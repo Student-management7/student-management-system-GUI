@@ -18,7 +18,7 @@ const StudentManagementSystem = () => {
     const fetchClasses = async () => {
         try {
             setLoading(true);
-            const response = await fetch('http://localhost:3000/clasess'); // Correct API endpoint
+            const response = await fetch('localhost:8080/class/data'); // Correct API endpoint
             const data = await response.json();
             setClasses(data.classData); // Set class data
             setLoading(false);
@@ -51,7 +51,7 @@ const StudentManagementSystem = () => {
     };
 
 
-    
+
     // Fetch students based on selected class and subject
     const fetchStudents = async () => {
         try {
