@@ -5,7 +5,8 @@ import Register from './Pages/StudentRegistrationForm'
 import Login from './Pages/Login'
 import FacultyRegistrationForm from './Pages/FacultyRegistrationForm';
 import StudentDataGrid from './Pages/StusentDashboard';
-
+import StudentManagement  from './Pages/StudentManagement';
+import SAMS from './experiments/SAMS'
 
 
 
@@ -20,6 +21,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/facultyregister" element={<FacultyRegistrationForm />} />
          <Route path="/studentdashboard" element={<StudentDataGrid />} />
+         <Route path="/studentmanagement" element={<StudentManagement />} />
+         <Route path="/sams" element={<SAMS />} />
         
       </Routes>
     </Router>

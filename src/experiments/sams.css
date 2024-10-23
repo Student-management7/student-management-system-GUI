@@ -1,0 +1,53 @@
+.student-management {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.dropdowns-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.dropdown-group {
+    display: flex;
+    gap: 20px;
+}
+
+.custom-dropdown {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.fetch-btn {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.fetch-btn:hover {
+    background-color: #45a049;
+}
+
+.table-container {
+    margin-top: 20px;
+}
+
+.submit-btn {
+    padding: 10px 20px;
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.submit-btn:hover {
+    background-color: #007bb5;
+}

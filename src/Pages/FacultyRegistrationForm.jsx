@@ -1,24 +1,50 @@
 import React from "react";
-import { useForm } from "react-hook-form";
-import { useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
+import axios from "axios"; // Or use fetch for making API calls
 
 const FacultyRegistrationForm = () => {
-  
-  
-    const { control, register, handleSubmit, formState: { errors } } = useForm({
-        defaultValues: {
-            qualifications: [{ type: "Graduation", subject: "", branch: "", grade: "", university: "", yearOfPassing: "" }]
-        }
-    });
-    
-    const onSubmit = (data) => {
-      console.log(data);
-    };
+  // useForm hook for handling form state and validation
+  const { control, register, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: {
+      fact_id: "",
+      fact_Name: "",
+      fact_email: "",
+      fact_contact: "",
+      fact_gender: "",
+      fact_address: "",
+      fact_city: "",
+      fact_state: "",
+      fact_joiningDate: "",
+      fact_leavingDate: "",
+      qualifications: [
+        { type: "Graduation", subject: "", branch: "", grade: "", university: "", yearOfPassing: "" }
+      ],
+      fact_cls: [{ cls_name: "", cls_sub: [""] }],
+      fact_status: "",
+    }
+  });
+
+  // Field array for dynamic qualification fields
   const { fields, append, remove } = useFieldArray({
     control,
     name: "qualifications",
   });
 
+  // Function to handle form submission
+  const onSubmit = async (data) => {
+    try {
+      console.log("Submitting data: ", data);
+      // Make a POST request to your API endpoint
+      const response = await axios.post("https://your-api-endpoint.com/faculty", data);
+      console.log("Response from API: ", response.data);
+
+      // Optionally show a success message or reset form
+      alert("Form submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting form: ", error);
+      alert("There was an error submitting the form. Please try again.");
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md">
