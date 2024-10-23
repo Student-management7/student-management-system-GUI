@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { InputFieldProps, ErrorData, FamilyDetails } from '../../interfaceModule/registration/Registration';
 
 // Reusable input field component
-const InputField = ({ label, name, value, onChange, type = "text", placeholder, error }) => (
+const InputField: React.FC<InputFieldProps> = ({ label, name, value, onChange, type = "text", placeholder, error }) => (
   <div className="mb-4">
     <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
     <input
@@ -15,6 +16,7 @@ const InputField = ({ label, name, value, onChange, type = "text", placeholder, 
     {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
   </div>
 );
+
 
 const StudentRegistrationForm = () => {
   const [showFamilyDetails, setShowFamilyDetails] = useState(false);
@@ -41,10 +43,10 @@ const StudentRegistrationForm = () => {
       stdo_email: '',
     },
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<ErrorData>({});
 
   // Handle input changes
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { name, value } = e.target;
     if (name.startsWith('familyDetails.')) {
       const familyField = name.split('.')[1];
@@ -65,7 +67,7 @@ const StudentRegistrationForm = () => {
 
   // Form validation
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: ErrorData  = {};
     if (!formData.name) newErrors.name = 'Full Name is required';
     if (!formData.address) newErrors.address = 'Address is required';
     if (!formData.city) newErrors.city = 'City is required';
@@ -99,7 +101,7 @@ const StudentRegistrationForm = () => {
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
     // Validate the form before submitting

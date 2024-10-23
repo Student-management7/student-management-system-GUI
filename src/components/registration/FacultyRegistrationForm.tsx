@@ -1,17 +1,47 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useFieldArray } from "react-hook-form";
+interface FormData {
+  fact_id: string;
+  fact_Name: string;
+  fact_email: string;
+  fact_contact: string;
+  fact_gender: string;
+  fact_address: string;
+  fact_city: string;
+  fact_state: string;
+  fact_joiningDate: string;
+  fact_leavingDate?: string; // Optional field
+
+  qualifications: {
+    type: string;
+    subject: string;
+    branch: string;
+    grade: string;
+    university: string;
+    yearOfPassing: string;
+  }[];
+
+  fact_cls: {
+    cls_name: string;
+    cls_sub: string;
+  };
+
+  fact_status: string;
+}
 
 const FacultyRegistrationForm = () => {
   
   
-    const { control, register, handleSubmit, formState: { errors } } = useForm({
+  //const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
+
+    const { control, register, handleSubmit, formState: { errors } } = useForm<FormData>({
         defaultValues: {
             qualifications: [{ type: "Graduation", subject: "", branch: "", grade: "", university: "", yearOfPassing: "" }]
         }
     });
     
-    const onSubmit = (data) => {
+    const onSubmit = (data: any) => {
       console.log(data);
     };
   const { fields, append, remove } = useFieldArray({
@@ -63,7 +93,7 @@ const FacultyRegistrationForm = () => {
               {...register("fact_contact", { required: "Contact is required" })}
               className="block w-full px-4 py-2 border rounded-md"
             />
-            {errors.fact_contact && <p className="text-red-600">{errors.fact_contact.message}</p>}
+            {errors.fact_contact && <p className="text-red-600">{errors?.fact_contact?.message}</p>}
           </div>
 
           <div>
@@ -154,7 +184,7 @@ const FacultyRegistrationForm = () => {
           <option value="Post-Graduation">Post-Graduation</option>
           <option value="Other">Other</option>
         </select>
-        {errors.qualifications?.[index]?.type && <p className="text-red-600">{errors.qualifications[index].type.message}</p>}
+        {errors.qualifications?.[index]?.type && <p className="text-red-600">{errors.qualifications[index]?.types?.message}</p>}
       </div>
 
       {/* Subject */}
@@ -165,7 +195,7 @@ const FacultyRegistrationForm = () => {
           {...register(`qualifications.${index}.subject`, { required: "Subject is required" })}
           className="block w-full px-4 py-2 border rounded-md"
         />
-        {errors.qualifications?.[index]?.subject && <p className="text-red-600">{errors.qualifications[index].subject.message}</p>}
+        {errors.qualifications?.[index]?.subject && <p className="text-red-600">{errors.qualifications[index]?.subject?.message}</p>}
       </div>
 
       {/* Branch */}
@@ -176,7 +206,7 @@ const FacultyRegistrationForm = () => {
           {...register(`qualifications.${index}.branch`, { required: "Branch is required" })}
           className="block w-full px-4 py-2 border rounded-md"
         />
-        {errors.qualifications?.[index]?.branch && <p className="text-red-600">{errors.qualifications[index].branch.message}</p>}
+        {errors.qualifications?.[index]?.branch && <p className="text-red-600">{errors.qualifications[index]?.branch?.message}</p>}
       </div>
 
       {/* Grade */}
@@ -187,7 +217,7 @@ const FacultyRegistrationForm = () => {
           {...register(`qualifications.${index}.grade`, { required: "Grade is required" })}
           className="block w-full px-4 py-2 border rounded-md"
         />
-        {errors.qualifications?.[index]?.grade && <p className="text-red-600">{errors.qualifications[index].grade.message}</p>}
+        {errors.qualifications?.[index]?.grade && <p className="text-red-600">{errors.qualifications[index]?.grade?.message}</p>}
       </div>
 
       {/* University */}
@@ -198,7 +228,7 @@ const FacultyRegistrationForm = () => {
           {...register(`qualifications.${index}.university`, { required: "University is required" })}
           className="block w-full px-4 py-2 border rounded-md"
         />
-        {errors.qualifications?.[index]?.university && <p className="text-red-600">{errors.qualifications[index].university.message}</p>}
+        {errors.qualifications?.[index]?.university && <p className="text-red-600">{errors.qualifications[index]?.university?.message}</p>}
       </div>
 
       {/* Year of Passing */}
@@ -209,7 +239,7 @@ const FacultyRegistrationForm = () => {
           {...register(`qualifications.${index}.yearOfPassing`, { required: "Year of passing is required" })}
           className="block w-full px-4 py-2 border rounded-md"
         />
-        {errors.qualifications?.[index]?.yearOfPassing && <p className="text-red-600">{errors.qualifications[index].yearOfPassing.message}</p>}
+        {errors.qualifications?.[index]?.yearOfPassing && <p className="text-red-600">{errors?.qualifications[index]?.yearOfPassing?.message}</p>}
       </div>
 
       {/* Remove Qualification Button */}

@@ -1,0 +1,44 @@
+.nav-bar{
+    display: inline;
+    .nav-item{
+        display: inline-block;
+    }
+}
+
+.headerBox{
+    background-color: #FFF;
+    box-shadow: 6px 6px 13px 0px #e5e7eb;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    .log-file{
+        width: 15%;
+        display: inline-block;
+    }
+    .nav{
+        width: calc(100% - 15%);
+        display: inline-block;
+        
+        .nav-bar{
+            display: inline-block;
+        }
+        .nav-item{
+            display: inline-block;
+            padding: 10px;
+        }
+    }
+}
+
+.footer{
+    box-shadow: 6px 6px 13px 0px #e5e7eb;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    background: #FFF;
+    justify-content: center;
+}
