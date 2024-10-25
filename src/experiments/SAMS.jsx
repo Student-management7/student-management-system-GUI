@@ -5,7 +5,6 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 const StudentManagementSystem = () => {
-    // State setup
     const [classes, setClasses] = useState([]); // Class and subject data from API
     const [subjects, setSubjects] = useState([]); // Subjects for the selected class
     const [selectedClass, setSelectedClass] = useState(""); // Selected class
@@ -52,61 +51,81 @@ const StudentManagementSystem = () => {
 
 
 
-    // Fetch students based on selected class and subject
-    const fetchStudents = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch('https://api.example.com/students', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    className: selectedClass,
-                    subject: selectedSubject
-                }),
-            });
-            const data = await response.json();
-            setStudents(data.students); // Set students data
-            setLoading(false);
-        } catch (error) {
-            setError("Failed to fetch students data");
-            setLoading(false);
-        }
-    };
 
-    // Submit attendance to the backend
-    const submitAttendance = async () => {
-        try {
-            const payload = {
-                className: selectedClass,
-                subject: selectedSubject,
-                studentList: students.map(student => ({
-                    stdId: student.stdId,
-                    attendance: student.attendance || "Present" // Default to Present if not set
-                }))
-            };
-            const response = await fetch('https://api.example.com/submitAttendance', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
-            });
-            if (response.ok) {
-                alert("Attendance submitted successfully!");
-            } else {
-                throw new Error("Failed to submit attendance");
-            }
-        } catch (error) {
-            alert("Error submitting attendance: " + error.message);
-        }
-    };
 
+    // Fetch students based on class and subject
+const fetchStudents = async () => {
+    try {
+        setLoading(true);
+        const response = await fetch('localhost:8080/StudentList', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                className: selectedClass,  // Send selected class and subject
+                subject: selectedSubject
+            }),
+        });
+        const data = await response.json();
+
+        // Extract only required data: stdId and studentName
+        const filteredStudents = data.students.map(student => ({
+            stdId: student.id,
+            name: student.name  // Extracting only the necessary fields
+        }));
+        
+        setStudents(filteredStudents); // Set filtered students data
+        setLoading(false);
+    } catch (error) {
+        setError("Failed to fetch students data");
+        setLoading(false);
+    }
+};
+
+
+  
+
+
+// Submit attendance to the backend
+const submitAttendance = async () => {
+    try {
+        const payload = {
+            className: selectedClass,  // Class selected from the dropdown
+            subject: selectedSubject,  // Subject selected from the dropdown
+            studentList: students.map(student => ({
+                stdId: student.id,
+                attendance: student.attendance || "Present" // Default to Present if not set
+            }))
+        };
+
+        const response = await fetch('localhost:8080/submit-attendance', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),  // Sending formatted payload to the server
+        });
+
+        if (response.ok) {
+            alert("Attendance submitted successfully!");
+        } else {
+            throw new Error("Failed to submit attendance");
+        }
+    } catch (error) {
+        alert("Error submitting attendance: " + error.message);
+    }
+};
+
+
+
+
+
+    
     // AG Grid column definitions
     const columns = [
         { headerName: "Serial Number", valueGetter: "node.rowIndex + 1", flex: 1 },
-        { headerName: "Student ID", field: "stdId", flex: 1 },
+        { headerName: "Student ID", field: "id", flex: 1 },
         { headerName: "Student Name", field: "name", flex: 2 },
         { headerName: "Class Name", field: "className", flex: 1 },
         { headerName: "Subject", field: "subject", flex: 1 },
@@ -172,12 +191,7 @@ const StudentManagementSystem = () => {
             {/* AG Grid table */}
             <div className="ag-theme-alpine table-container" style={{ height: '400px', width: '100%', marginTop: '20px' }}>
                 <AgGridReact
-                    rowData={students.map((student) => ({
-                        ...student,
-                        className: selectedClass,
-                        subject: selectedSubject,
-                        attendance: student.attendance || "Present" 
-                    }))}
+                    rowData={students}
                     columnDefs={columns}
                     pagination={true}
                 />
