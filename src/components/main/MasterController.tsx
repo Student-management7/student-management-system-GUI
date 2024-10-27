@@ -1,15 +1,15 @@
 import React from 'react';
-import FooterController from './FooterController';
-import HeaderController from './HeaderController';
+import './main.scss'
+
 
 const MasterController = () =>{
 
     return(
 
         <>
-            <HeaderController />
-            Master Body
-            <FooterController />
+            <div className='box'>
+                <h1>Hello1</h1>
+            </div>
         </>
     );
 }

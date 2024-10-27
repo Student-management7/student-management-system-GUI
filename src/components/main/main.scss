@@ -26,6 +26,7 @@
         .nav-item{
             display: inline-block;
             padding: 10px;
+            font-size: 20px;
         }
     }
 }
@@ -33,12 +34,56 @@
 .footer{
     box-shadow: 6px 6px 13px 0px #e5e7eb;
     height: 50px;
-    display: flex;
-    align-items: center;
+    text-align: center;
     padding: 10px;
     position: absolute;
     width: 100%;
     bottom: 0;
     background: #FFF;
-    justify-content: center;
+}
+.headding1{
+    margin-bottom: 20px;
+    color: #179DE3;
+    h1{
+        font-size: 28px;
+    }
+}
+
+.box{
+    background: #FFF;
+    height: 100%;
+    min-height: 500px;
+    margin: 15px;
+    padding: 15px;
+    border-radius: 3px;
+}
+.form-text{
+    display: none;
+}
+.row{
+    height: 105px;
+}
+#root{
+    position: relative;
+}
+.hr{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.titel{
+    margin-bottom: 20px;
+    
+    h2{
+        font-size: 24px;
+        color: #179DE3;
+    }
+}
+.log-file{
+    font-size: 28px;
+    color: green;
+}
+.btn-default{
+    background: #F7F7F7;
+    border: 1px solid #919191;
+    border-radius: 1px;
 }
