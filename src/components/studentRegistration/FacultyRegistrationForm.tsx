@@ -1,49 +1,27 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useFieldArray } from "react-hook-form";
-interface FormData {
-  fact_id: string;
-  fact_Name: string;
-  fact_email: string;
-  fact_contact: string;
-  fact_gender: string;
-  fact_address: string;
-  fact_city: string;
-  fact_state: string;
-  fact_joiningDate: string;
-  fact_leavingDate?: string; // Optional field
+import { FormData } from "../../services/fecultyRegistretion/Type/FecultyRegistrationType";
 
-  qualifications: {
-    type: string;
-    subject: string;
-    branch: string;
-    grade: string;
-    university: string;
-    yearOfPassing: string;
-  }[];
 
-  fact_cls: {
-    cls_name: string;
-    cls_sub: string;
-  };
 
-  fact_status: string;
-}
 
 const FacultyRegistrationForm = () => {
-  
-  
+
+
   //const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
 
-    const { control, register, handleSubmit, formState: { errors } } = useForm<FormData>({
-        defaultValues: {
-            qualifications: [{ type: "Graduation", subject: "", branch: "", grade: "", university: "", yearOfPassing: "" }]
-        }
-    });
-    
-    const onSubmit = (data: any) => {
-      console.log(data);
-    };
+  const { control, register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    defaultValues: {
+      qualifications: [{ type: "Graduation", subject: "", branch: "", grade: "", university: "", yearOfPassing: "" }]
+    }
+  });
+
+  
+
+  const onSubmit = (data: any) => {
+    console.log(data);
+  };
   const { fields, append, remove } = useFieldArray({
     control,
     name: "qualifications",
@@ -51,8 +29,8 @@ const FacultyRegistrationForm = () => {
 
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">Faculty Registration Form</h2>
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md mt-10 pb-10">
+      <h2 className="text-2xl font-bold mb-6 text-center"></h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
         {/* Personal Information */}
@@ -160,123 +138,127 @@ const FacultyRegistrationForm = () => {
           </div>
         </div>
 
+
+        <br />
+        <br />
+        <hr />
+        <br />
+
+
+        {/* Qualification Section */}
+        <div className="mt-6">
+          <h3 className="text-xl font-bold mb-4"></h3>
+
+          {fields.map((field, index) => (
+            <div key={field.id} className="grid grid-cols-2 gap-4 mb-6">
+              {/* Qualification Type */}
+              <div>
+                <label className="block mb-2 text-sm font-medium">Qualification Type</label>
+                <select
+                  {...register(`qualifications.${index}.type`, { required: "Qualification type is required" })}
+                  className="block w-full px-4 py-2 border rounded-md"
+                >
+                  <option value="Graduation">Graduation</option>
+                  <option value="Post-Graduation">Post-Graduation</option>
+                  <option value="Other">Other</option>
+                </select>
+                {errors.qualifications?.[index]?.type && <p className="text-red-600">{errors.qualifications[index]?.types?.message}</p>}
+              </div>
+                     
+                     
+              {/* Subject */}
+              <div>
+                <label className="block mb-2 text-sm font-medium">Subject</label>
+                <input
+                  type="text"
+                  {...register(`qualifications.${index}.subject`, { required: "Subject is required" })}
+                  className="block w-full px-4 py-2 border rounded-md"
+                />
+                {errors.qualifications?.[index]?.subject && <p className="text-red-600">{errors.qualifications[index]?.subject?.message}</p>}
+              </div>
+
+              {/* Branch */}
+              <div>
+                <label className="block mb-2 text-sm font-medium">Branch</label>
+                <input
+                  type="text"
+                  {...register(`qualifications.${index}.branch`, { required: "Branch is required" })}
+                  className="block w-full px-4 py-2 border rounded-md"
+                />
+                {errors.qualifications?.[index]?.branch && <p className="text-red-600">{errors.qualifications[index]?.branch?.message}</p>}
+              </div>
+
+              {/* Grade */}
+              <div>
+                <label className="block mb-2 text-sm font-medium">Grade</label>
+                <input
+                  type="text"
+                  {...register(`qualifications.${index}.grade`, { required: "Grade is required" })}
+                  className="block w-full px-4 py-2 border rounded-md"
+                />
+                {errors.qualifications?.[index]?.grade && <p className="text-red-600">{errors.qualifications[index]?.grade?.message}</p>}
+              </div>
+
+              {/* University */}
+              <div>
+                <label className="block mb-2 text-sm font-medium">University</label>
+                <input
+                  type="text"
+                  {...register(`qualifications.${index}.university`, { required: "University is required" })}
+                  className="block w-full px-4 py-2 border rounded-md"
+                />
+                {errors.qualifications?.[index]?.university && <p className="text-red-600">{errors.qualifications[index]?.university?.message}</p>}
+              </div>
+
+              {/* Year of Passing */}
+              <div>
+                <label className="block mb-2 text-sm font-medium">Year of Passing</label>
+                <input
+                  type="date"
+                  {...register(`qualifications.${index}.yearOfPassing`, { required: "Year of passing is required" })}
+                  className="block w-full px-4 py-2 border rounded-md"
+                />
+                {errors.qualifications?.[index]?.yearOfPassing && <p className="text-red-600">{errors?.qualifications[index]?.yearOfPassing?.message}</p>}
+              </div>
+
+              {/* Remove Qualification Button */}
+              {fields.length > 1 && (
+                <div className="col-span-2 text-right">
+                  <button type="button" onClick={() => remove(index)} className="text-red-600 hover:underline">
+                    Remove
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+         
+        
        
-<br />
-<br />
-<hr />
-<br />
-
- 
-{/* Qualification Section */}
-<div className="mt-6">
-  <h3 className="text-xl font-bold mb-4"></h3>
-
-  {fields.map((field, index) => (
-    <div key={field.id} className="grid grid-cols-2 gap-4 mb-6">
-      {/* Qualification Type */}
-      <div>
-        <label className="block mb-2 text-sm font-medium">Qualification Type</label>
-        <select
-          {...register(`qualifications.${index}.type`, { required: "Qualification type is required" })}
-          className="block w-full px-4 py-2 border rounded-md"
-        >
-          <option value="Graduation">Graduation</option>
-          <option value="Post-Graduation">Post-Graduation</option>
-          <option value="Other">Other</option>
-        </select>
-        {errors.qualifications?.[index]?.type && <p className="text-red-600">{errors.qualifications[index]?.types?.message}</p>}
-      </div>
-
-      {/* Subject */}
-      <div>
-        <label className="block mb-2 text-sm font-medium">Subject</label>
-        <input
-          type="text"
-          {...register(`qualifications.${index}.subject`, { required: "Subject is required" })}
-          className="block w-full px-4 py-2 border rounded-md"
-        />
-        {errors.qualifications?.[index]?.subject && <p className="text-red-600">{errors.qualifications[index]?.subject?.message}</p>}
-      </div>
-
-      {/* Branch */}
-      <div>
-        <label className="block mb-2 text-sm font-medium">Branch</label>
-        <input
-          type="text"
-          {...register(`qualifications.${index}.branch`, { required: "Branch is required" })}
-          className="block w-full px-4 py-2 border rounded-md"
-        />
-        {errors.qualifications?.[index]?.branch && <p className="text-red-600">{errors.qualifications[index]?.branch?.message}</p>}
-      </div>
-
-      {/* Grade */}
-      <div>
-        <label className="block mb-2 text-sm font-medium">Grade</label>
-        <input
-          type="text"
-          {...register(`qualifications.${index}.grade`, { required: "Grade is required" })}
-          className="block w-full px-4 py-2 border rounded-md"
-        />
-        {errors.qualifications?.[index]?.grade && <p className="text-red-600">{errors.qualifications[index]?.grade?.message}</p>}
-      </div>
-
-      {/* University */}
-      <div>
-        <label className="block mb-2 text-sm font-medium">University</label>
-        <input
-          type="text"
-          {...register(`qualifications.${index}.university`, { required: "University is required" })}
-          className="block w-full px-4 py-2 border rounded-md"
-        />
-        {errors.qualifications?.[index]?.university && <p className="text-red-600">{errors.qualifications[index]?.university?.message}</p>}
-      </div>
-
-      {/* Year of Passing */}
-      <div>
-        <label className="block mb-2 text-sm font-medium">Year of Passing</label>
-        <input
-          type="date"
-          {...register(`qualifications.${index}.yearOfPassing`, { required: "Year of passing is required" })}
-          className="block w-full px-4 py-2 border rounded-md"
-        />
-        {errors.qualifications?.[index]?.yearOfPassing && <p className="text-red-600">{errors?.qualifications[index]?.yearOfPassing?.message}</p>}
-      </div>
-
-      {/* Remove Qualification Button */}
-      {fields.length > 1 && (
-        <div className="col-span-2 text-right">
-          <button type="button" onClick={() => remove(index)} className="text-red-600 hover:underline">
-            Remove
-          </button>
+          {/* Add Qualification Button */}
+          <div className="mt-3">
+            <button
+              type="button"
+              onClick={() =>
+                append({
+                  type: "Graduation",
+                  subject: "",
+                  branch: "",
+                  grade: "",
+                  university: "",
+                  yearOfPassing: "",
+                })
+              }
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Add More
+            </button>
+          </div>
         </div>
-      )}
-    </div>
-  ))}
-    <br />
 
-  {/* Add Qualification Button */}
-  <div className="mt-4">
-    <button
-      type="button"
-      onClick={() =>
-        append({
-          type: "Graduation",
-          subject: "",
-          branch: "",
-          grade: "",
-          university: "",
-          yearOfPassing: "",
-        })
-      }
-      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-    >
-      Add More
-    </button>
-  </div>
-</div>
+        <br />
+        <hr />
+        <br />
 
-<br />
-<br />
 
         {/* Class & Subjects */}
         <div className="mt-6">
@@ -319,7 +301,7 @@ const FacultyRegistrationForm = () => {
         </div>
 
         {/* Submit Button */}
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-center pb-9">
           <button
             type="submit"
             className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"

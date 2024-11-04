@@ -11,6 +11,10 @@ import MasterController from './components/main/MasterController';
 import HeaderController from './components/main/HeaderController';
 import FooterController from './components/main/FooterController';
 import StudentRegistrationController from './components/studentRegistration/StudentRegistrationController';
+import StudentAttendenceManagementSystem from './components/studentRegistration/StudentAttendenceManagementSystem'
+import SaveSubjectsToClasses from './components/studentRegistration/saveSubjectsToClasess/saveSubjectsToClasess'
+
+
 
 //import App from './App'
 import './index.css'
@@ -25,9 +29,11 @@ const App = () =>{
         <Route path="/main" element={<MasterController />} />
         <Route path='/StudentRegistrationController' element={<StudentRegistrationController />} />
         <Route path="/register" element={<Register />} />
-        {/* 
+        <Route path="/StudentAttendenceManagementSystem" element={<StudentAttendenceManagementSystem />} />
+        <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
+
         <Route path="/facultyregister" element={<FacultyRegistrationForm />} />
-        <Route path="/studentdashboard" element={<StudentDataGrid />} /> */}
+        <Route path="/studentdashboard" element={<StudentDataGrid />} /> 
         <Route path="*" element={<MasterController />} />
         
       </Routes>
