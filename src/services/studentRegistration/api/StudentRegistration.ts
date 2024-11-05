@@ -27,9 +27,6 @@ export const getStdDetails = async () => {
 };
 
 
-
-
-
 export const fetchClasses = async () => {
     try {
         const response = await axios.get(`${API_URL}/class/data`); // Adjust the endpoint as needed

@@ -47,7 +47,7 @@ const SaveSubjectsToClasses: React.FC = () => {
         }
     };
 
-  // Modify the handleSave function to ensure correct payload structure
+ 
 const handleSave = () => {
     // Filter out the existing class if it exists, then add the updated one
     const updatedClassData = classData.filter((cls) => cls.className !== selectedClass);
