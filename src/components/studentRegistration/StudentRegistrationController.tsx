@@ -1,14 +1,67 @@
-import React, {useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { bool, boolean } from 'yup';
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
 import { getStdDetails, saveStdDetails } from '../../services/studentRegistration/api/StudentRegistration';
 import { StudentFormData, FamilyDetails } from '../../services/studentRegistration/type/StudentRegistrationType';
+
+
 import GridView from './GridView';
+// import { Alert, AlertTitle } from '@/components/ui/alert';
 
+import CustomAlert from '../UI/alert'; // Import the new custom alert component
 
-const StudentRegistrationController = (props: StudentFormData) =>{
+const validationSchema = Yup.object().shape({
+    name: Yup.string()
+        .required('Full name is required')
+        .min(2, 'Name must be at least 2 characters'),
+    address: Yup.string()
+        .required('Address is required'),
+    city: Yup.string()
+        .required('City is required'),
+    state: Yup.string()
+        .required('State is required'),
+    contact: Yup.string()
+        .required('Contact number is required')
+        .matches(/^[0-9]{10}$/, 'Contact number must be 10 digits'),
+    gender: Yup.string()
+        .required('Gender is required')
+        .oneOf(['Male', 'Female', 'Other'], 'Please select a valid gender'),
+    dob: Yup.date()
+        .required('Date of birth is required')
+        .max(new Date(), 'Date of birth cannot be in the future'),
+    cls: Yup.string()
+        .required('Class is required'),
+    category: Yup.string()
+        .required('Category is required'),
+    familyDetails: Yup.object().shape({
+        stdo_FatherName: Yup.string()
+            .required("Father's name is required"),
+        stdo_primaryContact: Yup.string()
+            .required('Primary contact is required')
+            .matches(/^[0-9]{10}$/, 'Contact number must be 10 digits'),
+    })
+});
 
-    const [formData, setFormData] = useState({
+const StudentRegistrationController = (props: StudentFormData) => {
+    const [error, setError] = useState<string | null>(null);
+    const [rowData, setRowData] = useState<any[]>([]);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [columnDefs] = useState<any[]>([
+        { field: 'name', headerName: 'Name' },
+        { field: 'city', headerName: 'City' },
+        { field: 'cls', headerName: 'Class' },
+        { field: 'address', headerName: 'Address' },
+        { field: 'gender', headerName: 'Gender' },
+        { field: 'state', headerName: 'State' },
+        { field: 'familyDetails.stdo_FatherName', headerName: 'Father Name' },
+        { field: 'familyDetails.stdo_MotherName', headerName: 'Mother Name' },
+        { field: 'familyDetails.stdo_primaryContact', headerName: 'Contact' }
+    ]);
+    const [switchForm, setSwitchForm] = useState<boolean>(false);
+    const [studentData, setStudentData] = useState<boolean>(false);
+
+    const initialValues = {
         name: '',
         address: '',
         city: '',
@@ -29,51 +82,10 @@ const StudentRegistrationController = (props: StudentFormData) =>{
             stdo_state: '',
             stdo_email: ''
         }
-      });
-        const [error, setError] = useState<string | null>(null);
-        const [rowData, setRowData] = useState<any[]>([]);
-        const [columnDefs] = useState<any[]>([
-            { field: 'name', headerName: 'Name' },
-            { field: 'city', headerName: 'City' },
-            { field: 'cls', headerName: 'Class' },
-            { field: 'address', headerName: 'Address' },
-            { field: 'gender', headerName: 'Gender' },
-            { field: 'state', headerName: 'State' },
-            { field: 'familyDetails.stdo_FatherName', headerName: 'Father Name' },
-            { field: 'familyDetails.stdo_MotherName', headerName: 'Mother Name' },
-            { field: 'familyDetails.stdo_primaryContact', headerName: 'Contact' }
-            
-            
-        ]);
-        const [switchForm, setSwitchForm] = useState<boolean>(false)
-        const [studentData, setStudentData] = useState<boolean>(false)
+    };
 
-      const handleInputChange = (
-        e: any,
-        fieldName: keyof StudentFormData | keyof FamilyDetails,
-        familyField: boolean = false
-      ) => {
-        const { value } = e.target;
-        setFormData((prevValues) => ({
-          ...prevValues,
-          ...(familyField
-            ? { familyDetails: { ...prevValues.familyDetails, [fieldName]: value } }
-            : { [fieldName]: value }),
-        }));
-      };
-    
-      const handleSubmit = async () => {
-        
-    
-         
-          console.log('Form submitted successfully:', formData);
-          saveStdDetails(formData);
-       
-      };
-
-      const fetchStudentDetails = async () => {
+    const fetchStudentDetails = async () => {
         try {
-            debugger;
             const data = await getStdDetails();
             setRowData(data);
         } catch (err) {
@@ -81,279 +93,358 @@ const StudentRegistrationController = (props: StudentFormData) =>{
             console.error(err);
         }
     };
-      useEffect(() => {
-    
-        fetchStudentDetails();
-        console.log('rowData', rowData);
-    }, []);
-    const addForm = ()=>{
-        setSwitchForm(true);
-    }
 
-    const setSwitch = ()=>{
+    useEffect(() => {
+        fetchStudentDetails();
+    }, []);
+
+    const addForm = () => {
+        setSwitchForm(true);
+    };
+
+    const setSwitch = () => {
         setStudentData(true);
-    }
-    
- return (
-    <> 
-    {!studentData? (<div className='box'>
-        <div className='text-right'><button onClick={setSwitch} className='btn btn-default'>Add Student</button></div>
-        <GridView rowData={rowData} columnDefs={columnDefs} onAddRow={addForm} />
-        </div>):(
-            <div className='box'>
-            <div className='headding1'>
-                <h1><Link to='/'><i className="bi bi-arrow-left-circle" /> <span>User Details</span></Link></h1>
-            </div>
-            <form>
-            <div className='row'>
-                <div className='col-md-4'>
-                    <div className='form-group'>
-                        <label htmlFor="fulName" className="form-label">Full Name</label>
-                        <input type="text" id="fulName"
-                        value={formData.name} onChange={(e) => handleInputChange(e, 'name')}
-                         className="form-control"
-                         placeholder='Enter full name'
-                          aria-describedby="fulName" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long
-                        </div>
+    };
+
+    const handleSubmit = async (values: StudentFormData, { resetForm }: any) => {
+        try {
+            await saveStdDetails(values);
+            setShowSuccess(true);
+            setTimeout(() => {
+                setShowSuccess(false);
+                resetForm();
+            }, 3000);
+        } catch (err) {
+            setError('Failed to save student details');
+            console.error(err);
+        }
+    };
+
+    return (
+        <>
+            {!studentData ? (
+                <div className='box'>
+                    <div className='text-right'>
+                        <button onClick={setSwitch} className='btn btn-default'>Add Student</button>
                     </div>
+                    <GridView rowData={rowData} columnDefs={columnDefs} onAddRow={addForm} />
                 </div>
-                <div className='col-md-4'>
-                <div>
-                        <label htmlFor="address" className="form-label">Address</label>
-                        <input type="text" id="address"
-                        placeholder='Enter Address'
-                        value={formData.address} onChange={(e) => handleInputChange(e, 'address')}
-                        className="form-control" aria-describedby="passwordHelpBlock" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
+            ) : (
+                <div className='box'>
+                    <div className='headding1'>
+                        <h1>
+                            <Link to='/'>
+                                <i className="bi bi-arrow-left-circle" /> <span>User Details</span>
+                            </Link>
+                        </h1>
                     </div>
+
+
+                    {showSuccess && (
+                        <CustomAlert
+                            message="Form submitted successfully!"
+                            type="success"
+                            onClose={() => setShowSuccess(false)}
+                        />
+                    )}
+
+
+                    <Formik
+                        initialValues={initialValues}
+                        validationSchema={validationSchema}
+                        onSubmit={handleSubmit}
+                    >
+                        {({ errors, touched }) => (
+                            <Form>
+                                <div className='row'>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="name" className="form-label">Full Name (Required)</label>
+                                            <Field
+                                                type="text"
+                                                id="name"
+                                                name="name"
+                                                className={`form-control ${errors.name && touched.name ? 'is-invalid' : ''}`}
+                                                placeholder='Enter full name'
+                                            />
+                                            {errors.name && touched.name && (
+                                                <div className="invalid-feedback">{errors.name}</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="address" className="form-label">Address</label>
+                                            <Field
+                                                type="text"
+                                                id="address"
+                                                name="address"
+                                                className={`form-control ${errors.address && touched.address ? 'is-invalid' : ''}`}
+                                                placeholder='Enter Address'
+                                            />
+                                            {errors.address && touched.address && (
+                                                <div className="invalid-feedback">{errors.address}</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="city" className="form-label">City</label>
+                                            <Field
+                                                type="text"
+                                                id="city"
+                                                name="city"
+                                                className={`form-control ${errors.city && touched.city ? 'is-invalid' : ''}`}
+                                                placeholder='Enter city'
+                                            />
+                                            {errors.city && touched.city && (
+                                                <div className="invalid-feedback">{errors.city}</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* Continue with all other fields following the same pattern */}
+                                <div className='row'>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="state" className="form-label">State</label>
+                                            <Field
+                                                type="text"
+                                                id="state"
+                                                name="state"
+                                                className={`form-control ${errors.state && touched.state ? 'is-invalid' : ''}`}
+                                                placeholder='Enter state'
+                                            />
+                                            {errors.state && touched.state && (
+                                                <div className="invalid-feedback">{errors.state}</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="contact" className="form-label">Contact</label>
+                                            <Field
+                                                type="text"
+                                                id="contact"
+                                                name="contact"
+                                                className={`form-control ${errors.contact && touched.contact ? 'is-invalid' : ''}`}
+                                                placeholder='Enter contact'
+                                            />
+                                            {errors.contact && touched.contact && (
+                                                <div className="invalid-feedback">{errors.contact}</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="gender" className="form-label">Gender</label>
+                                            <Field
+                                                as="select"
+                                                id="gender"
+                                                name="gender"
+                                                className={`form-control ${errors.gender && touched.gender ? 'is-invalid' : ''}`}
+                                            >
+                                                <option value="">Select</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                                <option value="Other">Other</option>
+                                            </Field>
+                                            {errors.gender && touched.gender && (
+                                                <div className="invalid-feedback">{errors.gender}</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='row'>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="dob" className="form-label">Date Of Birth</label>
+                                            <Field
+                                                type="date"
+                                                id="dob"
+                                                name="dob"
+                                                className={`form-control ${errors.dob && touched.dob ? 'is-invalid' : ''}`}
+                                            />
+                                            {errors.dob && touched.dob && (
+                                                <div className="invalid-feedback">{errors.dob}</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="email" className="form-label">Email</label>
+                                            <Field
+                                                type="email"
+                                                id="email"
+                                                name="email"
+                                                className="form-control"
+                                                placeholder='Enter email'
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="cls" className="form-label">Admission Class</label>
+                                            <Field
+                                                type="text"
+                                                id="cls"
+                                                name="cls"
+                                                className={`form-control ${errors.cls && touched.cls ? 'is-invalid' : ''}`}
+                                                placeholder='Enter Class'
+                                            />
+                                            {errors.cls && touched.cls && (
+                                                <div className="invalid-feedback">{errors.cls}</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='row'>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="department" className="form-label">Department</label>
+                                            <Field
+                                                type="text"
+                                                id="department"
+                                                name="department"
+                                                className="form-control"
+                                                placeholder='Enter Department'
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="category" className="form-label">Category</label>
+                                            <Field
+                                                type="text"
+                                                id="category"
+                                                name="category"
+                                                className={`form-control ${errors.category && touched.category ? 'is-invalid' : ''}`}
+                                                placeholder='Enter category'
+                                            />
+                                            {errors.category && touched.category && (
+                                                <div className="invalid-feedback">{errors.category}</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr className='hr' />
+                                <div className='titel'><h2>Family Details</h2></div>
+                                <div className='row'>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="familyDetails.stdo_FatherName" className="form-label">Father's Name</label>
+                                            <Field
+                                                type="text"
+                                                id="familyDetails.stdo_FatherName"
+                                                name="familyDetails.stdo_FatherName"
+                                                className={`form-control ${errors.familyDetails?.stdo_FatherName &&
+                                                    touched.familyDetails?.stdo_FatherName ? 'is-invalid' : ''
+                                                    }`}
+                                                placeholder="Enter father's name"
+                                            />
+                                            {errors.familyDetails?.stdo_FatherName &&
+                                                touched.familyDetails?.stdo_FatherName && (
+                                                    <div className="invalid-feedback">
+                                                        {errors.familyDetails.stdo_FatherName}
+                                                    </div>
+                                                )}
+                                        </div>
+                                    </div>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="familyDetails.stdo_MotherName" className="form-label">Mother's Name</label>
+                                            <Field
+                                                type="text"
+                                                id="familyDetails.stdo_MotherName"
+                                                name="familyDetails.stdo_MotherName"
+                                                className="form-control"
+                                                placeholder="Enter mother's name"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="familyDetails.stdo_primaryContact" className="form-label">Primary Contact</label>
+                                            <Field
+                                                type="text"
+                                                id="familyDetails.stdo_primaryContact"
+                                                name="familyDetails.stdo_primaryContact"
+                                                className={`form-control ${errors.familyDetails?.stdo_primaryContact &&
+                                                    touched.familyDetails?.stdo_primaryContact ? 'is-invalid' : ''
+                                                    }`}
+                                                placeholder="Enter primary contact"
+                                            />
+                                            {errors.familyDetails?.stdo_primaryContact &&
+                                                touched.familyDetails?.stdo_primaryContact && (
+                                                    <div className="invalid-feedback">
+                                                        {errors.familyDetails.stdo_primaryContact}
+                                                    </div>
+                                                )}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='row'>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="familyDetails.stdo_secondaryContact" className="form-label">Secondary Contact</label>
+                                            <Field
+                                                type="text"
+                                                id="familyDetails.stdo_secondaryContact"
+                                                name="familyDetails.stdo_secondaryContact"
+                                                className="form-control"
+                                                placeholder="Enter secondary Contact"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="familyDetails.stdo_city" className="form-label">Family Address</label>
+                                            <Field
+                                                type="text"
+                                                id="familyDetails.stdo_city"
+                                                name="familyDetails.stdo_city"
+                                                className="form-control"
+                                                placeholder="Enter family address"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="familyDetails.stdo_state" className="form-label">Family State</label>
+                                            <Field
+                                                type="text"
+                                                id="familyDetails.stdo_state"
+                                                name="familyDetails.stdo_state"
+                                                className="form-control"
+                                                placeholder="Enter family state"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='row'>
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <label htmlFor="familyDetails.stdo_email" className="form-label">Family Email Id</label>
+                                            <Field
+                                                type="email"
+                                                id="familyDetails.stdo_email"
+                                                name="familyDetails.stdo_email"
+                                                className="form-control"
+                                                placeholder="Enter family Email"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='text-center mt-4'>
+                                    <button type="submit" className="btn btn-primary">Submit</button>
+                                </div>
+                            </Form>
+                        )}
+                    </Formik>
                 </div>
-                <div className='col-md-4'>
-                    <div className='form-group'>
-                        <label htmlFor="city" className="form-label">City</label>
-                        <input type="text" id="city"
-                        value={formData.city} onChange={(e) => handleInputChange(e, 'city')}
-                        placeholder='Enter city'
-                        className="form-control" aria-describedby="passwordHelpBlock" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className='row'>
-                <div className='col-md-4'>
-                    <div className='form-group'>
-                        <label htmlFor="state" className="form-label">State</label>
-                        <input type="text" id="state"
-                        placeholder='Enter state'
-                        value={formData.state} onChange={(e) => handleInputChange(e, 'state')}
-                        className="form-control" aria-describedby="passwordHelpBlock" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-                <div className='col-md-4'>
-                <div>
-                        <label htmlFor="contact" className="form-label">Contect</label>
-                        <input type="text" id="contact"
-                        placeholder='Enter contect'
-                        value={formData.contact} onChange={(e) => handleInputChange(e, 'contact')}
-                        className="form-control" aria-describedby="passwordHelpBlock" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-                <div className='col-md-4'>
-                    <div className='form-group'>
-                        <label htmlFor="gender" className="form-label">Gender</label>
-                        <select id='gender'
-                        value={formData.gender} onChange={(e) => handleInputChange(e, 'gender')}
-                        className='form-control'>
-                            <option>Select</option>
-                            <option>Male</option>
-                            <option>Female</option>
-                            <option>Other</option>
-                        </select>
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className='row'>
-                <div className='col-md-4'>
-                    <div className='form-group'>
-                        <label htmlFor="dob" className="form-label">Date Of Birth</label>
-                        <input type="date" id="dob"
-                        value={formData.dob} onChange={(e) => handleInputChange(e, 'dob')}
-                        placeholder='Enter DOB'
-                        className="form-control" aria-describedby="passwordHelpBlock" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-                <div className='col-md-4'>
-                <div>
-                        <label htmlFor="email" className="form-label">Email</label>
-                        <input type="Eail" id="email"
-                        placeholder='Enter email'
-                        value={formData.email} onChange={(e) => handleInputChange(e, 'email')}
-                        className="form-control" aria-describedby="passwordHelpBlock" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-                <div className='col-md-4'>
-                    <div className='form-group'>
-                        <label htmlFor="addmitionClass" className="form-label">Addmition class</label>
-                        <input type="text" id="addmitionClass"
-                        placeholder='Enter Class'
-                        value={formData.cls} onChange={(e) => handleInputChange(e, 'cls')}
-                        className="form-control" aria-describedby="passwordHelpBlock" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className='row'>
-                <div className='col-md-4'>
-                    <div className='form-group'>
-                        <label htmlFor="department" className="form-label">Department</label>
-                        <input type="text" id="department"
-                        value={formData.department} onChange={(e) => handleInputChange(e, 'department')}
-                        placeholder='Enter Department'
-                        className="form-control" aria-describedby="passwordHelpBlock" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-                <div className='col-md-4'>
-                <div>
-                        <label htmlFor="email" className="form-label">Category</label>
-                        <input type="text" id="category"
-                        placeholder='Enter category'
-                        value={formData.category} onChange={(e) => handleInputChange(e, 'category')}
-                        className="form-control" aria-describedby="passwordHelpBlock" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-            <hr className='hr' />
-            <div className='titel'><h2>Family Details</h2></div>
-            <div className='row'>
-                <div className='col-md-4'>
-                    <div className='form-group'>
-                        <label htmlFor="fname" className="form-label">Father's Name</label>
-                        <input type="text" id="fname"
-                        value={formData.familyDetails.stdo_FatherName} onChange={(e) => handleInputChange(e, 'stdo_FatherName', true)}
-                        placeholder="Enter father's name"
-                         className="form-control" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-                <div className='col-md-4'>
-                <div className='form-group'>
-                        <label htmlFor="mName" className="form-label">Mother's Name</label>
-                        <input type="text" id="mName"
-                         placeholder="Enter mother's name"
-                         value={formData.familyDetails.stdo_MotherName} onChange={(e) => handleInputChange(e, 'stdo_MotherName', true)}
-                          className="form-control" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-                <div className='col-md-4'>
-                    <div className='form-group'>
-                        <label htmlFor="primaryContect" className="form-label">Primary Contact</label>
-                        <input type="text" id="primaryContect"
-                        value={formData.familyDetails.stdo_primaryContact} onChange={(e) => handleInputChange(e, 'stdo_primaryContact', true)}
-                        placeholder='Enter primary contact'
-                         className="form-control"/>
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className='row'>
-                <div className='col-md-4'>
-                    <div className='form-group'>
-                        <label htmlFor="scondoryContact" className="form-label">Secondary Contact</label>
-                        <input type="text" id="scondoryContact"
-                        value={formData.familyDetails.stdo_secondaryContact} onChange={(e) => handleInputChange(e, 'stdo_secondaryContact', true)}
-                        placeholder="Enter secondary Contact"
-                         className="form-control" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-                <div className='col-md-4'>
-                <div className='form-group'>
-                        <label htmlFor="familyAddress" className="form-label">Family Address</label>
-                        <input type="text" id="familyAddress"
-                        value={formData.familyDetails.stdo_city} onChange={(e) => handleInputChange(e, 'stdo_city', true)}
-                         placeholder="Enter mother's Name"
-                          className="form-control" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-                <div className='col-md-4'>
-                    <div className='form-group'>
-                        <label htmlFor="fState" className="form-label"> Family State</label>
-                        <input type="text" id="fState"
-                        value={formData.familyDetails.stdo_state} onChange={(e) => handleInputChange(e, 'stdo_state', true)}
-                        placeholder="Enter family State"
-                         className="form-control"/>
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className='row'>
-                <div className='col-md-4'>
-                    <div className='form-group'>
-                        <label htmlFor="fmailyEmail" className="form-label">Family Email Id</label>
-                        <input type="text" id="fmailyEmail"
-                        placeholder="Enter family Email"
-                        value={formData.familyDetails.stdo_email} onChange={(e) => handleInputChange(e, 'stdo_email', true)}
-                         className="form-control" />
-                        <div id="passwordHelpBlock" className="form-text">
-                        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-            <div className='text-center'>
-                <button type="button" onClick={handleSubmit} className="btn btn-primary">Submit</button>
-            </div>
-            </form>
-        </div>
-        )}
-    
-        
-    </>
- );   
-}
+            )}
+        </>
+    );
+};
 
 export default StudentRegistrationController;

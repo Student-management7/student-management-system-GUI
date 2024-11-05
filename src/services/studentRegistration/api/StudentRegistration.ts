@@ -25,3 +25,35 @@ export const getStdDetails = async () => {
         throw error; // Re-throw the error if you want to handle it later
     }
 };
+
+
+
+
+
+export const fetchClasses = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/class/data`); // Adjust the endpoint as needed
+        return response.data;
+    } catch (error) {
+        console.log('Error fetching details:', error);
+        throw error; // Re-throw the error if you want to handle it later
+    }
+};
+
+
+
+
+    // // Fetch classes and subjects from the API
+
+    // const fetchClasses = async () => {
+    //     try {
+    //         setLoading(true);
+    //         const response = await fetch('localhost:8080/class/data'); // Correct API endpoint
+    //         const data = await response.json();
+    //         setClasses(data.classData); // Set class data
+    //         setLoading(false);
+    //     } catch (error) {
+    //         setError("Failed to fetch classes data");
+    //         setLoading(false);
+    //     }
+    // };
