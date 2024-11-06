@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { ClassData } from "../../../services/SaveSubjects/Type";
-import { API_ENDPOINTS } from "../../../services/SaveSubjects/Api";
+import { ClassData } from "../../services/SaveSubjects/Type";
+import { API_ENDPOINTS } from "../../services/SaveSubjects/Api";
 
 const allSubjects = [
     "Maths", "Science", "English", "History", "Geography", 

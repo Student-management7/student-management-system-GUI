@@ -6,6 +6,7 @@ import { getStdDetails, saveStdDetails } from '../../services/studentRegistratio
 import { StudentFormData, FamilyDetails } from '../../services/studentRegistration/type/StudentRegistrationType';
 
 
+
 import GridView from './GridView';
 // import { Alert, AlertTitle } from '@/components/ui/alert';
 
@@ -47,6 +48,8 @@ const StudentRegistrationController = (props: StudentFormData) => {
     const [error, setError] = useState<string | null>(null);
     const [rowData, setRowData] = useState<any[]>([]);
     const [showSuccess, setShowSuccess] = useState(false);
+
+
     const [columnDefs] = useState<any[]>([
         { field: 'name', headerName: 'Name' },
         { field: 'city', headerName: 'City' },

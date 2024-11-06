@@ -1,15 +1,14 @@
-// services/facultyRegistration/facultyRegistrationApi.ts
+// src/api/facultyApi.ts
+
 import axios from "axios";
-import { FormData } from "../../fecultyRegistretion/Type/FecultyRegistrationType"; // adjust the path if needed
+import { FacultyFormData } from "../Type/FecultyRegistrationType";
 
-const API_URL = "https://s-m-s-keyw.onrender.com/faculty/save"; 
-
-export const saveFacultyData = async (data: FormData) => {
-  try {
-    const response = await axios.post(API_URL, data);
-    return response.data;
-  } catch (error) {
-    console.error("Error saving faculty data:", error);
-    throw error;
-  }
+export const saveFacultyData = async (data: FacultyFormData) => {
+    try {
+        const response = await axios.post("https://s-m-s-keyw.onrender.com/faculty/save", data);
+        return response.data;
+    } catch (error) {
+        console.error("Error saving faculty data:", error);
+        throw new Error("Failed to save faculty data");
+    }
 };
