@@ -50,6 +50,15 @@ const HeaderController = () => {
                     >
                         <a href="/SaveSubjectsToClasses" className="hover:text-blue-600 transition-colors">SaveSubjects</a>
                     </motion.li>
+
+                    <motion.li
+                        className="nav-item"
+                        whileHover={{ scale: 1.1, color: "#2563EB" }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                    >
+                        <a href="/FacultyRegistration" className="hover:text-blue-600 transition-colors">FacultyRegistration</a>
+                    </motion.li>
+
                 </ul>
             </motion.nav>
         </div>

@@ -51,6 +51,7 @@ const StudentRegistrationController = (props: StudentFormData) => {
 
 
     const [columnDefs] = useState<any[]>([
+        { field: 'edit', headerName: 'Edit' },
         { field: 'name', headerName: 'Name' },
         { field: 'city', headerName: 'City' },
         { field: 'cls', headerName: 'Class' },
