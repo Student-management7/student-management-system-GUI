@@ -1,99 +1,207 @@
 import React, { useEffect, useState } from 'react';
-import { Formik, Form, Field, FieldArray, ErrorMessage ,FormikHelpers} from 'formik';
+import { Formik, Form, Field, FieldArray, ErrorMessage, FormikHelpers } from 'formik';
 
-import { FaPlus, FaMinus } from 'react-icons/fa';
+import { FaPlus, FaMinus, FaTrash } from 'react-icons/fa';
 import { facultyValidationSchema } from '../../services/fecultyRegistretion/validation';
-import { FacultyFormData,  } from '../../services/fecultyRegistretion/Type/FecultyRegistrationType';
-import { saveFacultyDetails, getFacultyDetails } from '../../services/fecultyRegistretion/API/API';
+import { FacultyFormData, Qualification ,Class} from '../../services/fecultyRegistretion/Type/FecultyRegistrationType';
+import { saveFacultyDetails, getFacultyDetails, updateFacultyDetails ,deleteFacultyDetails } from '../../services/fecultyRegistretion/API/API';
 import GridView from './GridView';
 import CustomAlert from '../UI/alert';
+import DeleteConfirmationModal from '../../services/DeleteModele/DeleteConfirmationModal';
 
 
 const FacultyRegistrationForm: React.FC = () => {
   const [rowData, setRowData] = useState<FacultyFormData[]>([]);
+  const [editingFaculty, setEditingFaculty] = useState<FacultyFormData | null>(null);
   const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [showError, setShowError] = useState<boolean>(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  //
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [selectedFacultyToDelete, setSelectedFacultyToDelete] = useState<FacultyFormData | null>(null);
+ //
 
   const initialValues: FacultyFormData = {
-    fact_Name: '',
-    fact_email: '',
-    fact_contact: '',
-    fact_gender: '',
-    fact_address: '',
-    fact_city: '',
-    fact_state: '',
-    fact_joiningDate: '',
-    fact_leavingDate: '',
-    fact_status: '',
-    qualifications: [
-      { type: 'Graduation', subject: '', branch: '', grade: '', university: '', yearOfPassing: '' }
+    fact_id: editingFaculty?.fact_id || '',
+    fact_Name: editingFaculty?.fact_Name || '',
+    fact_email: editingFaculty?.fact_email || '',
+    fact_contact: editingFaculty?.fact_contact || '',
+    fact_gender: editingFaculty?.fact_gender || '',
+    fact_address: editingFaculty?.fact_address || '',
+    fact_city: editingFaculty?.fact_city || '',
+    fact_state: editingFaculty?.fact_state || '',
+    fact_joiningDate: editingFaculty?.fact_joiningDate || '',
+    fact_leavingDate: editingFaculty?.fact_leavingDate || '',
+    fact_qualifications: editingFaculty?.fact_qualifications || [
+      { type: 'Graduation', grd_sub: '', grd_branch: '', grd_grade: '', grd_university: '', grd_yearOfPassing: '' },
     ],
-    fact_cls: [{ cls_name: '', cls_sub: [''] }],
+    Fact_cls: editingFaculty?.Fact_cls || [{ cls_name: '', cls_sub: [''] }],
+    Fact_status: editingFaculty?.Fact_status || '',
   };
-
-  // Fetch faculty details
-  const fetchFacultyDetails = async () => {
-    try {
-      const data = await getFacultyDetails();
-      if (Array.isArray(data)) {
-        setRowData(data);
-      } else {
-        console.error('Unexpected data format');
-      }
-    } catch (error) {
-      console.error('Failed to fetch faculty details:', error);
-    }
-  };
-
+  
   useEffect(() => {
     fetchFacultyDetails();
   }, []);
-
-  // Define handleSubmit with proper type annotations
-
-  const handleSubmit = async (
-    data: FacultyFormData,
-    { resetForm }: FormikHelpers<FacultyFormData>
-) => {
+  
+  const fetchFacultyDetails = async () => {
     try {
-        const response = await saveFacultyDetails(data);
-        if (response.status === 200) {
-            setRowData((prev) => [...prev, data]);
-            setShowSuccess(true);
-            setShowError(false);
-            setIsFormVisible(false);
-            resetForm(); // reset the form upon success
-        } else {
-            setShowError(true);
-            console.error('Failed to save data on the server');
-        }
-    } catch (error) {
-        console.error('Error submitting form:', error);
-        alert("An error occurred while submitting the form. Please check the console for details.");
+      const response = await getFacultyDetails();
+      if (Array.isArray(response?.data)) {
+        setRowData(response.data);
+      } else {
+        console.error('Unexpected data format:', response);
         setShowError(true);
+      }
+    } catch (error) {
+      console.error('Failed to fetch faculty details:', error);
+      setShowError(true);
     }
-};
-
-
-
-  // Toggle form visibility
-  const toggleFormVisibility = () => {
-    setIsFormVisible((prev) => !prev);
   };
 
+  const handleSubmit = async (
+    values: FacultyFormData,
+    { resetForm, setSubmitting }: FormikHelpers<FacultyFormData>
+  ) => {
+    try {
+      const submissionData = {
+        ...values,
+        fact_id: editingFaculty?.fact_id || values.fact_id,
+      };
 
+      let response;
+      if (editingFaculty) {
+        response = await updateFacultyDetails(submissionData, editingFaculty.fact_id);
+      } else {
+        response = await saveFacultyDetails(submissionData);
+        console.log(response.data);
+      }
+
+      if (response?.status === 200) {
+        await fetchFacultyDetails();
+        setShowSuccess(true);
+        setShowError(false);
+        setIsFormVisible(false);
+        setEditingFaculty(null);
+        resetForm();
+      } else {
+        setShowError(true);
+        console.error('Server response:', response);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setShowError(true);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+    
+
+
+  const handleEdit = async (facultyData: FacultyFormData) => {
+    try {
+      if (!facultyData.fact_id) {
+        console.error('Faculty ID is missing');
+        return;
+      }
+
+      const response = await getFacultyDetails();
+      console.log(response.data);
+      const selectedFaculty = response.data.find(
+        (faculty) => faculty.fact_id === facultyData.fact_id
+      );
+
+      if (selectedFaculty) {
+        setIsFormVisible(true);
+        setEditingFaculty(selectedFaculty);
+        setIsEditMode(true);
+      } else {
+        console.error('Faculty not found');
+      }
+    } catch (error) {
+      console.error('Error fetching faculty details:', error);
+    }
+  };
+
+  //
+
+  const handleDelete = async (facultyData: FacultyFormData) => {
+    setSelectedFacultyToDelete(facultyData);
+    setShowDeleteModal(true);
+  };
+
+  //
+
+  const confirmDelete = async () => {
+    try {
+      if (!selectedFacultyToDelete?.fact_id) {
+        console.error('Faculty ID is missing');
+        return;
+      }
+
+      const response = await deleteFacultyDetails( selectedFacultyToDelete.fact_id);
+
+      if (response?.status === 200) {
+        setShowSuccess(true);
+        await fetchFacultyDetails(); // Refresh the grid
+        setShowDeleteModal(false);
+        setSelectedFacultyToDelete(null);
+      } else {
+        setShowError(true);
+        console.error('Delete failed:', response);
+      }
+    } catch (error) {
+      console.error('Error deleting faculty:', error);
+      setShowError(true);
+    }
+  };
+
+  //
+
+  const columnDefs: any[] = [
+    { field: 'fact_Name', headerName: 'Name' },
+    { field: 'fact_city', headerName: 'City' },
+    { field: 'fact_contact', headerName: 'Contact' },
+    { field: 'fact_address', headerName: 'Address' },
+    { field: 'fact_gender', headerName: 'Gender' },
+    { field: 'fact_state', headerName: 'State' },
+    { field: 'fact_email', headerName: 'Email' },
+    { field: 'fact_status', headerName: 'Status' },
+
+
+   {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 150,
+      cellRenderer: (params: any) => (
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleEdit(params.data)}
+            className="btn btn-primary btn-sm"
+          >
+            ✏️ Edit
+          </button>
+          <button
+            onClick={() => handleDelete(params.data)}
+            className="btn btn-danger btn-sm"
+          >
+            <FaTrash /> Delete
+          </button>
+        </div>
+      ),
+    },
+
+    
+  ];
 
 
   return (
     <>
       {!isFormVisible ? (
         <div className="box">
-          <button onClick={toggleFormVisibility} className="btn btn-default">
-            {isFormVisible ? 'Hide Form' : 'Add Faculty'}
+          <button onClick={() => setIsFormVisible(true)} className="btn btn-default">
+            Add Faculty
           </button>
-
-
 
           {showSuccess && (
             <CustomAlert
@@ -105,36 +213,47 @@ const FacultyRegistrationForm: React.FC = () => {
 
           {showError && (
             <CustomAlert
-              message="There was an error submitting the form. Please try again."
-              // type="danger"
+              message="There was an error. Please try again."
+              type="error"
               onClose={() => setShowError(false)}
             />
           )}
+   
+          <GridView
+            rowData={rowData}
+            columnDefs={columnDefs}
+          />
+
+         {/* delete Modele implement he */}
+
+         {showDeleteModal && selectedFacultyToDelete && (
+            <DeleteConfirmationModal
+              faculty={selectedFacultyToDelete}
+              onConfirm={confirmDelete}
+              onCancel={() => {
+                setShowDeleteModal(false);
+                setSelectedFacultyToDelete(null);
+              }}
+            />
+          )}
+
+         //
 
 
-          <GridView rowData={rowData} columnDefs={[
-            { field: 'fact_Name', headerName: 'Name' },
-            { field: 'fact_city', headerName: 'City' },
-            { field: 'fact_contact', headerName: 'Contact' },
-            { field: 'fact_address', headerName: 'Address' },
-            { field: 'fact_gender', headerName: 'Gender' },
-            { field: 'fact_state', headerName: 'State' },
-            { field: 'fact_email', headerName: 'Email' },
-            { field: 'fact_status', headerName: 'Status' },
-          ]} />
+
         </div>
       ) : (
         <div className="box">
           {showSuccess && <CustomAlert message="Form submitted successfully!" type="success" onClose={() => setShowSuccess(false)} />}
 
           <Formik
-            initialValues={initialValues}
-            
+            initialValues={ initialValues}
             validationSchema={facultyValidationSchema}
             onSubmit={handleSubmit}
+            enableReinitialize={true} // Fixed: Added to handle editing properly
           >
-            {({ values, errors, touched }) => (
-              <Form>
+            {({ values, errors, touched, handleSubmit, resetForm }) => (
+              <Form onSubmit={handleSubmit}>
                 {/* Basic  Fields */}
                 <div className="row">
                   <div className="col-md-4 mb-3">
@@ -204,7 +323,7 @@ const FacultyRegistrationForm: React.FC = () => {
                       <button type="button" onClick={() => push({ type: '', subject: '', branch: '', grade: '', university: '', yearOfPassing: '' })} className="btn btn-grey btn-sm">
                         <FaPlus />
                       </button>
-                      {values.qualifications.map((_, index) => (
+                      {values.fact_qualifications.map((_, index) => (
                         <div key={index} className="row mb-2">
                           <div className="col-md-2 mb-1">
                             <Field name={`qualifications[${index}].type`} placeholder="Type" className="form-control" />
@@ -251,7 +370,7 @@ const FacultyRegistrationForm: React.FC = () => {
                       <button type="button" onClick={() => push({ cls_name: '', cls_sub: [''] })} className="btn btn-grey btn-sm">
                         <FaPlus />
                       </button>
-                      {values.fact_cls.map((_, classIndex) => (
+                      {values.Fact_cls.map((_, classIndex) => (
                         <div key={classIndex} className="mb-3">
                           <div className="row mb-2">
                             <div className="col-md-3">
@@ -270,7 +389,7 @@ const FacultyRegistrationForm: React.FC = () => {
                                     <button type="button" onClick={() => pushSubject('')} className="btn btn-grey btn-sm">
                                       <FaPlus />
                                     </button>
-                                    {values.fact_cls[classIndex].cls_sub.map((_, subIndex) => (
+                                    {values.Fact_cls[classIndex].cls_sub.map((_, subIndex) => (
                                       <div key={`${classIndex}-${subIndex}`} className="input-group mb-2">
                                         <Field
                                           name={`fact_cls[${classIndex}].cls_sub[${subIndex}]`}
@@ -310,7 +429,7 @@ const FacultyRegistrationForm: React.FC = () => {
                 <div className="row mt-3">
                   <div className="col-md-4">
                     <label htmlFor="fact_status" className="form-label">Status</label>
-                    <Field as="select" id="fact_status" name="fact_status" className={`form-control ${errors.fact_status && touched.fact_status ? 'is-invalid' : ''}`}>
+                    <Field as="select" id="fact_status" name="fact_status" className={`form-control ${errors.Fact_status && touched.Fact_status ? 'is-invalid' : ''}`}>
                       <option value="">Select Status</option>
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
@@ -322,13 +441,16 @@ const FacultyRegistrationForm: React.FC = () => {
                 {/* Submit Button */}
                 <div className="row mt-4 flex justify-center items-center">
                   <div className="col-md-4">
-                  <button type="submit" className="btn btn-primary w-50 mb-5   ">Submit</button>
+                    <button type="submit" className="btn btn-primary w-50 mb-5   ">{editingFaculty ? 'Update' : 'Submit'}</button>
                   </div>
+                  {editingFaculty && <div className="col-md-4">
+                    <button type="button" className="btn btn-danger w-50 mb-5" onClick={() => {
+                      setEditingFaculty(null);
+                      resetForm();
+                      setIsFormVisible(false);
+                    }} >Cancel</button>
+                  </div>}
                 </div>
-
-
-
-
               </Form>
             )}
           </Formik>
