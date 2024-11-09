@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const HeaderController = () => {
     return (
@@ -24,31 +25,32 @@ const HeaderController = () => {
                 <ul className="nav-bar flex space-x-6 text-sm md:text-base text-gray-700 font-semibold">
                     <motion.li
                         className="nav-item"
+
                         whileHover={{ scale: 1.1, color: "#2563EB" }}
                         transition={{ type: "spring", stiffness: 300 }}
                     >
-                        <a href="/Home" className="hover:text-blue-600 transition-colors">Home</a>
+                        <Link to="/Home" className="hover:text-blue-600 transition-colors">Home</Link>
+                    </motion.li>
+                    <motion.li
+                        className="nav-item active"
+                        whileHover={{ scale: 1.1, color: "#2563EB" }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                    >
+                        <Link to="/StudentRegistrationController" className="hover:text-blue-600 transition-colors active">Registration</Link>
                     </motion.li>
                     <motion.li
                         className="nav-item"
                         whileHover={{ scale: 1.1, color: "#2563EB" }}
                         transition={{ type: "spring", stiffness: 300 }}
                     >
-                        <a href="/StudentRegistrationController" className="hover:text-blue-600 transition-colors">Registration</a>
+                        <Link to="/StudentAttendenceManagementSystem" className="hover:text-blue-600 transition-colors">Attendance</Link>
                     </motion.li>
                     <motion.li
                         className="nav-item"
                         whileHover={{ scale: 1.1, color: "#2563EB" }}
                         transition={{ type: "spring", stiffness: 300 }}
                     >
-                        <a href="/StudentAttendenceManagementSystem" className="hover:text-blue-600 transition-colors">Attendance</a>
-                    </motion.li>
-                    <motion.li
-                        className="nav-item"
-                        whileHover={{ scale: 1.1, color: "#2563EB" }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                    >
-                        <a href="/SaveSubjectsToClasses" className="hover:text-blue-600 transition-colors">SaveSubjects</a>
+                        <Link to="/SaveSubjectsToClasses" className="hover:text-blue-600 transition-colors">SaveSubjects</Link>
                     </motion.li>
 
                     <motion.li
@@ -56,7 +58,7 @@ const HeaderController = () => {
                         whileHover={{ scale: 1.1, color: "#2563EB" }}
                         transition={{ type: "spring", stiffness: 300 }}
                     >
-                        <a href="/FacultyRegistration" className="hover:text-blue-600 transition-colors">FacultyRegistration</a>
+                        <Link to="/FacultyRegistration" className="hover:text-blue-600 transition-colors">FacultyRegistration</Link>
                     </motion.li>
 
                 </ul>
