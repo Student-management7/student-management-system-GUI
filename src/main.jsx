@@ -22,7 +22,7 @@ const App = () =>{
   return(
     <>
       <HeaderController />
-     <Router>
+     {/* <Router> */}
       <Routes>
         <Route path="/main" element={<MasterController />} />
         <Route path='/StudentRegistrationController' element={<StudentRegistrationController />} />
@@ -33,7 +33,7 @@ const App = () =>{
 
         <Route path="*" element={<MasterController />} />
       </Routes>
-    </Router>
+    {/* </Router> */}
     <FooterController />
     </>
   );
@@ -41,6 +41,9 @@ const App = () =>{
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <Router>
+      <App />
+    </Router>
+    
   </StrictMode>,
 )
