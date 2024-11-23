@@ -62,6 +62,7 @@ export interface EditState {
 }
 
 export interface FacultyFormData {
+  
   fact_id: string;
   fact_Name: string;
   fact_email: string;
