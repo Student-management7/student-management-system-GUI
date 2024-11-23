@@ -51,6 +51,7 @@ const StudentManagementSystem: React.FC = () => {
             setLoading(true);
             const response = await axios.get(API_ENDPOINTS.STUDENT_DATA(selectedClass));
             const filteredStudents = response.data.map((student: any) => ({
+               
                 stdId: student.id,
                 name: student.name,
                 attendance: "Present",
@@ -69,6 +70,7 @@ const StudentManagementSystem: React.FC = () => {
             subject: selectedSubject,
             studentList: students.map(student => ({
                 stdId: student.stdId,
+                name: student.name,
                 attendance: student.attendance || "Present",
             })),
         };

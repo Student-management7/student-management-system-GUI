@@ -1,69 +1,63 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 const HeaderController = () => {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
+
     return (
-        <div className="headerBox bg-white shadow-md py-4 px-6 md:px-10 flex items-center justify-between">
+        <header className="headerBox bg-white shadow-md py-4 px-6 md:px-10 flex items-center justify-between">
             {/* Logo */}
-            <motion.div
-                className="text-blue-600 font-extrabold text-lg md:text-2xl cursor-pointer"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-            >
+            <div className="text-blue-600 font-extrabold text-lg md:text-2xl">
                 EasyWaySolution
-            </motion.div>
+            </div>
+
+            {/* Hamburger Icon for Mobile */}
+            <div className="md:hidden">
+                <button onClick={toggleMenu} className="text-gray-700 focus:outline-none">
+                    {isMenuOpen ? "✕" : "☰"}
+                </button>
+            </div>
 
             {/* Navigation Links */}
-            <motion.nav 
-                className="nav"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
+            <nav
+                className={`nav md:flex ${isMenuOpen ? "block" : "hidden"} w-full md:w-auto`}
             >
-                <ul className="nav-bar flex space-x-6 text-sm md:text-base text-gray-700 font-semibold">
-                    <motion.li
-                        className="nav-item"
-
-                        whileHover={{ scale: 1.1, color: "#2563EB" }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                    >
+                <ul className="nav-bar flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6 text-sm md:text-base text-gray-700 font-semibold">
+                    <li className="nav-item">
                         <Link to="/Home" className="hover:text-blue-600 transition-colors">Home</Link>
-                    </motion.li>
-                    <motion.li
-                        className="nav-item active"
-                        whileHover={{ scale: 1.1, color: "#2563EB" }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                    >
-                        <Link to="/StudentRegistrationController" className="hover:text-blue-600 transition-colors active">Registration</Link>
-                    </motion.li>
-                    <motion.li
-                        className="nav-item"
-                        whileHover={{ scale: 1.1, color: "#2563EB" }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                    >
-                        <Link to="/StudentAttendenceManagementSystem" className="hover:text-blue-600 transition-colors">Attendance</Link>
-                    </motion.li>
-                    <motion.li
-                        className="nav-item"
-                        whileHover={{ scale: 1.1, color: "#2563EB" }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                    >
-                        <Link to="/SaveSubjectsToClasses" className="hover:text-blue-600 transition-colors">SaveSubjects</Link>
-                    </motion.li>
-
-                    <motion.li
-                        className="nav-item"
-                        whileHover={{ scale: 1.1, color: "#2563EB" }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                    >
-                        <Link to="/FacultyRegistration" className="hover:text-blue-600 transition-colors">FacultyRegistration</Link>
-                    </motion.li>
-
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/StudentRegistrationController" className="hover:text-blue-600 transition-colors">Student Registration</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/FacultyRegistration" className="hover:text-blue-600 transition-colors">Faculty Registration</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/StudentAttendanceShow" className="hover:text-blue-600 transition-colors">View Student Attendance</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/FacultyAttendanceShow" className="hover:text-blue-600 transition-colors">View Faculty Attendance</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/SaveSubjectsToClasses" className="hover:text-blue-600 transition-colors">Save Subjects</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/StudentAttendenceManagement" className="hover:text-blue-600 transition-colors">Studence Attendance</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/facultyAttendanceSave" className="hover:text-blue-600 transition-colors">Faculty Attendance</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/holiday" className="hover:text-blue-600 transition-colors">holiday</Link>
+                    </li>
+                    
                 </ul>
-            </motion.nav>
-        </div>
+            </nav>
+        </header>
     );
 };
 

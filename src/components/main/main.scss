@@ -56,13 +56,15 @@
     margin: 15px;
     padding: 15px;
     border-radius: 3px;
+    
+    
 }
 .form-text{
     display: none;
 }
-.row{
-    height: 105px;
-}
+// .row{
+//     // height: 105px;
+// }
 #root{
     position: relative;
 }
@@ -86,4 +88,16 @@
     background: #F7F7F7;
     border: 1px solid #919191;
     border-radius: 1px;
+}
+
+
+// for header 
+
+
+.nav-item:hover .dropdown-content {
+    display: block;
+}
+.dropdown-content {
+    display: none;
+    min-width: 180px;
 }
