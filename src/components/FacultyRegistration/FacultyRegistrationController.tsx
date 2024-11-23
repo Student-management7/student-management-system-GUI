@@ -3,8 +3,8 @@ import { Formik, Form, Field, FieldArray, ErrorMessage, FormikHelpers } from 'fo
 
 import { FaPlus, FaMinus, FaTrash } from 'react-icons/fa';
 import { facultyValidationSchema } from '../../services/fecultyRegistretion/validation';
-import { FacultyFormData, Qualification ,Class} from '../../services/fecultyRegistretion/Type/FecultyRegistrationType';
-import { saveFacultyDetails, getFacultyDetails, updateFacultyDetails ,deleteFacultyDetails } from '../../services/fecultyRegistretion/API/API';
+import { FacultyFormData, } from '../../services/fecultyRegistretion/Type/FecultyRegistrationType';
+import { saveFacultyDetails, getFacultyDetails, updateFacultyDetails, deleteFacultyDetails } from '../../services/fecultyRegistretion/API/API';
 import GridView from './GridView';
 import CustomAlert from '../UI/alert';
 import DeleteConfirmationModal from '../../services/DeleteModele/DeleteConfirmationModal';
@@ -20,7 +20,7 @@ const FacultyRegistrationForm: React.FC = () => {
   //
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [selectedFacultyToDelete, setSelectedFacultyToDelete] = useState<FacultyFormData | null>(null);
- //
+  //
 
   const initialValues: FacultyFormData = {
     fact_id: editingFaculty?.fact_id || '',
@@ -35,15 +35,16 @@ const FacultyRegistrationForm: React.FC = () => {
     fact_leavingDate: editingFaculty?.fact_leavingDate || '',
     fact_qualifications: editingFaculty?.fact_qualifications || [
       { type: 'Graduation', grd_sub: '', grd_branch: '', grd_grade: '', grd_university: '', grd_yearOfPassing: '' },
+
     ],
     Fact_cls: editingFaculty?.Fact_cls || [{ cls_name: '', cls_sub: [''] }],
     Fact_status: editingFaculty?.Fact_status || '',
   };
-  
+
   useEffect(() => {
     fetchFacultyDetails();
   }, []);
-  
+
   const fetchFacultyDetails = async () => {
     try {
       const response = await getFacultyDetails();
@@ -95,7 +96,7 @@ const FacultyRegistrationForm: React.FC = () => {
       setSubmitting(false);
     }
   };
-    
+
 
 
   const handleEdit = async (facultyData: FacultyFormData) => {
@@ -139,7 +140,7 @@ const FacultyRegistrationForm: React.FC = () => {
         return;
       }
 
-      const response = await deleteFacultyDetails( selectedFacultyToDelete.fact_id);
+      const response = await deleteFacultyDetails(selectedFacultyToDelete.fact_id);
 
       if (response?.status === 200) {
         setShowSuccess(true);
@@ -169,7 +170,7 @@ const FacultyRegistrationForm: React.FC = () => {
     { field: 'fact_status', headerName: 'Status' },
 
 
-   {
+    {
       field: 'actions',
       headerName: 'Actions',
       width: 150,
@@ -191,7 +192,7 @@ const FacultyRegistrationForm: React.FC = () => {
       ),
     },
 
-    
+
   ];
 
 
@@ -199,9 +200,13 @@ const FacultyRegistrationForm: React.FC = () => {
     <>
       {!isFormVisible ? (
         <div className="box">
-          <button onClick={() => setIsFormVisible(true)} className="btn btn-default">
-            Add Faculty
-          </button>
+          <div className='text-right'>
+            <button onClick={() => setIsFormVisible(true)} className="btn btn-default">
+              Add Faculty
+            </button>
+          </div>
+
+
 
           {showSuccess && (
             <CustomAlert
@@ -218,15 +223,15 @@ const FacultyRegistrationForm: React.FC = () => {
               onClose={() => setShowError(false)}
             />
           )}
-   
+
           <GridView
             rowData={rowData}
             columnDefs={columnDefs}
           />
 
-         {/* delete Modele implement he */}
+          {/* delete Modele implement he */}
 
-         {showDeleteModal && selectedFacultyToDelete && (
+          {showDeleteModal && selectedFacultyToDelete && (
             <DeleteConfirmationModal
               faculty={selectedFacultyToDelete}
               onConfirm={confirmDelete}
@@ -237,8 +242,6 @@ const FacultyRegistrationForm: React.FC = () => {
             />
           )}
 
-         //
-
 
 
         </div>
@@ -247,7 +250,7 @@ const FacultyRegistrationForm: React.FC = () => {
           {showSuccess && <CustomAlert message="Form submitted successfully!" type="success" onClose={() => setShowSuccess(false)} />}
 
           <Formik
-            initialValues={ initialValues}
+            initialValues={initialValues}
             validationSchema={facultyValidationSchema}
             onSubmit={handleSubmit}
             enableReinitialize={true} // Fixed: Added to handle editing properly
@@ -315,55 +318,109 @@ const FacultyRegistrationForm: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Qualifications Section */}
-                <FieldArray name="qualifications">
+                <FieldArray name="fact_qualifications">
                   {({ push, remove }) => (
-                    <div className="mt-4">
-                      <label className="form-label">Qualifications</label>
-                      <button type="button" onClick={() => push({ type: '', subject: '', branch: '', grade: '', university: '', yearOfPassing: '' })} className="btn btn-grey btn-sm">
-                        <FaPlus />
-                      </button>
-                      {values.fact_qualifications.map((_, index) => (
-                        <div key={index} className="row mb-2">
-                          <div className="col-md-2 mb-1">
-                            <Field name={`qualifications[${index}].type`} placeholder="Type" className="form-control" />
-                            <ErrorMessage name={`qualifications[${index}].type`} component="div" className="text-danger" />
+                    <div className="bg-white p-6 rounded-lg shadow-sm">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold">Qualifications</h3>
+                        <button
+                          type="button"
+                          onClick={() => push({
+                            type: '',
+                            grd_sub: '',
+                            grd_branch: '',
+                            grd_grade: '',
+                            grd_university: '',
+                            grd_yearOfPassing: ''
+                          })}
+                          className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                        >
+                          <FaPlus className="w-4 h-4" /> Add Qualification
+                        </button>
+                      </div>
 
-                          </div>
-                          <div className="col-md-2 mb-1">
-                            <Field name={`qualifications[${index}].subject`} placeholder="Subject" className="form-control" />
-                          </div>
-                          <div className="col-md-2 mb-1">
-                            <Field name={`qualifications[${index}].branch`} placeholder="Branch" className="form-control" />
-                          </div>
-                          <div className="col-md-2 mb-1">
-                            <Field name={`qualifications[${index}].grade`} placeholder="Grade" className="form-control" />
-                          </div>
-                          <div className="col-md-2 mb-1">
-                            <Field name={`qualifications[${index}].university`} placeholder="University" className="form-control" />
-                          </div>
+                      <div className="space-y-4">
+                        {values.fact_qualifications.map((_, index) => (
+                          <div key={index} className="relative bg-gray-50 p-4 rounded-md">
+                            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+                              <div>
+                                <label className="text-sm font-medium mb-1 block">Type</label>
+                                <Field
+                                  name={`qualifications[${index}].type`}
+                                  placeholder="Type"
+                                  className="w-full p-2 border rounded-md"
+                                />
+                                <ErrorMessage
+                                  name={`qualifications[${index}].type`}
+                                  component="div"
+                                  className="text-red-500 text-sm mt-1"
+                                />
+                              </div>
 
-                          <div className="col-md-2">
-                            <Field name={`qualifications[${index}].yearOfPassing`} type="date" placeholder="Year of Passing" className="form-control" />
-                            <ErrorMessage name={`qualifications[${index}].yearOfPassing`} component="div" className="text-danger" />
-                          </div>
+                              <div>
+                                <label className="text-sm font-medium mb-1 block">Subject</label>
+                                <Field
+                                  name={`qualifications[${index}].subject`}
+                                  placeholder="Subject"
+                                  className="w-full p-2 border rounded-md"
+                                />
+                              </div>
 
-                          <div className="col-md-1 d-flex align-items-center">
+                              <div>
+                                <label className="text-sm font-medium mb-1 block">Branch</label>
+                                <Field
+                                  name={`qualifications[${index}].branch`}
+                                  placeholder="Branch"
+                                  className="w-full p-2 border rounded-md"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="text-sm font-medium mb-1 block">Grade</label>
+                                <Field
+                                  name={`qualifications[${index}].grade`}
+                                  placeholder="Grade"
+                                  className="w-full p-2 border rounded-md"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="text-sm font-medium mb-1 block">University</label>
+                                <Field
+                                  name={`qualifications[${index}].university`}
+                                  placeholder="University"
+                                  className="w-full p-2 border rounded-md"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="text-sm font-medium mb-1 block">Year</label>
+                                <Field
+                                  name={`qualifications[${index}].yearOfPassing`}
+                                  type="date"
+                                  className="w-full p-2 border rounded-md"
+                                />
+                              </div>
+                            </div>
+
                             {index > 0 && (
-                              <button type="button" onClick={() => remove(index)} className="btn btn-grey btn-sm">
-                                <FaMinus />
+                              <button
+                                type="button"
+                                onClick={() => remove(index)}
+                                className="absolute -right-2 -top-2 p-1 bg-red-100 hover:bg-red-200 text-red-600 rounded-full"
+                              >
+                                <FaMinus className="w-4 h-4" />
                               </button>
                             )}
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   )}
                 </FieldArray>
 
-
-                {/* Classes Section */}
-                <FieldArray name="fact_cls">
+                {/* Classes and Subjects Section */}
+                <FieldArray name="Fact_cls">
                   {({ push, remove }) => (
                     
                     <div className="mt-4">
@@ -408,31 +465,52 @@ const FacultyRegistrationForm: React.FC = () => {
                                         />
                                         <button
                                           type="button"
-                                          onClick={() => removeSubject(subIndex)}
-                                          className="btn btn-danger btn-sm"
+                                          onClick={() => pushSubject('')}
+                                          className="flex items-center gap-1 px-2 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
                                         >
-                                          <FaMinus />
+                                          <FaPlus className="w-3 h-3" /> Add Subject
                                         </button>
                                       </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </FieldArray>
+
+                                      <div className="space-y-2">
+                                        {values.Fact_cls[classIndex].cls_sub.map((_, subIndex) => (
+                                          <div key={`${classIndex}-${subIndex}`} className="flex items-center gap-2">
+                                            <Field
+                                              name={`Fact_cls[${classIndex}].cls_sub[${subIndex}]`}
+                                              placeholder="Subject"
+                                              className="flex-1 p-2 border rounded-md"
+                                            />
+                                            <button
+                                              type="button"
+                                              onClick={() => removeSubject(subIndex)}
+                                              className="p-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-md"
+                                            >
+                                              <FaMinus className="w-4 h-4" />
+                                            </button>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </FieldArray>
+                              </div>
                             </div>
-                            <div className="col-md-2 d-flex align-items-center">
-                              {classIndex > 0 && (
-                                <button type="button" onClick={() => remove(classIndex)} className="btn btn-grey btn-sm">
-                                  <FaMinus />
-                                </button>
-                              )}
-                            </div>
+
+                            {classIndex > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => remove(classIndex)}
+                                className="absolute -right-2 -top-2 p-1 bg-red-100 hover:bg-red-200 text-red-600 rounded-full"
+                              >
+                                <FaMinus className="w-4 h-4" />
+                              </button>
+                            )}
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   )}
                 </FieldArray>
-
 
 
                 {/* Status */}

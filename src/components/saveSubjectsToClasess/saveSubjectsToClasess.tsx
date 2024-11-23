@@ -20,6 +20,7 @@ const SaveSubjectsToClasses: React.FC = () => {
         const className = event.target.value;
         setSelectedClass(className);
 
+        // Retrieve existing subjects for the selected class if available
         const existingClass = classData.find((cls) => cls.className === className);
         setSelectedSubjects(existingClass ? existingClass.subject : []);
     };
@@ -32,13 +33,14 @@ const SaveSubjectsToClasses: React.FC = () => {
     };
 
     const handleSubjectToggle = (subject: string) => {
+        // Add or remove the subject from selected subjects
         setSelectedSubjects((prevSubjects) =>
             prevSubjects.includes(subject)
                 ? prevSubjects.filter((s) => s !== subject)
                 : [...prevSubjects, subject]
         );
     };
-
+     
     const handleAddCustomSubject = () => {
         if (customSubject && !allSubjects.includes(customSubject)) {
             allSubjects.push(customSubject);
@@ -46,33 +48,26 @@ const SaveSubjectsToClasses: React.FC = () => {
             setCustomSubject("");
         }
     };
+    
 
- 
-const handleSave = () => {
-    // Filter out the existing class if it exists, then add the updated one
-    const updatedClassData = classData.filter((cls) => cls.className !== selectedClass);
-    updatedClassData.push({ className: selectedClass, subject: selectedSubjects });
+    const handleSave = () => {
+        // Update class data without duplicating the selected class
+        const updatedClassData = classData.filter((cls) => cls.className !== selectedClass);
+        updatedClassData.push({ className: selectedClass, subject: selectedSubjects });
 
-    // Update classData state with new class information
-    setClassData(updatedClassData);
+        setClassData(updatedClassData);
 
-    // Construct the payload in the required format
-    const payload = { classData: updatedClassData };
+        const payload = { classData: updatedClassData };
 
-    // Print the payload to the console for debugging
-    console.log("Payload to be saved on the server:", JSON.stringify(payload, null, 2));
-
-    // Send payload to the server
-    axios.post(API_ENDPOINTS.SAVE_CLASS_DATA, payload)
-        .then(() => alert("Class and subject data saved successfully!"))
-        .catch((error) => console.error("Error saving class data:", error));
-};
-
+        axios.post(API_ENDPOINTS.SAVE_CLASS_DATA, payload)
+            .then(() => alert("Class and subject data saved successfully!"))
+            .catch((error) => console.error("Error saving class data:", error));
+    };
 
     return (
-        <div className="bg-gray-100 min-h-screen p-6 flex items-center justify-center">
-            <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-                <h2 className="text-2xl font-bold mb-6 text-center text-gray-700">Save Subjects to Classes</h2>
+        <div className="bg-gray-100 min-h-screen p-4 md:p-6 flex items-center justify-center">
+            <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-2xl">
+                <h2 className="text-2xl font-bold mb-4 text-center text-gray-700">Save Subjects to Classes</h2>
 
                 <label className="block mb-4">
                     <span className="text-gray-600">Select Class:</span>
@@ -90,22 +85,20 @@ const handleSave = () => {
                     </select>
                 </label>
 
-                <div className="mb-6">
-                    <div className="flex items-center mt-2">
-                        <input
-                            type="text"
-                            value={newClass}
-                            onChange={(e) => setNewClass(e.target.value)}
-                            placeholder="Enter class name"
-                            className="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <button
-                            onClick={handleAddNewClass}
-                            className="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600"
-                        >
-                            Add
-                        </button>
-                    </div>
+                <div className="mb-4 flex items-center">
+                    <input
+                        type="text"
+                        value={newClass}
+                        onChange={(e) => setNewClass(e.target.value)}
+                        placeholder="Enter class name"
+                        className="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                        onClick={handleAddNewClass}
+                        className="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600"
+                    >
+                        Add
+                    </button>
                 </div>
 
                 {selectedClass && (

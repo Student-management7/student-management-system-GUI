@@ -62,12 +62,14 @@ body{
     margin: 15px;
     padding: 15px;
     border-radius: 3px;
+    
+    
 }
 .form-text{
     display: none;
 }
 // .row{
-//     //height: 105px;
+//     // height: 105px;
 // }
 #root{
     position: relative;
@@ -101,4 +103,16 @@ body{
     &:hover{
         color: #eb6a0d;
     }
+}
+
+
+// for header 
+
+
+.nav-item:hover .dropdown-content {
+    display: block;
+}
+.dropdown-content {
+    display: none;
+    min-width: 180px;
 }

@@ -129,10 +129,8 @@ export const updateFacultyDetails = async (data: FacultyFormData, factId: string
 
 export const deleteFacultyDetails = async (facultyId: string) => {
   try {
-    const response = await axios.delete(`${API_URL}/faculty/delete/`
-      , {
-        params: { id: facultyId }, 
-      }
+    const response = await axios.post(
+      `${API_URL}/faculty/delete?id=${facultyId}`
     );
     return response;
   } catch (error) {
