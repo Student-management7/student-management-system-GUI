@@ -365,11 +365,24 @@ const FacultyRegistrationForm: React.FC = () => {
                 {/* Classes Section */}
                 <FieldArray name="fact_cls">
                   {({ push, remove }) => (
+                    
                     <div className="mt-4">
-                      <label className="form-label"> Classes</label>
-                      <button type="button" onClick={() => push({ cls_name: '', cls_sub: [''] })} className="btn btn-grey btn-sm">
-                        <FaPlus />
-                      </button>
+                      <div className='row'>
+                        <div className='col-md-4'>
+                          <label className="form-label"> Classes</label>
+                          <button type="button" onClick={() => push({ cls_name: '', cls_sub: [''] })} className="btn btn-grey btn-sm">
+                            <FaPlus />
+                          </button>
+                        </div>
+                        <div className='col-md-8'>
+                            <label className="form-label">Subjects</label>
+                            <button type="button" onClick={() => pushSubject('')} className="btn btn-grey btn-sm">
+                              <FaPlus />
+                            </button>
+                            </div>
+                        </div>
+                     
+                      
                       {values.Fact_cls.map((_, classIndex) => (
                         <div key={classIndex} className="mb-3">
                           <div className="row mb-2">
@@ -385,10 +398,7 @@ const FacultyRegistrationForm: React.FC = () => {
                               <FieldArray name={`fact_cls[${classIndex}].cls_sub`}>
                                 {({ push: pushSubject, remove: removeSubject }) => (
                                   <div>
-                                    <label className="form-label">Subjects</label>
-                                    <button type="button" onClick={() => pushSubject('')} className="btn btn-grey btn-sm">
-                                      <FaPlus />
-                                    </button>
+                                    
                                     {values.Fact_cls[classIndex].cls_sub.map((_, subIndex) => (
                                       <div key={`${classIndex}-${subIndex}`} className="input-group mb-2">
                                         <Field

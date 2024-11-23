@@ -1,3 +1,8 @@
+body{
+    background-color: #F7F7F7;
+    margin: 0;
+    padding: 0;
+}
 .nav-bar{
     display: inline;
     .nav-item{
@@ -46,6 +51,7 @@
     color: #179DE3;
     h1{
         font-size: 28px;
+        cursor: pointer;
     }
 }
 
@@ -60,9 +66,9 @@
 .form-text{
     display: none;
 }
-.row{
-    height: 105px;
-}
+// .row{
+//     //height: 105px;
+// }
 #root{
     position: relative;
 }
@@ -86,4 +92,13 @@
     background: #F7F7F7;
     border: 1px solid #919191;
     border-radius: 1px;
+}
+.form-group{
+    margin-bottom: 20px;
+}
+.btn-edit{
+    color: #eb6a0d;
+    &:hover{
+        color: #eb6a0d;
+    }
 }
