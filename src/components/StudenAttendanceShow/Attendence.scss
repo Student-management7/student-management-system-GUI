@@ -1,0 +1,54 @@
+.filters {
+    
+    padding: .5rem;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-left: 2rem;
+    margin-right: 2rem;
+  
+    label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-right: 0.5rem;
+    }
+  
+    select,
+    input[type="date"] {
+      font-size: 0.9rem;
+      padding: 0.4rem 0.6rem;
+      margin-right: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+  
+      &:focus {
+        border-color: #007bff;
+        outline: none;
+      }
+    }
+  
+    button {
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
+
+    .red-button {
+      background-color: rgb(220, 53, 69);
+      color: white; /* To match the text-white class */
+
+      &:hover {
+        background-color: #9d2007;
+      }
+  }
+  }
+  

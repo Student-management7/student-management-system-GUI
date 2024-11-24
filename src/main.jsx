@@ -1,43 +1,57 @@
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { useState } from 'react'
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Register from './components/studentRegistration/StudentRegistrationForm'
-import Login from './Pages/Login'
-import FacultyRegistrationForm from './components/studentRegistration/FacultyRegistrationForm';
 import StudentDataGrid from './Pages/StusentDashboard';
 import MasterController from './components/main/MasterController';
 import HeaderController from './components/main/HeaderController';
 import FooterController from './components/main/FooterController';
 import StudentRegistrationController from './components/studentRegistration/StudentRegistrationController';
-import StudentAttendenceManagementSystem from './components/studentRegistration/StudentAttendenceManagementSystem'
-import SaveSubjectsToClasses from './components/studentRegistration/saveSubjectsToClasess/saveSubjectsToClasess'
+import StudentAttendenceManagement from './components/StudentAttendence/StudentAttendenceManagement'
+import SaveSubjectsToClasses from './components/saveSubjectsToClasess/saveSubjectsToClasess'
+import FacultyRegistrationForm from './components/FacultyRegistration/FacultyRegistrationController';
+import StudentAttendanceShow from './components/StudenAttendanceShow/StudentAttendanceShow';
+import FacultyAttendanceSave from './components/facultyAttendanceSave/facultyAttendanceSave';
+ import FacultyAttendanceShow from './components/facultyAttendanceView/FacultyAttendanceShow';
+ import FacultyAttendanceEdit from './components/facultyAttendanceEdit/facultyAttendanceEdit';
+ import FacultyAttendanceEditSave from './components/facultyAttendanceEdit/facultyAttendanceEditSave';
+ import StudentAttendanceEdit from './components/StudenAttendanceShow/studentAttendanceEdit';
+ import StudentAttendanceEditSave from './components/StudenAttendanceShow/studentAttendanceEditSave';
+import HolidayFormController from './components/Holidays/holidayFormController';
 
-
-
-//import App from './App'
 import './index.css'
+
+
+
 
 const App = () =>{
 
   return(
     <>
       <HeaderController />
-     <Router>
+     {/* <Router> */}
       <Routes>
         <Route path="/main" element={<MasterController />} />
         <Route path='/StudentRegistrationController' element={<StudentRegistrationController />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/StudentAttendenceManagementSystem" element={<StudentAttendenceManagementSystem />} />
+        <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
         <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
-
-        <Route path="/facultyregister" element={<FacultyRegistrationForm />} />
         <Route path="/studentdashboard" element={<StudentDataGrid />} /> 
-        <Route path="*" element={<MasterController />} />
+        <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
+        <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
+        <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
+        <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
+        <Route path="/facultyAttendanceEdit" element={<FacultyAttendanceEdit />} />
+        <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />
+        <Route path="/studentAttendanceEdit" element={<StudentAttendanceEdit />} />
+        <Route path="/studentAttendanceEditSave" element={<StudentAttendanceEditSave />} />
+        <Route path="/holiday" element={<HolidayFormController />} />
         
+
+
+        <Route path="*" element={<MasterController />} />
       </Routes>
-    </Router>
+    {/* </Router> */}
     <FooterController />
     </>
   );
@@ -45,6 +59,9 @@ const App = () =>{
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <Router>
+      <App />
+    </Router>
+    
   </StrictMode>,
 )

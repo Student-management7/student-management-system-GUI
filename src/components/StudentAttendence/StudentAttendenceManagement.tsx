@@ -51,6 +51,7 @@ const StudentManagementSystem: React.FC = () => {
             setLoading(true);
             const response = await axios.get(API_ENDPOINTS.STUDENT_DATA(selectedClass));
             const filteredStudents = response.data.map((student: any) => ({
+               
                 stdId: student.id,
                 name: student.name,
                 attendance: "Present",
@@ -69,6 +70,7 @@ const StudentManagementSystem: React.FC = () => {
             subject: selectedSubject,
             studentList: students.map(student => ({
                 stdId: student.stdId,
+                name: student.name,
                 attendance: student.attendance || "Present",
             })),
         };
@@ -109,7 +111,7 @@ const StudentManagementSystem: React.FC = () => {
     ];
 
     return (
-        <div className="student-management max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md mt-10 mb-25">
+        <div className="box">
             <h2 className="text-2xl font-semibold text-blue-600 mb-4">Student Attendance</h2>
 
             {error && <p className="text-red-500 mb-4">{error}</p>}

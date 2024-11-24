@@ -13,6 +13,7 @@ export interface Student {
 export interface AttendancePayload {
     className: string;
     subject: string;
+    // name: string;
     studentList: {
         stdId: string;
         attendance: string;
