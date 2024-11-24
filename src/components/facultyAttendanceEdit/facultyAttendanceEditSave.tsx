@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import GridView from './gridView';
-import { saveAttendanceEdit } from '../../services/facultyAttendanceEdit/Api/api';
+import { saveAttendanceEdit } from '../../services/Faculty/facultyAttendanceEdit/Api/api';
 import { formatToDDMMYYYY } from '../Utils/dateUtils';
-import { Faculty } from '../../services/facultyAttendanceEdit/Type/type';
+import { Faculty } from '../../services/Faculty/facultyAttendanceEdit/Type/type';
 
 const EditAttendance: React.FC = () => {
   const location = useLocation();

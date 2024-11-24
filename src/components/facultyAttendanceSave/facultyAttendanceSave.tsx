@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import FacultyTable from './facultyTable';
-import { fetchFacultyData, submitAttendance } from '../../services/FacultyAttendanceSave/Api';
-import { Faculty } from '../../services/FacultyAttendanceSave/Type';
+import { fetchFacultyData, submitAttendance } from '../../services/Faculty/FacultyAttendanceSave/Api';
+import { Faculty } from '../../services/Faculty/FacultyAttendanceSave/Type';
 
 const FacultyAttendanceSave: React.FC = () => {
     const [facultyList, setFacultyList] = useState<Faculty[]>([]);

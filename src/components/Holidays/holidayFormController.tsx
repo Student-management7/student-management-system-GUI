@@ -98,10 +98,12 @@ const HolidayComponent: React.FC = () => {
     { headerName: 'Start Date', field: 'startDate', sortable: true, filter: true },
     { headerName: 'End Date', field: 'endDate', sortable: true, filter: true },
     { headerName: 'Description', field: 'description', sortable: true, filter: true },
+   
+  
   ];
 
   return (
-    <div className="box">
+    <div className="box ">
       {!showForm ? (
         <>
           <div className="text-right">
@@ -112,27 +114,38 @@ const HolidayComponent: React.FC = () => {
           <GridView rowData={rowData} columnDefs={columnDefs} />
         </>
       ) : (
-        <div className="box">
-          <h2 className="text-2xl font-bold mb-6 text-center">Holiday</h2>
-          <div className="mb-4">
+        <div className='box'>
+
+          <h2 className=" text-2xl font-bold mb-6 text-center">Holiday</h2>
+        <div className="flex flex-row items-center justify-center space-x-10 ">
+          <div className="mb-4 w-1/2">
             <h3 className="font-semibold mb-2">Select Classes:</h3>
             <Select
               isMulti
               options={options}
               onChange={handleClassSelection}
-              className="basic-multi-select"
+              className="basic-multi-select mb-4"
               classNamePrefix="select"
               placeholder="Select Classes..."
             />
+            <label className="block mb-2 font-semibold">Description:</label>
+            <input
+              type="text"
+              placeholder="Optional holiday description"
+              className="w-full border px-3 py-2 rounded-md "
+              value={holidayDate.description}
+              onChange={(e) => handleHolidayDateChange('description', e.target.value)}
+            />
           </div>
-          <div className="mb-4">
+          <div className="mb-4 w-1/2 pd-4">
             <label className="block mb-2 font-semibold">Start Date:</label>
             <input
               type="date"
               className="w-full border px-3 py-2 mb-4 rounded-md"
               value={holidayDate.startDate}
+              
               onChange={(e) => handleHolidayDateChange('startDate', e.target.value)}
-            />
+              />
             <label className="block mb-2 font-semibold">End Date:</label>
             <input
               type="date"
@@ -141,16 +154,10 @@ const HolidayComponent: React.FC = () => {
               onChange={(e) => handleHolidayDateChange('endDate', e.target.value)}
             />
           </div>
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">Description:</label>
-            <input
-              type="text"
-              placeholder="Optional holiday description"
-              className="w-full border px-3 py-2 rounded-md"
-              value={holidayDate.description}
-              onChange={(e) => handleHolidayDateChange('description', e.target.value)}
-            />
-          </div>
+          {/* <div className="mb-4 w-1/2">
+            
+          </div> */}
+        </div>
           <div className="text-center">
             <button
               type="button"
@@ -163,11 +170,11 @@ const HolidayComponent: React.FC = () => {
               type="button"
               className="w-1/8 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 ml-4"
               onClick={() => setShowForm(false)}
-            >
+              >
               Cancel
             </button>
           </div>
-        </div>
+      </div>
       )}
     </div>
   );
