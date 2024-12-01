@@ -1,6 +1,7 @@
 import { string } from "yup";
 
 export interface StudentFormData {
+  id?: string,
   name?: string;
   address?: string;
     city?: string;
@@ -24,6 +25,7 @@ export interface StudentFormData {
     stdo_city?: string;
     stdo_state?: string;
     stdo_email?: string;
+    stdo_address?: string;
   }
 
   

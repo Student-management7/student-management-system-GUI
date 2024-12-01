@@ -3,11 +3,12 @@ import { Formik, Form, Field, FieldArray, ErrorMessage, FormikHelpers } from 'fo
 
 import { FaPlus, FaMinus, FaTrash } from 'react-icons/fa';
 import { facultyValidationSchema } from '../../services/fecultyRegistretion/validation';
-import { FacultyFormData, } from '../../services/fecultyRegistretion/Type/FecultyRegistrationType';
+// import { FacultyFormData, } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
 import { saveFacultyDetails, getFacultyDetails, updateFacultyDetails, deleteFacultyDetails } from '../../services/fecultyRegistretion/API/API';
 import GridView from './GridView';
 import CustomAlert from '../UI/alert';
 import DeleteConfirmationModal from '../../services/DeleteModele/DeleteConfirmationModal';
+import { FacultyFormData } from '../../services/fecultyRegistretion/Type/FecultyRegistrationType';
 
 
 const FacultyRegistrationForm: React.FC = () => {

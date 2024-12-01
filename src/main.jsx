@@ -21,6 +21,7 @@ import FacultyAttendanceSave from './components/facultyAttendanceSave/facultyAtt
 import HolidayFormController from './components/Holidays/holidayFormController';
 
 import './index.css'
+import SideBarController from './components/sideBar/SideBarController';
 
 
 
@@ -29,30 +30,35 @@ const App = () =>{
 
   return(
     <>
-      <HeaderController />
-     {/* <Router> */}
-      <Routes>
-        <Route path="/main" element={<MasterController />} />
-        <Route path='/StudentRegistrationController' element={<StudentRegistrationController />} />
-        <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
-        <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
-        <Route path="/studentdashboard" element={<StudentDataGrid />} /> 
-        <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
-        <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
-        <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
-        <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
-        <Route path="/facultyAttendanceEdit" element={<FacultyAttendanceEdit />} />
-        <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />
-        <Route path="/studentAttendanceEdit" element={<StudentAttendanceEdit />} />
-        <Route path="/studentAttendanceEditSave" element={<StudentAttendanceEditSave />} />
-        <Route path="/holiday" element={<HolidayFormController />} />
-        
+      <div className='mainBody'>
+        <SideBarController />
+        <div className='rhsBox'>
+          <HeaderController />
+          {/* <Router> */}
+            <Routes>
+              <Route path="/main" element={<MasterController />} />
+              <Route path='/StudentRegistrationController' element={<StudentRegistrationController />} />
+              <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
+              <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
+              <Route path="/studentdashboard" element={<StudentDataGrid />} /> 
+              <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
+              <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
+              <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
+              <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
+              <Route path="/facultyAttendanceEdit" element={<FacultyAttendanceEdit />} />
+              <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />
+              <Route path="/studentAttendanceEdit" element={<StudentAttendanceEdit />} />
+              <Route path="/studentAttendanceEditSave" element={<StudentAttendanceEditSave />} />
+              <Route path="/holiday" element={<HolidayFormController />} />
+              
 
 
-        <Route path="*" element={<MasterController />} />
-      </Routes>
-    {/* </Router> */}
-    <FooterController />
+              <Route path="*" element={<MasterController />} />
+            </Routes>
+          {/* </Router> */}
+          <FooterController />
+        </div>
+      </div>
     </>
   );
 }
