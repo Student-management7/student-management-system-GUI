@@ -75,7 +75,9 @@ const StudentRegistrationController = () => {
 
     const getDeleteData =(data: StudentFormData) =>{
 
+       if(data?.id){
         deleteStudentRecord(data?.id);
+       }
 
     }
 

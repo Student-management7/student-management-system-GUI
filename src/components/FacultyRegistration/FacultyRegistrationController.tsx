@@ -3,11 +3,12 @@ import { Formik, Form, Field, FieldArray, ErrorMessage, FormikHelpers } from 'fo
 
 import { FaPlus, FaMinus, FaTrash } from 'react-icons/fa';
 import { facultyValidationSchema } from '../../services/fecultyRegistretion/validation';
-import { FacultyFormData, } from '../../services/fecultyRegistretion/Type/FecultyRegistrationType';
+// import { FacultyFormData, } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
 import { saveFacultyDetails, getFacultyDetails, updateFacultyDetails, deleteFacultyDetails } from '../../services/fecultyRegistretion/API/API';
 import GridView from './GridView';
 import CustomAlert from '../UI/alert';
 import DeleteConfirmationModal from '../../services/DeleteModele/DeleteConfirmationModal';
+import { FacultyFormData } from '../../services/fecultyRegistretion/Type/FecultyRegistrationType';
 
 
 const FacultyRegistrationForm: React.FC = () => {
@@ -422,47 +423,42 @@ const FacultyRegistrationForm: React.FC = () => {
                 {/* Classes and Subjects Section */}
                 <FieldArray name="Fact_cls">
                   {({ push, remove }) => (
-                    
-                    <div className="mt-4">
-                      <div className='row'>
-                        <div className='col-md-4'>
-                          <label className="form-label"> Classes</label>
-                          <button type="button" onClick={() => push({ cls_name: '', cls_sub: [''] })} className="btn btn-grey btn-sm">
-                            <FaPlus />
-                          </button>
-                        </div>
-                        <div className='col-md-8'>
-                            <label className="form-label">Subjects</label>
-                            <button type="button" onClick={() => pushSubject('')} className="btn btn-grey btn-sm">
-                              <FaPlus />
-                            </button>
-                            </div>
-                        </div>
-                     
-                      
-                      {values.Fact_cls.map((_, classIndex) => (
-                        <div key={classIndex} className="mb-3">
-                          <div className="row mb-2">
-                            <div className="col-md-3">
-                              <Field
-                                name={`fact_cls[${classIndex}].cls_name`}
-                                placeholder="Class Name"
-                                className="form-control"
-                              />
-                              <ErrorMessage name={`fact_cls[${classIndex}].cls_name`} component="div" className="text-danger" />
-                            </div>
-                            <div className="col-md-7">
-                              <FieldArray name={`fact_cls[${classIndex}].cls_sub`}>
-                                {({ push: pushSubject, remove: removeSubject }) => (
-                                  <div>
-                                    
-                                    {values.Fact_cls[classIndex].cls_sub.map((_, subIndex) => (
-                                      <div key={`${classIndex}-${subIndex}`} className="input-group mb-2">
-                                        <Field
-                                          name={`fact_cls[${classIndex}].cls_sub[${subIndex}]`}
-                                          placeholder="Subject"
-                                          className="form-control"
-                                        />
+                    <div className="bg-white p-6 rounded-lg shadow-sm">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold">Classes</h3>
+                        <button
+                          type="button"
+                          onClick={() => push({ cls_name: '', cls_sub: [''] })}
+                          className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                        >
+                          <FaPlus className="w-4 h-4" /> Add Class
+                        </button>
+                      </div>
+
+                      <div className="space-y-6">
+                        {values.Fact_cls.map((_, classIndex) => (
+                          <div key={classIndex} className="relative bg-gray-50 p-4 rounded-md">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div>
+                                <label className="text-sm font-medium mb-1 block">Class Name</label>
+                                <Field
+                                  name={`Fact_cls[${classIndex}].cls_name`}
+                                  placeholder="Class Name"
+                                  className="w-full p-2 border rounded-md"
+                                />
+                                <ErrorMessage
+                                  name={`Fact_cls[${classIndex}].cls_name`}
+                                  component="div"
+                                  className="text-red-500 text-sm mt-1"
+                                />
+                              </div>
+
+                              <div className="md:col-span-2">
+                                <FieldArray name={`Fact_cls[${classIndex}].cls_sub`}>
+                                  {({ push: pushSubject, remove: removeSubject }) => (
+                                    <div>
+                                      <div className="flex items-center justify-between mb-2">
+                                        <label className="text-sm font-medium">Subjects</label>
                                         <button
                                           type="button"
                                           onClick={() => pushSubject('')}
