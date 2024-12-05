@@ -1,67 +1,73 @@
-
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './App.css'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { AuthProvider } from './context/authContext';
+import ProtectedRoute from './Pages/Login/ProtectedRoute';
+import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import StudentDataGrid from './Pages/StusentDashboard';
+
 import MasterController from './components/main/MasterController';
 import HeaderController from './components/main/HeaderController';
 import FooterController from './components/main/FooterController';
 import StudentRegistrationController from './components/studentRegistration/StudentRegistrationController';
-import StudentAttendenceManagement from './components/StudentAttendence/StudentAttendenceManagement'
-import SaveSubjectsToClasses from './components/saveSubjectsToClasess/saveSubjectsToClasess'
+import StudentAttendenceManagement from './components/StudentAttendence/StudentAttendenceManagement';
+import SaveSubjectsToClasses from './components/saveSubjectsToClasess/saveSubjectsToClasess';
 import FacultyRegistrationForm from './components/FacultyRegistration/FacultyRegistrationController';
 import StudentAttendanceShow from './components/StudenAttendanceShow/StudentAttendanceShow';
 import FacultyAttendanceSave from './components/facultyAttendanceSave/facultyAttendanceSave';
- import FacultyAttendanceShow from './components/facultyAttendanceView/FacultyAttendanceShow';
- import FacultyAttendanceEdit from './components/facultyAttendanceEdit/facultyAttendanceEdit';
- import FacultyAttendanceEditSave from './components/facultyAttendanceEdit/facultyAttendanceEditSave';
- import StudentAttendanceEdit from './components/StudenAttendanceShow/studentAttendanceEdit';
- import StudentAttendanceEditSave from './components/StudenAttendanceShow/studentAttendanceEditSave';
+import FacultyAttendanceShow from './components/facultyAttendanceView/FacultyAttendanceShow';
+import FacultyAttendanceEdit from './components/facultyAttendanceEdit/facultyAttendanceEdit';
+import FacultyAttendanceEditSave from './components/facultyAttendanceEdit/facultyAttendanceEditSave';
+import StudentAttendanceEdit from './components/StudenAttendanceShow/studentAttendanceEdit';
+import StudentAttendanceEditSave from './components/StudenAttendanceShow/studentAttendanceEditSave';
 import HolidayFormController from './components/Holidays/holidayFormController';
+import FeesController from './components/fess/addFeesByAdmin/feesController';
+import Login from './Pages/Login/Login';
 
-import './index.css'
+import './index.css';
 
-
-
-
-const App = () =>{
-
-  return(
+const App = () => {
+  return (
     <>
       <HeaderController />
-     {/* <Router> */}
+      
       <Routes>
-        <Route path="/main" element={<MasterController />} />
-        <Route path='/StudentRegistrationController' element={<StudentRegistrationController />} />
-        <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
-        <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
-        <Route path="/studentdashboard" element={<StudentDataGrid />} /> 
-        <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
-        <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
-        <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
-        <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
-        <Route path="/facultyAttendanceEdit" element={<FacultyAttendanceEdit />} />
-        <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />
-        <Route path="/studentAttendanceEdit" element={<StudentAttendanceEdit />} />
-        <Route path="/studentAttendanceEditSave" element={<StudentAttendanceEditSave />} />
+        {/* Login and public routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/fees" element={<FeesController />} />
         <Route path="/holiday" element={<HolidayFormController />} />
-        
 
+        {/* Protected routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/main" element={<MasterController />} />
+          <Route path="/StudentRegistrationController" element={<StudentRegistrationController />} />
+          <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
+          <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
+          <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
+          <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
+          <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
+          <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
+          <Route path="/facultyAttendanceEdit" element={<FacultyAttendanceEdit />} />
+          <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />
+          <Route path="/studentAttendanceEdit" element={<StudentAttendanceEdit />} />
+          <Route path="/studentAttendanceEditSave" element={<StudentAttendanceEditSave />} />
+         
+        </Route>
 
+        {/* Fallback Route */}
         <Route path="*" element={<MasterController />} />
       </Routes>
-    {/* </Router> */}
-    <FooterController />
+
+      <FooterController />
     </>
   );
-}
+};
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Router>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </Router>
-    
-  </StrictMode>,
-)
+  </StrictMode>
+);

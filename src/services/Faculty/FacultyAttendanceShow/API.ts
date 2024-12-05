@@ -1,14 +1,14 @@
 
-import axios from 'axios';
-
+// import axios from 'axios';
+import axiosInstance from "../../Utils/apiUtils";
 
 export const fetchFacultyAttendanceData = async (
   fromDate: string,
   toDate: string
 ) => {
   try {
-    const response = await axios.get(
-      `https://s-m-s-keyw.onrender.com/faculty/getAttendance`,
+    const response = await axiosInstance.get(
+      `/faculty/getAttendance`,
       {
         params: { fromDate, toDate },
       }

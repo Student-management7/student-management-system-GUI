@@ -173,26 +173,32 @@ const FacultyRegistrationForm: React.FC = () => {
 
 
     {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 150,
+      field: 'edit',
+      headerName: 'Edit',
+      width: 100,
       cellRenderer: (params: any) => (
-        <div className="flex gap-2">
-          <button
-            onClick={() => handleEdit(params.data)}
-            className="btn btn-primary btn-sm"
-          >
-            ✏️ Edit
-          </button>
-          <button
-            onClick={() => handleDelete(params.data)}
-            className="btn btn-danger btn-sm"
-          >
-            <FaTrash /> Delete
-          </button>
-        </div>
+        <button
+          onClick={() => handleEdit(params.data)}
+          className=" bi bi-pen text-blue-600"
+        >
+          
+        </button>
       ),
     },
+    {
+      field: 'delete',
+      headerName: 'Delete',
+      width: 100,
+      cellRenderer: (params: any) => (
+        <button
+          onClick={() => handleDelete(params.data)}
+          className="bi bi-trash text-red-600"
+        >
+          
+        </button>
+      ),
+    },
+    
 
 
   ];

@@ -54,6 +54,9 @@ const HeaderController = () => {
                     <li className="nav-item">
                         <Link to="/holiday" className="hover:text-blue-600 transition-colors">holiday</Link>
                     </li>
+                    <li className="nav-item">
+                        <Link to="/fees" className="hover:text-blue-600 transition-colors">Admin fees</Link>
+                    </li>
                     
                 </ul>
             </nav>
