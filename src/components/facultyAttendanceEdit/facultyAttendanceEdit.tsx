@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GridView from './gridView';
-import { fetchAttendance } from '../../services/facultyAttendanceEdit/Api/api';
-import { Faculty, AttendanceEntry } from '../../services/facultyAttendanceEdit/Type/type';
+import { fetchAttendance } from '../../services/Faculty/facultyAttendanceEdit/Api/api';
+import { Faculty, AttendanceEntry } from '../../services/Faculty/facultyAttendanceEdit/Type/type';
 
 const FacultyAttendance: React.FC = () => {
   const navigate = useNavigate();

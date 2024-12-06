@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import GridView from './gridView';
-import { fetchHolidayData, saveHoliday } from '../../services/holiday/Api/api';
+import { deleteHolidayApi, fetchHolidayData, saveHoliday } from '../../services/holiday/Api/api';
 import { formatToDDMMYYYY } from '../../components/Utils/dateUtils';
 import { Holiday, HolidayPayload } from '../../services/holiday/Type/type';
+
 
 const HolidayComponent: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
@@ -49,6 +50,24 @@ const HolidayComponent: React.FC = () => {
     loadHolidays();
   }, []);
 
+
+  //  handle Delete Button Click
+  const handleDeleteButtonClick = async (holidayId: string) => {
+    if (window.confirm('Are you sure you want to delete this holiday?')) {
+      try {
+        // Call the API to delete the holiday
+        await deleteHolidayApi(holidayId);
+  
+        // Update the grid by removing the row
+        setRowData((prevData) => prevData.filter((row) => row.id !== holidayId));
+  
+        alert('Holiday deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting holiday:', error);
+        alert('Failed to delete the holiday. Please try again.');
+      }
+    }
+  };
   const handleClassSelection = (selectedOptions: any) => {
     if (selectedOptions.some((opt: any) => opt.value === 'All')) {
       setSelectedClasses('All');
@@ -98,10 +117,22 @@ const HolidayComponent: React.FC = () => {
     { headerName: 'Start Date', field: 'startDate', sortable: true, filter: true },
     { headerName: 'End Date', field: 'endDate', sortable: true, filter: true },
     { headerName: 'Description', field: 'description', sortable: true, filter: true },
+    {
+      field: 'delete',
+      headerName: 'Actions',
+      cellRenderer: (params: any) => (
+        <button
+          className="bi bi-trash text-red-600"
+          onClick={() => handleDeleteButtonClick(params.data.id)}
+        >
+         
+        </button>
+      ),
+    },
   ];
 
   return (
-    <div className="box">
+    <div className="box ">
       {!showForm ? (
         <>
           <div className="text-right">
@@ -112,46 +143,51 @@ const HolidayComponent: React.FC = () => {
           <GridView rowData={rowData} columnDefs={columnDefs} />
         </>
       ) : (
-        <div className="box">
-          <h2 className="text-2xl font-bold mb-6 text-center">Holiday</h2>
-          <div className="mb-4">
-            <h3 className="font-semibold mb-2">Select Classes:</h3>
-            <Select
-              isMulti
-              options={options}
-              onChange={handleClassSelection}
-              className="basic-multi-select"
-              classNamePrefix="select"
-              placeholder="Select Classes..."
-            />
+        <div className='box'>
+
+          <h2 className=" text-2xl font-bold mb-10 text-center">Holiday</h2>
+          <div className="flex flex-row items-center justify-center space-x-10 ">
+            <div className="mb-4 w-1/2">
+              <h3 className="font-semibold mb-2">Select Classes:</h3>
+              <Select
+                isMulti
+                options={options}
+                onChange={handleClassSelection}
+                className="basic-multi-select mb-4"
+                classNamePrefix="select"
+                placeholder="Select Classes..."
+              />
+              <label className="block mb-2 font-semibold">Description:</label>
+              <input
+                type="text"
+                placeholder="Optional holiday description"
+                className="w-full border px-3 py-2 rounded-md "
+                value={holidayDate.description}
+                onChange={(e) => handleHolidayDateChange('description', e.target.value)}
+              />
+            </div>
+            <div className="mb-4 w-1/2 pd-4">
+              <label className="block mb-2 font-semibold">Start Date:</label>
+              <input
+                type="date"
+                className="w-full border px-3 py-2 mb-4 rounded-md"
+                value={holidayDate.startDate}
+
+                onChange={(e) => handleHolidayDateChange('startDate', e.target.value)}
+              />
+              <label className="block mb-2 font-semibold">End Date:</label>
+              <input
+                type="date"
+                className="w-full border px-3 py-2 rounded-md"
+                value={holidayDate.endDate}
+                onChange={(e) => handleHolidayDateChange('endDate', e.target.value)}
+              />
+            </div>
+            {/* <div className="mb-4 w-1/2">
+            
+          </div> */}
           </div>
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">Start Date:</label>
-            <input
-              type="date"
-              className="w-full border px-3 py-2 mb-4 rounded-md"
-              value={holidayDate.startDate}
-              onChange={(e) => handleHolidayDateChange('startDate', e.target.value)}
-            />
-            <label className="block mb-2 font-semibold">End Date:</label>
-            <input
-              type="date"
-              className="w-full border px-3 py-2 rounded-md"
-              value={holidayDate.endDate}
-              onChange={(e) => handleHolidayDateChange('endDate', e.target.value)}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">Description:</label>
-            <input
-              type="text"
-              placeholder="Optional holiday description"
-              className="w-full border px-3 py-2 rounded-md"
-              value={holidayDate.description}
-              onChange={(e) => handleHolidayDateChange('description', e.target.value)}
-            />
-          </div>
-          <div className="text-center">
+          <div className="text-center mt-10">
             <button
               type="button"
               className="w-1/8 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"

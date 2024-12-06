@@ -53,7 +53,14 @@ const HeaderController = () => {
                     </li> */}
                     {/* <li className="nav-item">
                         <Link to="/holiday" className="hover:text-blue-600 transition-colors">holiday</Link>
+<<<<<<< HEAD
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/fees" className="hover:text-blue-600 transition-colors">Admin fees</Link>
+                    </li>
+=======
                     </li> */}
+ {/* e15c575e20d0d57dd72800820a076737390eb183 */}
                     
                 </ul>
             </nav>

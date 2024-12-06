@@ -24,3 +24,22 @@ export const saveHoliday = async (payload: HolidayPayload): Promise<void> => {
     throw error;
   }
 };
+
+// delete holiday Api
+
+
+
+export const deleteHolidayApi = async (holidayId: string): Promise<void> => {
+  try {
+    // Include the holidayId as a query parameter
+    await axios.post(`${BASE_URL}/holiday/delete`, null, {
+      params: { id: holidayId },
+    });
+  } catch (error) {
+    console.error("Failed to delete holiday:", error);
+    throw new Error("Failed to delete holiday");
+  }
+};
+
+
+
