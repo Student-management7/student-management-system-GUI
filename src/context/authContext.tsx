@@ -22,7 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<DecodedToken | null>(null);
   const [isLoading, setIsLoading] = useState(true); // Add isLoading state
 
-  //  only for debugging 
+  //   for debugging 
 
   //--------------------------------------------------------
   useEffect(() => {
@@ -61,7 +61,7 @@ const login = async (email: string, password: string): Promise<void> => {
     // Validate token
     const decoded = jwtDecode<DecodedToken>(token);
     
-    // Store token in both localStorage and  cookie
+    // Store token in localStorage and  cookie
     localStorage.setItem('token', token);
     document.cookie = `Authorization=Bearer ${token}; path=/; secure; samesite=strict`;
     
@@ -87,7 +87,8 @@ useEffect(() => {
       try {
         const decoded = jwtDecode<DecodedToken>(token);
         const currentTime = Date.now() / 1000;
-//
+
+//  debug 
         const isTokenValid = Date.now() / 1000 < decoded.exp;
         console.log('Is Token Valid:', isTokenValid);
 //
@@ -102,7 +103,7 @@ useEffect(() => {
         await logout();
       }
     }
-    setIsLoading(false); // Ensure loading state reset is done correctly
+    setIsLoading(false); 
   };
   checkInitialToken();
 }, []);
@@ -126,35 +127,7 @@ const logout = async () => {
   }
 };
   
-  // const handleTokenRefresh = async () => {
-  //   try {
-  //     setIsLoading(true); // Add loading state during refresh
-  //     const response = await fetch('https://s-m-s-keyw.onrender.com/auth/refresh', {
-  //       method: 'POST',
-  //       credentials: 'include',
-  //       headers: {
-  //         'Authorization': `Bearer ${localStorage.getItem('token')}`
-  //       }
-  //     });
-  
-  //     if (response.ok) {
-  //       const { token } = await response.json();
-  //       localStorage.setItem('token', token);
-  //       const decoded = jwtDecode<DecodedToken>(token);
-  //       setIsAuthenticated(true);
-  //       setUser(decoded);
-  //     } else {
-  //       throw new Error('Token refresh failed');
-  //     }
-  //   } catch (error) {
-  //     console.error('Token refresh error:', error);
-  //     logout();
-  //   } finally {
-  //     setIsLoading(false); // Ensure loading state is reset
-  //   }
-  // };
-
-
+ 
   const getCsrfToken = () => {
     // Fallback method
     const metaToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');

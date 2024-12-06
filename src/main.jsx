@@ -1,9 +1,11 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/authContext';
 import ProtectedRoute from './Pages/Login/ProtectedRoute';
+
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './index.css';
 
 import MasterController from './components/main/MasterController';
 import HeaderController from './components/main/HeaderController';
@@ -22,42 +24,47 @@ import StudentAttendanceEditSave from './components/StudenAttendanceShow/student
 import HolidayFormController from './components/Holidays/holidayFormController';
 import FeesController from './components/fess/addFeesByAdmin/feesController';
 import Login from './Pages/Login/Login';
+import SideBarController from './components/sideBar/SideBarController';
 
-import './index.css';
+// Dummy StudentDataGrid to avoid undefined error; replace with your actual implementation.
+const StudentDataGrid = () => <div>Student Data Grid</div>;
 
 const App = () => {
   return (
     <>
       <HeaderController />
-      
-      <Routes>
-        {/* Login and public routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/fees" element={<FeesController />} />
-        <Route path="/holiday" element={<HolidayFormController />} />
+      <div className="mainBody">
+        <SideBarController />
+        <div className="rhsBox">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/fees" element={<FeesController />} />
+            <Route path="/holiday" element={<HolidayFormController />} />
 
-        {/* Protected routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/main" element={<MasterController />} />
-          <Route path="/StudentRegistrationController" element={<StudentRegistrationController />} />
-          <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
-          <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
-          <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
-          <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
-          <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
-          <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
-          <Route path="/facultyAttendanceEdit" element={<FacultyAttendanceEdit />} />
-          <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />
-          <Route path="/studentAttendanceEdit" element={<StudentAttendanceEdit />} />
-          <Route path="/studentAttendanceEditSave" element={<StudentAttendanceEditSave />} />
-         
-        </Route>
+            {/* Protected Routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/main" element={<MasterController />} />
+              <Route path="/StudentRegistrationController" element={<StudentRegistrationController />} />
+              <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
+              <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
+              <Route path="/studentdashboard" element={<StudentDataGrid />} />
+              <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
+              <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
+              <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
+              <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
+              <Route path="/facultyAttendanceEdit" element={<FacultyAttendanceEdit />} />
+              <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />
+              <Route path="/studentAttendanceEdit" element={<StudentAttendanceEdit />} />
+              <Route path="/studentAttendanceEditSave" element={<StudentAttendanceEditSave />} />
+            </Route>
 
-        {/* Fallback Route */}
-        <Route path="*" element={<MasterController />} />
-      </Routes>
-
-      <FooterController />
+            {/* Fallback Route */}
+            <Route path="*" element={<MasterController />} />
+          </Routes>
+          <FooterController />
+        </div>
+      </div>
     </>
   );
 };
