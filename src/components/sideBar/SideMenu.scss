@@ -3,6 +3,18 @@
     width: 300px;
     color: #FFF;
     padding: 10px;
+
+    .logo{
+        position: relative;
+        p{
+            margin-bottom: 10px;
+        }
+        svg{
+            position: absolute;
+            right: 10px;
+            top: 12px;
+        }
+    }
 }
 
 .menu{

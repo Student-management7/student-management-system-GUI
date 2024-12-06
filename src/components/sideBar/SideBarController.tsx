@@ -4,7 +4,7 @@ import { SideBarData } from './SideBarData';
 import SubManu from './SubManu';
 import './SideMenu.scss'
 import { Link } from 'react-router-dom';
-
+import { FaBars } from "react-icons/fa6";
 const SideBarController = () =>{
 const [submenu, setSubmenu] = useState<{ [key: number]: boolean }>({});
 
@@ -21,7 +21,11 @@ const menuOpen = (index: number) =>{
         <>
             
             <div className='sideNav'>
-            <div className="font-extrabold text-md md:text-2xl">EasyWaySolution</div>
+            <div className="logo flex">
+                <p className='md:text-2xl'>EasyWaySolution</p>
+                <FaBars />
+                
+            </div>
 
                 {SideBarData.map((item: any, index: number)=>{
 
