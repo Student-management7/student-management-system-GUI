@@ -2,13 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { Formik, Form, Field, FieldArray, ErrorMessage, FormikHelpers } from 'formik';
 
 import { FaPlus, FaMinus, FaTrash } from 'react-icons/fa';
-import { facultyValidationSchema } from '../../services/fecultyRegistretion/validation';
+// <<<<<<< HEAD
+import { facultyValidationSchema } from '../../services/Faculty/fecultyRegistretion/validation';
 // import { FacultyFormData, } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
-import { saveFacultyDetails, getFacultyDetails, updateFacultyDetails, deleteFacultyDetails } from '../../services/fecultyRegistretion/API/API';
+import { saveFacultyDetails, getFacultyDetails, updateFacultyDetails, deleteFacultyDetails } from '../../services/Faculty/fecultyRegistretion/API/API';
+// =======
+// import { facultyValidationSchema } from '../../services/fecultyRegistretion/validation';
+// import { FacultyFormData, } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
+// import { saveFacultyDetails, getFacultyDetails, updateFacultyDetails, deleteFacultyDetails } from '../../services/fecultyRegistretion/API/API';
+// >>>>>>> e15c575e20d0d57dd72800820a076737390eb183
 import GridView from './GridView';
 import CustomAlert from '../UI/alert';
 import DeleteConfirmationModal from '../../services/DeleteModele/DeleteConfirmationModal';
-import { FacultyFormData } from '../../services/fecultyRegistretion/Type/FecultyRegistrationType';
+import { FacultyFormData } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
 
 
 const FacultyRegistrationForm: React.FC = () => {
@@ -18,6 +24,8 @@ const FacultyRegistrationForm: React.FC = () => {
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [showError, setShowError] = useState<boolean>(false);
   const [isEditMode, setIsEditMode] = useState(false);
+
+  
   //
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [selectedFacultyToDelete, setSelectedFacultyToDelete] = useState<FacultyFormData | null>(null);
@@ -172,26 +180,32 @@ const FacultyRegistrationForm: React.FC = () => {
 
 
     {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 150,
+      field: 'edit',
+      headerName: 'Edit',
+      width: 100,
       cellRenderer: (params: any) => (
-        <div className="flex gap-2">
-          <button
-            onClick={() => handleEdit(params.data)}
-            className="btn btn-primary btn-sm"
-          >
-            ✏️ Edit
-          </button>
-          <button
-            onClick={() => handleDelete(params.data)}
-            className="btn btn-danger btn-sm"
-          >
-            <FaTrash /> Delete
-          </button>
-        </div>
+        <button
+          onClick={() => handleEdit(params.data)}
+          className=" bi bi-pen text-blue-600"
+        >
+          
+        </button>
       ),
     },
+    {
+      field: 'delete',
+      headerName: 'Delete',
+      width: 100,
+      cellRenderer: (params: any) => (
+        <button
+          onClick={() => handleDelete(params.data)}
+          className="bi bi-trash text-red-600"
+        >
+          
+        </button>
+      ),
+    },
+    
 
 
   ];

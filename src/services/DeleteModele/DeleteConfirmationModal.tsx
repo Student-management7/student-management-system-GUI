@@ -2,7 +2,7 @@
 
 
 import React from 'react';
-import { FacultyFormData } from '../../services/fecultyRegistretion/Type/FecultyRegistrationType';
+import { FacultyFormData } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
 
 interface DeleteConfirmationModalProps {
   faculty: FacultyFormData;

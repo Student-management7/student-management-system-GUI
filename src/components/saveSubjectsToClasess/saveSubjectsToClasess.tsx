@@ -65,9 +65,11 @@ const SaveSubjectsToClasses: React.FC = () => {
     };
 
     return (
+
+       
         <div className="bg-gray-100 min-h-screen p-4 md:p-6 flex items-center justify-center">
-            <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-2xl">
-                <h2 className="text-2xl font-bold mb-4 text-center text-gray-700">Save Subjects to Classes</h2>
+            <div className="box bg-white p-6 rounded-lg shadow-lg w-full">
+                <h2 className="text-2xl font-bold mb-4 text-center text-gray-700">Save Subjects </h2>
 
                 <label className="block mb-4">
                     <span className="text-gray-600">Select Class:</span>
@@ -145,6 +147,7 @@ const SaveSubjectsToClasses: React.FC = () => {
                 </button>
             </div>
         </div>
+        
     );
 };
 

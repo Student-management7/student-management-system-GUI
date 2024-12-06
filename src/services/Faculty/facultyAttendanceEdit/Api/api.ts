@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { formatDate } from '../../../components/Utils/dateUtils';
+import { formatDate } from '../../../../components/Utils/dateUtils';
 import { AttendanceEntry , Faculty } from '../Type/type';
 
 
