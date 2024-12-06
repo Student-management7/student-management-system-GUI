@@ -1,6 +1,6 @@
 import React from 'react'
 import * as FaIcons from 'react-icons/fa';
-import { FaHouse, FaHandshakeAngle, FaCaretDown , FaCaretUp } from "react-icons/fa6";
+import { FaHouse, FaHandshakeAngle, FaCaretDown , FaCaretUp, FaUserLarge, FaUserTie   } from "react-icons/fa6";
 import * as AiIcons from 'react-icons/ai';
 import * as IoIcons from 'react-icons/io';
 import * as RiIcons from 'react-icons/ri';
@@ -16,7 +16,7 @@ export const SideBarData = [
     {
         title: 'Student',
         path: '/',
-        icon: FaHandshakeAngle,
+        icon: FaUserLarge ,
         iconClosed: FaCaretUp,
         iconeOpened: FaCaretDown,
         subNav: [
@@ -41,7 +41,7 @@ export const SideBarData = [
     {
         title: 'Faculty',
         path: '/',
-        icon: FaHandshakeAngle,
+        icon: FaUserTie ,
         iconClosed: FaCaretUp,
         iconeOpened: FaCaretDown,
         subNav: [

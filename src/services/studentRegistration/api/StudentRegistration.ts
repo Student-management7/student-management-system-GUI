@@ -29,7 +29,13 @@ export const updateStudentDeteails = async (data: any) =>{
 
 export const getStdDetails = async () => {
     try {
-        const response = await axios.get(`${API_URL}/student/findAllStudent`); // Adjust the endpoint as needed
+        
+        const response = await axios.get(`${API_URL}/student/findAllStudent`,{
+            headers: {
+                Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJwZXJtaXNzaW9uIjoicGVybWlzc2lvbjEiLCJzdWIiOiJhc2hAZXhhbXBsZS5jb20iLCJpYXQiOjE3MzMwNzgwODksImV4cCI6MTczMzA3ODk4OX0.z5QbQ-Kr5D3bF8XvvKSVpDnhS8uzlRQeB2s7wX-c0Zk", // Add token to request headers
+                "Content-Type": "application/json",
+            }
+        }); // Adjust the endpoint as needed
         return response.data;
     } catch (error) {
         console.log('Error fetching details:', error);
