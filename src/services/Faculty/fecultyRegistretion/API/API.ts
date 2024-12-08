@@ -1,5 +1,6 @@
-import axios, { AxiosResponse } from 'axios';
+import  { AxiosResponse } from 'axios';
 import { FacultyFormData ,ApiError , ApiResponse, } from '../Type/FecultyRegistrationType';
+import axiosInstance from '../../../Utils/apiUtils';
 
 const API_URL = 'https://s-m-s-keyw.onrender.com';
 
@@ -7,7 +8,7 @@ const API_URL = 'https://s-m-s-keyw.onrender.com';
 // Get Faculty Details
 export const getFacultyDetails = async (): Promise<ApiResponse<FacultyFormData[]>> => {
   try {
-    const response: AxiosResponse = await axios.get(`${API_URL}/faculty/findAllFaculty`);
+    const response: AxiosResponse = await axiosInstance.get(`${API_URL}/faculty/findAllFaculty`);
     
     // Log the response for debugging
     console.log('Get Faculty Response:', response);
@@ -38,7 +39,7 @@ export const saveFacultyDetails = async (data: FacultyFormData): Promise<ApiResp
       Object.entries(data).filter(([_, value]) => value !== null && value !== undefined)
     );
 
-    const response: AxiosResponse = await axios.post(`${API_URL}/faculty/save`, cleanData, {
+    const response: AxiosResponse = await axiosInstance.post(`${API_URL}/faculty/save`, cleanData, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -73,7 +74,7 @@ export const updateFacultyDetails = async (data: FacultyFormData, factId: string
     );
 
     // Fixed the URL structure and using axios consistently
-    const response: AxiosResponse = await axios.post(
+    const response: AxiosResponse = await axiosInstance.post(
       `${API_URL}/faculty/Update`, 
       cleanData,
       {
@@ -129,7 +130,7 @@ export const updateFacultyDetails = async (data: FacultyFormData, factId: string
 
 export const deleteFacultyDetails = async (facultyId: string) => {
   try {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `${API_URL}/faculty/delete?id=${facultyId}`
     );
     return response;

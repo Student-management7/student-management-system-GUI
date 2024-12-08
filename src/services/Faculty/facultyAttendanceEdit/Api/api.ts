@@ -1,13 +1,13 @@
-import axios from 'axios';
 import { formatDate } from '../../../../components/Utils/dateUtils';
 import { AttendanceEntry , Faculty } from '../Type/type';
+import axiosInstance from '../../../Utils/apiUtils';
 
 
 export const fetchAttendance = async (selectedDate: string): Promise<AttendanceEntry[]> => {
   try {
     const formattedDate = formatDate(selectedDate);
     const url = `https://s-m-s-keyw.onrender.com/faculty/getAttendance?fromDate=${formattedDate}&toDate=${formattedDate}`;
-    const response = await axios.get<AttendanceEntry[]>(url);
+    const response = await axiosInstance.get<AttendanceEntry[]>(url);
     
     if (!response.data || !Array.isArray(response.data)) {
       throw new Error('Invalid response format');
@@ -29,7 +29,7 @@ interface EditAttendancePayload {
 
 export const saveAttendanceEdit = async (payload: EditAttendancePayload): Promise<void> => {
   try {
-    await axios.post('https://s-m-s-keyw.onrender.com/faculty/attendanceEdit', payload);
+    await axiosInstance.post('https://s-m-s-keyw.onrender.com/faculty/attendanceEdit', payload);
   } catch (err) {
     console.error('Error saving attendance:', err);
     throw err;

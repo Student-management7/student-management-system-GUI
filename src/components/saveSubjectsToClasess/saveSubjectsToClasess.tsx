@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { ClassData } from "../../services/SaveSubjects/Type";
 import { API_ENDPOINTS } from "../../services/SaveSubjects/Api";
+import axiosInstance from "../../services/Utils/apiUtils";
 
 const allSubjects = [
     "Maths", "Science", "English", "History", "Geography", 
@@ -59,7 +60,7 @@ const SaveSubjectsToClasses: React.FC = () => {
 
         const payload = { classData: updatedClassData };
 
-        axios.post(API_ENDPOINTS.SAVE_CLASS_DATA, payload)
+        axiosInstance.post(API_ENDPOINTS.SAVE_CLASS_DATA, payload)
             .then(() => alert("Class and subject data saved successfully!"))
             .catch((error) => console.error("Error saving class data:", error));
     };

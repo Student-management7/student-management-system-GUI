@@ -25,6 +25,8 @@ import HolidayFormController from './components/Holidays/holidayFormController';
 import FeesController from './components/fess/addFeesByAdmin/feesController';
 import Login from './Pages/Login/Login';
 import SideBarController from './components/sideBar/SideBarController';
+import FacultySalaryController from './components/salary/facultySalary/facultySalaryController';
+import FacultySalaryDetails from './components/salary/facultySalary/facultySalaryDetails';
 
 // Dummy StudentDataGrid to avoid undefined error; replace with your actual implementation.
 const StudentDataGrid = () => <div>Student Data Grid</div>;
@@ -39,8 +41,6 @@ const App = () => {
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
-            <Route path="/fees" element={<FeesController />} />
-            <Route path="/holiday" element={<HolidayFormController />} />
 
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
@@ -57,6 +57,10 @@ const App = () => {
               <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />
               <Route path="/studentAttendanceEdit" element={<StudentAttendanceEdit />} />
               <Route path="/studentAttendanceEditSave" element={<StudentAttendanceEditSave />} />
+              <Route path="/fees" element={<FeesController />} />
+              <Route path="/holiday" element={<HolidayFormController />} />
+              <Route path="/FacultySalary" element={<FacultySalaryController />} />
+              <Route path="/FacultySalaryDetails" element={<FacultySalaryDetails />} />
             </Route>
 
             {/* Fallback Route */}
