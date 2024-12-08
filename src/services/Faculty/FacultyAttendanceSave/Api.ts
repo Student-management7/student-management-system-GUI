@@ -1,11 +1,11 @@
 
-import axios from 'axios';
 import { Faculty } from './Type';
+import axiosInstance from '../../Utils/apiUtils';
 
 const API_URL = 'https://s-m-s-keyw.onrender.com';
 
 export const fetchFacultyData = async (): Promise<Faculty[]> => {
-    const response = await axios.get(`${API_URL}/faculty/findAllFaculty`);
+    const response = await axiosInstance.get(`${API_URL}/faculty/findAllFaculty`);
     return response.data.map((faculty: Faculty) => ({
         ...faculty,
         attendance: '',
@@ -21,6 +21,6 @@ export const submitAttendance = async (facultyList: Faculty[]) => {
             attendance: faculty.attendance,
         })),
     };
-    const response = await axios.post(`${API_URL}/faculty/attendanceSave`, payload);
+    const response = await axiosInstance.post(`${API_URL}/faculty/attendanceSave`, payload);
     return response;
 };

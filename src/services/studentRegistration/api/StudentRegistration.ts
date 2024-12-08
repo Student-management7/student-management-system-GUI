@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "../../Utils/apiUtils";
 
 
 const API_URL = 'https://s-m-s-keyw.onrender.com'
@@ -8,7 +8,7 @@ const API_URL = 'https://s-m-s-keyw.onrender.com'
 export const saveStdDetails = async (data: any) =>{
 
     try{
-        const response = await axios.post(`${API_URL}/student/save`, data);
+        const response = await axiosInstance.post(`${API_URL}/student/save`, data);
         return response.data;
     }catch (error){
         console.log('Error saving details:', error);
@@ -19,7 +19,7 @@ export const saveStdDetails = async (data: any) =>{
 export const updateStudentDeteails = async (data: any) =>{
 
     try{
-        const response = await axios.post(`${API_URL}/student/update`, data);
+        const response = await axiosInstance.post(`${API_URL}/student/update`, data);
         return response.data;
     }catch (error){
         console.log('Error saving details:', error);
@@ -29,7 +29,7 @@ export const updateStudentDeteails = async (data: any) =>{
 
 export const getStdDetails = async () => {
     try {
-        const response = await axios.get(`${API_URL}/student/findAllStudent`); // Adjust the endpoint as needed
+        const response = await axiosInstance.get(`${API_URL}/student/findAllStudent`); // Adjust the endpoint as needed
         return response.data;
     } catch (error) {
         console.log('Error fetching details:', error);
@@ -40,7 +40,7 @@ export const getStdDetails = async () => {
 
 export const fetchClasses = async () => {
     try {
-        const response = await axios.get(`${API_URL}/class/data`); // Adjust the endpoint as needed
+        const response = await axiosInstance.get(`${API_URL}/class/data`); // Adjust the endpoint as needed
         return response.data;
     } catch (error) {
         console.log('Error fetching details:', error);
@@ -51,7 +51,7 @@ export const fetchClasses = async () => {
 export const deleteStudentRecord = async (id: string) =>{
 
     try{
-        const response = await axios.post(`${API_URL}/student/delete?id=${id}`);
+        const response = await axiosInstance.post(`${API_URL}/student/delete?id=${id}`);
         return response.data;
     }catch (error){
         console.log('Error saving details:', error);
@@ -62,17 +62,3 @@ export const deleteStudentRecord = async (id: string) =>{
 
 
 
-    // // Fetch classes and subjects from the API
-
-    // const fetchClasses = async () => {
-    //     try {
-    //         setLoading(true);
-    //         const response = await fetch('localhost:8080/class/data'); // Correct API endpoint
-    //         const data = await response.json();
-    //         setClasses(data.classData); // Set class data
-    //         setLoading(false);
-    //     } catch (error) {
-    //         setError("Failed to fetch classes data");
-    //         setLoading(false);
-    //     }
-    // };

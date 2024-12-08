@@ -1,28 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import GridView from './gridView';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../services/Utils/apiUtils';
+import { formatDate } from '../Utils/dateUtils';
+import { getDateRange } from '../Utils/dateUtils';
 
 // Helper functions for date formatting
-export const formatDate = (date: string): string => {
-  const d = new Date(date);
-  return `${d.getDate().toString().padStart(2, '0')}/${
-    (d.getMonth() + 1).toString().padStart(2, '0')
-  }/${d.getFullYear()}`;
-};
 
-export const getDateRange = (start: string, end: string): string[] => {
-  const dateArray: string[] = [];
-  let currentDate = new Date(start);
-  const endDate = new Date(end);
 
-  while (currentDate <= endDate) {
-    dateArray.push(formatDate(currentDate.toISOString().split('T')[0]));
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
 
-  return dateArray;
-};
 
 interface Faculty {
   factId: string;
@@ -78,7 +64,7 @@ const FacultyAttendance: React.FC = () => {
       const formattedToDate = formatDate(toDate);
 
       const url = `https://s-m-s-keyw.onrender.com/faculty/getAttendance?fromDate=${formattedFromDate}&toDate=${formattedToDate}`;
-      const response = await axios.get<AttendanceEntry[]>(url);
+      const response = await axiosInstance.get<AttendanceEntry[]>(url);
 
       if (!response.data || !Array.isArray(response.data)) {
         throw new Error('Invalid response format');

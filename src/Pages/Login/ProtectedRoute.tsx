@@ -1,29 +1,23 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import { ReactNode } from 'react';
 
-interface ProtectedRouteProps {
-  children: ReactNode;
-}
-
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+const ProtectedRoute = () => {
   const { isAuthenticated, isLoading } = useAuth();
 
   console.log('ProtectedRoute State:', { isAuthenticated, isLoading });
   
-  
-  console.log({ isAuthenticated, isLoading });
   if (isLoading) {
     return <div>Loading...</div>;
   }
   
   if (!isAuthenticated) {
-    console.warn('Redirecting to login because user is not authenticated.');
-    return <Navigate to="/login" />;
+    console.log('Not Authenticated - Redirecting to Login');
+    return <Navigate to="/login" replace />;
   }
   
-  return <>{children}</>;
+  // Use Outlet to render nested routes
+  return <Outlet />;
 };
-
 
 export default ProtectedRoute;

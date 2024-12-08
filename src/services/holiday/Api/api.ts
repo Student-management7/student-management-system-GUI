@@ -1,11 +1,12 @@
-import axios from 'axios';
+// import axios from 'axios';
 import { Holiday, HolidayPayload } from '../Type/type';
+import axiosInstance from '../../Utils/apiUtils';
 
 const BASE_URL = 'https://s-m-s-keyw.onrender.com';
 
 export const fetchHolidayData = async (): Promise<Holiday[]> => {
   try {
-    const response = await axios.get(`${BASE_URL}/holiday/get`);
+    const response = await axiosInstance.get(`${BASE_URL}/holiday/get`);
     return response.data;
   } catch (error) {
     console.error('Error fetching holiday data:', error);
@@ -15,7 +16,7 @@ export const fetchHolidayData = async (): Promise<Holiday[]> => {
 
 export const saveHoliday = async (payload: HolidayPayload): Promise<void> => {
   try {
-    const response = await axios.post(`${BASE_URL}/holiday/save`, payload);
+    const response = await axiosInstance.post(`${BASE_URL}/holiday/save`, payload);
     if (response.status !== 200) {
       throw new Error('Failed to save holiday');
     }
@@ -32,7 +33,7 @@ export const saveHoliday = async (payload: HolidayPayload): Promise<void> => {
 export const deleteHolidayApi = async (holidayId: string): Promise<void> => {
   try {
     // Include the holidayId as a query parameter
-    await axios.post(`${BASE_URL}/holiday/delete`, null, {
+    await axiosInstance.post(`${BASE_URL}/holiday/delete`, null, {
       params: { id: holidayId },
     });
   } catch (error) {

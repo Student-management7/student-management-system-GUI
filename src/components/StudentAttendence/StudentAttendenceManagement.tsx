@@ -6,6 +6,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import axios from "axios";
 import { ClassData, Student, AttendancePayload } from "../../services/StudentAttendence/Type/studentAttendenceType";
 import { API_ENDPOINTS } from "../../services/StudentAttendence/API/studentAttendenceApi";
+import axiosInstance from "../../services/Utils/apiUtils";
 
 const StudentManagementSystem: React.FC = () => {
     const [classes, setClasses] = useState<ClassData[]>([]);
@@ -20,7 +21,7 @@ const StudentManagementSystem: React.FC = () => {
         try {
             setError("");
             setLoading(true);
-            const response = await axios.get(API_ENDPOINTS.CLASS_DATA);
+            const response = await axiosInstance.get(API_ENDPOINTS.CLASS_DATA);
             setClasses(response.data.classData);
         } catch (error) {
             setError("Failed to fetch classes data");
@@ -49,7 +50,7 @@ const StudentManagementSystem: React.FC = () => {
         try {
             setError("");
             setLoading(true);
-            const response = await axios.get(API_ENDPOINTS.STUDENT_DATA(selectedClass));
+            const response = await axiosInstance.get(API_ENDPOINTS.STUDENT_DATA(selectedClass));
             const filteredStudents = response.data.map((student: any) => ({
                
                 stdId: student.id,
@@ -76,7 +77,7 @@ const StudentManagementSystem: React.FC = () => {
         };
 
         try {
-            const response = await axios.post(API_ENDPOINTS.SAVE_ATTENDANCE, payload);
+            const response = await axiosInstance.post(API_ENDPOINTS.SAVE_ATTENDANCE, payload);
             if (response.status === 200) {
                 alert("Attendance submitted successfully!");
             } else {

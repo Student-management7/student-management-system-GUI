@@ -1,9 +1,10 @@
-import React from 'react'
-import * as FaIcons from 'react-icons/fa';
-import { FaHouse, FaHandshakeAngle, FaCaretDown , FaCaretUp } from "react-icons/fa6";
-import * as AiIcons from 'react-icons/ai';
-import * as IoIcons from 'react-icons/io';
-import * as RiIcons from 'react-icons/ri';
+// import React from 'react'
+// import * as FaIcons from 'react-icons/fa';
+// import * as AiIcons from 'react-icons/ai';
+// import * as IoIcons from 'react-icons/io';
+// import * as RiIcons from 'react-icons/ri';
+// import {  FaHandshakeAngle, FaCaretDown, FaCaretUp,  } from "react-icons/fa6";
+import { FaHouse, FaHandshakeAngle, FaCaretDown, FaCaretUp,FaMoneyBill } from "react-icons/fa6";
 
 export const SideBarData = [
 
@@ -69,12 +70,31 @@ export const SideBarData = [
                 title: 'Hollyday',
                 path: '/holiday',
                 icon: FaHandshakeAngle,
-            }
+            },
         ]
 
+    },
+
+    {
+        title: 'Finance',
+        path: '/',
+        icon: FaHandshakeAngle,
+        iconClosed: FaCaretUp,
+        iconeOpened: FaCaretDown,
+        subNav: [
+
+            {
+                title: 'Admin Fees',
+                path: '/fees',
+                icon: FaMoneyBill,
+            },
+            {
+                title: 'Faculty Salary',
+                path: '/FacultySalary',
+                icon: FaMoneyBill,
+            },
+        ]
     }
-
-
 
 ]
 

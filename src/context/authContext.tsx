@@ -38,6 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 // Modified login method
 const login = async (email: string, password: string): Promise<void> => {
   try {
+    setIsLoading(true);
     const response = await fetch('https://s-m-s-keyw.onrender.com/auth/login', {
       method: 'POST',
       headers: { 
@@ -49,8 +50,6 @@ const login = async (email: string, password: string): Promise<void> => {
     });
 
     const data = await response.json();
-    console.log('Login Response:', data);
-    
     
     if (!response.ok) {
       throw new Error(data.message || 'Login failed');
@@ -61,24 +60,22 @@ const login = async (email: string, password: string): Promise<void> => {
     // Validate token
     const decoded = jwtDecode<DecodedToken>(token);
     
-    // Store token in localStorage and  cookie
+    // Store token securely
     localStorage.setItem('token', token);
     document.cookie = `Authorization=Bearer ${token}; path=/; secure; samesite=strict`;
     
     setIsAuthenticated(true);
     setUser(decoded);
-    setIsLoading(false);
-    
   } catch (err: any) {
     console.error('Login Error:', err);
     setIsAuthenticated(false);
     setUser(null);
-    setIsLoading(false);
+    // You might want to throw the error or handle it more specifically
     throw err;
+  } finally {
+    setIsLoading(false);
   }
-  console.log('Login successful, token set:', localStorage.getItem('token'));
 };
-  
 useEffect(() => {
   const checkInitialToken = async () => {
     setIsLoading(true);
