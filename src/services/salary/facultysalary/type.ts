@@ -53,5 +53,6 @@ export interface FacultySalaryDetails {
       facultyTransport: number;
       facultyDeduction: string; // JSON string of deductions
       total: number;
+      // hshshh
     }[];
   }
