@@ -40,16 +40,18 @@ const App = () => {
         <div className="rhsBox">
           <Routes>
             {/* Public Routes */}
+
             <Route path="/login" element={<Login />} />
 
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="/main" element={<MasterController />} />
-              <Route path="/StudentRegistrationController" element={<StudentRegistrationController />} />
               <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
               <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
               <Route path="/studentdashboard" element={<StudentDataGrid />} />
               <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
+              <Route path="/StudentRegistrationController" element={<StudentRegistrationController />} />
+
               <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
               <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
               <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
