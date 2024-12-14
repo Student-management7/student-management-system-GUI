@@ -1,4 +1,3 @@
-// src/types/studentManagementTypes.ts
 export interface ClassData {
     className: string;
     subject: string[];
@@ -12,8 +11,8 @@ export interface Student {
 
 export interface AttendancePayload {
     className: string;
-    subject: string;
-    // name: string;
+    subject?: string; // Optional for Master Attendance
+    masterAttendance: boolean;
     studentList: {
         stdId: string;
         attendance: string;

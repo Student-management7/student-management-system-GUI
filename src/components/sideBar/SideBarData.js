@@ -89,6 +89,11 @@ export const SideBarData = [
                 icon: FaMoneyBill,
             },
             {
+                title: 'Student Fees',
+                path: '/StudentFeesController',
+                icon: FaMoneyBill,
+            },
+            {
                 title: 'Faculty Salary',
                 path: '/FacultySalary',
                 icon: FaMoneyBill,
@@ -97,4 +102,3 @@ export const SideBarData = [
     }
 
 ]
-
