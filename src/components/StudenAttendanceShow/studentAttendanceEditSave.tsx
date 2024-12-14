@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import GridView from './GridView'; // Import your GridView component
 import { formatToDDMMYYYY } from '../Utils/dateUtils';
+import axiosInstance from '../../services/Utils/apiUtils';
 
 const StudentAttendanceEditSave: React.FC = () => {
   const location = useLocation();
@@ -24,7 +24,7 @@ const StudentAttendanceEditSave: React.FC = () => {
         studentList: editedStudentList, // Rename to `studentList` for consistency
       };
 
-      await axios.post(
+      await axiosInstance.post(
         'https://s-m-s-keyw.onrender.com/attendance/update',
         payload
       );

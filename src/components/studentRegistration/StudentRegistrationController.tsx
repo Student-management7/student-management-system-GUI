@@ -16,6 +16,16 @@ const StudentRegistrationController = () => {
 
 
     const [columnDefs] = useState<any[]>([
+        { field: 'id', headerName: 'ID' },
+        { field: 'name', headerName: 'Name' },
+        { field: 'city', headerName: 'City' },
+        { field: 'cls', headerName: 'Class' },
+        { field: 'address', headerName: 'Address' },
+        { field: 'gender', headerName: 'Gender' },
+        { field: 'state', headerName: 'State' },
+        { field: 'familyDetails.stdo_FatherName', headerName: 'Father Name' },
+        { field: 'familyDetails.stdo_MotherName', headerName: 'Mother Name' },
+        { field: 'familyDetails.stdo_primaryContact', headerName: 'Contact' },
         {
             field: 'actions',
             headerName: 'Actions',
@@ -41,15 +51,6 @@ const StudentRegistrationController = () => {
               
             ),
           },
-        { field: 'name', headerName: 'Name' },
-        { field: 'city', headerName: 'City' },
-        { field: 'cls', headerName: 'Class' },
-        { field: 'address', headerName: 'Address' },
-        { field: 'gender', headerName: 'Gender' },
-        { field: 'state', headerName: 'State' },
-        { field: 'familyDetails.stdo_FatherName', headerName: 'Father Name' },
-        { field: 'familyDetails.stdo_MotherName', headerName: 'Mother Name' },
-        { field: 'familyDetails.stdo_primaryContact', headerName: 'Contact' }
     ]);
 
     
@@ -73,13 +74,25 @@ const StudentRegistrationController = () => {
 
     }
 
-    const getDeleteData =(data: StudentFormData) =>{
-
-       if(data?.id){
-        deleteStudentRecord(data?.id);
-       }
-
-    }
+    const getDeleteData = async (data: StudentFormData) => {
+        if (!data?.id) return;
+    
+        const confirmDelete = window.confirm(
+            `Are you sure you want to delete the student record for ${data.name}?`
+        );
+    
+        if (confirmDelete) {
+            try {
+                await deleteStudentRecord(data.id);
+                setRowData((prev) => prev.filter((row) => row.id !== data.id));
+                alert('Student record deleted successfully.');
+            } catch (error) {
+                console.error(error);
+                alert('Failed to delete the student record. Please try again.');
+            }
+        }
+    };
+    
 
     useEffect(()=>{
         console.log(singleRowData);

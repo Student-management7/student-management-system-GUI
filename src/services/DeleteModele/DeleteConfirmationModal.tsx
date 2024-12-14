@@ -3,6 +3,8 @@
 
 import React from 'react';
 import { FacultyFormData } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface DeleteConfirmationModalProps {
   faculty: FacultyFormData;
@@ -14,6 +16,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
   faculty,
   onConfirm,
   onCancel,
+  
 }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
@@ -37,6 +40,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
           <button
             onClick={onConfirm}
             className="btn btn-danger"
+            
           >
             Delete
           </button>

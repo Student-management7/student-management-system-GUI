@@ -22,7 +22,6 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
       validationSchema={validationSchema}
       onSubmit={(values) => {
         onSave(values);
-        saveFees(values); // Optionally save using API
       }}
     >
       {({ values }) => (
