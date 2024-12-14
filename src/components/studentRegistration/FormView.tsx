@@ -313,7 +313,7 @@ const FormView = () =>{
                     name="cls"
                     className="form-control"
                     
-                    onChange={(e) => handleClassChange(e, setFieldValue)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleClassChange(e, setFieldValue)}
                 >
                     <option value="" disabled>Select a class</option>
                     {classes.map((cls) => (
