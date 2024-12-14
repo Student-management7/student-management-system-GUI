@@ -5,10 +5,71 @@ import * as Yup from 'yup';
 import { saveStdDetails } from '../../services/studentRegistration/api/StudentRegistration';
 import { StudentFormData } from '../../services/studentRegistration/type/StudentRegistrationType';
  // Import the new custom alert component
-
+import axios from 'axios'
+import axiosInstance from '../../services/Utils/apiUtils';
 //props: StudentFormData
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
+
+
+
 
 const FormView = () =>{
+
+    const [classes, setClasses] = useState<ClassData[]>([]);
+    const [selectedFee, setSelectedFee] = useState('');
+    // const { setFieldValue } = useFormikContext();
+
+    interface ClassData {
+        id: string;
+        className: string;
+        totalFee: number;
+        schoolFee: number;
+        sportsFee: number;
+        bookFee: number;
+        transportation: number;
+        otherAmount: any[];
+      }
+
+
+    useEffect(() => {
+        const fetchClasses = async () => {
+            try {
+                const token = localStorage.getItem('authToken'); // Replace with your actual token
+    const response = await axiosInstance.get('/admin/getAll', {
+      headers: {
+        Authorization: `Bearer ${token}` // Add the token to the headers
+      }
+    });
+                setClasses(response.data); // Assuming response data is the array
+                console.log(response)
+            } catch (error) {
+                console.error('Error fetching classes:', error);
+            }
+        };
+
+        fetchClasses();
+    }, []);
+  
+
+    const handleClassChange = (event: React.ChangeEvent<HTMLSelectElement> , setFieldValue: (field: string, value: any) => void) => {
+        const selectedClass = event.target.value;
+        setFieldValue('cls', selectedClass);
+
+        // Find the selected class details and update the fee
+        const classData = classes.find((cls) => cls.className === selectedClass);
+        if (classData) {
+            setSelectedFee(classData.totalFee.toString());
+            // Set the total fee in Formik as well
+            setFieldValue('totalFee', classData.totalFee);
+          } else {
+            setSelectedFee('');
+            setFieldValue('totalFee', '');
+          }
+    };
+
 
     const initialValues = {
         name: '',
@@ -22,6 +83,7 @@ const FormView = () =>{
         cls: '',
         department: '',
         category: '',
+        totalFee: '',
         familyDetails: {
             stdo_FatherName: '',
             stdo_MotherName: '',
@@ -30,6 +92,7 @@ const FormView = () =>{
             stdo_city: '',
             stdo_state: '',
             stdo_email: ''
+           
         }
     };
 
@@ -78,10 +141,21 @@ const FormView = () =>{
     const handleSubmit = async (values: StudentFormData, { resetForm }: any) => {
         try {
             await saveStdDetails(values);
+           
+             // Show success notification
+        toast.success('Student submitted successfully!', {
+            position: "top-right", // You can change the position
+            autoClose: 3000, // Notification auto-close time in milliseconds
+            hideProgressBar: false, // Optional: Show progress bar
+            closeOnClick: true, // Optional: Close on click
+            pauseOnHover: true, // Optional: Pause on hover
+        });
+
             setShowSuccess(true);
             setTimeout(() => {
                 setShowSuccess(false);
                 resetForm();
+                setSelectedFee('');
             }, 3000);
         } catch (err) {
             setError('Failed to save student details');
@@ -95,12 +169,13 @@ const FormView = () =>{
     return(
         <>
             <div>
+            <ToastContainer />
             <Formik
                         initialValues={initialValues}
                         validationSchema={validationSchema}
                         onSubmit={handleSubmit}
                     >
-                        {({ errors, touched }) => (
+                        {({ errors, touched,setFieldValue }) => (
                             <Form>
                                 <div className='row'>
                                     <div className='col-md-4'>
@@ -227,22 +302,29 @@ const FormView = () =>{
                                                 placeholder='Enter email'
                                             />
                                         </div>
-                                    </div>
+                                </div>
+                               
                                     <div className='col-md-4'>
-                                        <div className='form-group'>
-                                            <label htmlFor="cls" className="form-label">Admission Class</label>
-                                            <Field
-                                                type="text"
-                                                id="cls"
-                                                name="cls"
-                                                className={`form-control ${errors.cls && touched.cls ? 'is-invalid' : ''}`}
-                                                placeholder='Enter Class'
-                                            />
-                                            {errors.cls && touched.cls && (
-                                                <div className="invalid-feedback">{errors.cls}</div>
-                                            )}
-                                        </div>
-                                    </div>
+                                    <div className="form-group">
+                <label htmlFor="cls" className="form-label">Admission Class</label>
+                <Field
+                    as="select"
+                    id="cls"
+                    name="cls"
+                    className="form-control"
+                    
+                    onChange={(e) => handleClassChange(e, setFieldValue)}
+                >
+                    <option value="" disabled>Select a class</option>
+                    {classes.map((cls) => (
+                        <option key={cls.id} value={cls.className}>
+                            {cls.className}
+                        </option>
+                    ))}
+                </Field>
+            </div>
+</div>
+
                                 </div>
                                 <div className='row'>
                                     <div className='col-md-4'>
@@ -381,6 +463,20 @@ const FormView = () =>{
                                         </div>
                                     </div>
                                 </div>
+                                
+                                   {/* Fee Field */}
+            <div className="form-group">
+                <label htmlFor="totalFee" className="form-label fs-4 text-primary">Total Fee</label>
+                <Field
+                    type="text"
+                    id="totalFee"
+                    name="totalFee"
+                    className="form-control"
+                    value={selectedFee}
+                    readOnly
+                />
+            </div>
+        
                                 <div className='text-center mt-4'>
                                     <button type="submit" className="btn btn-primary">Submit</button>
                                 </div>
