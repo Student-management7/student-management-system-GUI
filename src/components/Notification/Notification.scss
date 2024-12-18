@@ -1,0 +1,89 @@
+/* Custom Notification Styles */
+.notification-card {
+    border-left: 5px solid;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    animation: fadeIn 0.5s ease-in-out;
+  
+    &.student {
+        border-color: #28a745; /* Green */
+        background-color: #d4edda; /* Light Green */
+      }
+      
+      &.teacher {
+        border-color: #007bff; /* Blue */
+        background-color: #cce5ff; /* Light Blue */
+      }
+      
+      &.staff {
+        border-color: #17a2b8; /* Cyan */
+        background-color: #d1ecf1; /* Light Cyan */
+      }
+      
+      &.holiday {
+        border-color: #ffc107; /* Yellow */
+        background-color: #fff3cd; /* Light Yellow */
+      }
+      
+      &.exam {
+        border-color: #dc3545; /* Red */
+        background-color: #f8d7da; /* Light Red */
+      }
+      
+      &.event {
+        border-color: #6610f2; /* Purple */
+        background-color: #e2d9f3; /* Light Purple */
+      }
+      
+      &.announcement {
+        border-color: #fd7e14; /* Orange */
+        background-color: #ffe5d4; /* Light Orange */
+      }
+      
+      &.reminder {
+        border-color: #20c997; /* Teal */
+        background-color: #d1f5e6; /* Light Teal */
+      }
+      
+      &.task {
+        border-color: #6f42c1; /* Dark Purple */
+        background-color: #e6dbf5; /* Light Lavender */
+      }
+      
+      &.other {
+        border-color: #6c757d; /* Gray */
+        background-color: #f8f9fa; /* Light Gray */
+      }
+      
+
+  
+    h5 {
+      margin: 0;
+    }
+    h6 {
+      margin: 0;
+    }
+  }
+  
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

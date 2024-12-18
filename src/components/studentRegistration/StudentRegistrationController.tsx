@@ -42,9 +42,9 @@ const StudentRegistrationController = () => {
                 <span></span>
                 <button
                   onClick={() => getDeleteData(params.data)}
-                  className="btn btn-lg btn-edit"
+                  className="btn btn-lg btn-delete"
                 >
-                  <i className="bi bi-trash"></i>
+                  <i className="bi bi-trash text-red-600 "></i>
                 </button>
               </div>
               </>
