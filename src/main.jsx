@@ -31,8 +31,9 @@ import StudentFeesController from './components/fess/studentFees/studentFeesCont
 import StudentFeesForm from './components/fess/studentFees/studentFeesForm';
 import StudentFeesDetails from './components/fess/studentFees/studentFeesDetails';
 import StudenAttendance from './components/StudentAttendence/studentAttendance';
-
-const StudentDataGrid = () => <div>Student Data Grid</div>;
+import CreateNotification from './components/Notification/CreateNotification'
+import Notifications from './components/Notification/NotificationDashBoard';
+import NotificationList from './components/Notification/notificationList';
 
 const App = () => {
   return (
@@ -43,18 +44,18 @@ const App = () => {
         <div className="rhsBox">
           <Routes>
             {/* Public Routes */}
-
             <Route path="/login" element={<Login />} />
+              <Route path="/CreateNotification" element={< CreateNotification />} />
+
 
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="/main" element={<MasterController />} />
               <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
               <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
-              <Route path="/studentdashboard" element={<StudentDataGrid />} />
               <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
               <Route path="/StudentRegistrationController" element={<StudentRegistrationController />} />
-
+              
               <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
               <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
               <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
@@ -70,7 +71,8 @@ const App = () => {
               <Route path="/StudentFeesForm" element={<StudentFeesForm />} />
               <Route path="/StudentFeesDetails/:id" element={<StudentFeesDetails />} />
               <Route path="/StudenAttendance" element={<StudenAttendance />} />
-              
+              <Route path="/Notifications" element={<Notifications />} />
+              <Route path="/ViewNotification" element={<NotificationList />} />
             </Route>
 
             <Route path="*" element={<MasterController />} />

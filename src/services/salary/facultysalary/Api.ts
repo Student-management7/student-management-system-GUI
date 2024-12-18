@@ -61,7 +61,7 @@ export const updateFacultySalary = async (id: string, data: FacultySalaryFormVal
     const {  ...payload } = data;
 
     const response = await axiosInstance.post(
-      `${BASE_URL}/faculty/salary/edit/`, // Base URL
+      `${BASE_URL}/faculty/salary/edit`, // Base URL
       payload, // Data for update (without `total`)
       {
         params: { id }, // Sending id as a query parameter

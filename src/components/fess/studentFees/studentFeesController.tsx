@@ -25,9 +25,9 @@ const StudentFeesController = () => {
       cellRenderer: (params: any) => (
         <button
           onClick={() => navigate(`/studentfeesDetails/${params.data.id}`)}
-          className="btn btn-primary"
+          className="bi bi-eye"
         >
-          View Fees Details
+          
         </button>
       ),
     },

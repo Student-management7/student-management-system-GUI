@@ -89,7 +89,7 @@ const FacultySalaryController: React.FC = () => {
           </button>
           <button
             onClick={() => params.data?.facultyID && handleViewDetails(params.data.facultyID)}
-            className="btn btn-info"
+            className="bi bi-eye text-blue-600"
           >
             View
           </button>

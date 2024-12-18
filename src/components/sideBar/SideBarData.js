@@ -1,11 +1,5 @@
-// import React from 'react'
-// import * as FaIcons from 'react-icons/fa';
-// import * as AiIcons from 'react-icons/ai';
-// import * as IoIcons from 'react-icons/io';
-// import * as RiIcons from 'react-icons/ri';
-// import {  FaHandshakeAngle, FaCaretDown, FaCaretUp,  } from "react-icons/fa6";
-import { FaHouse, FaHandshakeAngle, FaCaretDown, FaCaretUp,FaMoneyBill , FaUserLarge, FaUserTie } from "react-icons/fa6";
 
+import { FaHouse, FaHandshakeAngle, FaCaretDown, FaCaretUp, FaMoneyBill, FaUserLarge, FaUserTie } from "react-icons/fa6";
 export const SideBarData = [
 
     {
@@ -17,7 +11,7 @@ export const SideBarData = [
     {
         title: 'Student',
         path: '/',
-        icon: FaUserLarge ,
+        icon: FaUserLarge,
         iconClosed: FaCaretUp,
         iconeOpened: FaCaretDown,
         subNav: [
@@ -42,7 +36,7 @@ export const SideBarData = [
     {
         title: 'Faculty',
         path: '/',
-        icon: FaUserTie ,
+        icon: FaUserTie,
         iconClosed: FaCaretUp,
         iconeOpened: FaCaretDown,
         subNav: [
@@ -96,6 +90,26 @@ export const SideBarData = [
             {
                 title: 'Faculty Salary',
                 path: '/FacultySalary',
+                icon: FaMoneyBill,
+            },
+        ]
+    },
+    {
+        title: 'Notification',
+        path: '/',
+        icon: FaHandshakeAngle,
+        iconClosed: FaCaretUp,
+        iconeOpened: FaCaretDown,
+        subNav: [
+
+            {
+                title: 'Notification',
+                path: '/CreateNotification',
+                icon: FaMoneyBill,
+            },
+            {
+                title: 'View Notification',
+                path: '/ViewNotification',
                 icon: FaMoneyBill,
             },
         ]
