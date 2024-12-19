@@ -93,6 +93,11 @@ export const SideBarData = [
                 path: '/FacultySalary',
                 icon: FaMoneyBill,
             },
+            {
+                title: 'Permission',
+                path: '/permission',
+                icon: FaMoneyBill,
+            },
         ]
     }
 

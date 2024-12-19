@@ -26,7 +26,9 @@ export interface FacultyFormData {
   
   fact_id: string;
   fact_Name: string;
+  fact_Username: string;
   fact_email: string;
+  fact_password: string;
   fact_contact: string;
   fact_gender: string;
   fact_address: string;
@@ -37,6 +39,7 @@ export interface FacultyFormData {
   fact_qualifications: Qualification[];
   Fact_cls: Class[];
   Fact_status: string;
+
   
 }
 

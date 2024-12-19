@@ -41,13 +41,7 @@ const FacultyAttendanceSave: React.FC = () => {
 
     const handleSubmit = async () => {
         try {
-            toast.success('Student submitted successfully!', {
-                position: "top-right", // You can change the position
-                autoClose: 3000, // Notification auto-close time in milliseconds
-                hideProgressBar: false, // Optional: Show progress bar
-                closeOnClick: true, // Optional: Close on click
-                pauseOnHover: true, // Optional: Pause on hover
-            });
+           
             setError('');
             const response = await submitAttendance(facultyList);
             if (response.status === 200) {

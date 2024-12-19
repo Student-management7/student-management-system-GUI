@@ -15,7 +15,8 @@ import GridView from './GridView';
 import CustomAlert from '../UI/alert';
 import DeleteConfirmationModal from '../../services/DeleteModele/DeleteConfirmationModal';
 import { FacultyFormData } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const FacultyRegistrationForm: React.FC = () => {
   const [rowData, setRowData] = useState<FacultyFormData[]>([]);
@@ -34,7 +35,9 @@ const FacultyRegistrationForm: React.FC = () => {
   const initialValues: FacultyFormData = {
     fact_id: editingFaculty?.fact_id || '',
     fact_Name: editingFaculty?.fact_Name || '',
+    fact_Username: editingFaculty?.fact_Username || '',
     fact_email: editingFaculty?.fact_email || '',
+    fact_password: editingFaculty?.fact_password || '',
     fact_contact: editingFaculty?.fact_contact || '',
     fact_gender: editingFaculty?.fact_gender || '',
     fact_address: editingFaculty?.fact_address || '',
@@ -48,6 +51,7 @@ const FacultyRegistrationForm: React.FC = () => {
     ],
     Fact_cls: editingFaculty?.Fact_cls || [{ cls_name: '', cls_sub: [''] }],
     Fact_status: editingFaculty?.Fact_status || '',
+    
   };
 
   useEffect(() => {
@@ -84,12 +88,20 @@ const FacultyRegistrationForm: React.FC = () => {
         response = await updateFacultyDetails(submissionData, editingFaculty.fact_id);
       } else {
         response = await saveFacultyDetails(submissionData);
+       
         console.log(response.data);
       }
 
       if (response?.status === 200) {
         await fetchFacultyDetails();
         setShowSuccess(true);
+        toast.success(' Faculty submitted successfully!', {
+          position: "top-right", // You can change the position
+          autoClose: 3000, // Notification auto-close time in milliseconds
+          hideProgressBar: false, // Optional: Show progress bar
+          closeOnClick: true, // Optional: Close on click
+          pauseOnHover: true, // Optional: Pause on hover
+      });
         setShowError(false);
         setIsFormVisible(false);
         setEditingFaculty(null);
@@ -138,6 +150,7 @@ const FacultyRegistrationForm: React.FC = () => {
   const handleDelete = async (facultyData: FacultyFormData) => {
     setSelectedFacultyToDelete(facultyData);
     setShowDeleteModal(true);
+   
   };
 
   //
@@ -155,6 +168,13 @@ const FacultyRegistrationForm: React.FC = () => {
         setShowSuccess(true);
         await fetchFacultyDetails(); // Refresh the grid
         setShowDeleteModal(false);
+        toast.success('Faculty delete successfully!', {
+          position: "top-right", // You can change the position
+          autoClose: 3000, // Notification auto-close time in milliseconds
+          hideProgressBar: false, // Optional: Show progress bar
+          closeOnClick: true, // Optional: Close on click
+          pauseOnHover: true, // Optional: Pause on hover
+      });
         setSelectedFacultyToDelete(null);
       } else {
         setShowError(true);
@@ -170,12 +190,14 @@ const FacultyRegistrationForm: React.FC = () => {
 
   const columnDefs: any[] = [
     { field: 'fact_Name', headerName: 'Name' },
+    { field: 'fact_Username', headerName: 'Username' },
     { field: 'fact_city', headerName: 'City' },
     { field: 'fact_contact', headerName: 'Contact' },
     { field: 'fact_address', headerName: 'Address' },
     { field: 'fact_gender', headerName: 'Gender' },
     { field: 'fact_state', headerName: 'State' },
     { field: 'fact_email', headerName: 'Email' },
+    { field: 'fact_password', headerName: 'password' },
     { field: 'fact_status', headerName: 'Status' },
 
 
@@ -213,6 +235,7 @@ const FacultyRegistrationForm: React.FC = () => {
 
   return (
     <>
+   <ToastContainer/>
       {!isFormVisible ? (
         <div className="box">
           <div className='text-right'>
@@ -221,7 +244,7 @@ const FacultyRegistrationForm: React.FC = () => {
             </button>
           </div>
 
-
+       
 
           {showSuccess && (
             <CustomAlert
@@ -229,7 +252,10 @@ const FacultyRegistrationForm: React.FC = () => {
               type="success"
               onClose={() => setShowSuccess(false)}
             />
-          )}
+            
+            
+          ) 
+          }
 
           {showError && (
             <CustomAlert
@@ -253,6 +279,7 @@ const FacultyRegistrationForm: React.FC = () => {
               onCancel={() => {
                 setShowDeleteModal(false);
                 setSelectedFacultyToDelete(null);
+                toast.success
               }}
             />
           )}
@@ -274,6 +301,9 @@ const FacultyRegistrationForm: React.FC = () => {
               <Form onSubmit={handleSubmit}>
                 {/* Basic  Fields */}
                 <div className="row">
+                   <div onClick={() => setIsFormVisible(false)}>
+                                <i className="bi bi-arrow-left-circle fs-4 text-primary" /> <span className='fs-4 text-primary'>Faculty Details</span>
+                            </div>
                   <div className="col-md-4 mb-3">
                     <label htmlFor="fact_Name" className="form-label">Full Name</label>
                     <Field type="text" id="fact_Name" name="fact_Name" className={`form-control ${errors.fact_Name && touched.fact_Name ? 'is-invalid' : ''}`} placeholder="Enter full name" />
@@ -314,7 +344,7 @@ const FacultyRegistrationForm: React.FC = () => {
                     <ErrorMessage name="fact_city" component="div" className="invalid-feedback" />
                   </div>
                 </div>
-
+               
                 {/* State, Joining Date, Leaving Date */}
                 <div className="row">
                   <div className="col-md-4 mb-3">
@@ -337,7 +367,7 @@ const FacultyRegistrationForm: React.FC = () => {
                   {({ push, remove }) => (
                     <div className="bg-white p-6 rounded-lg shadow-sm">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold">Qualifications</h3>
+                        <h3 className="text-lg  fs-4 text-primary">Qualifications</h3>
                         <button
                           type="button"
                           onClick={() => push({
@@ -348,9 +378,9 @@ const FacultyRegistrationForm: React.FC = () => {
                             grd_university: '',
                             grd_yearOfPassing: ''
                           })}
-                          className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                          className="flex items-center  gap-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
                         >
-                          <FaPlus className="w-4 h-4" /> Add Qualification
+                          <FaPlus className="w-4 h-4 " /> Add Qualification
                         </button>
                       </div>
 
@@ -439,7 +469,7 @@ const FacultyRegistrationForm: React.FC = () => {
                   {({ push, remove }) => (
                     <div className="bg-white p-6 rounded-lg shadow-sm">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold">Classes</h3>
+                        <h3 className="text-lg  fs-4 text-primary">Classes</h3>
                         <button
                           type="button"
                           onClick={() => push({ cls_name: '', cls_sub: [''] })}
@@ -524,9 +554,9 @@ const FacultyRegistrationForm: React.FC = () => {
 
 
                 {/* Status */}
-                <div className="row mt-3">
-                  <div className="col-md-4">
-                    <label htmlFor="fact_status" className="form-label">Status</label>
+                <div className="row mt-3 md-1">
+                  <div className="col-md-4 ml-6">
+                    <label htmlFor="fact_status" className="form-label fs-4 text-primary ">Status</label>
                     <Field as="select" id="fact_status" name="fact_status" className={`form-control ${errors.Fact_status && touched.Fact_status ? 'is-invalid' : ''}`}>
                       <option value="">Select Status</option>
                       <option value="active">Active</option>
@@ -535,7 +565,23 @@ const FacultyRegistrationForm: React.FC = () => {
                     <ErrorMessage name="fact_status" component="div" className="invalid-feedback" />
                   </div>
                 </div>
-
+                <div className="row mt-3">
+                          <div className='mt-3 mb-3'>
+                           <span className='fs-4 text-primary'>Faculty Credentials</span>
+                            </div>
+               
+                  <div className="col-md-4 mb-3">
+                    <label htmlFor="fact_Name" className="form-label">Username</label>
+                    <Field type="text" id="fact_Username" name="fact_Username" className={`form-control ${errors.fact_Username && touched.Username ? 'is-invalid' : ''}`} placeholder="Enter Username" />
+                    <ErrorMessage name="fact_Username" component="div" className="invalid-feedback" />
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label htmlFor="fact_email" className="form-label">Password</label>
+                    <Field type="email" id="fact_password" name="fact_password" className={`form-control ${errors.fact_password && touched.fact_password ? 'is-invalid' : ''}`} placeholder="Enter Password" />
+                    <ErrorMessage name="fact_password" component="div" className="invalid-feedback" />
+                  </div>
+                 </div>
+               
                 {/* Submit Button */}
                 <div className="row mt-4 flex justify-center items-center">
                   <div className="col-md-4">

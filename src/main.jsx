@@ -27,7 +27,7 @@ import Login from './Pages/Login/Login';
 import SideBarController from './components/sideBar/SideBarController';
 import FacultySalaryController from './components/salary/facultySalary/facultySalaryController';
 import FacultySalaryDetails from './components/salary/facultySalary/facultySalaryDetails';
-
+import Permission from './components/permission/Permission'
 // Dummy StudentDataGrid to avoid undefined error; replace with your actual implementation.
 const StudentDataGrid = () => <div>Student Data Grid</div>;
 
@@ -40,8 +40,8 @@ const App = () => {
         <div className="rhsBox">
           <Routes>
             {/* Public Routes */}
-
-            <Route path="/login" element={<Login />} />
+             
+             <Route path="/login" element={<Login />} />
 
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
@@ -63,6 +63,7 @@ const App = () => {
               <Route path="/holiday" element={<HolidayFormController />} />
               <Route path="/FacultySalary" element={<FacultySalaryController />} />
               <Route path="/FacultySalaryDetails" element={<FacultySalaryDetails />} />
+              <Route path='/permission' element={<Permission/>}/>
             </Route>
 
             {/* Fallback Route */}
