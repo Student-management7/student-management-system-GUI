@@ -6,7 +6,7 @@ import ProtectedRoute from './Pages/Login/ProtectedRoute';
 
 import './App.css';
 import './index.css';
-
+import Alert from './components/alert/AlertDialog'
 import MasterController from './components/main/MasterController';
 import HeaderController from './components/main/HeaderController';
 import FooterController from './components/main/FooterController';
@@ -28,8 +28,10 @@ import SideBarController from './components/sideBar/SideBarController';
 import FacultySalaryController from './components/salary/facultySalary/facultySalaryController';
 import FacultySalaryDetails from './components/salary/facultySalary/facultySalaryDetails';
 import Permission from './components/permission/Permission'
+import NotificationList from './components/Notification/notificationList';
+import CreateNotification from './components/Notification/CreateNotification';
 // Dummy StudentDataGrid to avoid undefined error; replace with your actual implementation.
-const StudentDataGrid = () => <div>Student Data Grid</div>;
+// const StudentDataGrid = () => <div>Student Data Grid</div>;
 
 const App = () => {
   return (
@@ -48,10 +50,9 @@ const App = () => {
               <Route path="/main" element={<MasterController />} />
               <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
               <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
-              <Route path="/studentdashboard" element={<StudentDataGrid />} />
               <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
               <Route path="/StudentRegistrationController" element={<StudentRegistrationController />} />
-
+              
               <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
               <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
               <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
@@ -60,14 +61,18 @@ const App = () => {
               <Route path="/studentAttendanceEdit" element={<StudentAttendanceEdit />} />
               <Route path="/studentAttendanceEditSave" element={<StudentAttendanceEditSave />} />
               <Route path="/fees" element={<FeesController />} />
+              <Route path="/ViewNotification" element={<NotificationList />} />
+              <Route path="/CreateNotification" element={<CreateNotification />} />
               <Route path="/holiday" element={<HolidayFormController />} />
               <Route path="/FacultySalary" element={<FacultySalaryController />} />
               <Route path="/FacultySalaryDetails" element={<FacultySalaryDetails />} />
               <Route path='/permission' element={<Permission/>}/>
+              <Route path='/alert' element={<Alert/>}/>
+
             </Route>
 
-            {/* Fallback Route */}
             <Route path="*" element={<MasterController />} />
+            {/* Fallback Route */}
           </Routes>
           <FooterController />
         </div>

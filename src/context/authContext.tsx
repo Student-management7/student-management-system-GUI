@@ -105,7 +105,7 @@ useEffect(() => {
   checkInitialToken();
 }, []);
 
-const logout = async () => {
+ const logout = async () => {
   try {
     
     await fetch('https://s-m-s-keyw.onrender.com/auth/logout', {

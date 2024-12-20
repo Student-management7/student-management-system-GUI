@@ -4,18 +4,16 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { saveStdDetails } from "../../services/studentRegistration/api/StudentRegistration";
 import { StudentFormData } from "../../services/studentRegistration/type/StudentRegistrationType";
-// Import the new custom alert component
-import axios from "axios";
 import axiosInstance from "../../services/Utils/apiUtils";
-//props: StudentFormData
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import AlertDialog from "../alert/AlertDialog";
 const FormView = () => {
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [selectedFee, setSelectedFee] = useState("");
-  // const { setFieldValue } = useFormikContext();
-
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // const [formikValues, setFormikValues] = useState<any>(null); // Store form values temporarily
+  const [formikHelpers, setFormikHelpers] = useState<any>(null);
   interface ClassData {
     id: string;
     className: string;
@@ -30,13 +28,13 @@ const FormView = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const token = localStorage.getItem("authToken"); // Replace with your actual token
+        const token = localStorage.getItem("authToken");
         const response = await axiosInstance.get("/admin/getAll", {
           headers: {
-            Authorization: `Bearer ${token}`, // Add the token to the headers
+            Authorization: `Bearer ${token}`,
           },
         });
-        setClasses(response.data); // Assuming response data is the array
+        setClasses(response.data);
         console.log(response);
       } catch (error) {
         console.error("Error fetching classes:", error);
@@ -125,11 +123,11 @@ const FormView = () => {
 
       // Show success notification
       toast.success("Student submitted successfully!", {
-        position: "top-right", // You can change the position
-        autoClose: 3000, // Notification auto-close time in milliseconds
-        hideProgressBar: false, // Optional: Show progress bar
-        closeOnClick: true, // Optional: Close on click
-        pauseOnHover: true, // Optional: Pause on hover
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
       });
 
       setShowSuccess(true);
@@ -139,11 +137,29 @@ const FormView = () => {
         setSelectedFee("");
       }, 3000);
     } catch (err) {
+      // Show error notification
+      toast.error("Failed to save student details. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+
       setError("Failed to save student details");
       console.error(err);
     }
   };
 
+  const handleCancel = () => {
+    setIsDialogOpen(false); // Close the dialog on cancel
+  };
+
+  const handleConfirmSubmit = (values: StudentFormData, formikHelpers: any) => {
+    setIsDialogOpen(false); // Close the dialog on confirm
+    handleSubmit(values, formikHelpers); 
+    // setIsDialogOpen(false); // Call the submit function
+  };
   return (
     <>
       <div>
@@ -542,9 +558,20 @@ const FormView = () => {
               </div>
 
               <div className="text-center mt-4">
-                <button type="submit" className="btn btn-primary">
+                <button
+                  onClick={() => setIsDialogOpen(true)}
+                  type="button"
+                  className="btn btn-primary"
+                >
                   Submit
                 </button>
+                <AlertDialog
+                  title="Confirm Submit"
+                  message="Are you sure you want to submit this item?"
+                  isOpen={isDialogOpen}
+                  onConfirm={() => handleConfirmSubmit(values, formikHelpers)} // Pass values and helpers here
+                  onCancel={handleCancel}
+                />
               </div>
             </Form>
           )}

@@ -11,6 +11,7 @@ const FeesController: React.FC = () => {
 
   // Column definitions for GridView
   const columnDefs = [
+    { headerName: "Id", field: "id", sortable: true, filter: true },
     { headerName: "Class", field: "className", sortable: true, filter: true },
     { headerName: "School Fee", field: "schoolFee", sortable: true, filter: true },
     { headerName: "Sports Fee", field: "sportsFee", sortable: true, filter: true },
@@ -21,12 +22,13 @@ const FeesController: React.FC = () => {
       field: "otherAmount",
       cellRenderer: (params: any) =>
         params.value && params.value.length
-          ? params.value.map((item: any) => `${item.name}: ${item.amount}`).join(", ")
-          : "N/A",
+      ? params.value.map((item: any) => `${item.name}: ${item.amount}`).join(", ")
+      : "N/A",
     },
+
+    { headerName: "Total Fees", field: "totalFee", sortable: true, filter: true },
     
-    
-      {
+    {
         field: 'edit',
         headerName: 'Edit',
         cellRenderer: (params: any) => (
@@ -82,8 +84,10 @@ const FeesController: React.FC = () => {
   const handleSave = async (data: FeeFormValues) => {
     try {
       if (editData) {
+        console.log('Updating Fee with ID:', editData.id, 'Data:', data);
         await updateFee(editData.id, data);
       } else {
+        console.log('Saving New Fee Data:', data);
         await saveFees(data);
       }
       fetchFeeDetails();
@@ -93,7 +97,7 @@ const FeesController: React.FC = () => {
       console.error("Error saving fee details:", error);
     }
   };
-
+  
 
 
   const handleDeleteButtonClick = async (id: string) => {
@@ -132,13 +136,15 @@ const FeesController: React.FC = () => {
         </>
       ) : (
         <FeesForm
-          initialData={editData || undefined} // Pass data for editing or empty for new
-          onCancel={() => {
-            setShowForm(false);
-            setEditData(null);
-          }}
-          onSave={handleSave}
-        />
+        initialData={editData || undefined} // Pass data for editing or empty for new
+        onCancel={() => {
+          console.log('Cancelling Edit');
+          setShowForm(false);
+          setEditData(null);
+        }}
+        onSave={handleSave}
+      />
+      
       )}
     </div>
   );

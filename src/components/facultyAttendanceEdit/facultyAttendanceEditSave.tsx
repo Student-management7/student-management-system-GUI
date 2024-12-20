@@ -25,7 +25,7 @@ const EditAttendance: React.FC = () => {
       };
       await saveAttendanceEdit(payload);
       alert('Attendance updated successfully!');
-      navigate('/facultyAttendance');
+      navigate('/facultyAttendanceShow');
     } catch (error) {
       alert('Failed to save changes. Please try again.');
     }
