@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import GridView from "./gridView"; // Existing GridView component
+import GridView from "./gridView"; 
 import axiosInstance from "../../../services/Utils/apiUtils";
 import StudentFeesForm from "./studentFeesForm";
 
-const StudentFeesController = () => {
-  const [rowData, setRowData] = useState([]); // For grid data
-  const [showForm, setShowForm] = useState(false); // To toggle Add Fees form
+ const StudentFeesController = () => {
+  const [rowData, setRowData] = useState([]); 
+  const [showForm, setShowForm] = useState(false); 
   const navigate = useNavigate();
 
-  // Column definitions for the grid
 
 
   const columnDefs = [
@@ -21,22 +20,24 @@ const StudentFeesController = () => {
     { headerName: "Email", field: "email" },
     { headerName: "Class", field: "cls" },
     {
-      headerName: "Action",
+      headerName: " Transecton Details",
       cellRenderer: (params: any) => (
         <button
           onClick={() => navigate(`/studentfeesDetails/${params.data.id}`)}
-          className="bi bi-eye"
+          className="bi bi-eye text-blue-600 mr-2 hover:text-blue-800"
+          style={{ fontSize: 24 }}
         >
           
         </button>
       ),
     },
+  
   ];
 
   // Fetch data for the grid
   useEffect(() => {
     axiosInstance
-      .get("https://s-m-s-keyw.onrender.com/student/findAllStudent") // Replace with your actual API endpoint
+      .get("https://s-m-s-keyw.onrender.com/student/findAllStudent") 
       .then((response) => setRowData(response.data))
       .catch((error) => console.error("Error fetching student fees:", error));
   }, []);
@@ -64,4 +65,5 @@ const StudentFeesController = () => {
   );
 };
 
-export default StudentFeesController;
+
+export default StudentFeesController

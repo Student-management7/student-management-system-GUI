@@ -62,6 +62,10 @@ const NotificationList: React.FC = () => {
       .catch((err) => console.error("Error deleting notification", err));
   };
 
+  function handleEdit(id: string): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="container my-4">
       {/* Filters */}
@@ -91,8 +95,23 @@ const NotificationList: React.FC = () => {
           onChange={(e) => setClassFilter(e.target.value)}
         >
           <option value="All">All Classes</option>
+          <option value="1">Class Nursury</option>
+          <option value="2">Class LKG</option>
+          <option value="3">Class UKG</option>
           <option value="1">Class 1</option>
           <option value="2">Class 2</option>
+          <option value="3">Class 3</option>
+          <option value="4">Class 4</option>
+          <option value="1">Class 5</option>
+          <option value="2">Class 6</option>
+          <option value="3">Class 7</option>
+          <option value="4">Class 8</option>
+          <option value="4">Class 9</option>
+          <option value="1">Class 10</option>
+          <option value="2">Class 11</option>
+          <option value="3">Class 12</option>
+          
+
         </select>
       </div>
 
@@ -116,6 +135,8 @@ const NotificationList: React.FC = () => {
             >
               
             </button>
+
+            
           </div>
         ))}
       </div>
@@ -125,10 +146,6 @@ const NotificationList: React.FC = () => {
 
 export default NotificationList;
 
-
-
-
-
-
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 

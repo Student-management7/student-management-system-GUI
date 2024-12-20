@@ -78,25 +78,28 @@ const FacultySalaryController: React.FC = () => {
 
     { headerName: "Total", field: "total", sortable: true, filter: true },
     {
-      headerName: "Actions",
+      headerName: "Edit",
       cellRenderer: (params: any) => (
-        <div className="flex space-x-2">
+        
           <button
             onClick={() => params.data && handleEditButtonClick(params.data)}
-            className="bi bi-pen text-orange-600"
+            className="bi bi-pencil-square text-orange-500 mr-2 hover:text-orange-800"
           >
-            Edit
+           
           </button>
-          <button
-            onClick={() => params.data?.facultyID && handleViewDetails(params.data.facultyID)}
-            className="bi bi-eye text-blue-600"
-          >
-            View
-          </button>
-
-        </div>
+         
       ),
     },
+    {
+      headerName: "View Details",
+      cellRenderer: (params: any) => (
+        <button
+            onClick={() => params.data?.facultyID && handleViewDetails(params.data.facultyID)}
+            className="bi bi-eye text-blue-800"
+          >
+           
+          </button>
+      )}
   ];
 
   const fetchSalaryDetails = useCallback(async () => {

@@ -153,11 +153,11 @@ const FacultyAttendance: React.FC = () => {
           {loading ? 'Fetching...' : 'Fetch Attendance'}
         </button>
 
+          
         <button
           onClick={handleEditRedirect}
           className="bi bi-pencil-square red-button mt-2 ml-2"
         >
-          
         </button>
 
       </div>

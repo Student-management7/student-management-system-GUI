@@ -57,7 +57,7 @@ const Login: React.FC = () => {
     try {
       await login(email, password);
       // Successful login 
-      navigate('/home'); 
+      navigate('/main'); 
     } catch (error) {
       const errorMsg = error instanceof Error 
         ? error.message 
@@ -200,3 +200,4 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+

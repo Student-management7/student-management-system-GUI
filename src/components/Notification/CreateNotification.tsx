@@ -11,9 +11,12 @@ type NotificationPayload = {
   className: string[];
 };
 
+interface NotificationCreateProps {
+  onClose: () => void;
+}
 
 
-const CreateNotification: React.FC = () => {
+const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
   const [formData, setFormData] = useState<NotificationPayload>({
     startDate: '',
     endDate: '',
@@ -218,6 +221,6 @@ const CreateNotification: React.FC = () => {
   );
 };
 
-export default CreateNotification;
+export default NotificationCreate;
 
 
