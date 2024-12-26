@@ -1,10 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import { useAuth } from './context/authContext';
 import { AuthProvider } from './context/authContext';
-
-
-// import ProtectedRoute from './Pages/Login/ProtectedRoute';
 
 
 import './App.css';
@@ -35,21 +34,23 @@ import StudentFeesForm from './components/fess/studentFees/studentFeesForm';
 import StudentFeesDetails from './components/fess/studentFees/studentFeesDetails';
 import StudenAttendance from './components/StudentAttendence/studentAttendance';
 import NotificationController from './components/Notification/notificationController';
+import ClassSubjectShow from './components/saveSubjectsToClasess/ClassSubjectsShow';
 
 
 const App = () => {
+  const { isAuthenticated } = useAuth();
+
   return (
     <>
-      <HeaderController />
-      <div className="mainBody">
-        <SideBarController />
-        <div className="rhsBox">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/login" element={<Login />} />
-
-            {/* Protected Routes */}
-            <Route element={<ProtectedRoute />}>
+       {isAuthenticated ? (
+        <>
+          <HeaderController />
+          <div className="mainBody">
+            <SideBarController />
+            <div className="rhsBox">
+              <Routes>
+                {/* Protected Routes */}
+                <Route element={<ProtectedRoute />}>
               <Route path="/main" element={<MasterController />} />
               <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
               <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
@@ -71,26 +72,33 @@ const App = () => {
               <Route path="/StudentFeesForm" element={<StudentFeesForm />} />
               <Route path="/StudentFeesDetails/:id" element={<StudentFeesDetails />} />
               <Route path="/StudenAttendance" element={<StudenAttendance />} />
-              <Route path="/Notification" element={<NotificationController />} />
+              <Route path="/Notification" element={<NotificationController />} />             
+              <Route path="/ClassSubjectShow" element={<ClassSubjectShow />} />
+
 
             </Route>
 
             <Route path="*" element={<MasterController />} />
-            {/* Fallback Route */}
-          </Routes>
-          <FooterController />
-        </div>
-      </div>
+                {/* Fallback Route */}
+              </Routes>
+              <FooterController />
+            </div>
+          </div>
+        </>
+      ) : (
+        <Routes>
+
+          
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Login />} />
+           <Route path="*" element={<Login />} />
+        </Routes>
+      )}
     </>
-
-
   );
 };
 
-
-
-
-
+// Rendering App
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Router>
@@ -100,9 +108,6 @@ createRoot(document.getElementById('root')).render(
     </Router>
   </StrictMode>
 );
-
-
-
 
 
 

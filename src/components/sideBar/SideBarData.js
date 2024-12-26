@@ -1,5 +1,6 @@
 
-import { FaHouse, FaHandshakeAngle, FaCaretDown, FaCaretUp, FaMoneyBill, FaUserLarge, FaUserTie } from "react-icons/fa6";
+import { FaBook, FaRegEdit, FaUserEdit,  } from "react-icons/fa";
+import { FaHouse, FaHandshakeAngle, FaCaretDown, FaCaretUp, FaMoneyBill, FaUserLarge, FaUserTie ,FaBell, FaUserPlus ,FaClipboardList , } from "react-icons/fa6";
 export const SideBarData = [
 
     {
@@ -18,17 +19,17 @@ export const SideBarData = [
             {
                 title: 'Student Registration',
                 path: '/StudentRegistrationController',
-                icon: FaHandshakeAngle,
+                icon: FaUserPlus,
             },
             {
                 title: 'Student Attendance',
                 path: '/StudentAttendanceShow',
-                icon: FaHandshakeAngle,
+                icon: FaClipboardList,
             },
             {
                 title: 'Studence Attendance Managemnet',
                 path: '/StudentAttendenceManagement',
-                icon: FaHandshakeAngle,
+                icon: FaUserEdit,
             }
         ]
 
@@ -43,28 +44,20 @@ export const SideBarData = [
             {
                 title: 'Faculty Registration',
                 path: '/FacultyRegistration',
-                icon: FaHandshakeAngle,
+                icon: FaUserPlus,
             },
             {
                 title: 'Faculty Attendance',
                 path: '/FacultyAttendanceShow',
-                icon: FaHandshakeAngle,
+                icon: FaClipboardList,
             },
             {
                 title: 'Faculty Attendance Management',
                 path: '/facultyAttendanceSave',
-                icon: FaHandshakeAngle,
+                icon: FaRegEdit,
             },
-            {
-                title: 'Save Subjects',
-                path: '/SaveSubjectsToClasses',
-                icon: FaHandshakeAngle,
-            },
-            {
-                title: 'Hollyday',
-                path: '/holiday',
-                icon: FaHandshakeAngle,
-            },
+            
+           
         ]
 
     },
@@ -97,7 +90,7 @@ export const SideBarData = [
     {
         title: 'Notification',
         path: '/',
-        icon: FaHandshakeAngle,
+        icon: FaBell,
         iconClosed: FaCaretUp,
         iconeOpened: FaCaretDown,
         subNav: [
@@ -105,7 +98,28 @@ export const SideBarData = [
             {
                 title: 'Notification',
                 path: '/Notification',
-                icon: FaMoneyBill,
+                icon: FaBell,
+            },
+            {
+                title: 'Hollyday',
+                path: '/holiday',
+                icon: FaBell,
+            },
+            
+        ]
+    },
+    {
+        title: 'Class & Subject',
+        path: '/',
+        icon: FaBook,
+        iconClosed: FaCaretUp,
+        iconeOpened: FaCaretDown,
+        subNav: [
+
+            {
+                title: 'Save Subjects',
+                path: '/ClassSubjectShow',
+                icon: FaBook,
             },
             
         ]
