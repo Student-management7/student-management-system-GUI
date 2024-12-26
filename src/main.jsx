@@ -1,12 +1,14 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import { useAuth } from './context/authContext';
 import { AuthProvider } from './context/authContext';
-import ProtectedRoute from './Pages/Login/ProtectedRoute';
+
 
 import './App.css';
 import './index.css';
-
+import ProtectedRoute from './Pages/Login/ProtectedRoute';
 import MasterController from './components/main/MasterController';
 import HeaderController from './components/main/HeaderController';
 import FooterController from './components/main/FooterController';
@@ -31,31 +33,30 @@ import StudentFeesController from './components/fess/studentFees/studentFeesCont
 import StudentFeesForm from './components/fess/studentFees/studentFeesForm';
 import StudentFeesDetails from './components/fess/studentFees/studentFeesDetails';
 import StudenAttendance from './components/StudentAttendence/studentAttendance';
-import CreateNotification from './components/Notification/CreateNotification'
-import Notifications from './components/Notification/NotificationDashBoard';
-import NotificationList from './components/Notification/notificationList';
+import NotificationController from './components/Notification/notificationController';
+import ClassSubjectShow from './components/saveSubjectsToClasess/ClassSubjectsShow';
+
 
 const App = () => {
+  const { isAuthenticated } = useAuth();
+
   return (
     <>
-      <HeaderController />
-      <div className="mainBody">
-        <SideBarController />
-        <div className="rhsBox">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/login" element={<Login />} />
-              <Route path="/CreateNotification" element={< CreateNotification />} />
-
-
-            {/* Protected Routes */}
-            <Route element={<ProtectedRoute />}>
+       {isAuthenticated ? (
+        <>
+          <HeaderController />
+          <div className="mainBody">
+            <SideBarController />
+            <div className="rhsBox">
+              <Routes>
+                {/* Protected Routes */}
+                <Route element={<ProtectedRoute />}>
               <Route path="/main" element={<MasterController />} />
               <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
               <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
               <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
               <Route path="/StudentRegistrationController" element={<StudentRegistrationController />} />
-              
+
               <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
               <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
               <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
@@ -71,20 +72,33 @@ const App = () => {
               <Route path="/StudentFeesForm" element={<StudentFeesForm />} />
               <Route path="/StudentFeesDetails/:id" element={<StudentFeesDetails />} />
               <Route path="/StudenAttendance" element={<StudenAttendance />} />
-              <Route path="/Notifications" element={<Notifications />} />
-              <Route path="/ViewNotification" element={<NotificationList />} />
+              <Route path="/Notification" element={<NotificationController />} />             
+              <Route path="/ClassSubjectShow" element={<ClassSubjectShow />} />
+
+
             </Route>
 
             <Route path="*" element={<MasterController />} />
-            {/* Fallback Route */}
-          </Routes>
-          <FooterController />
-        </div>
-      </div>
+                {/* Fallback Route */}
+              </Routes>
+              <FooterController />
+            </div>
+          </div>
+        </>
+      ) : (
+        <Routes>
+
+          
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Login />} />
+           <Route path="*" element={<Login />} />
+        </Routes>
+      )}
     </>
   );
 };
 
+// Rendering App
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Router>
@@ -94,3 +108,7 @@ createRoot(document.getElementById('root')).render(
     </Router>
   </StrictMode>
 );
+
+
+
+

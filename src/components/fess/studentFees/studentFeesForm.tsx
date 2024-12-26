@@ -84,7 +84,7 @@ const StudentFeesForm: React.FC<AddFeesFormProps> = ({ onClose }) => {
                   <div className="d-flex justify-content-between">
                     <button
                       type="submit"
-                      className="btn btn-success"
+                      className="submit-btn btn btn-primary"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? "Saving..." : "Add Fee"}

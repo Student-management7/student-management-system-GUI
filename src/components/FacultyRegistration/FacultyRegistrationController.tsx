@@ -180,7 +180,7 @@ const FacultyRegistrationForm: React.FC = () => {
       cellRenderer: (params: any) => (
         <button
           onClick={() => handleEdit(params.data)}
-          className=" bi bi-pen text-blue-600"
+          className=" bi bi-pencil-square text-orange-600"
         >
           
         </button>

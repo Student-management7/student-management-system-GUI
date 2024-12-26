@@ -10,22 +10,22 @@ import "./Attendence.scss";
 
 const StudentAttendanceShow: React.FC = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [classData, setClassData] = useState<ClassData[]>([]);
-  const [classSelected, setClassSelected] = useState<string>("");
-  const [subjectSelected, setSubjectSelected] = useState<string>("");
-  const [fromDate, setFromDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
-  const [toDate, setToDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
+  const [classSelected, setClassSelected] = useState("");
+  const [subjectSelected, setSubjectSelected] = useState("");
+  const [fromDate, setFromDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [toDate, setToDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [rowData, setRowData] = useState<any[]>([]);
   const [columnDefs, setColumnDefs] = useState<any[]>([
-    { field: "stdId", headerName: "Student ID" },
-    { field: "name", headerName: "Student Name" },
+    { field: "stdId", headerName: "Student ID", width: 120 },
+    { field: "name", headerName: "Student Name", width: 150 },
   ]);
-  const [isMasterAttendanceMode, setIsMasterAttendanceMode] = useState<boolean>(false);
-  const [error, setError] = useState<{
+  const [isMasterAttendanceMode, setIsMasterAttendanceMode] = useState(false);
+  const [error, setError] = useState<null | {
     message: string;
     type: 'error' | 'warning' | 'info';
-  } | null>(null);
+  }>(null);
 
   useEffect(() => {
     if (error) {
@@ -96,11 +96,7 @@ const StudentAttendanceShow: React.FC = () => {
       ]);
       setRowData(rows);
     } catch (err: any) {
-      if (err.response?.data?.detail) {
-        setError({ message: err.response.data.detail, type: 'info' });
-      } else {
-        setError({ message: `Failed to fetch attendance: ${err.message || 'Unknown error'}`, type: 'error' });
-      }
+      setError({ message: `Failed to fetch attendance: ${err.message || 'Unknown error'}`, type: 'error' });
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +106,7 @@ const StudentAttendanceShow: React.FC = () => {
     if (classSelected && (isMasterAttendanceMode || subjectSelected)) {
       handleFetchAttendance();
     }
-  }, [handleFetchAttendance]);
+  }, [handleFetchAttendance, classSelected, subjectSelected, isMasterAttendanceMode]);
 
   const mapAttendanceToRows = (data: AttendanceResponse[], dates: string[]): any[] => {
     const studentMap: { [id: string]: any } = {};
@@ -210,7 +206,7 @@ const StudentAttendanceShow: React.FC = () => {
           </div>
         </div>
 
-        <div className="row mt-4">
+        <div className="row mt-3">
           <div className="col-md-12 text-center">
             <button
               className="btn btn-primary"
@@ -223,17 +219,19 @@ const StudentAttendanceShow: React.FC = () => {
         </div>
 
         {error && (
-          <div className={`alert alert-${error.type} mt-3`}>
+          <div className={`alert alert-${error.type} mt-3`} role="alert">
             {error.message}
           </div>
         )}
 
-        <div className="row mt-4">
-          {rowData.length > 0 && (
+        <div className="mt-4">
+          {rowData.length > 0 ? (
             <AttendanceTable
-              columnDefs={columnDefs}
               rowData={rowData}
+              columnDefs={columnDefs}
             />
+          ) : (
+            <p className="text-center">No attendance data available.</p>
           )}
         </div>
       </div>

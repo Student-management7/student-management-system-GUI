@@ -43,3 +43,9 @@ export const fetchClassData = async (): Promise<ClassData[]> => {
     throw error;
   }
 };
+
+
+
+
+
+
