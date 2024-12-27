@@ -21,7 +21,7 @@ export const fetchFees = async (): Promise<FeeDetails[]> => {
 export const saveFees = async (values: FeeFormValues) => {
   try {
     const response = await axiosInstance.post(
-      `${BASE_URL}/admin/save`,
+      `/admin/save`,
       values
     );
     return response.data;

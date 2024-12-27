@@ -5,12 +5,13 @@ import { FeeFormValues } from "../../../services/feesServices/AdminFeescreationF
 import { saveFees } from "../../../services/feesServices/AdminFeescreationForm/api";
 
 const initialValues: FeeFormValues = {
-    className: "Nursery",
-    schoolFee: 10000,
-    sportsFee: 5000,
+    className: "",
+    schoolFee: 0,
+    sportsFee: 0,
     bookFee: 0,
     transportation: 0,
-    otherAmount: [{ name: "other fees : ", amount: 0 }],
+    otherAmount: [{ name: "", amount: 0 }],
+
 };
 
 const classes = [
@@ -21,19 +22,19 @@ const classes = [
 ];
 
 const FeesForm: React.FC = () => {
+    const [error, setError] = React.useState("");
     const handleSubmit = async (values: FeeFormValues) => {
-        console.log("Form Payload:", values);
         try {
             const response = await saveFees(values);
             console.log("Response:", response);
         } catch (error: any) {
-            console.error(error.message);
+            setError(error.message || "An unexpected error occurred.");
         }
     };
 
     return (
-      
-            <div className="box max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-md">
+
+        <div className="box max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-md">
             <h2 className="text-xl font-bold mb-4 text-center">Fees Creation Form</h2>
             <Formik
                 initialValues={initialValues}
@@ -46,18 +47,17 @@ const FeesForm: React.FC = () => {
                             <label className="block mb-2 font-semibold" htmlFor="className">
                                 Class Name
                             </label>
-                            <Field
-                                as="select"
-                                id="className"
-                                name="className"
-                                className="w-full p-2 border rounded-md"
-                            >
+                            <Field as="select" id="className" name="className" className="w-full p-2 border rounded-md">
+                                <option value="" disabled>
+                                    Select a class
+                                </option>
                                 {classes.map((classOption) => (
                                     <option key={classOption} value={classOption}>
                                         {classOption}
                                     </option>
                                 ))}
                             </Field>
+
                             <ErrorMessage
                                 name="className"
                                 component="div"
@@ -155,7 +155,7 @@ const FeesForm: React.FC = () => {
                                                     onClick={() => push({ name: "", amount: 0 })}
                                                     className="bi bi-plus-circle-fill text-blue-500"
                                                 >
-                                                    
+
                                                 </button>
                                                 <Field
                                                     name={`otherAmount[${index}].name`}
@@ -192,8 +192,9 @@ const FeesForm: React.FC = () => {
                 )}
             </Formik>
         </div>
-       
+
     );
 };
 
 export default FeesForm;
+
