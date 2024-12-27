@@ -38,6 +38,7 @@ export const getStdDetails = async () => {
 };
 
 
+
 export const fetchClasses = async () => {
     try {
         const response = await axiosInstance.get(`${API_URL}/class/data`); // Adjust the endpoint as needed
@@ -48,17 +49,17 @@ export const fetchClasses = async () => {
     }
 };
 
-export const deleteStudentRecord = async (id: string) =>{
 
-    try{
-        const response = await axiosInstance.post(`${API_URL}/student/delete?id=${id}`);
+
+export const deleteStudentRecord = async (id: string) => {
+    try {
+        const response = await axiosInstance.post(`/student/delete?id=${id}`);
         return response.data;
-    }catch (error){
-        console.log('Error saving details:', error);
-        throw error;
+    } catch (error) {
+        console.error('Error deleting student record:', error);
+        throw error; // Re-throw the error for further handling
     }
 };
-
 
 
 

@@ -1,11 +1,6 @@
-// import React from 'react'
-// import * as FaIcons from 'react-icons/fa';
-// import * as AiIcons from 'react-icons/ai';
-// import * as IoIcons from 'react-icons/io';
-// import * as RiIcons from 'react-icons/ri';
-// import {  FaHandshakeAngle, FaCaretDown, FaCaretUp,  } from "react-icons/fa6";
-import { FaHouse, FaHandshakeAngle, FaCaretDown, FaCaretUp,FaMoneyBill , FaUserLarge, FaUserTie } from "react-icons/fa6";
 
+import { FaBook, FaRegEdit, FaUserEdit,  } from "react-icons/fa";
+import { FaHouse, FaHandshakeAngle, FaCaretDown, FaCaretUp, FaMoneyBill, FaUserLarge, FaUserTie ,FaBell, FaUserPlus ,FaClipboardList , } from "react-icons/fa6";
 export const SideBarData = [
 
     {
@@ -17,24 +12,24 @@ export const SideBarData = [
     {
         title: 'Student',
         path: '/',
-        icon: FaUserLarge ,
+        icon: FaUserLarge,
         iconClosed: FaCaretUp,
         iconeOpened: FaCaretDown,
         subNav: [
             {
                 title: 'Student Registration',
                 path: '/StudentRegistrationController',
-                icon: FaHandshakeAngle,
+                icon: FaUserPlus,
             },
             {
                 title: 'Student Attendance',
                 path: '/StudentAttendanceShow',
-                icon: FaHandshakeAngle,
+                icon: FaClipboardList,
             },
             {
                 title: 'Studence Attendance Managemnet',
                 path: '/StudentAttendenceManagement',
-                icon: FaHandshakeAngle,
+                icon: FaUserEdit,
             }
         ]
 
@@ -42,35 +37,27 @@ export const SideBarData = [
     {
         title: 'Faculty',
         path: '/',
-        icon: FaUserTie ,
+        icon: FaUserTie,
         iconClosed: FaCaretUp,
         iconeOpened: FaCaretDown,
         subNav: [
             {
                 title: 'Faculty Registration',
                 path: '/FacultyRegistration',
-                icon: FaHandshakeAngle,
+                icon: FaUserPlus,
             },
             {
                 title: 'Faculty Attendance',
                 path: '/FacultyAttendanceShow',
-                icon: FaHandshakeAngle,
+                icon: FaClipboardList,
             },
             {
                 title: 'Faculty Attendance Management',
                 path: '/facultyAttendanceSave',
-                icon: FaHandshakeAngle,
+                icon: FaRegEdit,
             },
-            {
-                title: 'Save Subjects',
-                path: '/SaveSubjectsToClasses',
-                icon: FaHandshakeAngle,
-            },
-            {
-                title: 'Hollyday',
-                path: '/holiday',
-                icon: FaHandshakeAngle,
-            },
+            
+           
         ]
 
     },
@@ -89,6 +76,11 @@ export const SideBarData = [
                 icon: FaMoneyBill,
             },
             {
+                title: 'Student Fees',
+                path: '/StudentFeesController',
+                icon: FaMoneyBill,
+            },
+            {
                 title: 'Faculty Salary',
                 path: '/FacultySalary',
                 icon: FaMoneyBill,
@@ -99,7 +91,43 @@ export const SideBarData = [
                 icon: FaMoneyBill,
             },
         ]
+    },
+    {
+        title: 'Notification',
+        path: '/',
+        icon: FaBell,
+        iconClosed: FaCaretUp,
+        iconeOpened: FaCaretDown,
+        subNav: [
+
+            {
+                title: 'Notification',
+                path: '/Notification',
+                icon: FaBell,
+            },
+            {
+                title: 'Hollyday',
+                path: '/holiday',
+                icon: FaBell,
+            },
+            
+        ]
+    },
+    {
+        title: 'Class & Subject',
+        path: '/',
+        icon: FaBook,
+        iconClosed: FaCaretUp,
+        iconeOpened: FaCaretDown,
+        subNav: [
+
+            {
+                title: 'Save Subjects',
+                path: '/ClassSubjectShow',
+                icon: FaBook,
+            },
+            
+        ]
     }
 
 ]
-

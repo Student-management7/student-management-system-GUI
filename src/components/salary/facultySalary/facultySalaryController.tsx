@@ -1,31 +1,65 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import GridView from "./gridView";
 import FacultySalaryForm from "./FacultySalaryForm";
-import { FacultySalaryDetails, FacultySalaryFormValues, FacultySalaryResponse } from "../../../services/salary/facultysalary/type";
-import { fetchFacultySalaries, updateFacultySalary, saveFacultySalary, deleteFacultySalary } from "../../../services/salary/facultysalary/Api";
+import { fetchFacultySalaries, updateFacultySalary, saveFacultySalary } from "../../../services/salary/facultysalary/Api";
 
-const transformFacultySalaryData = (data: FacultySalaryResponse[]) => {
-  return data.map(faculty => ({
-    ...faculty,
-    facultySalary: faculty.fact_salary[0]?.facultySalary || 0,
-    facultyTax: faculty.fact_salary[0]?.facultyTax || 0,
-    facultyTransport: faculty.fact_salary[0]?.facultyTransport || 0,
-    facultyDeduction: faculty.fact_salary[0]?.facultyDeduction || '[]',
-    total: faculty.fact_salary[0]?.total || 0,
-    // Add an identifier for operations
-    id: faculty.fact_id
-  }));
+// Define types with improved clarity
+type DeductionItem = {
+  name: string;
+  amount: number;
 };
 
+type FacultySalaryDetails = {
+  facultyID: string;
+  fact_Name?: string;
+  facultySalary: number;
+  facultyTax: number;
+  facultyTransport: number;
+  facultyDeduction: DeductionItem[];
+  total: number;
+};
+
+type FacultySalaryResponse = {
+  fact_id: string;
+  fact_Name: string;
+  fact_salary: {
+    facultySalary?: number;
+    facultyTax?: number;
+    facultyTransport?: number;
+    facultyDeduction?: string; // Stored as a JSON string
+    total?: number;
+  }[];
+};
+
+interface FacultySalaryFormValues extends FacultySalaryDetails { }
+
+const transformFacultySalaryData = (data: FacultySalaryResponse[]): FacultySalaryDetails[] => {
+  return data.map((faculty) => {
+    const salary = faculty.fact_salary?.[0] || {};
+    return {
+      facultyID: faculty.fact_id,
+      fact_Name: faculty.fact_Name,
+      facultySalary: salary.facultySalary || 0,
+      facultyTax: salary.facultyTax || 0,
+      facultyTransport: salary.facultyTransport || 0,
+      facultyDeduction: JSON.parse(salary.facultyDeduction || "[]"),
+      total: salary.total || 0,
+    };
+  });
+};
+
+
 const FacultySalaryController: React.FC = () => {
-  const navigate = useNavigate(); // Initialize navigation
+  const navigate = useNavigate();
   const [showForm, setShowForm] = useState<boolean>(false);
-  const [rowData, setRowData] = useState<any[]>([]); // Changed to any to accommodate transformed data
+  const [rowData, setRowData] = useState<FacultySalaryDetails[]>([]);
   const [editData, setEditData] = useState<FacultySalaryDetails | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const columnDefs = [
-    { headerName: "Faculty ID", field: "fact_id", sortable: true, filter: true },
+    { headerName: "Faculty ID", field: "facultyID", sortable: true, filter: true },
     { headerName: "Faculty Name", field: "fact_Name", sortable: true, filter: true },
     { headerName: "Salary", field: "facultySalary", sortable: true, filter: true },
     { headerName: "Tax %", field: "facultyTax", sortable: true, filter: true },
@@ -34,62 +68,52 @@ const FacultySalaryController: React.FC = () => {
       headerName: "Deductions",
       field: "facultyDeduction",
       cellRenderer: (params: any) => {
-        try {
-          const deductions = JSON.parse(params.value || "[]");
-          return deductions.map((d: any) => `${d.name}: ${d.amount}`).join(", ") || "N/A";
-        } catch (error) {
-          return "N/A";
-        }
+        if (!params?.value || !Array.isArray(params.value)) return "N/A";
+        const deductions: DeductionItem[] = params.value;
+        return deductions.length
+          ? deductions.map((d: DeductionItem) => `${d.name}: ${d.amount}`).join(", ")
+          : "N/A";
       },
     },
+
     { headerName: "Total", field: "total", sortable: true, filter: true },
-    {
-      headerName: "View Details",
-      cellRenderer: (params: any) => (
-        <button 
-          onClick={() => navigate(`/faculty-salary/${params.data.fact_id}`)}
-          className="btn btn-info btn-sm"
-        >
-          View Details
-        </button>
-      ),
-    },
     {
       headerName: "Edit",
       cellRenderer: (params: any) => (
-        <button 
-          onClick={() => handleEditButtonClick()}
-          className="btn btn-warning btn-sm"
-        >
-          Edit
-        </button>
+        
+          <button
+            onClick={() => params.data && handleEditButtonClick(params.data)}
+            className="bi bi-pencil-square text-orange-500 mr-2 hover:text-orange-800"
+          >
+           
+          </button>
+         
       ),
     },
     {
-      headerName: "Delete",
+      headerName: "View Details",
       cellRenderer: (params: any) => (
-        <button 
-          onClick={() => handleDeleteButtonClick(params.data.fact_id)}
-          className="btn btn-danger btn-sm"
-        >
-          Delete
-        </button>
-      ),
-    },
-   
+        <button
+            onClick={() => params.data?.facultyID && handleViewDetails(params.data.facultyID)}
+            className="bi bi-eye text-blue-800"
+          >
+           
+          </button>
+      )}
   ];
 
-  // Fetch faculty salary details
   const fetchSalaryDetails = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
     try {
       const data: FacultySalaryResponse[] = await fetchFacultySalaries();
-      // Transform data for grid display
-      const transformedData = transformFacultySalaryData(data );
+      const transformedData = transformFacultySalaryData(data);
       setRowData(transformedData);
-      console.log("Transformed Data:", transformedData);
     } catch (error) {
       console.error("Error fetching faculty salary details:", error);
-    
+      setError("Failed to fetch salary details. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -97,79 +121,91 @@ const FacultySalaryController: React.FC = () => {
     fetchSalaryDetails();
   }, [fetchSalaryDetails]);
 
-  // Handle Edit button 
-  const handleEditButtonClick = (data: any) => {
-    setEditData({
-      ...data,
-      
-      fact_salary: data.fact_salary || []
-    }); 
+  const handleEditButtonClick = (data: FacultySalaryDetails) => {
+    setEditData(data);
     setShowForm(true);
   };
 
-  // Handle Save button
-  const handleSave = async (data: FacultySalaryFormValues) => {
+  const handleSave = async (payload: FacultySalaryFormValues) => {
+    setIsLoading(true);
+    setError(null);
     try {
       if (editData) {
-        // Update existing record
-        await updateFacultySalary(editData.fact_id ,data);
+        await updateFacultySalary(payload.facultyID, payload);
       } else {
-        // Save new record
-        await saveFacultySalary(data);
+        await saveFacultySalary(payload);
       }
-      fetchSalaryDetails(); 
-      setShowForm(false); 
-      setEditData(null); // Clear edit data
+      setShowForm(false);
+      setEditData(null);
+      await fetchSalaryDetails();
     } catch (error) {
       console.error("Error saving faculty salary details:", error);
-      // Optional: Add error handling toast or alert
+      setError("Failed to save salary details. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Handle Delete button click
-  const handleDeleteButtonClick = async (id: string) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this record?");
-    if (!confirmDelete) return;
-
-    try {
-      await deleteFacultySalary(id);
-      fetchSalaryDetails(); // Refresh grid
-      alert("Record deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting faculty salary record:", error);
-      alert("An unexpected error occurred while deleting the record.");
-    }
+  const handleViewDetails = (facultyID: string) => {
+    navigate(`/FacultySalaryDetails/${facultyID}`);
   };
 
+  const handleCancel = () => {
+    setShowForm(false);
+    setEditData(null);
+  };
 
-  
-  function handleViewdeatils() {
-    navigate("/facultysalaryView");
-
-  }
-  // Render
   return (
     <div className="box">
+      {error && (
+        <div className="alert alert-error mb-4">
+          {error}
+          <button onClick={() => setError(null)} className="ml-2">
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {isLoading && (
+        <div className="text-center my-4">
+          <span className="loading loading-spinner loading-lg"></span>
+          <p>Loading...</p>
+        </div>
+      )}
+
       {!showForm ? (
         <>
           <div className="text-right mb-4">
-            <button 
-              onClick={() => setShowForm(true)} 
-              className=""
+            <button
+              onClick={() => {
+                setShowForm(true);
+                setEditData(null);
+              }}
+              className={`btn btn-default ${isLoading ? "btn-disabled" : ""}`}
+              disabled={isLoading}
             >
               Add Salary
             </button>
+
           </div>
-          <GridView rowData={rowData} columnDefs={columnDefs} />
+          <GridView
+            rowData={rowData}
+            columnDefs={columnDefs}
+          // loading={isLoading}
+          />
         </>
       ) : (
         <FacultySalaryForm
-          initialData={editData || undefined}
-          onCancel={() => {
-            setShowForm(false);
-            setEditData(null);
+          initialData={editData || {
+            facultyID: "",
+            facultySalary: 0,
+            facultyTax: 0,
+            facultyTransport: 0,
+            facultyDeduction: [],
+
           }}
           onSave={handleSave}
+          onCancel={handleCancel}
         />
       )}
     </div>

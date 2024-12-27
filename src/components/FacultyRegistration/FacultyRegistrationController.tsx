@@ -2,15 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Formik, Form, Field, FieldArray, ErrorMessage, FormikHelpers } from 'formik';
 
 import { FaPlus, FaMinus, FaTrash } from 'react-icons/fa';
-// <<<<<<< HEAD
+
 import { facultyValidationSchema } from '../../services/Faculty/fecultyRegistretion/validation';
-// import { FacultyFormData, } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
 import { saveFacultyDetails, getFacultyDetails, updateFacultyDetails, deleteFacultyDetails } from '../../services/Faculty/fecultyRegistretion/API/API';
-// =======
-// import { facultyValidationSchema } from '../../services/fecultyRegistretion/validation';
-// import { FacultyFormData, } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
-// import { saveFacultyDetails, getFacultyDetails, updateFacultyDetails, deleteFacultyDetails } from '../../services/fecultyRegistretion/API/API';
-// >>>>>>> e15c575e20d0d57dd72800820a076737390eb183
 import GridView from './GridView';
 import CustomAlert from '../UI/alert';
 import DeleteConfirmationModal from '../../services/DeleteModele/DeleteConfirmationModal';
@@ -208,7 +202,7 @@ const FacultyRegistrationForm: React.FC = () => {
       cellRenderer: (params: any) => (
         <button
           onClick={() => handleEdit(params.data)}
-          className=" bi bi-pen text-blue-600"
+          className=" bi bi-pencil-square text-orange-600"
         >
           
         </button>

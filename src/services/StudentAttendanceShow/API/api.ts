@@ -13,13 +13,16 @@ export const fetchAttendanceData = async (
   fromDate: string,
   toDate: string,
   classSelected: string,
-  subjectSelected: string
+  subjectSelected: string,
+  masterAttendance: boolean // Added parameter for master attendance mode
 ): Promise<AttendanceResponse[]> => {
   try {
     const formattedFromDate = formatDate(fromDate);
     const formattedToDate = formatDate(toDate);
 
-    const apiUrl = `/attendance/getAttendance?cls=${classSelected}&fromDate=${formattedFromDate}&toDate=${formattedToDate}&subject=${subjectSelected}`;
+    // Construct API URL with the new masterAttendance parameter
+    const apiUrl = `/attendance/getAttendance?cls=${classSelected}&fromDate=${formattedFromDate}&toDate=${formattedToDate}&subject=${subjectSelected}&masterAttendance=${masterAttendance}`;
+    
     const response = await axiosInstance.post<AttendanceResponse[]>(apiUrl);
 
     return response.data;
@@ -28,6 +31,7 @@ export const fetchAttendanceData = async (
     throw error;
   }
 };
+
 
 // Fetch class data
 export const fetchClassData = async (): Promise<ClassData[]> => {
@@ -39,3 +43,9 @@ export const fetchClassData = async (): Promise<ClassData[]> => {
     throw error;
   }
 };
+
+
+
+
+
+

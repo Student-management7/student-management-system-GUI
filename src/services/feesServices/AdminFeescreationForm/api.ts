@@ -33,7 +33,7 @@ export const saveFees = async (values: FeeFormValues) => {
 // Function to update a fee record
 export const updateFee = async (id: string, data: FeeFormValues): Promise<void> => {
   try {
-    await axios.post(`${BASE_URL}/admin/edit`, data, {
+    await axiosInstance.post(`${BASE_URL}/admin/edit`, data, {
       params: { id },
     });
   } catch (error) {
