@@ -23,7 +23,7 @@ const FeesController: React.FC = () => {
       cellRenderer: (params: any) =>
         params.value && params.value.length
       ? params.value.map((item: any) => `${item.name}: ${item.amount}`).join(", ")
-      : "N/A",
+      : "0",
     },
 
     { headerName: "Total Fees", field: "totalFee", sortable: true, filter: true },

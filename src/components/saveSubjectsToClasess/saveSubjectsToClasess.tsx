@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClassData } from "../../services/SaveSubjects/Type";
-import { API_ENDPOINTS } from "../../services/SaveSubjects/Api";
 import axiosInstance from "../../services/Utils/apiUtils";
 
 
@@ -57,12 +56,15 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({ onClose, 
       setCustomSubject("");
     } else {
       toast.error("Subject already exists or is invalid!");
+      
+
     }
   };
 
   const handleSave = async () => {
     if (!selectedClass || selectedSubjects.length === 0) {
       toast.error("Please select a class and subjects.");
+      console.error("Please select a class and subjects.");
       return;
     }
 
@@ -72,7 +74,7 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({ onClose, 
 
     try {
       const payload = { classData: updatedClassData };
-      await axiosInstance.post(API_ENDPOINTS.SAVE_CLASS_DATA, payload);
+      await axiosInstance.post("class/save", payload);
       setClassData(updatedClassData);
       toast.success("Class and subject data saved successfully!");
       onSave(updatedClassData);
