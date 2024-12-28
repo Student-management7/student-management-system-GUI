@@ -16,7 +16,7 @@ const HeaderLogin = () => {
   ];
 
   return (
-    <div className="fixed w-full top-0 z-50">
+    <div className="">
       <nav className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
