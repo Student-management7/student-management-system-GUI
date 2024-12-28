@@ -29,9 +29,9 @@ const FacultyRegistrationForm: React.FC = () => {
   const initialValues: FacultyFormData = {
     fact_id: editingFaculty?.fact_id || '',
     fact_Name: editingFaculty?.fact_Name || '',
-    fact_Username: editingFaculty?.fact_Username || '',
+    email: editingFaculty?.email || '',
     fact_email: editingFaculty?.fact_email || '',
-    fact_password: editingFaculty?.fact_password || '',
+    password: editingFaculty?.password || '',
     fact_contact: editingFaculty?.fact_contact || '',
     fact_gender: editingFaculty?.fact_gender || '',
     fact_address: editingFaculty?.fact_address || '',
@@ -184,14 +184,14 @@ const FacultyRegistrationForm: React.FC = () => {
 
   const columnDefs: any[] = [
     { field: 'fact_Name', headerName: 'Name' },
-    { field: 'fact_Username', headerName: 'Username' },
+    { field: 'email', headerName: 'Username' },
     { field: 'fact_city', headerName: 'City' },
     { field: 'fact_contact', headerName: 'Contact' },
     { field: 'fact_address', headerName: 'Address' },
     { field: 'fact_gender', headerName: 'Gender' },
     { field: 'fact_state', headerName: 'State' },
     { field: 'fact_email', headerName: 'Email' },
-    { field: 'fact_password', headerName: 'password' },
+    { field: 'password', headerName: 'password' },
     { field: 'fact_status', headerName: 'Status' },
 
 
@@ -566,13 +566,13 @@ const FacultyRegistrationForm: React.FC = () => {
                
                   <div className="col-md-4 mb-3">
                     <label htmlFor="fact_Name" className="form-label">Username</label>
-                    <Field type="text" id="fact_Username" name="fact_Username" className={`form-control ${errors.fact_Username && touched.Username ? 'is-invalid' : ''}`} placeholder="Enter Username" />
-                    <ErrorMessage name="fact_Username" component="div" className="invalid-feedback" />
+                    <Field type="text" id="email" name="email" className={`form-control ${errors.email && touched.Username ? 'is-invalid' : ''}`} placeholder="Enter Username" />
+                    <ErrorMessage name="email" component="div" className="invalid-feedback" />
                   </div>
                   <div className="col-md-4 mb-3">
                     <label htmlFor="fact_email" className="form-label">Password</label>
-                    <Field type="email" id="fact_password" name="fact_password" className={`form-control ${errors.fact_password && touched.fact_password ? 'is-invalid' : ''}`} placeholder="Enter Password" />
-                    <ErrorMessage name="fact_password" component="div" className="invalid-feedback" />
+                    <Field type="email" id="password" name="password" className={`form-control ${errors.password && touched.password ? 'is-invalid' : ''}`} placeholder="Enter Password" />
+                    <ErrorMessage name="password" component="div" className="invalid-feedback" />
                   </div>
                  </div>
                
