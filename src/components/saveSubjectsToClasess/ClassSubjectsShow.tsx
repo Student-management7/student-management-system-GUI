@@ -66,14 +66,14 @@ const ClassTable: React.FC = () => {
 
       {!showForm ? (
         <>
-          
+          <div className="text-right">
             <button
               onClick={() => setShowForm(true)}
              className="btn btn-default"
             >
               Add Subject
             </button>
-         
+            </div>
 
           {loading ? (
             <Loader />

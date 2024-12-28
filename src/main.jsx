@@ -35,7 +35,7 @@ import StudentFeesDetails from './components/fess/studentFees/studentFeesDetails
 import StudenAttendance from './components/StudentAttendence/studentAttendance';
 import NotificationController from './components/Notification/notificationController';
 import ClassSubjectShow from './components/saveSubjectsToClasess/ClassSubjectsShow';
-
+import Permission from './components/permission/Permission';
 
 const App = () => {
   const { isAuthenticated } = useAuth();
@@ -65,6 +65,7 @@ const App = () => {
               <Route path="/studentAttendanceEdit" element={<StudentAttendanceEdit />} />
               <Route path="/studentAttendanceEditSave" element={<StudentAttendanceEditSave />} />
               <Route path="/fees" element={<FeesController />} />
+             
               <Route path="/holiday" element={<HolidayFormController />} />
               <Route path="/FacultySalary" element={<FacultySalaryController />} />
               <Route path="/FacultySalaryDetails/:id" element={<FacultySalaryDetails />} />
@@ -74,7 +75,7 @@ const App = () => {
               <Route path="/StudenAttendance" element={<StudenAttendance />} />
               <Route path="/Notification" element={<NotificationController />} />             
               <Route path="/ClassSubjectShow" element={<ClassSubjectShow />} />
-
+              <Route path="/Permission" element={<Permission />} />
 
             </Route>
 
@@ -108,7 +109,6 @@ createRoot(document.getElementById('root')).render(
     </Router>
   </StrictMode>
 );
-
 
 
 
