@@ -37,20 +37,8 @@ const FacultyAttendanceSave: React.FC = () => {
 
     // Submit attendance
     const handleSubmit = async () => {
-        const unmarkedAttendance = facultyList.filter(faculty => !faculty.attendance);
-        if (unmarkedAttendance.length > 0) {
-            toast.error('Please mark attendance for all faculty members.', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-            });
-            return;
-        }
-
         try {
-            setIsLoading(true);
+           
             setError('');
             const response = await submitAttendance(facultyList);
             if (response.status === 200) {

@@ -10,7 +10,7 @@ interface EditStudentFormProps  {
 
 const EditStudentForm = (props: EditStudentFormProps) =>{
 
-
+    const [editFormView, setEditFormView] = useState<boolean>(false);
     const {singleRowData} = props;
 
     if (!singleRowData) return <div>Loading...</div>;
@@ -78,39 +78,23 @@ const EditStudentForm = (props: EditStudentFormProps) =>{
 
         setFormData({...formData, [name]:[value]})
     };
-    // const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    //     const { name, value } = e.target;
+   
 
-    //     if (name.startsWith("familyDetails.")) {
-    //         const familyField = name.split(".")[1];
-    //         setFormData((prevFormData) => ({
-    //             ...prevFormData,
-    //             familyDetails: {
-    //                 ...prevFormData.familyDetails,
-    //                 [familyField]: value
-    //             }
-    //         }));
-    //     } else {
-    //         setFormData({
-    //             ...formData,
-    //             [name]: value
-    //         });
-    //     }
-    // };
 
-    // Step 4: Handle form submission
+   
     const handleSubmit = (e: any) => {
         e.preventDefault();
         // Here, you can handle the save logic, e.g., send data to API
         updateStudentDeteails(formData); 
         console.log(formData)
+        
     };
 
 
     return(
         <>
              <div>            
-                <form onSubmit={handleSubmit}>
+                <form >
                     <div className='row'>
                         <div className='col-md-4'>
                             <div className='form-group'>
@@ -470,8 +454,13 @@ const EditStudentForm = (props: EditStudentFormProps) =>{
                             </div>
                         </div>
                     </div>
-                    <div className='text-center mt-4'>
-                        <button type="submit" className="btn btn-primary">Submit</button>
+                    <div className="row">
+                    <div className='text-center mt-4 col' >
+                        <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Submit</button>
+                    </div>
+                    <div className='text-center mt-4 col ' >
+                        <button className="btn btn-danger" >Canel</button>
+                    </div>
                     </div>
                 </form>
                       
