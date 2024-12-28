@@ -1,0 +1,29 @@
+.logiginBody{
+    height: calc(100vh - 70px);
+}
+.banner1{
+    background-image: url("../../../public/images/banner1.jpg");
+    background-repeat: no-repeat;
+    background-position: right top;
+    background-attachment: fixed;
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+    display: flex;
+        justify-content: center;
+        align-items: center;
+}
+.banner2{
+    background-image: url("../../../public/images/sideImg.jpg");
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-attachment: fixed;
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+    
+}
+.loginPage{
+    width: 80%;
+    background-color: #FFFFFF;
+}
