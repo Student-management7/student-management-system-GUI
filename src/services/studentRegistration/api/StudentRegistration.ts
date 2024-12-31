@@ -53,9 +53,7 @@ export const fetchClasses = async () => {
 
 export const deleteStudentRecord = async (id: string) => {
     try {
-        const response = await axiosInstance.post(`${API_URL}/student/delete`, {
-            params: { id },
-        });
+        const response = await axiosInstance.post(`/student/delete?id=${id}`);
         return response.data;
     } catch (error) {
         console.error('Error deleting student record:', error);

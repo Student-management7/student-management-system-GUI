@@ -13,14 +13,33 @@ export default function Permission() {
     Student: {
       studentAttendance: false,
       StudentAttendanceEdit: false,
+      StudentAttendenceManagement:false,
       StudentFees: false,
+      StudentAttendanceEditSave: false,
+      StudentRegistrationController:false,
+      StudentAttendanceShow:false
     },
     faculty: {
-      facultySalary: false,
+     
+      FacultySalaryDetails:false,
+      FacultySalaryController:false,
+      FacultyAttendanceEditSave:false,
+      FacultyAttendanceEdit :false,
+      FacultyAttendanceShow:false,
+      FacultyAttendanceSave:false,
+      FacultyRegistrationForm:false,
     },
     finance: {
-      adminFees: false,
+      adminFees: false 
     },
+    Notification:{
+      CreateNotification:false,
+      NotificationList:false,
+      HolidayFormController:false,
+    },
+    Subject:{
+      SaveSubjectsToClasses:false,
+    }
   });
 
   // Fetch faculty data from the API
@@ -198,6 +217,48 @@ export default function Permission() {
           </div>
           <div className="card-body">
             {Object.keys(permissions.finance).map((key) => (
+              <div className="form-check mb-2" key={key}>
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  checked={(permissions.finance as any)[key]}
+                  onChange={() => handlePermissionChange("finance", key)}
+                  id={`finance-${key}`}
+                />
+                <label className="form-check-label" htmlFor={`finance-${key}`}>
+                  {key.replace(/([A-Z])/g, " $1")}
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="card shadow-sm mb-4">
+          <div className="card-header bg-secondary text-white">
+            <h5>Notification Permissions</h5>
+          </div>
+          <div className="card-body">
+            {Object.keys(permissions.Notification).map((key) => (
+              <div className="form-check mb-2" key={key}>
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  checked={(permissions.finance as any)[key]}
+                  onChange={() => handlePermissionChange("finance", key)}
+                  id={`finance-${key}`}
+                />
+                <label className="form-check-label" htmlFor={`finance-${key}`}>
+                  {key.replace(/([A-Z])/g, " $1")}
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="card shadow-sm mb-4">
+          <div className="card-header bg-secondary text-white">
+            <h5>Subject  Permissions</h5  >
+          </div>
+          <div className="card-body">
+            {Object.keys(permissions.Subject).map((key) => (
               <div className="form-check mb-2" key={key}>
                 <input
                   className="form-check-input"

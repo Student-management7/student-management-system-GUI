@@ -2,7 +2,10 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/authContext';
-import ProtectedRoute from './Pages/Login/ProtectedRoute';
+
+
+// import ProtectedRoute from './Pages/Login/ProtectedRoute';
+
 
 import './App.css';
 import './index.css';
@@ -30,6 +33,8 @@ import FacultySalaryDetails from './components/salary/facultySalary/facultySalar
 import Permission from './components/permission/Permission'
 import NotificationList from './components/Notification/notificationList';
 import CreateNotification from './components/Notification/CreateNotification';
+import ProtectedRoute from './Pages/Login/ProtectedRoute';
+import PermissionBasedRoute from './components/permission/PermissionBasedRoute';
 // Dummy StudentDataGrid to avoid undefined error; replace with your actual implementation.
 // const StudentDataGrid = () => <div>Student Data Grid</div>;
 
@@ -47,24 +52,25 @@ const App = () => {
 
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
+              <Route path="*" element={<PermissionBasedRoute />} />
               <Route path="/main" element={<MasterController />} />
               <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
               <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
-              <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
+              <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />f
               <Route path="/StudentRegistrationController" element={<StudentRegistrationController />} />
-              
+
               <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
-              <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
-              <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
-              <Route path="/facultyAttendanceEdit" element={<FacultyAttendanceEdit />} />
-              <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />
+              <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />f
+              <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />f
+              <Route path="/facultyAttendanceEdit" element={<FacultyAttendanceEdit />} />f
+              <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />f
               <Route path="/studentAttendanceEdit" element={<StudentAttendanceEdit />} />
               <Route path="/studentAttendanceEditSave" element={<StudentAttendanceEditSave />} />
               <Route path="/fees" element={<FeesController />} />
               <Route path="/ViewNotification" element={<NotificationList />} />
               <Route path="/CreateNotification" element={<CreateNotification />} />
               <Route path="/holiday" element={<HolidayFormController />} />
-              <Route path="/FacultySalary" element={<FacultySalaryController />} />
+              <Route path="/FacultySalary" element={<FacultySalaryController />} />f
               <Route path="/FacultySalaryDetails" element={<FacultySalaryDetails />} />
               <Route path='/permission' element={<Permission/>}/>
               <Route path='/alert' element={<Alert/>}/>
@@ -78,8 +84,14 @@ const App = () => {
         </div>
       </div>
     </>
+
+
   );
 };
+
+
+
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -90,3 +102,10 @@ createRoot(document.getElementById('root')).render(
     </Router>
   </StrictMode>
 );
+
+
+
+
+
+
+

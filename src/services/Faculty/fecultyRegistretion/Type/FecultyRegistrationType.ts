@@ -26,9 +26,9 @@ export interface FacultyFormData {
   
   fact_id: string;
   fact_Name: string;
-  fact_Username: string;
+  email: string;
+  password: string;
   fact_email: string;
-  fact_password: string;
   fact_contact: string;
   fact_gender: string;
   fact_address: string;

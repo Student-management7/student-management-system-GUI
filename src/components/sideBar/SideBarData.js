@@ -109,14 +109,10 @@ export const SideBarData = [
 
             {
                 title: 'Notification',
-                path: '/CreateNotification',
+                path: '/Notification',
                 icon: FaMoneyBill,
             },
-            {
-                title: 'View Notification',
-                path: '/ViewNotification',
-                icon: FaMoneyBill,
-            },
+            
         ]
     }
 

@@ -56,8 +56,18 @@ const Login: React.FC = () => {
     setIsLoading(true);
     try {
       await login(email, password);
+      const response = await fetch('https://s-m-s-keyw.onrender.com/self', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // Adjust based on your login flow
+        },
+      });
+      if (!response.ok) throw new Error('Failed to fetch user details.');
+      const data = await response.json();
+      localStorage.setItem('userDetails', JSON.stringify(data));
+      console.log('me a gaya ',data);
+      
       // Successful login 
-      navigate('/home'); 
+      navigate('/main'); 
     } catch (error) {
       const errorMsg = error instanceof Error 
         ? error.message 
@@ -200,3 +210,4 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+
