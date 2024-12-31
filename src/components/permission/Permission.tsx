@@ -28,6 +28,7 @@ export default function Permission() {
       FacultyAttendanceShow:false,
       FacultyAttendanceSave:false,
       FacultyRegistrationForm:false,
+      
     },
     finance: {
       adminFees: false 
