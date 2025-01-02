@@ -1,5 +1,6 @@
 // types.ts
 export interface Faculty {
+  id: string;
   fact_id: string;
   fact_Name: string;
   fact_email: string;

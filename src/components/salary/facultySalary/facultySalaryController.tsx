@@ -103,7 +103,7 @@ const FacultySalaryController: React.FC = () => {
   ];
 
   const fetchSalaryDetails = useCallback(async () => {
-    setIsLoading(true);
+    
     setError(null);
     try {
       const data: FacultySalaryResponse[] = await fetchFacultySalaries();
@@ -113,7 +113,7 @@ const FacultySalaryController: React.FC = () => {
       console.error("Error fetching faculty salary details:", error);
       setError("Failed to fetch salary details. Please try again.");
     } finally {
-      setIsLoading(false);
+      
     }
   }, []);
 
@@ -176,6 +176,7 @@ const FacultySalaryController: React.FC = () => {
       {!showForm ? (
         <>
           <div className="text-right mb-4">
+          <h1 className="text-center text-2xl font-bold mb-2 ">Faculty Salary</h1>
             <button
               onClick={() => {
                 setShowForm(true);
@@ -213,4 +214,3 @@ const FacultySalaryController: React.FC = () => {
 };
 
 export default FacultySalaryController;
-

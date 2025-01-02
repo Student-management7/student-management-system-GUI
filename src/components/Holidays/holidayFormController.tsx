@@ -136,6 +136,7 @@ const HolidayComponent: React.FC = () => {
       {!showForm ? (
         <>
           <div className="text-right">
+            <h1 className='text-2xl text-center font-bold mb-2'>Holidays</h1>
             <button onClick={() => setShowForm(true)} className="btn btn-default">
               Add Holiday
             </button>

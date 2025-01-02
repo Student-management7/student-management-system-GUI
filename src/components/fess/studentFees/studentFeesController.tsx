@@ -12,13 +12,14 @@ import StudentFeesForm from "./studentFeesForm";
 
 
   const columnDefs = [
-    { headerName: "Id", field: "id" },
+    
     { headerName: "Name", field: "name" },
-    { headerName: "Total Fees", field: "totalFees" },
-    { headerName: "Remaining Fees", field: "remainingFees" },
+    { headerName: "Father Name", field: "familyDetails.stdo_FatherName" },
     { headerName: "Contact", field: "contact" },
     { headerName: "Email", field: "email" },
     { headerName: "Class", field: "cls" },
+    { headerName: "Total Fees", field: "totalFees" },
+    { headerName: "Remaining Fees", field: "remainingFees" },
     {
       headerName: " Transecton Details",
       cellRenderer: (params: any) => (
@@ -47,6 +48,7 @@ import StudentFeesForm from "./studentFeesForm";
       {!showForm ? (
         <>
           <div className="text-right mb-3">
+            <h1 className="text-center text-3xl font-bold mb-2 ">Student Fees</h1>
             <button
               onClick={() => setShowForm(true)}
               className="btn btn-default"

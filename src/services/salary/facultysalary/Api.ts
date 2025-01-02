@@ -61,7 +61,7 @@ export const updateFacultySalary = async (id: string, data: FacultySalaryFormVal
     const {  ...payload } = data;
 
     const response = await axiosInstance.post(
-      `${BASE_URL}/faculty/salary/edit`, // Base URL
+      `${BASE_URL}/faculty/salary/edit`,
       payload, // Data for update (without `total`)
       {
         params: { id }, // Sending id as a query parameter
@@ -107,3 +107,12 @@ export const fetchFacultySalariesById = async (id: string): Promise<FacultySalar
   }
 };
 
+export const deleteFacultySalary = async (id: string): Promise<any> => {
+  try {
+    const response = await axiosInstance.delete(`${BASE_URL}/faculty/salary/delete/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error deleting salary for faculty ID ${id}:`, error);
+    throw new Error("Failed to delete faculty salary.");
+  }
+};

@@ -26,7 +26,7 @@ const StudentFeesDetails = () => {
   const columnDefs = [
     { headerName: "ID", field: "id" },
     {
-      headerName: "Creation Date",
+      headerName: "fees submitted Date",
       field: "creationDateTime",
       valueFormatter: (params: any) =>
         params.value ? new Date(params.value).toLocaleString() : "N/A",
@@ -58,18 +58,16 @@ const StudentFeesDetails = () => {
   }, [id]);
 
   return (
-    <div>
-      <h1><b>Fees Details :</b> </h1>
+    <div className="box">
+      <h1><b>Fees Details :- </b> </h1>
       <br />
 
       {/* Display Student ID and Name */}
       {studentData ? (
         <div style={{ marginBottom: "20px" }}>
+          
           <p>
-            <strong>ID:</strong> {studentData.id || "N/A"}
-          </p>
-          <p>
-            <strong>Name:</strong> {studentData.name || "N/A"}
+            <strong>Name:- </strong> {studentData.name || "N/A"}
           </p>
         </div>
       ) : (
@@ -80,7 +78,7 @@ const StudentFeesDetails = () => {
       {feeInfo.length > 0 ? (
         <GridView rowData={feeInfo} columnDefs={columnDefs} />
       ) : (
-        <p>No fee information available for this student.</p>
+        <p>No fee information available for this student. </p>
       )}
     </div>
   );

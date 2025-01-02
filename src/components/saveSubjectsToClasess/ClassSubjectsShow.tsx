@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getClassData } from "../../services/classSubjectShow/api";
 import { ClassData } from "../../services/classSubjectShow/type";
-import GridView from "./gridView";
 import SaveSubjectsToClasses from "./saveSubjectsToClasess";
+import ReusableTable from "../MUI Table/ReusableTable"; // Import the reusable table
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -43,16 +43,17 @@ const ClassTable: React.FC = () => {
     </div>
   );
 
-  const columnDefs = [
-    { headerName: "Class Name", field: "className", sortable: true, filter: true },
-    { 
-      headerName: "Subjects", 
-      field: "subject", 
-      sortable: true, 
-      filter: true,
-      cellRenderer: (params: any) => params.value.join(", "),
-    },
+  // Define columns for ReusableTable
+  const columns = [
+    { field: "className", headerName: "Class Name" },
+    { field: "subject", headerName: "Subjects" },
   ];
+
+  // Transform rows for ReusableTable
+  const rows = data.map((item) => ({
+    className: item.className,
+    subject: item.subject.join(", "), // Join subjects as a string
+  }));
 
   const handleSave = (updatedData: ClassData[]) => {
     setData(updatedData); // Update the grid data after saving
@@ -69,11 +70,11 @@ const ClassTable: React.FC = () => {
           <div className="text-right">
             <button
               onClick={() => setShowForm(true)}
-             className="btn btn-default"
+              className="btn btn-default"
             >
               Add Subject
             </button>
-            </div>
+          </div>
 
           {loading ? (
             <Loader />
@@ -81,17 +82,15 @@ const ClassTable: React.FC = () => {
             <div className="text-center text-red-500">{error}</div>
           ) : (
             <div className="box">
-               <GridView rowData={data} columnDefs={columnDefs} />
+              <ReusableTable columns={columns} rows={rows} />
             </div>
           )}
         </>
       ) : (
-        
-          <SaveSubjectsToClasses
-            onClose={() => setShowForm(false)}
-            onSave={handleSave}
-          />
-        
+        <SaveSubjectsToClasses
+          onClose={() => setShowForm(false)}
+          onSave={handleSave}
+        />
       )}
     </div>
   );

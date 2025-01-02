@@ -5,6 +5,8 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 import { ClassData, Student, AttendancePayload } from "../../services/StudentAttendence/Type/studentAttendenceType";
 import { API_ENDPOINTS } from "../../services/StudentAttendence/API/studentAttendenceApi";
 import axiosInstance from "../../services/Utils/apiUtils";
+import { sortArrayByKey } from "../Utils/sortArrayByKey";
+
 
 const StudentManagementSystem: React.FC = () => {
     const [classes, setClasses] = useState<ClassData[]>([]);
@@ -19,28 +21,30 @@ const StudentManagementSystem: React.FC = () => {
     // Fetch class data
     const fetchClasses = async () => {
         try {
-            setError("");
-            setLoading(true);
-            const response = await axiosInstance.get(API_ENDPOINTS.CLASS_DATA);
-            setClasses(response.data.classData);
+          setError("");
+          setLoading(true);
+          const response = await axiosInstance.get("/class/data");
+          const sortedClasses = sortArrayByKey(response.data.classData, "className"); // Sort data by className
+          setClasses(sortedClasses); // Set the sorted class data
         } catch (error) {
-            setError("Failed to fetch class data");
+          setError("Failed to fetch class data");
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
-
-    useEffect(() => {
+      };
+      
+      useEffect(() => {
         fetchClasses();
-    }, []);
-
-    // Handle class change
-    const handleClassChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+      }, []);
+      
+      // Handle class change
+      const handleClassChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedClassName = event.target.value;
         setSelectedClass(selectedClassName);
         const classData = classes.find((cls) => cls.className === selectedClassName);
         setSubjects(classData ? classData.subject : []);
-    };
+      };
+      
 
     // Handle subject change
     const handleSubjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -68,56 +72,87 @@ const StudentManagementSystem: React.FC = () => {
         }
     };
 
-    // Submit attendance
-  const submitAttendance = async () => {
-    const payload: AttendancePayload = {
-      className: selectedClass,
-      subject: attendanceMode === "master" ? "" : selectedSubject, // Empty string for master attendance
-      studentList: students.map((student) => ({
-        stdId: student.stdId,
-        attendance: student.attendance || "Present",
-      })),
-      masterAttendance: false
+    // Update attendance immediately when bulk radio is selected
+    const handleBulkAttendanceChange = (bulkAttendance: string) => {
+        setStudents((prevStudents) =>
+            prevStudents.map((student) => ({
+                ...student,
+                attendance: bulkAttendance,
+            }))
+        );
     };
 
-    try {
-        // Include masterAttendance as a query parameter
-        const endpoint = API_ENDPOINTS.SAVE_ATTENDANCE(attendanceMode === "master");
-        const response = await axiosInstance.post(endpoint, payload);
+    // Submit attendance
+    const submitAttendance = async () => {
+        const payload: AttendancePayload = {
+            className: selectedClass,
+            subject: attendanceMode === "master" ? "" : selectedSubject,
+            studentList: students.map((student) => ({
+                stdId: student.stdId,
+                remark: student.remark || "",
+                name: student.name,
+                attendance: student.attendance || "Present",
+            })),
+            masterAttendance: attendanceMode === "master",
+        };
 
-        if (response.status === 200) {
-            alert("Attendance submitted successfully!");
-        } else {
-            throw new Error("Failed to submit attendance");
+        try {
+            const endpoint = API_ENDPOINTS.SAVE_ATTENDANCE(attendanceMode === "master");
+            const response = await axiosInstance.post(endpoint, payload);
+
+            if (response.status === 200) {
+                alert("Attendance submitted successfully!");
+            } else {
+                throw new Error("Failed to submit attendance");
+            }
+        } catch (error) {
+            alert("Error submitting attendance: " + error);
         }
-    } catch (error) {
-        alert("Error submitting attendance: " + error);
-    }
-};
+    };
 
-  
-
+    // Table columns
     const columns = [
-        { headerName: "Serial Number", valueGetter: "node.rowIndex + 1", flex: 1 },
+        { headerName: "SN", valueGetter: "node.rowIndex + 1", flex: 1 }, // Serial Number Column
         { headerName: "Student ID", field: "stdId", flex: 1 },
         { headerName: "Student Name", field: "name", flex: 2 },
         {
             headerName: "Attendance",
             field: "attendance",
+            flex: 2,
             cellRenderer: (params: any) => (
-                <select
-                    value={params.value || "Present"}
-                    onChange={(e) => {
-                        params.setValue(e.target.value);
-                    }}
-                    className="border border-gray-300 rounded p-1 focus:outline-none"
-                >
-                    <option value="Present">Present</option>
-                    <option value="Absent">Absent</option>
-                </select>
+                <div className="flex gap-2">
+                    {["Present", "Absent", "Half Day", "Late"].map((option) => (
+                        <label key={option} className="flex items-center gap-1">
+                            <input
+                                type="radio"
+                                name={`attendance-${params.data.stdId}`}
+                                value={option}
+                                checked={params.value === option}
+                                onChange={() => params.setValue(option)}
+                                className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="text-sm">{option}</span>
+                        </label>
+                    ))}
+                </div>
             ),
-            flex: 1,
         },
+        {
+            headerName: "Remarks",
+            field: "remark",
+            flex: 2,
+            editable: true,
+            cellRenderer: (params: any) => (
+                <input
+                    type="text"
+                    value={params.value || ""}
+                    onChange={(e) => params.setValue(e.target.value)}
+                    placeholder="Enter remarks"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out placeholder-gray-400 hover:border-gray-400 shadow-sm mb-2"
+                />
+            ),
+        },
+        
     ];
 
     return (
@@ -126,7 +161,7 @@ const StudentManagementSystem: React.FC = () => {
 
             {error && <p className="text-red-500 mb-4">{error}</p>}
 
-            {/* Radio Button to Toggle Attendance Mode */}
+            {/* Attendance Mode Selector */}
             <div className="attendance-mode-selector mb-4">
                 <label className="mr-4">
                     <input
@@ -150,6 +185,7 @@ const StudentManagementSystem: React.FC = () => {
                 </label>
             </div>
 
+            {/* Dropdowns */}
             <div className="dropdowns-container flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
                 <select
                     value={selectedClass}
@@ -187,14 +223,35 @@ const StudentManagementSystem: React.FC = () => {
                 </button>
             </div>
 
+            {/* Bulk Attendance */}
+            <div className="bulk-attendance mb-4 flex items-center">
+    <span className="mr-4 font-semibold">Bulk Attendance:</span>
+    <div className="flex space-x-6">
+        {["Present", "Absent", "Half Day", "Late"].map((option) => (
+            <label key={option} className="inline-flex items-center cursor-pointer">
+                <input
+                    type="radio"
+                    name="bulkAttendance"
+                    value={option}
+                    onChange={() => handleBulkAttendanceChange(option)}
+                    className="form-radio h-4 w-4 text-blue-600"
+                />
+                <span className="ml-2 text-sm">{option}</span>
+            </label>
+        ))}
+    </div>
+</div>
+
+            {/* Data Grid */}
             <div className="ag-theme-alpine" style={{ height: "400px", width: "100%", marginTop: "20px" }}>
                 <AgGridReact rowData={students} columnDefs={columns} pagination={true} />
             </div>
 
+            {/* Submit Button */}
             <button
                 onClick={submitAttendance}
                 disabled={students.length === 0}
-                className="submit-btn mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="submit-btn px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 mt-6"
             >
                 Submit Attendance
             </button>
@@ -203,3 +260,4 @@ const StudentManagementSystem: React.FC = () => {
 };
 
 export default StudentManagementSystem;
+``

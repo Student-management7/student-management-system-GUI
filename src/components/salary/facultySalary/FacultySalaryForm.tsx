@@ -1,6 +1,6 @@
 
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
@@ -87,6 +87,9 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
           console.error("Salary save/update error:", error);
         }
       };
+
+
+      
       
 
   return (
@@ -244,6 +247,5 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
 };
 
 export default FacultySalaryForm;
-
 
 
