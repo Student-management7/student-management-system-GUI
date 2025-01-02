@@ -456,7 +456,7 @@ const EditStudentForm = (props: EditStudentFormProps) =>{
                     </div>
                     <div className="row">
                     <div className='text-center mt-4 col' >
-                        <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Submit</button>
+                        <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Update</button>
                     </div>
                     <div className='text-center mt-4 col ' >
                         <button className="btn btn-danger" >Canel</button>

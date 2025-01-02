@@ -167,7 +167,9 @@ const FormView = () => {
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
+          
         >
+          
           {({ errors, touched, setFieldValue }) => (
             <Form>
               <div className="row">
@@ -562,11 +564,13 @@ const FormView = () => {
                 >
                   Submit
                 </button>
+
+                
                 <AlertDialog
                   title="Confirm Submit"
                   message="Are you sure you want to submit this item?"
                   isOpen={isDialogOpen}
-                  onConfirm={() => handleConfirmSubmit(values, formikHelpers)} // Pass values and helpers here
+                  onConfirm={async () => handleConfirmSubmit(values, formikHelpers)} // Pass values and helpers here
                   onCancel={handleCancel}
                 />
               </div>

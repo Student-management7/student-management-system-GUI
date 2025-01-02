@@ -54,14 +54,14 @@ const App = () => {
               <Route path="/main" element={<MasterController />} />
               <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
               <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
-              <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
+              <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />f
               <Route path="/StudentRegistrationController" element={<StudentRegistrationController />} />
 
               <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
-              <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
-              <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
-              <Route path="/facultyAttendanceEdit" element={<FacultyAttendanceEdit />} />
-              <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />
+              <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />f
+              <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />f
+              <Route path="/facultyAttendanceEdit" element={<FacultyAttendanceEdit />} />f
+              <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />f
               <Route path="/studentAttendanceEdit" element={<StudentAttendanceEdit />} />
               <Route path="/FacultySalary" element={<FacultySalaryController />} />
               <Route path="/studentAttendanceEditSave" element={<StudentAttendanceEditSave />} />
