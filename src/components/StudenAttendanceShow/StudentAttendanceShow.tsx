@@ -1,70 +1,67 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { fetchAttendanceData, fetchClassData } from "../../services/StudentAttendanceShow/API/api";
 import { validateAttendanceForm } from "../../services/StudentAttendanceShow/validation/attendanceValidation";
 import { getDateRange } from "../../services/StudentAttendanceShow/dateFormates/dateUtils";
 import AttendanceTable from "./AttendanceTable";
 import { ClassData } from "../../services/SaveSubjects/Type";
 import { AttendanceResponse } from "../../services/StudentAttendanceShow/type/attendanceTypes";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import "./Attendence.scss";
-
+import  { handleApiError } from '../Utility/toastUtils'
+import { sortArrayByKey } from "../Utils/sortArrayByKey";
 const StudentAttendanceShow: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [classData, setClassData] = useState<ClassData[]>([]);
   const [classSelected, setClassSelected] = useState("");
   const [subjectSelected, setSubjectSelected] = useState("");
-  const [fromDate, setFromDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const [toDate, setToDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [fromDate, setFromDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [toDate, setToDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [rowData, setRowData] = useState<any[]>([]);
   const [columnDefs, setColumnDefs] = useState<any[]>([
     { field: "stdId", headerName: "Student ID", width: 120 },
     { field: "name", headerName: "Student Name", width: 150 },
+    { field: "remark" , headerName: "Remark", width: 150 },
   ]);
   const [isMasterAttendanceMode, setIsMasterAttendanceMode] = useState(false);
-  const [error, setError] = useState<null | {
-    message: string;
-    type: 'error' | 'warning' | 'info';
-  }>(null);
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => setError(null), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
 
   useEffect(() => {
     const loadClassData = async () => {
-      setIsLoading(true);
+      setIsLoading(true); 
       try {
-        const data = await fetchClassData();
+        const data = await fetchClassData(); 
         if (data?.length > 0) {
-          setClassData(data);
-          setClassSelected(data[0].className);
-          setSubjectSelected(data[0]?.subject?.[0] || "");
+          
+          const sortedData = sortArrayByKey(data, "className"); 
+          setClassData(sortedData); // Set the sorted data
+          setClassSelected(sortedData[0].className); 
+          setSubjectSelected(sortedData[0]?.subject?.[0] || ""); 
         } else {
-          setError({ message: "No classes available. Please add classes first.", type: 'warning' });
+          toast.error("No class data found.");
         }
       } catch (err) {
-        setError({ message: "Failed to load class data. Please try again later.", type: 'error' });
+        handleApiError(err); 
       } finally {
         setIsLoading(false);
       }
     };
+  
     loadClassData();
-  }, []);
+  }, []); 
+  
 
   const handleFetchAttendance = useCallback(async () => {
     if (!validateAttendanceForm(fromDate, toDate, classSelected, subjectSelected)) {
-      setError({ message: "Please fill in all required fields with valid values.", type: 'warning' });
+      toast.warning("Please fill in all required fields with valid values.");
       return;
     }
 
     const fromDateObj = new Date(fromDate);
     const toDateObj = new Date(toDate);
     if (fromDateObj > toDateObj) {
-      setError({ message: "From date cannot be later than To date", type: 'warning' });
+      toast.warning("From date cannot be later than To date.");
       return;
     }
 
@@ -79,7 +76,7 @@ const StudentAttendanceShow: React.FC = () => {
       );
 
       if (!attendanceData || attendanceData.length === 0) {
-        setError({ message: "No attendance records found for the selected criteria.", type: 'info' });
+        toast.info("No attendance records found for the selected criteria.");
         setRowData([]);
         return;
       }
@@ -92,21 +89,17 @@ const StudentAttendanceShow: React.FC = () => {
       setColumnDefs([
         { field: "stdId", headerName: "Student ID", width: 120 },
         { field: "name", headerName: "Student Name", width: 150 },
-        ...dynamicColumns
+        { field: "remark" , headerName: "Remark", width: 150 },
+        ...dynamicColumns,
       ]);
       setRowData(rows);
+      toast.success("Attendance data fetched successfully.");
     } catch (err: any) {
-      setError({ message: `Failed to fetch attendance: ${err.message || 'Unknown error'}`, type: 'error' });
+      toast.error(`Failed to fetch attendance: ${err.message || "Unknown error"}`);
     } finally {
       setIsLoading(false);
     }
-  }, [fromDate, toDate, classSelected, subjectSelected, isMasterAttendanceMode]);
-
-  useEffect(() => {
-    if (classSelected && (isMasterAttendanceMode || subjectSelected)) {
-      handleFetchAttendance();
-    }
-  }, [handleFetchAttendance, classSelected, subjectSelected, isMasterAttendanceMode]);
+  }, [fromDate,  toDate, classSelected, subjectSelected, isMasterAttendanceMode]);
 
   const mapAttendanceToRows = (data: AttendanceResponse[], dates: string[]): any[] => {
     const studentMap: { [id: string]: any } = {};
@@ -114,7 +107,7 @@ const StudentAttendanceShow: React.FC = () => {
       const formattedDate = date.split("T")[0];
       students.forEach(({ stdId, name, attendance }) => {
         if (!studentMap[stdId]) {
-          studentMap[stdId] = { stdId, name, ...dates.reduce((acc, d) => ({ ...acc, [d]: '-' }), {}) };
+          studentMap[stdId] = { stdId, name, ...dates.reduce((acc, d) => ({ ...acc, [d]: "-" }), {}) };
         }
         studentMap[stdId][formattedDate] = attendance;
       });
@@ -127,7 +120,9 @@ const StudentAttendanceShow: React.FC = () => {
   return (
     <div className="box p-4">
       <h2 className="text-center mb-4">Student Attendance</h2>
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
       <div className="card p-4">
+
         <div className="form-group">
           <div className="form-check form-switch">
             <input
@@ -137,6 +132,7 @@ const StudentAttendanceShow: React.FC = () => {
               checked={isMasterAttendanceMode}
               onChange={toggleAttendanceMode}
               disabled={isLoading}
+
             />
             <label className="form-check-label" htmlFor="attendanceModeToggle">
               {isMasterAttendanceMode ? "Master Attendance Mode" : "Subject-wise Attendance Mode"}
@@ -144,8 +140,9 @@ const StudentAttendanceShow: React.FC = () => {
           </div>
         </div>
 
-        {!isMasterAttendanceMode && (
-          <div className="row">
+        <div className="row">
+          {/* Show Class dropdown in Master Attendance Mode */}
+          {(isMasterAttendanceMode || !isMasterAttendanceMode) && (
             <div className="col-md-6">
               <label htmlFor="classSelect">Class:</label>
               <select
@@ -162,6 +159,10 @@ const StudentAttendanceShow: React.FC = () => {
                 ))}
               </select>
             </div>
+          )}
+
+          {/* Show Subject dropdown only when in Subject-wise Attendance Mode */}
+          {!isMasterAttendanceMode && (
             <div className="col-md-6">
               <label htmlFor="subjectSelect">Subject:</label>
               <select
@@ -178,8 +179,8 @@ const StudentAttendanceShow: React.FC = () => {
                 ))}
               </select>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         <div className="row mt-3">
           <div className="col-md-6">
@@ -208,32 +209,13 @@ const StudentAttendanceShow: React.FC = () => {
 
         <div className="row mt-3">
           <div className="col-md-12 text-center">
-            <button
-              className="btn btn-primary"
-              onClick={handleFetchAttendance}
-              disabled={isLoading}
-            >
+            <button className="btn btn-primary" onClick={handleFetchAttendance} disabled={isLoading}>
               {isLoading ? "Loading..." : "Fetch Attendance"}
             </button>
           </div>
         </div>
 
-        {error && (
-          <div className={`alert alert-${error.type} mt-3`} role="alert">
-            {error.message}
-          </div>
-        )}
-
-        <div className="mt-4">
-          {rowData.length > 0 ? (
-            <AttendanceTable
-              rowData={rowData}
-              columnDefs={columnDefs}
-            />
-          ) : (
-            <p className="text-center">No attendance data available.</p>
-          )}
-        </div>
+        <AttendanceTable columnDefs={columnDefs} rowData={rowData} />
       </div>
     </div>
   );

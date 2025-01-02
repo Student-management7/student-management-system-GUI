@@ -23,8 +23,8 @@ interface AttendanceEntry {
 
 const FacultyAttendance: React.FC = () => {
   const navigate = useNavigate();
-  const [fromDate, setFromDate] = useState<string>('2024-11-07');
-  const [toDate, setToDate] = useState<string>('2024-11-10');
+  const [fromDate, setFromDate] = useState<string>('2024-12-20');
+  const [toDate, setToDate] = useState<string>('2024-12-28');
   const [rowData, setRowData] = useState<any[]>([]);
   const [columnDefs, setColumnDefs] = useState<any[]>([
     { field: 'name', headerName: 'Faculty Name' },

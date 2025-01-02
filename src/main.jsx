@@ -36,7 +36,7 @@ import StudenAttendance from './components/StudentAttendence/studentAttendance';
 import NotificationController from './components/Notification/notificationController';
 import ClassSubjectShow from './components/saveSubjectsToClasess/ClassSubjectsShow';
 import Permission from './components/permission/Permission';
-
+import TableComponent from './components/StudentAttendence/studentAttendance';
 const App = () => {
   const { isAuthenticated } = useAuth();
 
@@ -54,20 +54,20 @@ const App = () => {
               <Route path="/main" element={<MasterController />} />
               <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
               <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
-              <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
+              <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />f
               <Route path="/StudentRegistrationController" element={<StudentRegistrationController />} />
 
               <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
-              <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
-              <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
-              <Route path="/facultyAttendanceEdit" element={<FacultyAttendanceEdit />} />
-              <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />
+              <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />f
+              <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />f
+              <Route path="/facultyAttendanceEdit" element={<FacultyAttendanceEdit />} />f
+              <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />f
               <Route path="/studentAttendanceEdit" element={<StudentAttendanceEdit />} />
+              <Route path="/FacultySalary" element={<FacultySalaryController />} />
               <Route path="/studentAttendanceEditSave" element={<StudentAttendanceEditSave />} />
               <Route path="/fees" element={<FeesController />} />
              
               <Route path="/holiday" element={<HolidayFormController />} />
-              <Route path="/FacultySalary" element={<FacultySalaryController />} />
               <Route path="/FacultySalaryDetails/:id" element={<FacultySalaryDetails />} />
               <Route path="/StudentFeesController" element={<StudentFeesController />} />
               <Route path="/StudentFeesForm" element={<StudentFeesForm />} />
@@ -76,6 +76,9 @@ const App = () => {
               <Route path="/Notification" element={<NotificationController />} />             
               <Route path="/ClassSubjectShow" element={<ClassSubjectShow />} />
               <Route path="/Permission" element={<Permission />} />
+              <Route path="/attendance" element={<TableComponent />} />
+               
+
 
             </Route>
 

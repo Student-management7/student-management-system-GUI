@@ -1,0 +1,69 @@
+.alert-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .alert-dialog {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .alert-dialog-title {
+    margin: 0 0 10px;
+    font-size: 1.5rem;
+    color: #333;
+  }
+  
+  .alert-dialog-message {
+    margin: 0 0 20px;
+    color: #555;
+  }
+  
+  .alert-dialog-buttons {
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+  }
+  
+  .alert-dialog-confirm,
+  .alert-dialog-cancel {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  .alert-dialog-confirm {
+    background: #28a745;
+    color: #fff;
+  }
+  
+  .alert-dialog-cancel {
+    background: #dc3545;
+    color: #fff;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  

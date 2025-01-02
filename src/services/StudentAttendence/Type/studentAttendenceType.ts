@@ -4,6 +4,7 @@ export interface ClassData {
 }
 
 export interface Student {
+    remark: string;
     stdId: string;
     name: string;
     attendance?: string; // Default to "Present" if not provided
@@ -15,6 +16,8 @@ export interface AttendancePayload {
     masterAttendance: boolean;
     studentList: {
         stdId: string;
+        name: string;
         attendance: string;
+        remark: string | null;
     }[];
 }

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getClassData } from "../../services/classSubjectShow/api";
 import { ClassData } from "../../services/classSubjectShow/type";
-import GridView from "./gridView";
 import SaveSubjectsToClasses from "./saveSubjectsToClasess";
+import ReusableTable from "../MUI Table/ReusableTable"; 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -16,7 +16,7 @@ const ClassTable: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      setError(null); // Reset error state
+      setError(null); 
 
       try {
         const result = await getClassData();
@@ -36,28 +36,29 @@ const ClassTable: React.FC = () => {
     fetchData();
   }, []);
 
-  // Loader Component
+ 
   const Loader = () => (
     <div className="flex items-center justify-center h-40">
       <div className="loader border-t-4 border-blue-500 rounded-full w-12 h-12 animate-spin"></div>
     </div>
   );
 
-  const columnDefs = [
-    { headerName: "Class Name", field: "className", sortable: true, filter: true },
-    { 
-      headerName: "Subjects", 
-      field: "subject", 
-      sortable: true, 
-      filter: true,
-      cellRenderer: (params: any) => params.value.join(", "),
-    },
+ 
+  const columns = [
+    { field: "className", headerName: "Class Name" },
+    { field: "subject", headerName: "Subjects" },
   ];
 
+  
+  const rows = data.map((item) => ({
+    className: item.className,
+    subject: item.subject.join(", "), 
+  }));
+
   const handleSave = (updatedData: ClassData[]) => {
-    setData(updatedData); // Update the grid data after saving
+    setData(updatedData); 
     toast.success("Data updated successfully!");
-    setShowForm(false); // Close the form
+    setShowForm(false);
   };
 
   return (
@@ -69,11 +70,11 @@ const ClassTable: React.FC = () => {
           <div className="text-right">
             <button
               onClick={() => setShowForm(true)}
-             className="btn btn-default"
+              className="btn btn-default"
             >
               Add Subject
             </button>
-            </div>
+          </div>
 
           {loading ? (
             <Loader />
@@ -81,17 +82,15 @@ const ClassTable: React.FC = () => {
             <div className="text-center text-red-500">{error}</div>
           ) : (
             <div className="box">
-               <GridView rowData={data} columnDefs={columnDefs} />
+              <ReusableTable columns={columns} rows={rows} />
             </div>
           )}
         </>
       ) : (
-        
-          <SaveSubjectsToClasses
-            onClose={() => setShowForm(false)}
-            onSave={handleSave}
-          />
-        
+        <SaveSubjectsToClasses
+          onClose={() => setShowForm(false)}
+          onSave={handleSave}
+        />
       )}
     </div>
   );

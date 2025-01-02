@@ -8,8 +8,9 @@ import axiosInstance from "../../services/Utils/apiUtils";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AlertDialog from "../alert/AlertDialog";
+import { sortArrayByKey } from "../Utils/sortArrayByKey";
 const FormView = () => {
-  const [classes, setClasses] = useState<ClassData[]>([]);
+  const [classes, setClasses] = React.useState<ClassData[]>([]);
   const [selectedFee, setSelectedFee] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   // const [formikValues, setFormikValues] = useState<any>(null); // Store form values temporarily
@@ -28,14 +29,12 @@ const FormView = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const token = localStorage.getItem("authToken");
-        const response = await axiosInstance.get("/admin/getAll", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setClasses(response.data);
-        console.log(response);
+        const response = await axiosInstance.get<ClassData[]>("/admin/getAll");
+        const data = response.data;
+
+        // Sort the data
+        const sortedData = sortArrayByKey(data, "className");
+        setClasses(sortedData);
       } catch (error) {
         console.error("Error fetching classes:", error);
       }
@@ -44,6 +43,7 @@ const FormView = () => {
     fetchClasses();
   }, []);
 
+  // Handle dropdown change
   const handleClassChange = (
     event: React.ChangeEvent<HTMLSelectElement>,
     setFieldValue: (field: string, value: any) => void
@@ -55,7 +55,6 @@ const FormView = () => {
     const classData = classes.find((cls) => cls.className === selectedClass);
     if (classData) {
       setSelectedFee(classData.totalFee.toString());
-      // Set the total fee in Formik as well
       setFieldValue("totalFee", classData.totalFee);
     } else {
       setSelectedFee("");
@@ -157,7 +156,7 @@ const FormView = () => {
 
   const handleConfirmSubmit = (values: StudentFormData, formikHelpers: any) => {
     setIsDialogOpen(false); // Close the dialog on confirm
-    handleSubmit(values, formikHelpers); 
+    handleSubmit(values, formikHelpers);
     // setIsDialogOpen(false); // Call the submit function
   };
   return (
@@ -168,7 +167,9 @@ const FormView = () => {
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
+          
         >
+          
           {({ errors, touched, setFieldValue }) => (
             <Form>
               <div className="row">
@@ -181,9 +182,8 @@ const FormView = () => {
                       type="text"
                       id="name"
                       name="name"
-                      className={`form-control ${
-                        errors.name && touched.name ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.name && touched.name ? "is-invalid" : ""
+                        }`}
                       placeholder="Enter full name"
                     />
                     {errors.name && touched.name && (
@@ -200,9 +200,8 @@ const FormView = () => {
                       type="text"
                       id="address"
                       name="address"
-                      className={`form-control ${
-                        errors.address && touched.address ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.address && touched.address ? "is-invalid" : ""
+                        }`}
                       placeholder="Enter Address"
                     />
                     {errors.address && touched.address && (
@@ -219,9 +218,8 @@ const FormView = () => {
                       type="text"
                       id="city"
                       name="city"
-                      className={`form-control ${
-                        errors.city && touched.city ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.city && touched.city ? "is-invalid" : ""
+                        }`}
                       placeholder="Enter city"
                     />
                     {errors.city && touched.city && (
@@ -241,9 +239,8 @@ const FormView = () => {
                       type="text"
                       id="state"
                       name="state"
-                      className={`form-control ${
-                        errors.state && touched.state ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.state && touched.state ? "is-invalid" : ""
+                        }`}
                       placeholder="Enter state"
                     />
                     {errors.state && touched.state && (
@@ -260,9 +257,8 @@ const FormView = () => {
                       type="text"
                       id="contact"
                       name="contact"
-                      className={`form-control ${
-                        errors.contact && touched.contact ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.contact && touched.contact ? "is-invalid" : ""
+                        }`}
                       placeholder="Enter contact"
                     />
                     {errors.contact && touched.contact && (
@@ -279,9 +275,8 @@ const FormView = () => {
                       as="select"
                       id="gender"
                       name="gender"
-                      className={`form-control ${
-                        errors.gender && touched.gender ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.gender && touched.gender ? "is-invalid" : ""
+                        }`}
                     >
                       <option value="">Select</option>
                       <option value="Male">Male</option>
@@ -304,9 +299,8 @@ const FormView = () => {
                       type="date"
                       id="dob"
                       name="dob"
-                      className={`form-control ${
-                        errors.dob && touched.dob ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.dob && touched.dob ? "is-invalid" : ""
+                        }`}
                     />
                     {errors.dob && touched.dob && (
                       <div className="invalid-feedback">{errors.dob}</div>
@@ -349,6 +343,8 @@ const FormView = () => {
                         </option>
                       ))}
                     </Field>
+
+
                   </div>
                 </div>
               </div>
@@ -373,18 +369,23 @@ const FormView = () => {
                       Category
                     </label>
                     <Field
-                      type="text"
+                      as="select"
                       id="category"
                       name="category"
-                      className={`form-control ${
-                        errors.category && touched.category ? "is-invalid" : ""
-                      }`}
-                      placeholder="Enter category"
-                    />
+                      className={`form-control ${errors.category && touched.category ? "is-invalid" : ""}`}
+                    >
+                      <option value="">Select Category</option>
+                      <option value="category1">General</option>
+                      <option value="category1">OBC</option>
+                      <option value="category2">SC</option>
+                      <option value="category3">ST</option>
+                      {/* Add more options as needed */}
+                    </Field>
                     {errors.category && touched.category && (
                       <div className="invalid-feedback">{errors.category}</div>
                     )}
                   </div>
+
                 </div>
               </div>
               <hr className="hr" />
@@ -404,12 +405,11 @@ const FormView = () => {
                       type="text"
                       id="familyDetails.stdo_FatherName"
                       name="familyDetails.stdo_FatherName"
-                      className={`form-control ${
-                        errors.familyDetails?.stdo_FatherName &&
+                      className={`form-control ${errors.familyDetails?.stdo_FatherName &&
                         touched.familyDetails?.stdo_FatherName
-                          ? "is-invalid"
-                          : ""
-                      }`}
+                        ? "is-invalid"
+                        : ""
+                        }`}
                       placeholder="Enter father's name"
                     />
                     {errors.familyDetails?.stdo_FatherName &&
@@ -449,12 +449,11 @@ const FormView = () => {
                       type="text"
                       id="familyDetails.stdo_primaryContact"
                       name="familyDetails.stdo_primaryContact"
-                      className={`form-control ${
-                        errors.familyDetails?.stdo_primaryContact &&
+                      className={`form-control ${errors.familyDetails?.stdo_primaryContact &&
                         touched.familyDetails?.stdo_primaryContact
-                          ? "is-invalid"
-                          : ""
-                      }`}
+                        ? "is-invalid"
+                        : ""
+                        }`}
                       placeholder="Enter primary contact"
                     />
                     {errors.familyDetails?.stdo_primaryContact &&
@@ -565,11 +564,13 @@ const FormView = () => {
                 >
                   Submit
                 </button>
+
+                
                 <AlertDialog
                   title="Confirm Submit"
                   message="Are you sure you want to submit this item?"
                   isOpen={isDialogOpen}
-                  onConfirm={() => handleConfirmSubmit(values, formikHelpers)} // Pass values and helpers here
+                  onConfirm={async () => handleConfirmSubmit(values, formikHelpers)} // Pass values and helpers here
                   onCancel={handleCancel}
                 />
               </div>
