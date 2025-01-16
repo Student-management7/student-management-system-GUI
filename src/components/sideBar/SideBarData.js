@@ -1,5 +1,5 @@
 
-import { FaBook, FaRegEdit, FaUserEdit,  } from "react-icons/fa";
+import { FaBook, FaIdCard, FaRegEdit, FaUserEdit,  } from "react-icons/fa";
 import { FaHouse, FaHandshakeAngle, FaCaretDown, FaCaretUp, FaMoneyBill, FaUserLarge, FaUserTie ,FaBell, FaUserPlus ,FaClipboardList , } from "react-icons/fa6";
 export const SideBarData = [
 
@@ -125,6 +125,27 @@ export const SideBarData = [
                 title: 'Save Subjects',
                 path: '/ClassSubjectShow',
                 icon: FaBook,
+            },
+            
+        ]
+    },
+    {
+        title: 'Student Report',
+        path: '/',
+        icon: FaIdCard,
+        iconClosed: FaCaretUp,
+        iconeOpened: FaCaretDown,
+        subNav: [
+
+            {
+                title: 'Create Report',
+                path: '/StudentReportForm',
+                icon: FaIdCard,
+            },
+            {
+                title: 'View Report',
+                path: '/StudentReport',
+                icon: FaIdCard,
             },
             
         ]

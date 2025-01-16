@@ -1,9 +1,4 @@
 
-
-
-
-
-
 import axiosInstance from "../../Utils/apiUtils";
 import { AttendanceResponse, ClassData } from "../type/attendanceTypes";
 import { formatDate } from "../dateFormates/dateUtils";

@@ -9,7 +9,7 @@ import { ClassData } from "../../services/SaveSubjects/Type";
 import { AttendanceResponse } from "../../services/StudentAttendanceShow/type/attendanceTypes";
 import { useNavigate } from "react-router-dom";
 import "./Attendence.scss";
-import  { handleApiError } from '../Utility/toastUtils'
+import { handleApiError } from '../Utility/toastUtils'
 import { sortArrayByKey } from "../Utils/sortArrayByKey";
 const StudentAttendanceShow: React.FC = () => {
   const navigate = useNavigate();
@@ -21,35 +21,35 @@ const StudentAttendanceShow: React.FC = () => {
   const [toDate, setToDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [rowData, setRowData] = useState<any[]>([]);
   const [columnDefs, setColumnDefs] = useState<any[]>([
-    { field: "stdId", headerName: "Student ID", width: 120 },
+
     { field: "name", headerName: "Student Name", width: 150 },
-    { field: "remark" , headerName: "Remark", width: 150 },
+    { field: "remark", headerName: "Remark", width: 150 },
+    { field: "Attendance", headerName: "Remark", width: 150 },
   ]);
   const [isMasterAttendanceMode, setIsMasterAttendanceMode] = useState(false);
 
   useEffect(() => {
     const loadClassData = async () => {
-      setIsLoading(true); 
+      setIsLoading(true);
       try {
-        const data = await fetchClassData(); 
+        const data = await fetchClassData();
         if (data?.length > 0) {
-          
-          const sortedData = sortArrayByKey(data, "className"); 
+          const sortedData = sortArrayByKey(data, "className");
           setClassData(sortedData); // Set the sorted data
-          setClassSelected(sortedData[0].className); 
-          setSubjectSelected(sortedData[0]?.subject?.[0] || ""); 
+          setClassSelected(""); // Default to the placeholder value
+          setSubjectSelected(""); // Default to the placeholder value
         } else {
           toast.error("No class data found.");
         }
       } catch (err) {
-        handleApiError(err); 
+        handleApiError(err);
       } finally {
         setIsLoading(false);
       }
     };
   
     loadClassData();
-  }, []); 
+  }, []);
   
 
   const handleFetchAttendance = useCallback(async () => {
@@ -87,9 +87,9 @@ const StudentAttendanceShow: React.FC = () => {
       const rows = mapAttendanceToRows(attendanceData, dateRange);
 
       setColumnDefs([
-        { field: "stdId", headerName: "Student ID", width: 120 },
+
         { field: "name", headerName: "Student Name", width: 150 },
-        { field: "remark" , headerName: "Remark", width: 150 },
+        { field: "remark", headerName: "Remark", width: 150 },
         ...dynamicColumns,
       ]);
       setRowData(rows);
@@ -99,7 +99,7 @@ const StudentAttendanceShow: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [fromDate,  toDate, classSelected, subjectSelected, isMasterAttendanceMode]);
+  }, [fromDate, toDate, classSelected, subjectSelected, isMasterAttendanceMode]);
 
   const mapAttendanceToRows = (data: AttendanceResponse[], dates: string[]): any[] => {
     const studentMap: { [id: string]: any } = {};
@@ -152,6 +152,9 @@ const StudentAttendanceShow: React.FC = () => {
                 onChange={(e) => setClassSelected(e.target.value)}
                 disabled={isLoading}
               >
+                <option value="" disabled>
+                  Select a class
+                </option>
                 {classData.map(({ className }) => (
                   <option key={className} value={className}>
                     Class {className}
@@ -161,52 +164,54 @@ const StudentAttendanceShow: React.FC = () => {
             </div>
           )}
 
-          {/* Show Subject dropdown only when in Subject-wise Attendance Mode */}
-          {!isMasterAttendanceMode && (
-            <div className="col-md-6">
-              <label htmlFor="subjectSelect">Subject:</label>
-              <select
-                id="subjectSelect"
-                className="form-control"
-                value={subjectSelected}
-                onChange={(e) => setSubjectSelected(e.target.value)}
-                disabled={isLoading}
-              >
-                {classData.find(({ className }) => className === classSelected)?.subject.map((subj) => (
-                  <option key={subj} value={subj}>
-                    {subj}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
+ {/* Show Subject dropdown only when in Subject-wise Attendance Mode */}
+ {!isMasterAttendanceMode && (
+    <div className="col-md-6">
+      <label htmlFor="subjectSelect">Subject:</label>
+      <select
+        id="subjectSelect"
+        className="form-control"
+        value={subjectSelected}
+        onChange={(e) => setSubjectSelected(e.target.value)}
+        disabled={isLoading}
+      >
+        <option value="" disabled>
+          Select a subject
+        </option>
+        {classData.find(({ className }) => className === classSelected)?.subject.map((subj) => (
+          <option key={subj} value={subj}>
+            {subj}
+          </option>
+        ))}
+      </select>
+    </div>
+  )}
+</div>
 
-        <div className="row mt-3">
-          <div className="col-md-6">
-            <label htmlFor="fromDate">From Date:</label>
-            <input
-              type="date"
-              id="fromDate"
-              className="form-control"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              disabled={isLoading}
-            />
-          </div>
-          <div className="col-md-6">
-            <label htmlFor="toDate">To Date:</label>
-            <input
-              type="date"
-              id="toDate"
-              className="form-control"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              disabled={isLoading}
-            />
-          </div>
-        </div>
-
+<div className="row mt-3">
+  <div className="col-md-6">
+    <label htmlFor="fromDate">From Date:</label>
+    <input
+      type="date"
+      id="fromDate"
+      className="form-control"
+      value={fromDate}
+      onChange={(e) => setFromDate(e.target.value)}
+      disabled={isLoading}
+    />
+  </div>
+  <div className="col-md-6">
+    <label htmlFor="toDate">To Date:</label>
+    <input
+      type="date"
+      id="toDate"
+      className="form-control"
+      value={toDate}
+      onChange={(e) => setToDate(e.target.value)}
+      disabled={isLoading}
+    />
+  </div>
+</div>
         <div className="row mt-3">
           <div className="col-md-12 text-center">
             <button className="btn btn-primary" onClick={handleFetchAttendance} disabled={isLoading}>

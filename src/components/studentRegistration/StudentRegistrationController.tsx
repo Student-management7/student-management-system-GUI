@@ -11,6 +11,8 @@ import EditStudentForm from "./EditStudentForm";
 import AlertDialog from "../alert/AlertDialog";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Eye, IdCard, Pencil, Trash2 } from "lucide-react";
+
 
 const StudentRegistrationController = () => {
   const [rowData, setRowData] = useState<any[]>([]);
@@ -21,15 +23,15 @@ const StudentRegistrationController = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false); // Control dialog visibility
 
   const [columnDefs] = useState<any[]>([
-    { field: "id", headerName: "ID" },
+   
     { field: "name", headerName: "Name" },
     { field: "city", headerName: "City" },
     { field: "cls", headerName: "Class" },
-    { field: "address", headerName: "Address" },
+    // { field: "address", headerName: "Address" },
     { field: "gender", headerName: "Gender" },
-    { field: "state", headerName: "State" },
+    // { field: "state", headerName: "State" },
     { field: "familyDetails.stdo_FatherName", headerName: "Father Name" },
-    { field: "familyDetails.stdo_MotherName", headerName: "Mother Name" },
+    // { field: "familyDetails.stdo_MotherName", headerName: "Mother Name" },
     { field: "familyDetails.stdo_primaryContact", headerName: "Contact" },
     {
       field: "actions",
@@ -42,22 +44,38 @@ const StudentRegistrationController = () => {
               onClick={() => getSingleData(params.data)}
               className="btn btn-lg btn-edit"
             >
-              <i className="bi bi-pencil-square"></i>
+             <Pencil size={20} />
             </button>
 
-            <span></span>
+           
 
             <button
               onClick={() => getDeleteData(params.data)}
               className="btn btn-lg btn-delete"
             >
-              <i className="bi bi-trash text-red-600 "></i>
+              <Trash2 size={20} color="red" />
             </button>
+
+            
           </div>
-          <div></div>
+
+          
         </>
       ),
     },
+    {
+          field: ' Report Card',
+          headerName: 'Report Card',
+          width: 100,
+          cellRenderer: (params: any) => (
+            <button
+              onClick={() => handeleReport(params.data)}
+             
+            >
+            <IdCard size={20} color='green' />
+            </button>
+          ),
+        },
   ]);
 
   const fetchStudentDetails = async () => {
@@ -165,3 +183,7 @@ const StudentRegistrationController = () => {
 };
 
 export default StudentRegistrationController;
+function handeleReport(data: any): void {
+  throw new Error("Function not implemented.");
+}
+

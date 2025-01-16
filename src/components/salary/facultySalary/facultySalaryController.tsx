@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import GridView from "./gridView";
 import FacultySalaryForm from "./FacultySalaryForm";
 import { fetchFacultySalaries, updateFacultySalary, saveFacultySalary } from "../../../services/salary/facultysalary/Api";
+import { Eye, Pencil } from "lucide-react";
 
 // Define types with improved clarity
 type DeductionItem = {
@@ -21,6 +22,7 @@ type FacultySalaryDetails = {
 };
 
 type FacultySalaryResponse = {
+  fact_email: any;
   fact_id: string;
   fact_Name: string;
   fact_salary: {
@@ -39,6 +41,7 @@ const transformFacultySalaryData = (data: FacultySalaryResponse[]): FacultySalar
     const salary = faculty.fact_salary?.[0] || {};
     return {
       facultyID: faculty.fact_id,
+      fact_email: faculty.fact_email,
       fact_Name: faculty.fact_Name,
       facultySalary: salary.facultySalary || 0,
       facultyTax: salary.facultyTax || 0,
@@ -60,6 +63,7 @@ const FacultySalaryController: React.FC = () => {
 
   const columnDefs = [
     { headerName: "Faculty ID", field: "facultyID", sortable: true, filter: true },
+    { headerName: "Email", field: "fact_email", sortable: true, filter: true },
     { headerName: "Faculty Name", field: "fact_Name", sortable: true, filter: true },
     { headerName: "Salary", field: "facultySalary", sortable: true, filter: true },
     { headerName: "Tax %", field: "facultyTax", sortable: true, filter: true },
@@ -83,9 +87,8 @@ const FacultySalaryController: React.FC = () => {
         
           <button
             onClick={() => params.data && handleEditButtonClick(params.data)}
-            className="bi bi-pencil-square text-orange-500 mr-2 hover:text-orange-800"
           >
-           
+           <Pencil size={20} color='orange' />
           </button>
          
       ),
@@ -95,9 +98,8 @@ const FacultySalaryController: React.FC = () => {
       cellRenderer: (params: any) => (
         <button
             onClick={() => params.data?.facultyID && handleViewDetails(params.data.facultyID)}
-            className="bi bi-eye text-blue-800"
           >
-           
+           <Eye size={20} color='blue' />
           </button>
       )}
   ];
