@@ -34,6 +34,14 @@ interface StudentData {
     studentInfo: any;
     id: string;
     name: string;
+    attendance: any;
+}
+
+interface AttendanceData {
+    totalDays: number;
+    presentDays: number;
+    absentDays: number;
+    attendancePercentage: number;
 }
 
 const StudentReport: React.FC = () => {
@@ -48,16 +56,22 @@ const StudentReport: React.FC = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const [examResponse] = await Promise.all([
+                const [examResponse, attendanceResponse] = await Promise.all([
                     axiosInstance.get(
                         "/report/getStudentReport?id=652cd614-9815-4fbe-8873-18fd1b1b1642"
                     ),
-
+                    axiosInstance.get(
+                        "/attendance/getStudentAttendance?id=652cd614-9815-4fbe-8873-18fd1b1b1642"
+                    )
                 ]);
                 const examData = examResponse.data;
+                const attendanceData = attendanceResponse.data;
 
                 setExamData(examData);
-                setStudentData(examData[0].studentInfo);
+                setStudentData({
+                    ...examData[0].studentInfo,
+                    attendance: attendanceData
+                });
                 if (examData.length > 0) {
                     setSelectedExamType(examData[0].examType);
                 }
@@ -91,6 +105,38 @@ const StudentReport: React.FC = () => {
     if (!filteredExam) {
         return <div className="p-5">No data available</div>;
     }
+
+    const AttendanceCard: React.FC<{ attendance: AttendanceData }> = ({ attendance }) => (
+        <div className="bg-white rounded-xl p-5 shadow-md mb-10">
+            <h3 className="text-xl font-bold text-indigo-600 mb-5">Attendance</h3>
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <p className="text-sm text-gray-600">Total Days</p>
+                    <p className="text-lg font-semibold">{attendance.totalDays}</p>
+                </div>
+                <div>
+                    <p className="text-sm text-gray-600">Present Days</p>
+                    <p className="text-lg font-semibold">{attendance.presentDays}</p>
+                </div>
+                <div>
+                    <p className="text-sm text-gray-600">Absent Days</p>
+                    <p className="text-lg font-semibold">{attendance.absentDays}</p>
+                </div>
+                <div>
+                    <p className="text-sm text-gray-600">Attendance Percentage</p>
+                    <p className="text-lg font-semibold">{attendance.attendancePercentage}%</p>
+                </div>
+            </div>
+            <div className="mt-4">
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div 
+                        className="bg-indigo-600 h-2.5 rounded-full" 
+                        style={{ width: `${attendance.attendancePercentage}%` }}
+                    ></div>
+                </div>
+            </div>
+        </div>
+    );
 
     return (
         <div className="container-fluid p-5 bg-gray-100 font-sans">
@@ -247,6 +293,9 @@ const StudentReport: React.FC = () => {
                 </div>
 
                 <div className="lg:w-1/4 mt-10 lg:mt-0">
+                    {studentData.attendance && (
+                        <AttendanceCard attendance={studentData.attendance} />
+                    )}
                     {/* Exam Details Card */}
                     <div className="bg-white rounded-xl p-5 shadow-md mb-10">
                         <h3 className="text-xl font-bold text-indigo-600 mb-5">Exam Details</h3>
