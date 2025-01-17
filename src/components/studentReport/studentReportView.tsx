@@ -64,6 +64,7 @@ const StudentReport: React.FC = () => {
                         "/attendance/getStudentAttendance?id=652cd614-9815-4fbe-8873-18fd1b1b1642"
                     )
                 ]);
+
                 const examData = examResponse.data;
                 const attendanceData = attendanceResponse.data;
 
@@ -72,6 +73,13 @@ const StudentReport: React.FC = () => {
                     ...examData[0].studentInfo,
                     attendance: attendanceData
                 });
+                
+
+                console.log("Exam Data:", examData);
+                console.log("Attendance Data:", attendanceData);
+
+
+
                 if (examData.length > 0) {
                     setSelectedExamType(examData[0].examType);
                 }
@@ -101,7 +109,7 @@ const StudentReport: React.FC = () => {
             </div>
         );
     }
-
+    
     if (!filteredExam) {
         return <div className="p-5">No data available</div>;
     }
@@ -137,6 +145,8 @@ const StudentReport: React.FC = () => {
             </div>
         </div>
     );
+
+    
 
     return (
         <div className="container-fluid p-5 bg-gray-100 font-sans">
@@ -186,6 +196,7 @@ const StudentReport: React.FC = () => {
                           <label className="text-sm font-medium text-gray-500">Full Name</label>
                           <p className="text-lg font-semibold">{studentData.name}</p>
                         </div>
+                         
                         <div className="flex flex-col space-y-2">
                           <label className="text-sm font-medium text-gray-500">Roll Number</label>
                           <p className="text-lg font-semibold">SMS90764389</p>

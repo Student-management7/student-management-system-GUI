@@ -1,71 +1,112 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
-const HeaderController = () => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+interface UserDetails {
+  email: string;
+  facultyInfo?: {
+    fact_Name: string;
+  };
+}
 
-    const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
+const HeaderController: React.FC = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Fetch user details from localStorage
+  useEffect(() => {
+    const storedDetails = localStorage.getItem("userDetails");
+    if (storedDetails) {
+      setUserDetails(JSON.parse(storedDetails));
+    }
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
     };
 
-    return (
-        <header className="headerBox bg-white shadow-md py-4 px-6 md:px-10 flex items-center justify-between">
-            {/* Logo */}
-            {/* <div className="text-blue-600 font-extrabold text-lg md:text-2xl">
-                EasyWaySolution
-            </div> */}
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
 
-            {/* Hamburger Icon for Mobile */}
-            <div className="md:hidden">
-                <button onClick={toggleMenu} className="text-gray-700 focus:outline-none">
-                    {isMenuOpen ? "✕" : "☰"}
-                </button>
-            </div>
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isDropdownOpen]);
 
-            {/* Navigation Links */}
-            <nav
-                className={`nav md:flex ${isMenuOpen ? "block" : "hidden"} w-full md:w-auto`}
-            >
-                <ul className="nav-bar flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6 text-sm md:text-base text-gray-700 font-semibold">
-                    <li className="nav-item">
-                        <Link to="/Home" className="hover:text-blue-600 transition-colors">Home</Link>
-                    </li>
-                    {/* <li className="nav-item">
-                        <Link to="/StudentRegistrationController" className="hover:text-blue-600 transition-colors">Student Registration</Link>
-                    </li> */}
-                    {/* <li className="nav-item">
-                        <Link to="/FacultyRegistration" className="hover:text-blue-600 transition-colors">Faculty Registration</Link>
-                    </li> */}
-                    {/* <li className="nav-item">
-                        <Link to="/StudentAttendanceShow" className="hover:text-blue-600 transition-colors">View Student Attendance</Link>
-                    </li> */}
-                    {/* <li className="nav-item">
-                        <Link to="/FacultyAttendanceShow" className="hover:text-blue-600 transition-colors">View Faculty Attendance</Link>
-                    </li> */}
-                    {/* <li className="nav-item">
-                        <Link to="/SaveSubjectsToClasses" className="hover:text-blue-600 transition-colors">Save Subjects</Link>
-                    </li> */}
-                    {/* <li className="nav-item">
-                        <Link to="/StudentAttendenceManagement" className="hover:text-blue-600 transition-colors">Studence Attendance</Link>
-                    </li> */}
-                    {/* <li className="nav-item">
-                        <Link to="/facultyAttendanceSave" className="hover:text-blue-600 transition-colors">Faculty Attendance</Link>
-                    </li> */}
-                    {/* <li className="nav-item">
-                        <Link to="/holiday" className="hover:text-blue-600 transition-colors">holiday</Link>
-<<<<<<< HEAD
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/fees" className="hover:text-blue-600 transition-colors">Admin fees</Link>
-                    </li>
-=======
-                    </li> */}
- {/* e15c575e20d0d57dd72800820a076737390eb183 */}
-                    
-                </ul>
-            </nav>
-        </header>
-    );
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleDropdown = () => {
+    setDropdownOpen((prev) => !prev);
+  };
+
+  return (
+    <header className="headerBox bg-white shadow-md py-4 px-6 md:px-10 flex items-center justify-between">
+      {/* Mobile Menu Toggle Button */}
+      <div className="md:hidden">
+        <button
+          onClick={toggleMenu}
+          className="text-gray-700 focus:outline-none"
+        >
+          {isMenuOpen ? "✕" : "☰"}
+        </button>
+      </div>
+
+      {/* Navigation Links */}
+      <nav
+        className={`nav md:flex ${
+          isMenuOpen ? "block" : "hidden"
+        } w-full md:w-auto`}
+      >
+        {/* Left Side Navigation */}
+        <ul className="nav-bar flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6 text-sm md:text-base text-gray-700 font-semibold">
+          <li className="nav-item">
+            <Link to="/Home" className="hover:text-blue-600 transition-colors">
+              Home
+            </Link>
+          </li>
+        </ul>
+      </nav>
+
+      {/* Right Side Icon and Dropdown */}
+      <div className="relative flex items-center" ref={dropdownRef}>
+        <i
+          className="bi bi-person-circle text-2xl cursor-pointer"
+          onClick={toggleDropdown}
+        ></i>
+        {isDropdownOpen && userDetails && (
+          <div
+            className="absolute mt-2 w-48 bg-white shadow-lg rounded-lg py-2 z-10"
+            style={{
+              top: "100%",
+              left: "50%",
+              transform: "translateX(-90%)",
+            }}
+          >
+            <p className="px-4 py-2 text-gray-700">
+              <strong>Name:</strong> {userDetails.facultyInfo?.fact_Name || "N/A"}
+            </p>
+            <p className="px-4 py-2 text-gray-700">
+              <strong>Email:</strong> {userDetails.email || "N/A"}
+            </p>
+            <p className="px-4 py-2 text-gray-700">
+              <strong>Profile</strong>
+            </p>
+          </div>
+        )}
+      </div>
+    </header>
+  );
 };
 
 export default HeaderController;

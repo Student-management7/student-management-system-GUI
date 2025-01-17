@@ -147,7 +147,7 @@ const StudentAttendanceShow: React.FC = () => {
               <label htmlFor="classSelect">Class:</label>
               <select
                 id="classSelect"
-                className="form-control"
+                className="form-select"
                 value={classSelected}
                 onChange={(e) => setClassSelected(e.target.value)}
                 disabled={isLoading}
@@ -170,7 +170,7 @@ const StudentAttendanceShow: React.FC = () => {
       <label htmlFor="subjectSelect">Subject:</label>
       <select
         id="subjectSelect"
-        className="form-control"
+        className="form-select"
         value={subjectSelected}
         onChange={(e) => setSubjectSelected(e.target.value)}
         disabled={isLoading}
