@@ -22,12 +22,12 @@ export const SideBarData = [
                 icon: FaUserPlus,
             },
             {
-                title: 'Student Attendance',
+                title: 'Student Attendance View',
                 path: '/StudentAttendanceShow',
                 icon: FaClipboardList,
             },
             {
-                title: 'Studence Attendance Managemnet',
+                title: 'Studence Attendance ',
                 path: '/StudentAttendenceManagement',
                 icon: FaUserEdit,
             }
@@ -47,12 +47,12 @@ export const SideBarData = [
                 icon: FaUserPlus,
             },
             {
-                title: 'Faculty Attendance',
+                title: 'Faculty Attendance View',
                 path: '/FacultyAttendanceShow',
                 icon: FaClipboardList,
             },
             {
-                title: 'Faculty Attendance Management',
+                title: 'Faculty Attendance ',
                 path: '/facultyAttendanceSave',
                 icon: FaRegEdit,
             },
@@ -152,3 +152,4 @@ export const SideBarData = [
     }
 
 ]
+

@@ -11,6 +11,7 @@ import axiosInstance from "../../services/Utils/apiUtils";
 
 
   import { User } from 'lucide-react';
+import axios from "axios";
 
 interface Subject {
     subject: string;
@@ -58,10 +59,10 @@ const StudentReport: React.FC = () => {
                 setLoading(true);
                 const [examResponse, attendanceResponse] = await Promise.all([
                     axiosInstance.get(
-                        "/report/getStudentReport?id=652cd614-9815-4fbe-8873-18fd1b1b1642"
+                        "/report/getStudentReport?id=98d9b1de-0f62-4656-9482-e59242e731c6"
                     ),
-                    axiosInstance.get(
-                        "/attendance/getStudentAttendance?id=652cd614-9815-4fbe-8873-18fd1b1b1642"
+                    axios.get(
+                        "https://716a9f60-27a0-449f-bb20-e8e3518d7858.mock.pstmn.io/get attendance"
                     )
                 ]);
 
@@ -342,4 +343,6 @@ const StudentReport: React.FC = () => {
 };
 
 export default StudentReport;
+
+
 
