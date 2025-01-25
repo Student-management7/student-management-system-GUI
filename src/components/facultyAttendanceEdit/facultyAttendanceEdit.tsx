@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import GridView from './gridView';
 import { fetchAttendance } from '../../services/Faculty/facultyAttendanceEdit/Api/api';
 import { Faculty, AttendanceEntry } from '../../services/Faculty/facultyAttendanceEdit/Type/type';
+import { Pencil } from 'lucide-react';
 
 const FacultyAttendance: React.FC = () => {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ const FacultyAttendance: React.FC = () => {
                 handleEditButtonClick(params.data.factId, selectedDate, params.data.factList)
               }
             >
-              Edit
+              <Pencil size={20} color='orange' />
             </button>
           ),
         },

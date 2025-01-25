@@ -1,5 +1,5 @@
 
-import { FaBook, FaRegEdit, FaUserEdit,  } from "react-icons/fa";
+import { FaBook, FaIdCard, FaRegEdit, FaUserEdit,  } from "react-icons/fa";
 import { FaHouse, FaHandshakeAngle, FaCaretDown, FaCaretUp, FaMoneyBill, FaUserLarge, FaUserTie ,FaBell, FaUserPlus ,FaClipboardList , } from "react-icons/fa6";
 export const SideBarData = [
 
@@ -22,12 +22,12 @@ export const SideBarData = [
                 icon: FaUserPlus,
             },
             {
-                title: 'Student Attendance',
+                title: 'Student Attendance View',
                 path: '/StudentAttendanceShow',
                 icon: FaClipboardList,
             },
             {
-                title: 'Studence Attendance Managemnet',
+                title: 'Studence Attendance ',
                 path: '/StudentAttendenceManagement',
                 icon: FaUserEdit,
             }
@@ -47,12 +47,12 @@ export const SideBarData = [
                 icon: FaUserPlus,
             },
             {
-                title: 'Faculty Attendance',
+                title: 'Faculty Attendance View',
                 path: '/FacultyAttendanceShow',
                 icon: FaClipboardList,
             },
             {
-                title: 'Faculty Attendance Management',
+                title: 'Faculty Attendance ',
                 path: '/facultyAttendanceSave',
                 icon: FaRegEdit,
             },
@@ -128,6 +128,24 @@ export const SideBarData = [
             },
             
         ]
+    },
+    {
+        title: 'Student Report',
+        path: '/',
+        icon: FaIdCard,
+        iconClosed: FaCaretUp,
+        iconeOpened: FaCaretDown,
+        subNav: [
+
+            {
+                title: 'Create Report',
+                path: '/StudentReportForm',
+                icon: FaIdCard,
+            },
+            
+            
+        ]
     }
 
 ]
+

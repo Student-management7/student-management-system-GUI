@@ -11,6 +11,7 @@ import DeleteConfirmationModal from '../../services/DeleteModele/DeleteConfirmat
 import { FacultyFormData } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Pencil, Trash2 ,IdCard } from 'lucide-react';
 
 const FacultyRegistrationForm: React.FC = () => {
   const [rowData, setRowData] = useState<FacultyFormData[]>([]);
@@ -202,9 +203,9 @@ const FacultyRegistrationForm: React.FC = () => {
       cellRenderer: (params: any) => (
         <button
           onClick={() => handleEdit(params.data)}
-          className=" bi bi-pencil-square text-orange-600"
-        >
           
+        >
+          <Pencil size={20} color='orange' />
         </button>
       ),
     },
@@ -215,12 +216,13 @@ const FacultyRegistrationForm: React.FC = () => {
       cellRenderer: (params: any) => (
         <button
           onClick={() => handleDelete(params.data)}
-          className="bi bi-trash text-red-600"
+         
         >
-          
+          <Trash2 size={20} color="red" />
         </button>
       ),
     },
+    
     
 
 
@@ -599,4 +601,5 @@ const FacultyRegistrationForm: React.FC = () => {
 };
 
 export default FacultyRegistrationForm;
+
 

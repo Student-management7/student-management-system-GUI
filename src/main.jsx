@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+// import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -37,6 +37,9 @@ import NotificationController from './components/Notification/notificationContro
 import ClassSubjectShow from './components/saveSubjectsToClasess/ClassSubjectsShow';
 import Permission from './components/permission/Permission';
 import TableComponent from './components/StudentAttendence/studentAttendance';
+import StudentReportForm from './components/studentReport/studentReportForm';
+import StudentReport from './components/studentReport/studentReportView';
+
 const App = () => {
   const { isAuthenticated } = useAuth();
 
@@ -45,9 +48,9 @@ const App = () => {
        {isAuthenticated ? (
         <>
           <HeaderController />
-          <div className="mainBody">
+          <div className="mainBody ">
             <SideBarController />
-            <div className="rhsBox">
+            <div className="rhsBox ">
               <Routes>
                 {/* Protected Routes */}
                 <Route element={<ProtectedRoute />}>
@@ -77,6 +80,9 @@ const App = () => {
               <Route path="/ClassSubjectShow" element={<ClassSubjectShow />} />
               <Route path="/Permission" element={<Permission />} />
               <Route path="/attendance" element={<TableComponent />} />
+              <Route path="/StudentReportForm" element={<StudentReportForm />} />
+               <Route path="/StudentReport" element={<StudentReport />} />
+              
                
 
 
@@ -104,13 +110,13 @@ const App = () => {
 
 // Rendering App
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  // <StrictMode>
     <Router>
       <AuthProvider>
         <App />
       </AuthProvider>
     </Router>
-  </StrictMode>
+  // </StrictMode>
 );
 
 

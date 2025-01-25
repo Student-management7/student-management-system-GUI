@@ -5,7 +5,7 @@ import axiosInstance from '../../services/Utils/apiUtils';
 import { formatDate } from '../Utils/dateUtils';
 import { getDateRange } from '../Utils/dateUtils';
 
-// Helper functions for date formatting
+
 
 
 
@@ -27,8 +27,8 @@ const FacultyAttendance: React.FC = () => {
   const [toDate, setToDate] = useState<string>('2024-12-28');
   const [rowData, setRowData] = useState<any[]>([]);
   const [columnDefs, setColumnDefs] = useState<any[]>([
-    { field: 'name', headerName: 'Faculty Name' },
     { field: 'factId', headerName: 'Faculty ID' },
+    { field: 'name', headerName: 'Faculty Name' },
   ]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
@@ -86,7 +86,7 @@ const FacultyAttendance: React.FC = () => {
 
       setColumnDefs([
         { field: 'name', headerName: 'Faculty Name' },
-        { field: 'factId', headerName: 'Faculty ID' },
+        // { field: 'factId', headerName: 'Faculty ID' },
         ...dynamicColumns,
       ]);
       setRowData(rows);
