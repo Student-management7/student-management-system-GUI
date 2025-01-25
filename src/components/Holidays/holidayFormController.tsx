@@ -196,9 +196,10 @@ const HolidayComponent: React.FC = () => {
             >
               Submit
             </button>
+            
             <button
               type="button"
-              className="w-1/8 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 ml-4"
+              className="w-1/8 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-600 ml-4"
               onClick={() => setShowForm(false)}
             >
               Cancel
@@ -218,3 +219,6 @@ export default HolidayComponent;
 
 
 
+
+
+  
