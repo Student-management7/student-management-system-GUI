@@ -12,9 +12,14 @@ import AlertDialog from "../alert/AlertDialog";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Eye, IdCard, Pencil, Trash2 } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import StudentReport from "../studentReport/studentReportView";
+import { log } from "console";
+
 
 
 const StudentRegistrationController = () => {
+   const navigate = useNavigate();
   const [rowData, setRowData] = useState<any[]>([]);
   const [studentData, setStudentData] = useState<boolean>(false);
   const [singleRowData, setSingleRowData] = useState<StudentFormData>();
@@ -69,7 +74,7 @@ const StudentRegistrationController = () => {
           width: 100,
           cellRenderer: (params: any) => (
             <button
-              onClick={() => handeleReport(params.data)}
+              onClick={() => handeleReport(params.data.id)}
              
             >
             <IdCard size={20} color='green' />
@@ -128,6 +133,18 @@ const StudentRegistrationController = () => {
     console.log(singleRowData);
   }, [singleRowData]);
 
+
+
+
+  const handeleReport =(id: string,)=>{
+    navigate('/StudentReport', {
+      state: { id },
+      
+    });
+  }
+
+
+
   return (
     <>
       {!studentData ? (
@@ -183,7 +200,5 @@ const StudentRegistrationController = () => {
 };
 
 export default StudentRegistrationController;
-function handeleReport(data: any): void {
-  throw new Error("Function not implemented.");
-}
+
 

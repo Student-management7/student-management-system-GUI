@@ -142,11 +142,7 @@ export const SideBarData = [
                 path: '/StudentReportForm',
                 icon: FaIdCard,
             },
-            {
-                title: 'View Report',
-                path: '/StudentReport',
-                icon: FaIdCard,
-            },
+            
             
         ]
     }

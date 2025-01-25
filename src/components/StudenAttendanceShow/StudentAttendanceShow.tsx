@@ -9,6 +9,8 @@ import { sortArrayByKey } from "../Utils/sortArrayByKey"
 import { Switch } from '@headlessui/react'
 // import ReusableTable from "../MUI Table/ReusableTable"
 import ReusableTable from "./table/reusabletable"
+
+
 const StudentAttendanceShow: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [classData, setClassData] = useState<ClassData[]>([])
@@ -26,6 +28,9 @@ const StudentAttendanceShow: React.FC = () => {
     attendance: string
     remark: string
   } | null>(null)
+
+
+
 
 
 
@@ -96,7 +101,12 @@ const StudentAttendanceShow: React.FC = () => {
 
   // const toggleAttendanceMode = () => setAttendanceMode((prev) => !prev)
 
-  const handleEditAttendance = (studentId: any, date: string, attendance: any, remark: string  ) => {
+  const handleEditAttendance = (
+    studentId: string, 
+    date: string, 
+    attendance: 'Present' | 'Absent' | 'Late' | 'Half Day',
+    remark: string
+  ) => {
     setEditingAttendance({
       studentId,
       date,
@@ -133,7 +143,7 @@ const StudentAttendanceShow: React.FC = () => {
           subject: subjectSelected || '',
           studentList: completeStudentList.map(student => ({
             ...student,
-            remark: student.remark ?? undefined, // Set remark to undefined if it's null
+            remark: student.remark ?? undefined, 
           })),
          
          
@@ -142,7 +152,7 @@ const StudentAttendanceShow: React.FC = () => {
       await updateAttendance(payload);
   
       alert("Attendance updated successfully.");
-      handleFetchAttendance(); // Refresh the attendance data
+      handleFetchAttendance(); // Refresh 
     } catch (err) {
       alert("Failed to update attendance.");
     } finally {
@@ -151,6 +161,9 @@ const StudentAttendanceShow: React.FC = () => {
       setEditingAttendance(null);
     }
   };
+
+
+  
   return (
     <div className="box">
       <h2 className="text-2xl font-bold text-center mb-6">Student Attendance</h2>
@@ -264,9 +277,9 @@ const StudentAttendanceShow: React.FC = () => {
         </div>
 
 
-        <div className=" webkit-overflow-scrolling-touch overflow-x-auto ">
+        
           {attendanceData.length > 0 && (
-            <div className="mt-8 overflow-x-auto shadow-md rounded-lg">
+            <div className="overflow-x-auto ">
               <ReusableTable
                 columns={[
                   {
@@ -286,6 +299,8 @@ const StudentAttendanceShow: React.FC = () => {
                     ),
                   })),
                 ]}
+
+                
                 rows={attendanceData.flatMap(({ students }) =>
                   students.map((student) => {
                     const row: Record<string, any> = {
@@ -305,7 +320,7 @@ const StudentAttendanceShow: React.FC = () => {
               />
             </div>
           )}
-        </div>
+        
 
 
 
