@@ -4,6 +4,7 @@ import styles from './ReusableTable.module.scss';
 
 
 interface Column {
+  renderCell: any;
   field: string;
   headerName: string;
 
@@ -21,6 +22,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
   columns,
   rows,
   rowsPerPageOptions = [5, 10, 25],
+  
 }) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(rowsPerPageOptions[0]);

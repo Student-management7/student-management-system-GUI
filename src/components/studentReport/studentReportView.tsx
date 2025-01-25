@@ -7,10 +7,11 @@ import {
     SelectValue,
 } from "@radix-ui/react-select";
 import axiosInstance from "../../services/Utils/apiUtils";
+ import { User } from 'lucide-react';
+import axios from "axios";
+import { useLocation } from 'react-router-dom';
 
 
-
-  import { User } from 'lucide-react';
 
 interface Subject {
     subject: string;
@@ -45,23 +46,29 @@ interface AttendanceData {
 }
 
 const StudentReport: React.FC = () => {
+    
+    const location = useLocation();
     const [examData, setExamData] = useState<ExamData[]>([]);
     const [selectedExamType, setSelectedExamType] = useState<string>("");
     const [filteredExam, setFilteredExam] = useState<ExamData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [studentData, setStudentData] = useState<StudentData | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const { id } = location.state || {};
+    if (!id ) {
+        return <div>Error: Missing Student id </div>;
+      }
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchData = async ( ) => {
             try {
                 setLoading(true);
                 const [examResponse, attendanceResponse] = await Promise.all([
                     axiosInstance.get(
-                        "/report/getStudentReport?id=652cd614-9815-4fbe-8873-18fd1b1b1642"
+                        `/report/getStudentReport?id=${id}`
                     ),
-                    axiosInstance.get(
-                        "/attendance/getStudentAttendance?id=652cd614-9815-4fbe-8873-18fd1b1b1642"
+                    axios.get(
+                        "https://716a9f60-27a0-449f-bb20-e8e3518d7858.mock.pstmn.io/get attendance"
                     )
                 ]);
 
@@ -342,4 +349,6 @@ const StudentReport: React.FC = () => {
 };
 
 export default StudentReport;
+
+
 

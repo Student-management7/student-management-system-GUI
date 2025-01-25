@@ -48,9 +48,9 @@ const App = () => {
        {isAuthenticated ? (
         <>
           <HeaderController />
-          <div className="mainBody">
+          <div className="mainBody ">
             <SideBarController />
-            <div className="rhsBox">
+            <div className="rhsBox ">
               <Routes>
                 {/* Protected Routes */}
                 <Route element={<ProtectedRoute />}>
