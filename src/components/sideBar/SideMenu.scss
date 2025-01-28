@@ -3,6 +3,7 @@
     width: 300px;
     color: #FFF;
     padding: 10px;
+    transition: 1s;
 
     .logo{
         position: relative;
@@ -45,6 +46,10 @@
     }  
 }
 
+.active{
+    margin-left: -250px;
+    transition: 1s;
+}
 
 // .sideNav {
 //     .logo {
