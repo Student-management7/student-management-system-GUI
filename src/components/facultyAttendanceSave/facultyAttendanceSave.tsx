@@ -4,12 +4,11 @@ import { fetchFacultyData, submitAttendance } from '../../services/Faculty/Facul
 import { Faculty } from '../../services/Faculty/FacultyAttendanceSave/Type';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// import './FacultyAttendanceSave.css'; // Assuming external CSS for styles
 
 const FacultyAttendanceSave: React.FC = () => {
     const [facultyList, setFacultyList] = useState<Faculty[]>([]);
     const [error, setError] = useState<string>('');
-    const [isLoading, setIsLoading] = useState<boolean>(false); // For loading state
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     // Fetch faculty data
     useEffect(() => {
@@ -37,13 +36,26 @@ const FacultyAttendanceSave: React.FC = () => {
 
     // Submit attendance
     const handleSubmit = async () => {
+        // Validate if all attendance options are selected
+        const unselected = facultyList.some(faculty => !faculty.attendance);
+        if (unselected) {
+            toast.error('Please select attendance for all faculty members.', {
+                position: 'top-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+            });
+            return;
+        }
+
         try {
-           
+            setIsLoading(true);
             setError('');
             const response = await submitAttendance(facultyList);
             if (response.status === 200) {
                 toast.success('Attendance submitted successfully!', {
-                    position: "top-right",
+                    position: 'top-right',
                     autoClose: 3000,
                     hideProgressBar: false,
                     closeOnClick: true,
@@ -54,9 +66,8 @@ const FacultyAttendanceSave: React.FC = () => {
             }
         } catch (error) {
             console.error('Error submitting attendance:', error);
-          
             toast.error('Error submitting attendance. Please try again.', {
-                position: "top-right",
+                position: 'top-right',
                 autoClose: 3000,
                 hideProgressBar: false,
                 closeOnClick: true,
@@ -72,11 +83,14 @@ const FacultyAttendanceSave: React.FC = () => {
             {error && <div className="error-message">{error}</div>}
             <FacultyTable facultyList={facultyList} onAttendanceSelect={handleAttendanceSelect} />
 
-            <button className="submit-button bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded " onClick={handleSubmit} disabled={isLoading}>
-                {isLoading ? 'Submitting...' : 'Submit Attendance'} 
+            <button
+                className="submit-button bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                onClick={handleSubmit}
+                disabled={isLoading}
+            >
+                {isLoading ? 'Submitting...' : 'Submit Attendance'}
             </button>
-               
-           
+
             <ToastContainer />
         </div>
     );

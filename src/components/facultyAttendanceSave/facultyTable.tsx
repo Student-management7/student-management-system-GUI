@@ -19,11 +19,12 @@ const FacultyTable: React.FC<FacultyTableProps> = ({ facultyList, onAttendanceSe
         return (
             <div onClick={(e) => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center' }}>
                 <select
+                    
                     value={props.data.attendance || ''}
                     onChange={handleChange}
                     style={{ width: '100%', height: '30px', border: '1px solid #ddd', borderRadius: '4px' }}
                 >
-                    <option value="">Select</option>
+                    <option  value="">Select</option>
                     <option value="Present">Present</option>
                     <option value="Absent">Absent</option>
                 </select>
