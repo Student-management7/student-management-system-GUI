@@ -2,7 +2,7 @@
 import React from 'react';
 import GridView from './gridView';
 import { Faculty , FacultyTableProps } from '../../services/Faculty/FacultyAttendanceSave/Type';
-
+import ReusableTable from '../StudenAttendanceShow/table/reusabletable';
 
 
 
@@ -56,7 +56,7 @@ const FacultyTable: React.FC<FacultyTableProps> = ({ facultyList, onAttendanceSe
 
     return (
         <div className='box' >
-            <GridView rowData={facultyList} columnDefs={columnDefs} />
+            <ReusableTable rows={facultyList} columns={columnDefs} />
         </div>
     );
 };

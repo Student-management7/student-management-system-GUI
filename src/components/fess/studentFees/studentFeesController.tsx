@@ -5,6 +5,8 @@ import { Eye, Pencil, Trash2 } from "lucide-react";
 import GridView from "./gridView";
 import axiosInstance from "../../../services/Utils/apiUtils";
 import StudentFeesForm from "./studentFeesForm";
+import Loader from "../../loader/loader";
+import BackButton from "../../Navigation/backButton";
 
 interface FeeData {
   id: string;
@@ -23,6 +25,7 @@ const StudentFeesController: React.FC = () => {
   const [rowData, setRowData] = useState<FeeData[]>([]);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editingFee, setEditingFee] = useState<FeeData | null>(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const columnDefs = [
@@ -90,10 +93,13 @@ const StudentFeesController: React.FC = () => {
 
   const fetchFees = async () => {
     try {
+      setLoading(true);
       const response = await axiosInstance.get<FeeData[]>("https://s-m-s-keyw.onrender.com/student/findAllStudent");
       setRowData(response.data);
     } catch (error) {
       console.error("Error fetching fees:", error);
+    }finally {
+      setLoading(false); 
     }
   };
 
@@ -102,11 +108,21 @@ const StudentFeesController: React.FC = () => {
   }, []);
 
   return (
+
+    <>
+    {loading && <Loader />} {/* Show loader when loading */}
+    {!loading && (
     <div className="box">
+      <div className="flex items-center space-x-4 mb-4">
+            <span>
+              <BackButton />
+            </span>
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Fees </h1>
+          </div>
       {!showForm ? (
         <>
           <div className="text-right mb-3">
-            <h1 className="text-center text-3xl font-bold mb-2">Student Fees</h1>
+            
             <button
               onClick={() => setShowForm(true)}
               className="btn btn-default"
@@ -123,10 +139,12 @@ const StudentFeesController: React.FC = () => {
             setEditingFee(null);
             fetchFees();
           }}
-          editingData={editingFee}
+          // editingData={editingFee}
         />
       )}
     </div>
+    )}
+    </>
   );
 };
 

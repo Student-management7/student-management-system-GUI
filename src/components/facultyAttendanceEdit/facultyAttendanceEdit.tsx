@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import GridView from './gridView';
 import { fetchAttendance } from '../../services/Faculty/facultyAttendanceEdit/Api/api';
 import { Faculty, AttendanceEntry } from '../../services/Faculty/facultyAttendanceEdit/Type/type';
 import { Pencil } from 'lucide-react';
-
+import ReusableTable from '../MUI Table/ReusableTable';
+import Loader from '../loader/loader';
+import BackButton from '../Navigation/backButton';
 const FacultyAttendance: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState<string>('2024-11-14');
+  const [selectedDate, setSelectedDate] = useState<string>('');
   const [rowData, setRowData] = useState<any[]>([]);
   const [columnDefs, setColumnDefs] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -15,7 +16,7 @@ const FacultyAttendance: React.FC = () => {
 
   useEffect(() => {
     if (selectedDate) {
-      fetchAttendanceData();
+      
     }
   }, [selectedDate]);
 
@@ -27,7 +28,7 @@ const FacultyAttendance: React.FC = () => {
       const rows = mapAttendanceToRows(data, selectedDate);
       setColumnDefs([
         { field: 'name', headerName: 'Faculty Name' },
-        { field: 'factId', headerName: 'Faculty ID' },
+        // { field: 'factId', headerName: 'Faculty ID' },
         {
           field: selectedDate,
           headerName: selectedDate,
@@ -41,7 +42,7 @@ const FacultyAttendance: React.FC = () => {
           headerName: 'Actions',
           cellRenderer: (params: any) => (
             <button
-              className="bi bi-pencil-square red-button"
+              className=""
               onClick={() =>
                 handleEditButtonClick(params.data.factId, selectedDate, params.data.factList)
               }
@@ -93,7 +94,17 @@ const FacultyAttendance: React.FC = () => {
   };
 
   return (
+
+    <>
+     {loading && <Loader />} {/* Show loader when loading */}
+     {!loading && (
     <div className="box">
+      <div className="flex items-center space-x-4 mb-4">
+            <span>
+              <BackButton />
+            </span>
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Attendance Edit </h1>
+          </div>
       <div className="filters space-y-4 md:flex md:space-y-0 md:space-x-4 md:items-center mb-2">
         <div className="space-y-2">
           <label className="text-sm font-medium">Select Date:</label>
@@ -116,9 +127,11 @@ const FacultyAttendance: React.FC = () => {
         <div className="bg-red-100 text-red-600 p-3 rounded">{error}</div>
       )}
       <div className="box">
-        <GridView rowData={rowData} columnDefs={columnDefs} showAddButton={false} />
+        <ReusableTable rows={rowData} columns={columnDefs} rowsPerPageOptions={[5, 10, 20]}  />
       </div>
     </div>
+     )}
+    </>
   );
 };
 

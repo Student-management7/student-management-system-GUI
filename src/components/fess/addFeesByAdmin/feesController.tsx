@@ -4,11 +4,15 @@ import FeesForm from "./feesForm";
 import { FeeDetails, FeeFormValues } from "../../../services/feesServices/AdminFeescreationForm/type";
 import { fetchFees, updateFee, saveFees ,deleteFeeRecord} from "../../../services/feesServices/AdminFeescreationForm/api";
 import { Pencil, Trash, Trash2 } from "lucide-react";
+import Loader from "../../loader/loader";
+import BackButton from "../../Navigation/backButton";
+import ReusableTable from "../../MUI Table/ReusableTable";
 
 const FeesController: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(false); // Toggle between grid and form views
   const [rowData, setRowData] = useState<FeeDetails[]>([]); // Holds grid data
   const [editData, setEditData] = useState<FeeDetails | null>(null); // Holds data for editing
+  const [loading, setLoading] = useState(false); // State for managing loader visibility
 
   // Column definitions for GridView
   const columnDefs = [
@@ -56,19 +60,19 @@ const FeesController: React.FC = () => {
         ),
       },
     
-    
-
-
-    
   ];
 
   // Fetch fee data on mount
   const fetchFeeDetails = useCallback(async () => {
     try {
+      setLoading(true);
       const data = await fetchFees();
       setRowData(data);
     } catch (error) {
       console.error("Error fetching fee details:", error);
+    }
+    finally {
+      setLoading(false);
     }
   }, []);
 
@@ -84,6 +88,7 @@ const FeesController: React.FC = () => {
   
   const handleSave = async (data: FeeFormValues) => {
     try {
+
       if (editData) {
         console.log('Updating Fee with ID:', editData.id, 'Data:', data);
         await updateFee(editData.id, data);
@@ -125,6 +130,9 @@ const FeesController: React.FC = () => {
   
   // Render
   return (
+    <>
+    {loading && <Loader />} {/* Show loader when loading */}
+    {!loading && (
     <div className="box">
       {!showForm ? (
         <>
@@ -134,7 +142,7 @@ const FeesController: React.FC = () => {
               Add Fee
             </button>
           </div>
-          <GridView rowData={rowData} columnDefs={columnDefs} />
+          <ReusableTable rows={rowData} columns={columnDefs} />
         </>
       ) : (
         <FeesForm
@@ -149,6 +157,8 @@ const FeesController: React.FC = () => {
       
       )}
     </div>
+    )}
+    </>
   );
 };
 

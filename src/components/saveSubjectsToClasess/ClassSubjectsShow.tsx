@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { Pencil, Trash2 } from "lucide-react";
+import Loader from "../loader/loader";
 
 
 
@@ -23,6 +24,7 @@ const ClassSubjectShow: React.FC = () => {
     setError(null);
 
     try {
+      setLoading(true);
       const result = await getClassData();
       if (result && result.classData) {
         setData(result.classData);
@@ -52,11 +54,7 @@ const ClassSubjectShow: React.FC = () => {
     fetchData();
   }, []);
 
-  const Loader = () => (
-    <div className="flex items-center justify-center h-40">
-      <div className="loader border-t-4 border-blue-500 rounded-full w-12 h-12 animate-spin"></div>
-    </div>
-  );
+ 
 
   const columns = [
     { field: "className", headerName: "Class Name" },
@@ -112,6 +110,10 @@ const ClassSubjectShow: React.FC = () => {
   };
 
   return (
+    <>
+    {loading ? (
+      <Loader /> // Show loader while data is being fetched
+    ) : (
     <div className="box">
       <ToastContainer />
       {!showForm ? (
@@ -146,6 +148,8 @@ const ClassSubjectShow: React.FC = () => {
       />
       )}
     </div>
+    )}
+    </>
   );
 };
 

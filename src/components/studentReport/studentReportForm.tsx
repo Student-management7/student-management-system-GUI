@@ -6,6 +6,7 @@ import { ClassData } from "../../services/SaveSubjects/Type";
 import { handleApiError } from "../Utility/toastUtils";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { formatToDDMMYYYY } from "../../components/Utils/dateUtils";
+import Loader from "../loader/loader";
 
 interface Student {
     familyDetails: any;
@@ -22,7 +23,7 @@ interface SubjectMarks {
 }
 
 const StudentReportForm: React.FC = () => {
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [classData, setClassData] = useState<ClassData[]>([]);
     const [classSelected, setClassSelected] = useState("");
     const [subjects, setSubjects] = useState<string[]>([]);
@@ -50,7 +51,7 @@ const StudentReportForm: React.FC = () => {
 
     useEffect(() => {
         const loadClassData = async () => {
-            setIsLoading(true);
+            setLoading(true);
             try {
                 const data = await fetchClassData();
                 if (data?.length) {
@@ -60,7 +61,7 @@ const StudentReportForm: React.FC = () => {
             } catch (err) {
                 handleApiError(err);
             } finally {
-                setIsLoading(false);
+                setLoading(false);
             }
         };
         loadClassData();
@@ -74,7 +75,7 @@ const StudentReportForm: React.FC = () => {
                 return;
             }
 
-            setIsLoading(true);
+            setLoading(true);
             try {
                 const response = await axiosInstance.get(`/student/findAllStudent?cls=${classSelected}`);
                 if (response.status === 200) {
@@ -87,7 +88,7 @@ const StudentReportForm: React.FC = () => {
                 toast.error("Failed to fetch students");
                 setStudents([]);
             } finally {
-                setIsLoading(false);
+                setLoading(false);
             }
         };
 
@@ -145,7 +146,7 @@ const StudentReportForm: React.FC = () => {
         };
 
         try {
-            setIsLoading(true);
+            setLoading(true);
             const response = await axiosInstance.post(`report/save?id=${studentSelected} `, payload);
             if (response.status === 200) {
                 toast.success("Marks submitted successfully!");
@@ -161,11 +162,16 @@ const StudentReportForm: React.FC = () => {
         } catch (error) {
             toast.error("Failed to submit marks");
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
     return (
+
+        <>
+        {loading ? (
+          <Loader /> // Show loader while data is being fetched
+        ) : (
         <div className="box p-4 mb-4">
             <h2 className="text-center mb-4 fs-4 fw-bold">Student Report Form</h2>
             <ToastContainer position="top-right" autoClose={5000} />
@@ -178,7 +184,7 @@ const StudentReportForm: React.FC = () => {
                             className="form-select"
                             value={classSelected}
                             onChange={(e) => setClassSelected(e.target.value)}
-                            disabled={isLoading}
+                            disabled={loading}
                         >
                             <option value="">Select Class</option>
                             {classData.map(({ className }) => (
@@ -196,7 +202,7 @@ const StudentReportForm: React.FC = () => {
                             className="form-select"
                             value={studentSelected}
                             onChange={(e) => setStudentSelected(e.target.value)}
-                            disabled={isLoading || !classSelected}
+                            disabled={loading || !classSelected}
                         >
                             <option value="">Select Student</option>
                             {students.map((student) => (
@@ -214,7 +220,7 @@ const StudentReportForm: React.FC = () => {
                             className="form-select"
                             value={examType}
                             onChange={(e) => setExamType(e.target.value)}
-                            disabled={isLoading}
+                            disabled={loading}
                         >
                             <option value="">Select Exam Type</option>
                             <option value="Test">Test</option>
@@ -232,7 +238,7 @@ const StudentReportForm: React.FC = () => {
                             className="form-control"
                             value={examDate}
                             onChange={(e) => setExamDate(e.target.value)}
-                            disabled={isLoading}
+                            disabled={loading}
                         />
                     </div>
                 </div>
@@ -266,7 +272,7 @@ const StudentReportForm: React.FC = () => {
                                                     )
                                                 );
                                             }}
-                                            disabled={isLoading}
+                                            disabled={loading}
                                         />
                                     </td>
                                     <td>
@@ -283,7 +289,7 @@ const StudentReportForm: React.FC = () => {
                                                     )
                                                 );
                                             }}
-                                            disabled={isLoading}
+                                            disabled={loading}
                                         />
                                     </td>
                                     <td>
@@ -298,7 +304,7 @@ const StudentReportForm: React.FC = () => {
                                                     )
                                                 );
                                             }}
-                                            disabled={isLoading}
+                                            disabled={loading}
                                         />
                                     </td>
                                 </tr>
@@ -311,13 +317,15 @@ const StudentReportForm: React.FC = () => {
                     <button
                         onClick={handleSubmit}
                         className="btn btn-primary"
-                        disabled={isLoading}
+                        disabled={loading}
                     >
-                        {isLoading ? 'Submitting...' : 'Submit'}
+                        {loading ? 'Submitting...' : 'Submit'}
                     </button>
                 </div>
             </div>
         </div>
+        )}
+        </>
     );
 };
 

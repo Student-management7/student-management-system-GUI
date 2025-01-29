@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import GridView from "./gridView";
 import axiosInstance from "../../../services/Utils/apiUtils";
+import Loader from "../../loader/loader";
 
+// Define interfaces for data structures
 interface FacultySalary {
   id: string;
   creationDateTime: string;
@@ -28,8 +30,10 @@ const FacultySalaryDetails: React.FC = () => {
 
   useEffect(() => {
     const fetchFacultyDetails = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
-        setLoading(true);
         const response = await axiosInstance.get(`/faculty/findAllFaculty`, {
           params: { id },
         });
@@ -51,61 +55,62 @@ const FacultySalaryDetails: React.FC = () => {
     }
   }, [id]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const parseDeductions = (deductions: string): string => {
+    try {
+      return JSON.parse(deductions)
+        .map((deduction: { name: string; amount: number }) => `${deduction.name}: ${deduction.amount}`)
+        .join(", ");
+    } catch {
+      return "Invalid Deduction Data";
+    }
+  };
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  const renderContent = () => {
+    if (loading) return <Loader />;
+    if (error) return <div className="text-red-500">Error: {error}</div>;
+    if (!faculty) return <div>No data available.</div>;
 
-  if (!faculty) {
-    return <div>No data available.</div>;
-  }
-
-  return (
-    <div className="box p-4">
-      <div className="header mb-4">
-        <h2 className="text-2xl font-bold">Faculty Details</h2>
-        <p><strong>ID:</strong> {faculty.fact_id}</p>
-        <p><strong>Name:</strong> {faculty.fact_Name}</p>
-      </div>
-
+    return (
       <div className="box p-4">
-        <h3 className="text-xl font-semibold mb-2">Salary Details</h3>
-        <GridView
-          rowData={faculty.fact_salary.map(salary => ({
-            id: salary.id,
-            creationDateTime: salary.creationDateTime,
-            schoolCode: salary.schoolCode,
-            facultySalary: salary.facultySalary,
-            facultyTax: salary.facultyTax,
-            facultyTransport: salary.facultyTransport,
-            facultyDeduction: (() => {
-              try {
-                return JSON.parse(salary.facultyDeduction)
-                  .map((deduction: { name: string; amount: number }) => `${deduction.name}: ${deduction.amount}`)
-                  .join(", ");
-              } catch {
-                return "Invalid Deduction Data";
-              }
-            })(),
-            total: salary.total,
-          }))}
-          columnDefs={[
-            { field: "id", headerName: "ID" },
-            { field: "creationDateTime", headerName: "Creation Date" },
-            // { field: "schoolCode", headerName: "School Code" },
-            { field: "facultySalary", headerName: "Salary" },
-            { field: "facultyTax", headerName: "Tax (%)" },
-            { field: "facultyTransport", headerName: "Transport" },
-            { field: "facultyDeduction", headerName: "Deductions" },
-            { field: "total", headerName: "Total" },
-          ]}
-        />
+        <div className="header mb-4">
+          <h2 className="text-2xl font-bold">Faculty Details</h2>
+          <p>
+            <strong>ID:</strong> {faculty.fact_id}
+          </p>
+          <p>
+            <strong>Name:</strong> {faculty.fact_Name}
+          </p>
+        </div>
+
+        <div className="box p-4">
+          <h3 className="text-xl font-semibold mb-2">Salary Details</h3>
+          <GridView
+            rowData={faculty.fact_salary.map((salary) => ({
+              id: salary.id,
+              creationDateTime: salary.creationDateTime,
+              schoolCode: salary.schoolCode,
+              facultySalary: salary.facultySalary,
+              facultyTax: salary.facultyTax,
+              facultyTransport: salary.facultyTransport,
+              facultyDeduction: parseDeductions(salary.facultyDeduction),
+              total: salary.total,
+            }))}
+            columnDefs={[
+              { field: "id", headerName: "ID" },
+              { field: "creationDateTime", headerName: "Creation Date" },
+              { field: "facultySalary", headerName: "Salary" },
+              { field: "facultyTax", headerName: "Tax (%)" },
+              { field: "facultyTransport", headerName: "Transport" },
+              { field: "facultyDeduction", headerName: "Deductions" },
+              { field: "total", headerName: "Total" },
+            ]}
+          />
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
+
+  return <>{renderContent()}</>;
 };
 
 export default FacultySalaryDetails;

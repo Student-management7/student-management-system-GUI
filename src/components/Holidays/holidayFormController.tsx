@@ -4,12 +4,14 @@ import GridView from './gridView';
 import { deleteHolidayApi, fetchHolidayData, saveHoliday } from '../../services/holiday/Api/api';
 import { formatToDDMMYYYY } from '../../components/Utils/dateUtils';
 import { Holiday, HolidayPayload } from '../../services/holiday/Type/type';
+import Loader from '../loader/loader';
 
 
 const HolidayComponent: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
   const [rowData, setRowData] = useState<Holiday[]>([]);
   const [selectedClasses, setSelectedClasses] = useState<(string | number)[] | 'All'>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [holidayDate, setHolidayDate] = useState({
     startDate: '',
     endDate: '',
@@ -31,6 +33,7 @@ const HolidayComponent: React.FC = () => {
   useEffect(() => {
     const loadHolidays = async () => {
       try {
+        setLoading(true);
         const holidays = await fetchHolidayData();
         const formattedData = holidays.flatMap((holiday) =>
           holiday.date.map((dateEntry: any) => ({
@@ -44,6 +47,8 @@ const HolidayComponent: React.FC = () => {
         setRowData(formattedData);
       } catch (error) {
         console.error(error);
+      }finally{
+        setLoading(false);
       }
     };
 
@@ -132,6 +137,11 @@ const HolidayComponent: React.FC = () => {
   ];
 
   return (
+
+    <>
+    {loading ? (
+      <Loader /> // Show loader while data is being fetched
+    ) : (
     <div className="box ">
       {!showForm ? (
         <>
@@ -207,6 +217,8 @@ const HolidayComponent: React.FC = () => {
         </div>
       )}
     </div>
+    )}
+    </>
   );
 };
 

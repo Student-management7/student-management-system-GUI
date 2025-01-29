@@ -3,6 +3,7 @@ import NotificationCard from "./notificationCard";
 import axiosInstance from "../../services/Utils/apiUtils";
 import './Notification.scss';
 import { formatToDDMMYYYY } from "../../components/Utils/dateUtils";
+import Loader from "../loader/loader"; 
 
 interface Notification {
   id: string;
@@ -19,16 +20,24 @@ const NotificationList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("All");
   const [classFilter, setClassFilter] = useState("All");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Set loading to true when the data is being fetched
+    setLoading(true);
+
     // Fetch notifications using Axios
     axiosInstance
       .get("https://s-m-s-keyw.onrender.com/notification/getAllNotification") // Replace with real API
       .then((res) => {
         setNotifications(res.data);
         setFilteredNotifications(res.data);
+        setLoading(false); // Set loading to false when data is fetched
       })
-      .catch((err) => console.error("Error fetching notifications", err));
+      .catch((err) => {
+        console.error("Error fetching notifications", err);
+        setLoading(false); // Set loading to false if there's an error
+      });
   }, []);
 
   useEffect(() => {
@@ -110,42 +119,39 @@ const NotificationList: React.FC = () => {
           <option value="1">Class 10</option>
           <option value="2">Class 11</option>
           <option value="3">Class 12</option>
-          
-
         </select>
       </div>
 
-      {/* Notification List */}
-      <div>
-        {filteredNotifications.map((notification) => (
-          <div key={notification.id} className="mb-2">
-            <div className="sticky-header">
-              {formatToDDMMYYYY(notification.startDate)} <span className="mx-2">to</span>{" "}
-              {formatToDDMMYYYY(notification.endDate)}
+      {/* Loader Component */}
+      {loading ? (
+        <div className="d-flex justify-content-center my-5">
+          <Loader /> {/* Assuming Loader is a component you have for loading */}
+        </div>
+      ) : (
+        // Notification List
+        <div>
+          {filteredNotifications.map((notification) => (
+            <div key={notification.id} className="mb-2">
+              <div className="sticky-header">
+                {formatToDDMMYYYY(notification.startDate)} <span className="mx-2">to</span>{" "}
+                {formatToDDMMYYYY(notification.endDate)}
+              </div>
+              <NotificationCard
+                category={notification.cato}
+                description={notification.description}
+                className={notification.className}
+              />
+              {/* Delete Button */}
+              <button
+                className="bi bi-x-circle text-red-600"
+                onClick={() => handleDelete(notification.id)}
+              ></button>
             </div>
-            <NotificationCard
-              category={notification.cato}
-              description={notification.description}
-              className={notification.className}
-            />
-            {/* Delete Button */}
-            <button
-              className=" bi bi-x-circle text-red-600 "
-              onClick={() => handleDelete(notification.id)}
-            >
-              
-            </button>
-
-            
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
 export default NotificationList;
-
-// ----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
