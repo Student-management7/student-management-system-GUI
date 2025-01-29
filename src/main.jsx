@@ -41,6 +41,7 @@ import StudentReportForm from './components/studentReport/studentReportForm';
 import StudentReport from './components/studentReport/studentReportView';
 import Loader from './components/loader/loader';
 
+
 const App = () => {
   const { isAuthenticated } = useAuth();
 
@@ -48,10 +49,13 @@ const App = () => {
     <>
        {isAuthenticated ? (
         <>
-          <HeaderController />
+        
           <div className="mainBody ">
+
             <SideBarController />
+            
             <div className="rhsBox ">
+            <HeaderController />
               <Routes>
                 {/* Protected Routes */}
                 <Route element={<ProtectedRoute />}>

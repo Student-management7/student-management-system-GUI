@@ -2,7 +2,7 @@ import React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-
+import '../../global.scss'
 interface GridViewProps {
     rowData: any[];
     columnDefs: any[];
@@ -16,6 +16,7 @@ const GridView: React.FC<GridViewProps> = ({ rowData, columnDefs, showAddButton,
             <div>
             {showAddButton && (
             <button
+            
                 onClick={onAddRow} // Call the function passed from the parent
                 style={{
                     position: 'absolute',
