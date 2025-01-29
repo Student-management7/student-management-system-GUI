@@ -1,60 +1,51 @@
-
-
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
-import * as Yup from "yup";
+import { FacultySalaryFormValues, FacultySalaryFormProps } from "../../../services/salary/facultysarayform/type";
+import { SalaryValidationSchema } from "../../../services/salary/facultysarayform/validation";
+import axiosInstance from "../../../services/Utils/apiUtils";
 
-interface DeductionItem {
-  name: string;
-  amount: number;
+interface FacultyData {
+  fact_id: string;
+  fact_email: string;
+  fact_Name: string;
+  
 }
-
-interface FacultySalaryFormValues {
-  facultyID: string;
-  facultySalary: number;
-  facultyTax: number;
-  facultyTransport: number;
-  facultyDeduction: DeductionItem[];
-  total?: number;
-}
-
-interface FacultySalaryFormProps {
-  initialData?: FacultySalaryFormValues;
-  onSave: (payload: FacultySalaryFormValues) => Promise<void>;
-  onCancel: () => void;
-}
-
-const SalaryValidationSchema = Yup.object().shape({
-  facultyID: Yup.string()
-    .required("Faculty ID is required"),
-   
-  facultySalary: Yup.number()
-    .positive("Salary must be positive")
-    .required("Salary is required"),
-  facultyTax: Yup.number()
-    .min(0, "Tax cannot be negative")
-    .max(50, "Tax cannot exceed 50%")
-    .required("Tax is required"),
-  facultyTransport: Yup.number()
-    .min(0, "Transport allowance cannot be negative")
-    .required("Transport allowance is required"),
-  facultyDeduction: Yup.array().of(
-    Yup.object().shape({
-      name: Yup.string().required("Deduction name is required"),
-      amount: Yup.number()
-        .positive("Deduction amount must be positive")
-        .required("Deduction amount is required")
-    })
-  )
-});
 
 const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
   initialData,
   onCancel,
   onSave,
 }) => {
-  // Explicitly check if it's edit mode
+  const [facultyData, setFacultyData] = useState<FacultyData[]>([]);
+  const [selectedFaculty, setSelectedFaculty] = useState<FacultyData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const isEditMode = initialData && initialData.facultyID !== "";
+
+  useEffect(() => {
+    fetchFacultyData();
+  }, []);
+
+  const fetchFacultyData = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await axiosInstance.get('/faculty/findAllFaculty'); 
+      setFacultyData(response.data);
+    } catch (err) {
+      setError("Failed to fetch faculty data. Please try again later.");
+      console.error("Error fetching faculty data:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedEmail = e.target.value;
+    const faculty = facultyData.find(f => f.fact_email === selectedEmail);
+    setSelectedFaculty(faculty || null);
+  };
 
   const initialValues: FacultySalaryFormValues = isEditMode
     ? {
@@ -75,8 +66,15 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
         const cleanedDeductions = values.facultyDeduction.filter(
           (deduction) => deduction.name && deduction.amount > 0
         );
-      
-        const payload = {
+        
+        // Create different payloads for save and update
+        const payload = isEditMode ? {
+          facultyID: values.facultyID,
+          facultySalary: values.facultySalary,
+          facultyTax: values.facultyTax,
+          facultyTransport: values.facultyTransport,
+          facultyDeduction: cleanedDeductions,
+        } : {
           ...values,
           facultyDeduction: cleanedDeductions,
         };
@@ -88,35 +86,91 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
         }
       };
 
+  if (isLoading) {
+    return <div className="text-center mt-4">Loading faculty data...</div>;
+  }
 
-      
-      
+  if (error) {
+    return (
+      <div className="alert alert-danger mt-4" role="alert">
+        {error}
+      </div>
+    );
+  }
 
   return (
-    <div className="container mt-4">
-      <div className="card">
-        <div className="card-header">
-          <h2 className="text-center">
-            {isEditMode ? "Edit Faculty Salary" : "Add New Faculty Salary"}
-          </h2>
-        </div>
+    <div className="box mt-4">
+       
+        <h1 className="text-center mt-4 text-3xl">{isEditMode ? "Edit Faculty Salary" : "Add Faculty Salary"}</h1>
+          
         <div className="card-body">
           <Formik
             initialValues={initialValues}
             validationSchema={SalaryValidationSchema}
             onSubmit={handleSubmit}
           >
-            {({ values, errors, touched }) => (
+            {({ values, errors, touched, setFieldValue }) => (
               <Form>
+                {/* Email Selection */}
+                <div className="mb-4">
+                  <label htmlFor="emailDropdown" className="form-label">
+                    Select  Email:
+                  </label>
+                  <select
+                    id="emailDropdown"
+                    className="form-select"
+                    value={selectedFaculty?.fact_email || ""}
+                    onChange={(e) => {
+                      handleEmailChange(e);
+                      const selectedEmail = e.target.value;
+                      const faculty = facultyData.find(
+                        (f) => f.fact_email === selectedEmail
+                      );
+                      if (faculty) {
+                        setFieldValue("facultyID", faculty.fact_id);
+                      }
+                    }}
+                  >
+                    <option value="" disabled>
+                      -- Select Email --
+                    </option>
+                    {facultyData.map((faculty, index) => (
+                      <option key={index} value={faculty.fact_email}>
+                        {faculty.fact_email}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Display Selected Faculty Details */}
+                {selectedFaculty && (
+                  <>
+                    <div className="mb-4">
+                      <label htmlFor="facultyName" className="form-label">
+                        Faculty Name:
+                      </label>
+                      <input
+                        id="facultyName"
+                        className="form-control"
+                        type="text"
+                        value={selectedFaculty.fact_Name}
+                        disabled
+                      />
+                    </div>
+                    
+                  </>
+                )}
+
+                {/* Faculty ID */}
                 <div className="mb-3">
                   <label className="form-label">Faculty ID:</label>
                   <Field
                     name="facultyID"
                     type="text"
                     className={`form-control ${
-                      touched.facultyID && errors.facultyID ? 'is-invalid' : ''
+                      touched.facultyID && errors.facultyID ? "is-invalid" : ""
                     }`}
-                    placeholder="Enter Faculty ID (e.g., FACT-1234)"
+                    disabled={!!selectedFaculty}
                   />
                   <ErrorMessage
                     name="facultyID"
@@ -125,13 +179,17 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                   />
                 </div>
 
+                {/* Rest of the form fields remain the same */}
+                {/* Salary */}
                 <div className="mb-3">
                   <label className="form-label">Salary Amount:</label>
                   <Field
                     name="facultySalary"
                     type="number"
                     className={`form-control ${
-                      touched.facultySalary && errors.facultySalary ? 'is-invalid' : ''
+                      touched.facultySalary && errors.facultySalary
+                        ? "is-invalid"
+                        : ""
                     }`}
                     placeholder="Enter Salary"
                   />
@@ -142,13 +200,14 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                   />
                 </div>
 
+                {/* Tax */}
                 <div className="mb-3">
                   <label className="form-label">Tax (%):</label>
                   <Field
                     name="facultyTax"
                     type="number"
                     className={`form-control ${
-                      touched.facultyTax && errors.facultyTax ? 'is-invalid' : ''
+                      touched.facultyTax && errors.facultyTax ? "is-invalid" : ""
                     }`}
                     placeholder="Enter Tax Percentage"
                   />
@@ -159,13 +218,16 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                   />
                 </div>
 
+                {/* Transport Allowance */}
                 <div className="mb-3">
                   <label className="form-label">Transport Allowance:</label>
                   <Field
                     name="facultyTransport"
                     type="number"
                     className={`form-control ${
-                      touched.facultyTransport && errors.facultyTransport ? 'is-invalid' : ''
+                      touched.facultyTransport && errors.facultyTransport
+                        ? "is-invalid"
+                        : ""
                     }`}
                     placeholder="Enter Transport Allowance"
                   />
@@ -176,6 +238,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                   />
                 </div>
 
+                {/* Deductions */}
                 <div className="mb-3">
                   <label className="form-label">Deductions</label>
                   <FieldArray name="facultyDeduction">
@@ -222,11 +285,9 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                   </FieldArray>
                 </div>
 
+                {/* Buttons */}
                 <div className="d-flex justify-content-between mt-4">
-                  <button 
-                    type="submit" 
-                    className="btn btn-primary"
-                  >
+                  <button type="submit" className="btn btn-primary">
                     {isEditMode ? "Update" : "Save"}
                   </button>
                   <button
@@ -242,10 +303,8 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
           </Formik>
         </div>
       </div>
-    </div>
+    
   );
 };
 
 export default FacultySalaryForm;
-
-

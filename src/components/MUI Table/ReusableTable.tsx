@@ -4,20 +4,25 @@ import styles from './ReusableTable.module.scss';
 
 
 interface Column {
+  renderCell: any;
   field: string;
   headerName: string;
+
 }
 
 interface ReusableTableProps {
   columns: Column[];
   rows: Record<string, any>[];
   rowsPerPageOptions?: number[];
+
+
 }
 
 const ReusableTable: React.FC<ReusableTableProps> = ({
   columns,
   rows,
   rowsPerPageOptions = [5, 10, 25],
+  
 }) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(rowsPerPageOptions[0]);
@@ -127,29 +132,34 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {(rowsPerPage > 0
-              ? sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              : sortedRows
-            ).map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={selectedRows.has(rowIndex)}
-                    onChange={() => handleSelectRow(rowIndex)}
-                  />
-                </td>
-                {columns.map((column) => (
-                  <td key={column.field}>{row[column.field]}</td>
-                ))}
-              </tr>
-            ))}
-            {emptyRows > 0 && (
-              <tr style={{ height: `${41 * emptyRows}px` }}>
-                <td colSpan={columns.length + 1} />
-              </tr>
-            )}
-          </tbody>
+  {(rowsPerPage > 0
+    ? sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    : sortedRows
+  ).map((row, rowIndex) => (
+    <tr key={rowIndex}>
+      <td>
+        <input
+          type="checkbox"
+          checked={selectedRows.has(rowIndex)}
+          onChange={() => handleSelectRow(rowIndex)}
+        />
+      </td>
+      {columns.map((column) => (
+        <td key={column.field}>
+          {typeof column.renderCell === "function"
+            ? column.renderCell(row)
+            : row[column.field]}
+        </td>
+      ))}
+    </tr>
+  ))}
+  {emptyRows > 0 && (
+    <tr style={{ height: `${41 * emptyRows}px` }}>
+      <td colSpan={columns.length + 1} />
+    </tr>
+  )}
+</tbody>
+
           <tfoot>
             <tr>
               <td colSpan={columns.length + 1}>

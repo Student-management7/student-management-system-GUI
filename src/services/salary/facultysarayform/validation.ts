@@ -1,3 +1,4 @@
+// FacultySalaryForm.validation.ts
 import * as Yup from "yup";
 
 export const SalaryValidationSchema = Yup.object().shape({

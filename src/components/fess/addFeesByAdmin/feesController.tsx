@@ -3,6 +3,7 @@ import GridView from "./GridView";
 import FeesForm from "./feesForm";
 import { FeeDetails, FeeFormValues } from "../../../services/feesServices/AdminFeescreationForm/type";
 import { fetchFees, updateFee, saveFees ,deleteFeeRecord} from "../../../services/feesServices/AdminFeescreationForm/api";
+import { Pencil, Trash, Trash2 } from "lucide-react";
 
 const FeesController: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(false); // Toggle between grid and form views
@@ -33,10 +34,10 @@ const FeesController: React.FC = () => {
         headerName: 'Edit',
         cellRenderer: (params: any) => (
           <button
-            className="bi bi-pencil-square text-blue-600"
+           
             onClick={() => handleEditButtonClick(params.data)}
           >
-            Edit
+            <Pencil size={20} color='orange' />
           </button>
         ),
       },
@@ -47,10 +48,10 @@ const FeesController: React.FC = () => {
         headerName: 'Delete',
         cellRenderer: (params: any) => (
           <button
-            className="bi bi-trash text-red-600"
-            onClick={() => handleDeleteButtonClick(params.data.id)}
+          onClick={() => handleDeleteButtonClick(params.data.id)}
           >
-            Delete
+            
+          <Trash2 size={20} color="red" />
           </button>
         ),
       },

@@ -1,9 +1,4 @@
 
-
-
-
-
-
 import axiosInstance from "../../Utils/apiUtils";
 import { AttendanceResponse, ClassData } from "../type/attendanceTypes";
 import { formatDate } from "../dateFormates/dateUtils";
@@ -45,7 +40,25 @@ export const fetchClassData = async (): Promise<ClassData[]> => {
 };
 
 
-
+export const updateAttendance = async (payload: {
+  date: string,
+  className: string,
+  subject?: string,
+  studentList: Array<{
+    stdId: string,
+    name?: string,
+    attendance: string,
+    remark?: string
+  }>,
+  
+}) => {
+  try {
+    const response = await axiosInstance.post(`/attendance/update?&masterAttendance=true`, payload);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 
 

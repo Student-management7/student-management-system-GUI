@@ -1,0 +1,57 @@
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 600px; // Adjust this value as needed
+    position: relative;
+  
+    // Fix header
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background-color: white; // Adjust this to match your theme
+    }
+  
+    // Fix first column (checkbox column)
+    th:first-child,
+    td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background-color: white; // Adjust this to match your theme
+    }
+  
+    // Ensure header cells are visible above content
+    th {
+      z-index: 3;
+    }
+  
+    // Style for the scrollbars
+    &::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+  
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+  
+    &::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 5px;
+    }
+  
+    &::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  }
+  
+  // Ensure content cells don't wrap
+  td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  

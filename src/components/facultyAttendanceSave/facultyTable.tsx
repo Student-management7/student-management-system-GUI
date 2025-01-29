@@ -1,7 +1,7 @@
 
 import React from 'react';
 import GridView from './gridView';
-import { Faculty , FacultyTableProps } from '../../services/FacultyAttendanceSave/Type';
+import { Faculty , FacultyTableProps } from '../../services/Faculty/FacultyAttendanceSave/Type';
 
 
 
@@ -32,7 +32,7 @@ const FacultyTable: React.FC<FacultyTableProps> = ({ facultyList, onAttendanceSe
     };
 
     const columnDefs = [
-        { field: 'fact_id', headerName: 'ID' },
+        // { field: 'fact_id', headerName: 'ID' },
         { field: 'fact_Name', headerName: 'Name' },
         { field: 'fact_email', headerName: 'Email' },
         { field: 'fact_contact', headerName: 'Contact' },

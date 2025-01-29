@@ -113,7 +113,6 @@ const StudentManagementSystem: React.FC = () => {
     // Table columns
     const columns = [
         { headerName: "SN", valueGetter: "node.rowIndex + 1", flex: 1 }, // Serial Number Column
-        { headerName: "Student ID", field: "stdId", flex: 1 },
         { headerName: "Student Name", field: "name", flex: 2 },
         {
             headerName: "Attendance",
