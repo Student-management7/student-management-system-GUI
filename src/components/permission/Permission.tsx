@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/Utils/apiUtils";
-
+import BackButton from "../Navigation/backButton";
 export default function Permission() {
   const [facultyData, setFacultyData] = useState<any[]>([]);
   const [selectedFaculty, setSelectedFaculty] = useState<{
@@ -117,7 +117,12 @@ export default function Permission() {
 
   return (
     <div className="container mt-5">
-      <h2 className="text-center fw-bold mb-4">Manage Faculty Permissions</h2>
+  <div className="flex items-center space-x-4 mb-4 ">
+            <span >
+              <BackButton />
+            </span>
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Manage Faculty Permission</h1>
+          </div>
 
       {/* Scrollable Form Container */}
       <div

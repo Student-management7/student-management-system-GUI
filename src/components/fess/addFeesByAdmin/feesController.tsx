@@ -136,9 +136,13 @@ const FeesController: React.FC = () => {
     <div className="box">
       {!showForm ? (
         <>
-          <div className="text-right mb-4">
-          <h1 className="text-center text-2xl font-bold mb-2 ">Admin Create Student Fees </h1>
-            <button onClick={() => setShowForm(true)} className="btn btn-default">
+          <div className="text-right">
+          <div className="flex items-center space-x-4 ">
+            <span >
+              <BackButton />
+            </span>
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Admin Fee Page</h1>
+          </div>            <button onClick={() => setShowForm(true)} className="btn btn-default">
               Add Fee
             </button>
           </div>

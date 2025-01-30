@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { Pencil, Trash2 } from "lucide-react";
 import Loader from "../loader/loader";
+import BackButton from "../Navigation/backButton";
 
 
 
@@ -118,6 +119,12 @@ const ClassSubjectShow: React.FC = () => {
       <ToastContainer />
       {!showForm ? (
         <>
+         <div className="flex items-center space-x-4 mb-4 ">
+            <span >
+              <BackButton />
+            </span>
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Subjevt Page</h1>
+          </div>
           <div className="text-right mb-4">
             <button
               onClick={() => setShowForm(true)}
