@@ -206,7 +206,7 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
 
                   <button
                     type="submit"
-                    className={`btn w-100 ${isFormValid() ? 'btn-primary' : 'btn-secondary'}`}
+                    className={`button text-white p-2 w-100  ${isFormValid() ? 'btn-primary' : 'btn-secondary'}`}
                     disabled={!isFormValid()}
                   >
                     Save Notification

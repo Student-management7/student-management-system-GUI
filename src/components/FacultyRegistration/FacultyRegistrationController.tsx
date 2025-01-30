@@ -12,6 +12,8 @@ import { FacultyFormData } from '../../services/Faculty/fecultyRegistretion/Type
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Pencil, Trash2 ,IdCard } from 'lucide-react';
+import '../../global.scss'
+
 
 const FacultyRegistrationForm: React.FC = () => {
   const [rowData, setRowData] = useState<FacultyFormData[]>([]);
@@ -581,7 +583,7 @@ const FacultyRegistrationForm: React.FC = () => {
                 {/* Submit Button */}
                 <div className="row mt-4 flex justify-center items-center">
                   <div className="col-md-4">
-                    <button type="submit" className="btn btn-primary w-50 mb-5   ">{editingFaculty ? 'Update' : 'Submit'}</button>
+                    <button type="submit" className="btn button btn-primary w-50 mb-5   ">{editingFaculty ? 'Update' : 'Submit'}</button>
                   </div>
                   {editingFaculty && <div className="col-md-4">
                     <button type="button" className="btn btn-danger w-50 mb-5" onClick={() => {

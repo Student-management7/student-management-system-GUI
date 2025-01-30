@@ -130,7 +130,7 @@ const NotificationList: React.FC = () => {
             />
             {/* Delete Button */}
             <button
-              className=" bi bi-x-circle text-red-600 "
+              className=" bi bi-x-circle text-red-600 button"
               onClick={() => handleDelete(notification.id)}
             >
               

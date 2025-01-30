@@ -195,7 +195,7 @@ const StudentAttendanceShow: React.FC = () => {
             </label>
             <select
               id="classSelect"
-              className="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-3"
               value={classSelected}
               onChange={(e) => setClassSelected(e.target.value)}
               disabled={isLoading}
@@ -218,7 +218,7 @@ const StudentAttendanceShow: React.FC = () => {
               </label>
               <select
                 id="subjectSelect"
-                className="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                className="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-3"
                 value={subjectSelected}
                 onChange={(e) => setSubjectSelected(e.target.value)}
                 disabled={isLoading}
@@ -244,7 +244,7 @@ const StudentAttendanceShow: React.FC = () => {
             <input
               type="date"
               id="fromDate"
-              className="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-3"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
               disabled={isLoading}
@@ -258,7 +258,7 @@ const StudentAttendanceShow: React.FC = () => {
             <input
               type="date"
               id="toDate"
-              className="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-3"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
               disabled={isLoading}
@@ -268,7 +268,7 @@ const StudentAttendanceShow: React.FC = () => {
 
         <div className="text-center">
           <button
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline button"
             onClick={handleFetchAttendance}
             disabled={isLoading}
           >

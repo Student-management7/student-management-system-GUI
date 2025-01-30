@@ -310,7 +310,7 @@ const StudentReportForm: React.FC = () => {
                 <div className="mt-4">
                     <button
                         onClick={handleSubmit}
-                        className="btn btn-primary"
+                        className="btn btn-primary button"
                         disabled={isLoading}
                     >
                         {isLoading ? 'Submitting...' : 'Submit'}

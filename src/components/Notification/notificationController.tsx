@@ -12,7 +12,7 @@ const NotificationController = () => {
           <div className="text-right">
             <button
               onClick={() => setShowForm(true)}
-              className="btn btn-default"
+              className="btn btn-default button text-white"
             >
               Create Notification
             </button>
