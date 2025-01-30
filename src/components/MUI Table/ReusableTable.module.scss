@@ -75,6 +75,7 @@
         td {
           padding: 0.75rem;
           border-bottom: 1px solid #dee2e6;
+          position: relative;
         }
   
         input[type="checkbox"] {
@@ -159,5 +160,44 @@
         }
       }
     }
+    
   }
+  
+
+
+  .showMd{
+    @media (max-width: 480px){
+        display: none;
+
+      }
+    }
+
+    .showSm{
+      display: none;
+      @media (max-width: 480px){
+          display: block;
+          padding-left: 25px;
+  
+          .gap-2{
+            display: inline;
+          }
+        }
+        
+
+      }
+      .smData{
+        padding-left: 20px;
+      }
+      .smInput{
+
+        @media (max-width: 480px){
+          position: absolute;
+          top: 13px;
+        }
+      }
+  
+  
+  
+
+  
   

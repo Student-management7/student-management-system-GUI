@@ -25,13 +25,17 @@ const SideBarController = () => {
         await logout(); // Call the logout function
         navigate('/login'); // Redirect to login page
     };
+
+    const getToggelButton = ()=>{
+        const sidNav: any = document.querySelector('.sideNav');
+            sidNav.classList.toggle('active');
+    }
     return (
         <>
-        
-            <div className='sideNav'>
+            <div id="item" className='sideNav'>
                 <div className="logo flex">
-                    <p className='fs-4'>EasyWaySolution</p>
-                    <FaBars  className=''/>
+                    <p className='text-xl font-semibold'>EasyWaySolution</p>
+                    <span onClick={getToggelButton}><FaBars /></span>
                 </div>
 
                 {SideBarData.map((item: any, index: number) => {

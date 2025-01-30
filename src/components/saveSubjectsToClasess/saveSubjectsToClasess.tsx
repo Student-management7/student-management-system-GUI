@@ -171,9 +171,9 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
   };
 
   return (
-    <div className="box">
-      <div className="bg-gray-100 min-h-screen p-4 md:p-6 flex items-center justify-center">
-        <div className="box bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
+    <div>
+      <div>
+        <div>
           <h2 className="text-2xl font-bold mb-4 text-center text-gray-700">
             {editableRow ? "Update Subjects" : "Save Subjects"}
           </h2>
@@ -205,7 +205,7 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
               />
               <button
                 onClick={handleAddNewClass}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                className="btn btn-primary"
               >
                 Add Class
               </button>
@@ -241,7 +241,7 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
                 />
                 <button
                   onClick={handleAddCustomSubject}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                  className="btn btn-primary"
                 >
                   Add Subject
                 </button>
@@ -252,7 +252,7 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
 <div className="flex justify-between space-x-4">
             <button
               onClick={onClose}
-              className="py-2 px-4 rounded-md bg-gray-500 hover:bg-gray-600 text-white"
+              className="btn btn-secondary"
             >
               Cancel
             </button>

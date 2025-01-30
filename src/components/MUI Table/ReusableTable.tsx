@@ -106,7 +106,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
       <div>
         <table>
           <thead>
-            <tr>
+            <tr className={styles['showMd']}>
               <th>
                 <input
                   type="checkbox"
@@ -140,12 +140,23 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
       <td>
         <input
           type="checkbox"
+          className={styles['smInput']}
           checked={selectedRows.has(rowIndex)}
           onChange={() => handleSelectRow(rowIndex)}
         />
+        <div className={styles['showSm']}>
+          {columns.map((column) => (
+          <div key={column.field}>
+            <span>{column.field}: </span>
+            {typeof column.renderCell === "function"
+              ? column.renderCell(row)
+              : row[column.field]}, 
+          </div>
+        ))}
+        </div>
       </td>
       {columns.map((column) => (
-        <td key={column.field}>
+        <td className={styles['showMd']} key={column.field}>
           {typeof column.renderCell === "function"
             ? column.renderCell(row)
             : row[column.field]}
@@ -164,7 +175,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
             <tr>
               <td colSpan={columns.length + 1}>
                 <div className="flex justify-between items-center p-4">
-                  <div className="flex items-center gap-4">
+                  <div className={`flex items-center gap-4 ${styles['showMd']}`}>
                     <button
                       onClick={exportToCSV}
                       className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 transition"
