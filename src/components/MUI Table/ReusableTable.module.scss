@@ -134,3 +134,26 @@
     }
   }
 }
+
+.editableCell {
+  padding: 4px;
+  cursor: pointer;
+  min-height: 24px;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.editableInput {
+  width: 100%;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  
+  &:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+  }
+}

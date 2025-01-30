@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
-import GridView from "./GridView";
 import FeesForm from "./feesForm";
 import { FeeDetails, FeeFormValues } from "../../../services/feesServices/AdminFeescreationForm/type";
 import { fetchFees, updateFee, saveFees ,deleteFeeRecord} from "../../../services/feesServices/AdminFeescreationForm/api";
 import { Pencil, Trash, Trash2 } from "lucide-react";
 import Loader from "../../loader/loader";
-import BackButton from "../../Navigation/backButton";
 import ReusableTable from "../../MUI Table/ReusableTable";
 
 const FeesController: React.FC = () => {
@@ -16,12 +14,13 @@ const FeesController: React.FC = () => {
 
   // Column definitions for GridView
   const columnDefs = [
-    { headerName: "Id", field: "id", sortable: true, filter: true },
-    { headerName: "Class", field: "className", sortable: true, filter: true },
-    { headerName: "School Fee", field: "schoolFee", sortable: true, filter: true },
-    { headerName: "Sports Fee", field: "sportsFee", sortable: true, filter: true },
-    { headerName: "Book Fee", field: "bookFee", sortable: true, filter: true },
-    { headerName: "Transportation Fee", field: "transportation", sortable: true, filter: true },
+    
+    // { headerName: "Id", field: "id", editable: false  },
+    { headerName: "Class", field: "className", editable: false  },
+    { headerName: "School Fee", field: "schoolFee", editable: false  },
+    { headerName: "Sports Fee", field: "sportsFee", editable: false  },
+    { headerName: "Book Fee", field: "bookFee", editable: false  },
+    { headerName: "Transportation Fee", field: "transportation", editable: false  },
     {
       headerName: "Other Amounts",
       field: "otherAmount",
@@ -31,7 +30,7 @@ const FeesController: React.FC = () => {
       : "0",
     },
 
-    { headerName: "Total Fees", field: "totalFee", sortable: true, filter: true },
+    { headerName: "Total Fees", field: "totalFee", editable: false  },
     
     {
         field: 'edit',

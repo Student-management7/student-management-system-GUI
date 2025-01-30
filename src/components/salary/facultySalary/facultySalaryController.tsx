@@ -5,6 +5,7 @@ import FacultySalaryForm from "./FacultySalaryForm";
 import { fetchFacultySalaries, updateFacultySalary, saveFacultySalary } from "../../../services/salary/facultysalary/Api";
 import { Eye, Pencil } from "lucide-react";
 import Loader from "../../loader/loader";
+import ReusableTable from "../../MUI Table/ReusableTable";
 // Define types with improved clarity
 type DeductionItem = {
   name: string;
@@ -34,6 +35,14 @@ type FacultySalaryResponse = {
   }[];
 };
 
+interface Column {
+  field: string;
+  headerName: string;
+  renderCell?: (row: any) => React.ReactNode;
+  editable?: boolean;
+  cellRenderer?: (row: any) => React.ReactNode;
+}
+
 interface FacultySalaryFormValues extends FacultySalaryDetails { }
 
 const transformFacultySalaryData = (data: FacultySalaryResponse[]): FacultySalaryDetails[] => {
@@ -61,13 +70,13 @@ const FacultySalaryController: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const columnDefs = [
-    { headerName: "Faculty ID", field: "facultyID", sortable: true, filter: true },
-    { headerName: "Email", field: "fact_email", sortable: true, filter: true },
-    { headerName: "Faculty Name", field: "fact_Name", sortable: true, filter: true },
-    { headerName: "Salary", field: "facultySalary", sortable: true, filter: true },
-    { headerName: "Tax %", field: "facultyTax", sortable: true, filter: true },
-    { headerName: "Transport Allowance", field: "facultyTransport", sortable: true, filter: true },
+  const columns: Column[] = [
+    // { headerName: "Faculty ID", field: "facultyID", editable: false },
+    { headerName: "Email", field: "fact_email", editable: false },
+    { headerName: "Faculty Name", field: "fact_Name", editable: false },
+    { headerName: "Salary", field: "facultySalary", editable: false },
+    { headerName: "Tax %", field: "facultyTax", editable: false },
+    { headerName: "Transport Allowance", field: "facultyTransport", editable: false },
     {
       headerName: "Deductions",
       field: "facultyDeduction",
@@ -80,8 +89,9 @@ const FacultySalaryController: React.FC = () => {
       },
     },
 
-    { headerName: "Total", field: "total", sortable: true, filter: true },
+    { headerName: "Total", field: "total", editable: false },
     {
+      field: "edit",
       headerName: "Edit",
       cellRenderer: (params: any) => (
         
@@ -93,7 +103,8 @@ const FacultySalaryController: React.FC = () => {
          
       ),
     },
-    {
+    { 
+      field: "view",
       headerName: "View Details",
       cellRenderer: (params: any) => (
         <button
@@ -101,7 +112,9 @@ const FacultySalaryController: React.FC = () => {
           >
            <Eye size={20} color='blue' />
           </button>
-      )}
+      )},
+
+      
   ];
 
   const fetchSalaryDetails = useCallback(async () => {
@@ -198,9 +211,9 @@ const FacultySalaryController: React.FC = () => {
             </button>
 
           </div>
-          <GridView
-            rowData={rowData}
-            columnDefs={columnDefs}
+          <ReusableTable
+            rows={rowData}
+            columns={columns}
           // loading={loading}
           />
         </>
