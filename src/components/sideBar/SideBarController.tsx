@@ -33,13 +33,10 @@ const SideBarController = () => {
     return (
         <>
         
-            <div className='sideNav'>
 
-                    <p className='fs-4'>EasyWaySolution</p>
-                    <FaBars  className=''/>
             <div id="item" className='sideNav'>
                 <div className="logo flex">
-                    <p className='text-xl font-semibold'>EasyWaySolution</p>
+                    <p className='fs-4'>EasyWaySolution</p>
                     <span onClick={getToggelButton}><FaBars /></span>
                 </div>
 
@@ -72,7 +69,7 @@ const SideBarController = () => {
                     <span>Logout</span>
                 </div>
             </div>
-            </div>
+            
         </>
     );
 };
