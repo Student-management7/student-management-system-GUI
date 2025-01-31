@@ -48,7 +48,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
       justifyContent: "space-around",
     },
     confirmButton: {
-      background: "#28a745",
+      //background: "#28a745",
       color: "#fff",
       border: "none",
       padding: "10px 20px",
@@ -79,7 +79,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
         <h3 style={styles.title}>{title}</h3>
         <p style={styles.message}>{message}</p>
         <div style={styles.buttons} >
-          <button style={styles.confirmButton} onClick={handleConfirm} >
+          <button className="button" style={styles.confirmButton} onClick={handleConfirm} >
             OK
           </button>
           <button style={styles.cancelButton} onClick={handleCancel}>

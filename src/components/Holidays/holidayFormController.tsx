@@ -223,14 +223,14 @@ const HolidayComponent: React.FC = () => {
           <div className="text-center mt-10">
             <button
               type="button"
-              className="w-1/8 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+              className="w-1/8 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 button"
               onClick={() => formik.handleSubmit()}
             >
               Submit
             </button>
             <button
               type="button"
-              className="w-1/8 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 ml-4"
+              className="w-1/8 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 ml-4 btn-danger"
               onClick={() => setShowForm(false)}
             >
               Cancel
