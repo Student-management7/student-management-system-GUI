@@ -39,6 +39,7 @@ import Permission from './components/permission/Permission';
 import TableComponent from './components/StudentAttendence/studentAttendance';
 import StudentReportForm from './components/studentReport/studentReportForm';
 import StudentReport from './components/studentReport/studentReportView';
+import Loader from './components/loader/loader';
 
 
 const App = () => {
@@ -86,7 +87,7 @@ const App = () => {
               <Route path="/attendance" element={<TableComponent />} />
               <Route path="/StudentReportForm" element={<StudentReportForm />} />
                <Route path="/StudentReport" element={<StudentReport />} />
-               
+               <Route path ="/loader" element={<Loader/>} />
               
                
 

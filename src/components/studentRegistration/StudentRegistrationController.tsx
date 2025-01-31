@@ -3,92 +3,79 @@ import {
   getStdDetails,
   deleteStudentRecord,
 } from "../../services/studentRegistration/api/StudentRegistration";
-import GridView from "./GridView";
 import FormView from "./FormView";
 import { StudentFormData } from "../../services/studentRegistration/type/StudentRegistrationType";
-import { data } from "@remix-run/router";
 import EditStudentForm from "./EditStudentForm";
 import AlertDialog from "../alert/AlertDialog";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Eye, IdCard, Pencil, Trash2 } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
-import StudentReport from "../studentReport/studentReportView";
-import { log } from "console";
-
+import { useNavigate } from "react-router-dom";
+import Loader from "../loader/loader"; // Add a Spinner component for loading
+import ReusableTable from "../MUI Table/ReusableTable";
+import BackButton from "../Navigation/backButton";
 
 
 const StudentRegistrationController = () => {
-   const navigate = useNavigate();
-  const [rowData, setRowData] = useState<any[]>([]);
+  const navigate = useNavigate();
+  const [data, setData] = useState<any[]>([]);
   const [studentData, setStudentData] = useState<boolean>(false);
   const [singleRowData, setSingleRowData] = useState<StudentFormData>();
   const [editFormView, setEditFormView] = useState<boolean>(false);
-  const [dialogData, setDialogData] = useState<StudentFormData | null>(null); // Store the data to delete
-  const [isDialogOpen, setIsDialogOpen] = useState(false); // Control dialog visibility
+  const [dialogData, setDialogData] = useState<StudentFormData | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false); // State for managing loader visibility
 
-  const [columnDefs] = useState<any[]>([
-   
+  const [columns] = useState<any[]>([
     { field: "name", headerName: "Name" },
     { field: "city", headerName: "City" },
     { field: "cls", headerName: "Class" },
-    // { field: "address", headerName: "Address" },
     { field: "gender", headerName: "Gender" },
-    // { field: "state", headerName: "State" },
     { field: "familyDetails.stdo_FatherName", headerName: "Father Name" },
-    // { field: "familyDetails.stdo_MotherName", headerName: "Mother Name" },
     { field: "familyDetails.stdo_primaryContact", headerName: "Contact" },
     {
       field: "actions",
       headerName: "Actions",
       width: 150,
       cellRenderer: (params: any) => (
-        <>
-          <div className="flex gap-2">
-            <button
-              onClick={() => getSingleData(params.data)}
-              className="btn btn-lg btn-edit"
-            >
-             <Pencil size={20} />
-            </button>
-
-           
-
-            <button
-              onClick={() => getDeleteData(params.data)}
-              className="btn btn-lg btn-delete"
-            >
-              <Trash2 size={20} color="red" />
-            </button>
-
-            
-          </div>
-
-          
-        </>
+        <div className="flex gap-2">
+          <button
+            onClick={() => getSingleData(params.data)}
+            className="btn btn-lg btn-edit"
+          >
+            <Pencil size={20} />
+          </button>
+          <button
+            onClick={() => getDeleteData(params.data)}
+            className="btn btn-lg btn-delete"
+          >
+            <Trash2 size={20} color="red" />
+          </button>
+        </div>
       ),
     },
     {
-          field: ' Report Card',
-          headerName: 'Report Card',
-          width: 100,
-          cellRenderer: (params: any) => (
-            <button
-              onClick={() => handeleReport(params.data.id)}
-             
-            >
-            <IdCard size={20} color='green' />
-            </button>
-          ),
-        },
+      field: "Report Card",
+      headerName: "Report Card",
+      width: 100,
+      cellRenderer: (params: any) => (
+        <button onClick={() => handeleReport(params.data.id)}>
+          <IdCard size={20} color="green" />
+        </button>
+      ),
+    },
   ]);
 
   const fetchStudentDetails = async () => {
+    setLoading(true); // Show loader before the API call
     try {
       const data = await getStdDetails();
-      setRowData(data);
+      setData(data);
     } catch (err) {
       console.error(err);
+      toast.error("Failed to fetch student details. Please try again.");
+    } finally {
+      setLoading(false); // Hide loader after the API call
     }
   };
 
@@ -101,98 +88,98 @@ const StudentRegistrationController = () => {
     setEditFormView(true);
   };
 
-  useEffect(() => {
-    console.log("Dialog open state changed:", isDialogOpen);
-  }, [isDialogOpen]);
   const getDeleteData = (data: StudentFormData) => {
-    console.log("getDeleteData triggered", data); // Check if this is logged
-    setDialogData(data); // Set the data for the item being deleted
+    setDialogData(data);
     setIsDialogOpen(true);
   };
+
   const handleConfirmDelete = async () => {
     if (!dialogData?.id) return;
 
+    setLoading(true); // Show loader during deletion
     try {
-      await deleteStudentRecord(dialogData.id); // Delete the record
-      setRowData((prev) => prev.filter((row) => row.id !== dialogData.id)); // Update the rows
+      await deleteStudentRecord(dialogData.id);
+      setData((prev) => prev.filter((row) => row.id !== dialogData.id));
       toast.success("Student record deleted successfully.");
     } catch (error) {
       console.error(error);
       toast.error("Failed to delete the student record. Please try again.");
     } finally {
-      setIsDialogOpen(false); // Close the dialog
-      setDialogData(null); // Reset dialog data
+      setLoading(false); // Hide loader after deletion
+      setIsDialogOpen(false);
+      setDialogData(null);
     }
   };
+
   const handleCancel = () => {
-    setIsDialogOpen(false); // Close the dialog without action
-    setDialogData(null); // Reset dialog data
+    setIsDialogOpen(false);
+    setDialogData(null);
   };
 
-  useEffect(() => {
-    console.log(singleRowData);
-  }, [singleRowData]);
-
-
-
-
-  const handeleReport =(id: string,)=>{
-    navigate('/StudentReport', {
-      state: { id },
+  const handeleReport = (id: string) => {
+    navigate("/StudentReport", {
       
+      state: { id },
     });
-  }
-
-
+  };
 
   return (
     <>
-      {!studentData ? (
-        editFormView ? (
-          <div className="box">
-            <div className="headding1">
-              <h1 onClick={() => setEditFormView(false)}>
-                <div>
-                  <i className="bi bi-arrow-left-circle" />{" "}
-                  <span>User Edit</span>
-                </div>
-              </h1>
-            </div>
-            {singleRowData && <EditStudentForm singleRowData={singleRowData} />}
-          </div>
-        ) : (
-          <div className="box">
-            <div className="text-right">
-              <button
-                onClick={() => setStudentData(true)}
-                className="btn btn-default"
-              >
-                Add Student
-              </button>
-            </div>
-            <ToastContainer />
-            <AlertDialog
-              title="Confirm Deletion"
-              message={`Are you sure you want to delete the student record for ${dialogData?.name}?`}
-              isOpen={isDialogOpen}
-              onConfirm={handleConfirmDelete}
-              onCancel={handleCancel}
-            />
-            <GridView rowData={rowData} columnDefs={columnDefs} />
-          </div>
-        )
-      ) : (
-        <div className="box">
-          <div className="headding1">
-            <h1 onClick={() => setStudentData(false)}>
-              <div>
-                <i className="bi bi-arrow-left-circle" />{" "}
-                <span>User Details</span>
-              </div>
-            </h1>
+      {loading && <Loader />} {/* Show loader when loading */}
+      {!loading && (
+        <div className="box ">
+        <div className="flex items-center space-x-4 mb-4">
+            <span>
+              <BackButton />
+            </span>
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Registration</h1>
           </div>
 
-          <FormView />
+          {!studentData ? (
+            editFormView ? (
+              <div className="box">
+                <div className="headding1">
+                  <h1 onClick={() => setEditFormView(false)}>
+                    <div>
+                      <i className="bi bi-arrow-left-circle" /> <span>User Edit</span>
+                    </div>
+                  </h1>
+                </div>
+                {singleRowData && <EditStudentForm singleRowData={singleRowData} />}
+              </div>
+            ) : (
+              <div className="box">
+                <div className="text-right">
+                  <button
+                    onClick={() => setStudentData(true)}
+                    className="btn btn-default"
+                  >
+                    Add Student
+                  </button>
+                </div>
+                <ToastContainer />
+                <AlertDialog
+                  title="Confirm Deletion"
+                  message={`Are you sure you want to delete the student record for ${dialogData?.name}?`}
+                  isOpen={isDialogOpen}
+                  onConfirm={handleConfirmDelete}
+                  onCancel={handleCancel}
+                />
+                <ReusableTable rows={data} columns={columns} />
+              </div>
+            )
+          ) : (
+            <div className="box">
+              <div className="headding1">
+                <h1 onClick={() => setStudentData(false)}>
+                  <div>
+                    <i className="bi bi-arrow-left-circle" /> <span>User Details</span>
+                  </div>
+                </h1>
+              </div>
+              <FormView />
+            </div>
+          )}
         </div>
       )}
     </>
@@ -200,5 +187,3 @@ const StudentRegistrationController = () => {
 };
 
 export default StudentRegistrationController;
-
-

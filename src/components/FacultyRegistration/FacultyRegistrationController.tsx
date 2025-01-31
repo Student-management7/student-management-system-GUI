@@ -12,8 +12,9 @@ import { FacultyFormData } from '../../services/Faculty/fecultyRegistretion/Type
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Pencil, Trash2 ,IdCard } from 'lucide-react';
-import '../../global.scss'
+import Loader from '../loader/loader';
 
+import ReusableTable from '../MUI Table/ReusableTable';
 
 const FacultyRegistrationForm: React.FC = () => {
   const [rowData, setRowData] = useState<FacultyFormData[]>([]);
@@ -22,7 +23,7 @@ const FacultyRegistrationForm: React.FC = () => {
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [showError, setShowError] = useState<boolean>(false);
   const [isEditMode, setIsEditMode] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   
   //
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
@@ -57,6 +58,7 @@ const FacultyRegistrationForm: React.FC = () => {
 
   const fetchFacultyDetails = async () => {
     try {
+      setLoading(true);
       const response = await getFacultyDetails();
       if (Array.isArray(response?.data)) {
         setRowData(response.data);
@@ -67,6 +69,8 @@ const FacultyRegistrationForm: React.FC = () => {
     } catch (error) {
       console.error('Failed to fetch faculty details:', error);
       setShowError(true);
+    }finally {
+      setLoading(false); // Hide loader after the API call
     }
   };
 
@@ -185,17 +189,13 @@ const FacultyRegistrationForm: React.FC = () => {
 
   //
 
-  const columnDefs: any[] = [
+  const column: any[] = [
     { field: 'fact_Name', headerName: 'Name' },
-    { field: 'email', headerName: 'Username' },
-    { field: 'fact_city', headerName: 'City' },
+    { field: 'fact_email', headerName: 'Email' },
     { field: 'fact_contact', headerName: 'Contact' },
     { field: 'fact_address', headerName: 'Address' },
     { field: 'fact_gender', headerName: 'Gender' },
-    { field: 'fact_state', headerName: 'State' },
-    { field: 'fact_email', headerName: 'Email' },
-    { field: 'password', headerName: 'password' },
-    { field: 'fact_status', headerName: 'Status' },
+
 
 
     {
@@ -232,7 +232,12 @@ const FacultyRegistrationForm: React.FC = () => {
 
 
   return (
+
     <>
+    {loading && <Loader />} {/* Show loader when loading */}
+    {!loading && (
+    <>
+
    <ToastContainer/>
       {!isFormVisible ? (
         <div className="box">
@@ -263,9 +268,9 @@ const FacultyRegistrationForm: React.FC = () => {
             />
           )}
 
-          <GridView
-            rowData={rowData}
-            columnDefs={columnDefs}
+          <ReusableTable
+            rows={rowData}
+            columns={column}
           />
 
           {/* delete Modele implement he */}
@@ -598,6 +603,8 @@ const FacultyRegistrationForm: React.FC = () => {
           </Formik>
         </div>
       )}
+    </>
+    )}
     </>
   );
 };

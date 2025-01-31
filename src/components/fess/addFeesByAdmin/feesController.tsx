@@ -1,23 +1,26 @@
 import React, { useState, useEffect, useCallback } from "react";
-import GridView from "./GridView";
 import FeesForm from "./feesForm";
 import { FeeDetails, FeeFormValues } from "../../../services/feesServices/AdminFeescreationForm/type";
 import { fetchFees, updateFee, saveFees ,deleteFeeRecord} from "../../../services/feesServices/AdminFeescreationForm/api";
 import { Pencil, Trash, Trash2 } from "lucide-react";
+import Loader from "../../loader/loader";
+import ReusableTable from "../../MUI Table/ReusableTable";
 
 const FeesController: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(false); // Toggle between grid and form views
   const [rowData, setRowData] = useState<FeeDetails[]>([]); // Holds grid data
   const [editData, setEditData] = useState<FeeDetails | null>(null); // Holds data for editing
+  const [loading, setLoading] = useState(false); // State for managing loader visibility
 
   // Column definitions for GridView
   const columnDefs = [
-    { headerName: "Id", field: "id", sortable: true, filter: true },
-    { headerName: "Class", field: "className", sortable: true, filter: true },
-    { headerName: "School Fee", field: "schoolFee", sortable: true, filter: true },
-    { headerName: "Sports Fee", field: "sportsFee", sortable: true, filter: true },
-    { headerName: "Book Fee", field: "bookFee", sortable: true, filter: true },
-    { headerName: "Transportation Fee", field: "transportation", sortable: true, filter: true },
+    
+    // { headerName: "Id", field: "id", editable: false  },
+    { headerName: "Class", field: "className", editable: false  },
+    { headerName: "School Fee", field: "schoolFee", editable: false  },
+    { headerName: "Sports Fee", field: "sportsFee", editable: false  },
+    { headerName: "Book Fee", field: "bookFee", editable: false  },
+    { headerName: "Transportation Fee", field: "transportation", editable: false  },
     {
       headerName: "Other Amounts",
       field: "otherAmount",
@@ -27,7 +30,7 @@ const FeesController: React.FC = () => {
       : "0",
     },
 
-    { headerName: "Total Fees", field: "totalFee", sortable: true, filter: true },
+    { headerName: "Total Fees", field: "totalFee", editable: false  },
     
     {
         field: 'edit',
@@ -56,19 +59,19 @@ const FeesController: React.FC = () => {
         ),
       },
     
-    
-
-
-    
   ];
 
   // Fetch fee data on mount
   const fetchFeeDetails = useCallback(async () => {
     try {
+      setLoading(true);
       const data = await fetchFees();
       setRowData(data);
     } catch (error) {
       console.error("Error fetching fee details:", error);
+    }
+    finally {
+      setLoading(false);
     }
   }, []);
 
@@ -84,6 +87,7 @@ const FeesController: React.FC = () => {
   
   const handleSave = async (data: FeeFormValues) => {
     try {
+
       if (editData) {
         console.log('Updating Fee with ID:', editData.id, 'Data:', data);
         await updateFee(editData.id, data);
@@ -125,6 +129,9 @@ const FeesController: React.FC = () => {
   
   // Render
   return (
+    <>
+    {loading && <Loader />} {/* Show loader when loading */}
+    {!loading && (
     <div className="box">
       {!showForm ? (
         <>
@@ -134,7 +141,7 @@ const FeesController: React.FC = () => {
               Add Fee
             </button>
           </div>
-          <GridView rowData={rowData} columnDefs={columnDefs} />
+          <ReusableTable rows={rowData} columns={columnDefs} />
         </>
       ) : (
         <FeesForm
@@ -149,6 +156,8 @@ const FeesController: React.FC = () => {
       
       )}
     </div>
+    )}
+    </>
   );
 };
 

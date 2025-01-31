@@ -1,28 +1,97 @@
-import React from 'react';
-// import './ReusableTable.module.scss';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './ReusableTable.module.scss';
 
-
 interface Column {
-  renderCell: any;
   field: string;
   headerName: string;
+  renderCell?: (row: any) => React.ReactNode;
+  cellRenderer?: (row: any) => React.ReactNode;
+  editable?: boolean; // New property to control which columns are editable
+}
 
+interface EditableCellProps {
+  value: any;
+  row: any;
+  field: string;
+  onSave: (field: string, value: any, row: any) => void;
 }
 
 interface ReusableTableProps {
   columns: Column[];
   rows: Record<string, any>[];
   rowsPerPageOptions?: number[];
-
-
+  onRowUpdate?: (row: Record<string, any>, index: number) => void;
 }
+
+// Helper function to access nested fields
+const getNestedValue = (obj: any, path: string) => {
+  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+};
+
+
+const EditableCell: React.FC<EditableCellProps> = ({ value, row, field, onSave }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(value);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
+
+  const handleDoubleClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleBlur = () => {
+    setIsEditing(false);
+    if (editValue !== value) {
+      onSave(field, editValue, row);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      setIsEditing(false);
+      if (editValue !== value) {
+        onSave(field, editValue, row);
+      }
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+      setEditValue(value);
+    }
+  };
+
+  if (isEditing) {
+    return (
+      <input
+        ref={inputRef}
+        type="text"
+        value={editValue}
+        onChange={(e) => setEditValue(e.target.value)}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        className={styles.editableInput}
+      />
+    );
+  }
+
+  return (
+    <div onDoubleClick={handleDoubleClick} className={styles.editableCell}>
+      {value}
+    </div>
+  );
+};
+
+
+
 
 const ReusableTable: React.FC<ReusableTableProps> = ({
   columns,
   rows,
   rowsPerPageOptions = [5, 10, 25],
-  
+  onRowUpdate,
 }) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(rowsPerPageOptions[0]);
@@ -30,39 +99,45 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
   const [sortConfig, setSortConfig] = React.useState<{ field: string; direction: 'asc' | 'desc' } | null>(null);
   const [selectedRows, setSelectedRows] = React.useState<Set<number>>(new Set());
 
+  // Filter rows based on search query
   const filteredRows = React.useMemo(() => {
+    if (!searchQuery) return rows;
     return rows.filter((row) =>
       columns.some((column) =>
-        String(row[column.field]).toLowerCase().includes(searchQuery.toLowerCase())
+        String(getNestedValue(row, column.field)).toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
   }, [rows, columns, searchQuery]);
 
+
+
+  // Sort rows based on sort configuration
   const sortedRows = React.useMemo(() => {
-    if (sortConfig) {
-      return [...filteredRows].sort((a, b) => {
-        const aValue = a[sortConfig.field];
-        const bValue = b[sortConfig.field];
-        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-        return 0;
-      });
-    }
-    return filteredRows;
+    if (!sortConfig) return filteredRows;
+    return [...filteredRows].sort((a, b) => {
+      const aValue = getNestedValue(a, sortConfig.field);
+      const bValue = getNestedValue(b, sortConfig.field);
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
   }, [filteredRows, sortConfig]);
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - sortedRows.length) : 0;
+  // Calculate empty rows for pagination
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - sortedRows.length) : 0;
 
+  // Handle page change
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };
 
+  // Handle rows per page change
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
+  // Handle sorting
   const handleSort = (field: string) => {
     let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig?.field === field && sortConfig.direction === 'asc') {
@@ -71,16 +146,32 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
     setSortConfig({ field, direction });
   };
 
+  // Handle row selection
   const handleSelectRow = (index: number) => {
     setSelectedRows((prev) =>
       prev.has(index) ? new Set([...prev].filter((i) => i !== index)) : new Set(prev.add(index))
     );
   };
 
+
+  const handleCellUpdate = (field: string, value: any, row: any) => {
+    const rowIndex = rows.findIndex((r) => r === row);
+    if (rowIndex !== -1 && onRowUpdate) {
+      const updatedRow = {
+        ...row,
+        [field]: value,
+      };
+      onRowUpdate(updatedRow, rowIndex);
+    }
+  };
+
+
+
+  // Export to CSV
   const exportToCSV = () => {
     const csvContent = [
       columns.map((column) => column.headerName).join(','),
-      ...rows.map((row) => columns.map((column) => row[column.field]).join(',')),
+      ...rows.map((row) => columns.map((column) => getNestedValue(row, column.field)).join(',')),
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -92,19 +183,19 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
   };
 
   return (
-    <div className={styles['table-container']}>
-      <div>
+    <div className={styles.tableContainer}>
+      <div className={styles.searchContainer}>
         <input
           type="text"
           placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          aria-label="Search table"
         />
-
       </div>
 
-      <div>
-        <table>
+      <div className={styles.tableWrapper}>
+        <table className={styles.table}>
           <thead>
             <tr className={styles['showMd']}>
               <th>
@@ -114,12 +205,14 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
                     const allSelected = e.target.checked;
                     setSelectedRows(allSelected ? new Set(rows.map((_, index) => index)) : new Set());
                   }}
+                  aria-label="Select all rows"
                 />
               </th>
               {columns.map((column) => (
                 <th
                   key={column.field}
                   onClick={() => handleSort(column.field)}
+                  className={styles.sortableHeader}
                 >
                   <div>
                     <span>{column.headerName}</span>
@@ -132,53 +225,51 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
             </tr>
           </thead>
           <tbody>
-  {(rowsPerPage > 0
-    ? sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    : sortedRows
-  ).map((row, rowIndex) => (
-    <tr key={rowIndex}>
-      <td>
-        <input
-          type="checkbox"
-          className={styles['smInput']}
-          checked={selectedRows.has(rowIndex)}
-          onChange={() => handleSelectRow(rowIndex)}
-        />
-        <div className={styles['showSm']}>
-          {columns.map((column) => (
-          <div key={column.field}>
-            <span>{column.field}: </span>
-            {typeof column.renderCell === "function"
-              ? column.renderCell(row)
-              : row[column.field]}, 
-          </div>
-        ))}
-        </div>
-      </td>
-      {columns.map((column) => (
-        <td className={styles['showMd']} key={column.field}>
-          {typeof column.renderCell === "function"
-            ? column.renderCell(row)
-            : row[column.field]}
-        </td>
-      ))}
-    </tr>
-  ))}
-  {emptyRows > 0 && (
-    <tr style={{ height: `${41 * emptyRows}px` }}>
-      <td colSpan={columns.length + 1} />
-    </tr>
-  )}
-</tbody>
-
+            {(rowsPerPage > 0
+              ? sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              : sortedRows
+            ).map((row, rowIndex) => (
+              <tr key={rowIndex} className={selectedRows.has(rowIndex) ? styles.selectedRow : ''}>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={selectedRows.has(rowIndex)}
+                    onChange={() => handleSelectRow(rowIndex)}
+                    aria-label={`Select row ${rowIndex + 1}`}
+                  />
+                </td>
+                {columns.map((column) => (
+                  <td key={column.field}>
+                    {column.cellRenderer ? (
+                      column.cellRenderer({ data: row })
+                    ) : column.editable ? (
+                      <EditableCell
+                        value={getNestedValue(row, column.field)}
+                        row={row}
+                        field={column.field}
+                        onSave={handleCellUpdate}
+                      />
+                    ) : (
+                      getNestedValue(row, column.field)
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+            {emptyRows > 0 && (
+              <tr style={{ height: `${41 * emptyRows}px` }}>
+                <td colSpan={columns.length + 1} />
+              </tr>
+            )}
+          </tbody>
           <tfoot>
             <tr>
               <td colSpan={columns.length + 1}>
-                <div className="flex justify-between items-center p-4">
-                  <div className={`flex items-center gap-4 ${styles['showMd']}`}>
+                <div className={styles.footer}>
+                  <div className={styles.footerLeft}>
                     <button
                       onClick={exportToCSV}
-                      className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 transition"
+                      className={styles.exportButton}
                     >
                       Export to CSV
                     </button>
@@ -186,7 +277,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
                     <select
                       value={rowsPerPage}
                       onChange={handleChangeRowsPerPage}
-                      className="border border-gray-300 rounded p-1"
+                      className={styles.rowsPerPageSelect}
                     >
                       {rowsPerPageOptions.map((option) => (
                         <option key={option} value={option}>
@@ -195,42 +286,40 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
                       ))}
                     </select>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-600">
+                  <div className={styles.footerRight}>
+                    <span className={styles.paginationInfo}>
                       {page * rowsPerPage + 1}-
                       {Math.min((page + 1) * rowsPerPage, sortedRows.length)} of{' '}
                       {sortedRows.length}
                     </span>
-                    <div className="flex gap-1">
+                    <div className={styles.paginationButtons}>
                       <button
                         onClick={() => handleChangePage(0)}
                         disabled={page === 0}
-                        className="py-1 px-2 bg-gray-100 text-gray-700 rounded disabled:opacity-50"
+                        className={styles.paginationButton}
                       >
                         {'<<'}
                       </button>
                       <button
                         onClick={() => handleChangePage(page - 1)}
                         disabled={page === 0}
-                        className="py-1 px-2 bg-gray-100 text-gray-700 rounded disabled:opacity-50"
+                        className={styles.paginationButton}
                       >
                         {'<'}
                       </button>
                       <button
                         onClick={() => handleChangePage(page + 1)}
                         disabled={page >= Math.ceil(sortedRows.length / rowsPerPage) - 1}
-                        className="py-1 px-2 bg-gray-100 text-gray-700 rounded disabled:opacity-50"
+                        className={styles.paginationButton}
                       >
                         {'>'}
                       </button>
                       <button
                         onClick={() =>
-                          handleChangePage(
-                            Math.ceil(sortedRows.length / rowsPerPage) - 1
-                          )
+                          handleChangePage(Math.ceil(sortedRows.length / rowsPerPage) - 1)
                         }
                         disabled={page >= Math.ceil(sortedRows.length / rowsPerPage) - 1}
-                        className="py-1 px-2 bg-gray-100 text-gray-700 rounded disabled:opacity-50"
+                        className={styles.paginationButton}
                       >
                         {'>>'}
                       </button>
@@ -240,7 +329,6 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
               </td>
             </tr>
           </tfoot>
-
         </table>
       </div>
     </div>

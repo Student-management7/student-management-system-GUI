@@ -4,7 +4,8 @@ import GridView from "./gridView";
 import FacultySalaryForm from "./FacultySalaryForm";
 import { fetchFacultySalaries, updateFacultySalary, saveFacultySalary } from "../../../services/salary/facultysalary/Api";
 import { Eye, Pencil } from "lucide-react";
-
+import Loader from "../../loader/loader";
+import ReusableTable from "../../MUI Table/ReusableTable";
 // Define types with improved clarity
 type DeductionItem = {
   name: string;
@@ -34,6 +35,14 @@ type FacultySalaryResponse = {
   }[];
 };
 
+interface Column {
+  field: string;
+  headerName: string;
+  renderCell?: (row: any) => React.ReactNode;
+  editable?: boolean;
+  cellRenderer?: (row: any) => React.ReactNode;
+}
+
 interface FacultySalaryFormValues extends FacultySalaryDetails { }
 
 const transformFacultySalaryData = (data: FacultySalaryResponse[]): FacultySalaryDetails[] => {
@@ -59,15 +68,15 @@ const FacultySalaryController: React.FC = () => {
   const [rowData, setRowData] = useState<FacultySalaryDetails[]>([]);
   const [editData, setEditData] = useState<FacultySalaryDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const columnDefs = [
-    { headerName: "Faculty ID", field: "facultyID", sortable: true, filter: true },
-    { headerName: "Email", field: "fact_email", sortable: true, filter: true },
-    { headerName: "Faculty Name", field: "fact_Name", sortable: true, filter: true },
-    { headerName: "Salary", field: "facultySalary", sortable: true, filter: true },
-    { headerName: "Tax %", field: "facultyTax", sortable: true, filter: true },
-    { headerName: "Transport Allowance", field: "facultyTransport", sortable: true, filter: true },
+  const columns: Column[] = [
+    // { headerName: "Faculty ID", field: "facultyID", editable: false },
+    { headerName: "Email", field: "fact_email", editable: false },
+    { headerName: "Faculty Name", field: "fact_Name", editable: false },
+    { headerName: "Salary", field: "facultySalary", editable: false },
+    { headerName: "Tax %", field: "facultyTax", editable: false },
+    { headerName: "Transport Allowance", field: "facultyTransport", editable: false },
     {
       headerName: "Deductions",
       field: "facultyDeduction",
@@ -80,8 +89,9 @@ const FacultySalaryController: React.FC = () => {
       },
     },
 
-    { headerName: "Total", field: "total", sortable: true, filter: true },
+    { headerName: "Total", field: "total", editable: false },
     {
+      field: "edit",
       headerName: "Edit",
       cellRenderer: (params: any) => (
         
@@ -93,7 +103,8 @@ const FacultySalaryController: React.FC = () => {
          
       ),
     },
-    {
+    { 
+      field: "view",
       headerName: "View Details",
       cellRenderer: (params: any) => (
         <button
@@ -101,13 +112,16 @@ const FacultySalaryController: React.FC = () => {
           >
            <Eye size={20} color='blue' />
           </button>
-      )}
+      )},
+
+      
   ];
 
   const fetchSalaryDetails = useCallback(async () => {
     
     setError(null);
     try {
+      setLoading(true);
       const data: FacultySalaryResponse[] = await fetchFacultySalaries();
       const transformedData = transformFacultySalaryData(data);
       setRowData(transformedData);
@@ -115,6 +129,7 @@ const FacultySalaryController: React.FC = () => {
       console.error("Error fetching faculty salary details:", error);
       setError("Failed to fetch salary details. Please try again.");
     } finally {
+      setLoading(false);
       
     }
   }, []);
@@ -129,7 +144,7 @@ const FacultySalaryController: React.FC = () => {
   };
 
   const handleSave = async (payload: FacultySalaryFormValues) => {
-    setIsLoading(true);
+    setLoading(true);
     setError(null);
     try {
       if (editData) {
@@ -144,7 +159,7 @@ const FacultySalaryController: React.FC = () => {
       console.error("Error saving faculty salary details:", error);
       setError("Failed to save salary details. Please try again.");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -158,6 +173,11 @@ const FacultySalaryController: React.FC = () => {
   };
 
   return (
+
+    <>
+    {loading ? (
+      <Loader /> // Show loader while data is being fetched
+    ) : (
     <div className="box">
       {error && (
         <div className="alert alert-error mb-4">
@@ -168,7 +188,7 @@ const FacultySalaryController: React.FC = () => {
         </div>
       )}
 
-      {isLoading && (
+      {loading && (
         <div className="text-center my-4">
           <span className="loading loading-spinner loading-lg"></span>
           <p>Loading...</p>
@@ -184,17 +204,17 @@ const FacultySalaryController: React.FC = () => {
                 setShowForm(true);
                 setEditData(null);
               }}
-              className={`btn btn-default ${isLoading ? "btn-disabled" : ""}`}
-              disabled={isLoading}
+              className={`btn btn-default ${loading ? "btn-disabled" : ""}`}
+              disabled={loading}
             >
               Add Salary
             </button>
 
           </div>
-          <GridView
-            rowData={rowData}
-            columnDefs={columnDefs}
-          // loading={isLoading}
+          <ReusableTable
+            rows={rowData}
+            columns={columns}
+          // loading={loading}
           />
         </>
       ) : (
@@ -212,6 +232,8 @@ const FacultySalaryController: React.FC = () => {
         />
       )}
     </div>
+    )}
+    </>
   );
 };
 

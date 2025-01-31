@@ -6,10 +6,20 @@ import GridView from './gridView';
 import { deleteHolidayApi, fetchHolidayData, saveHoliday } from '../../services/holiday/Api/api';
 import { formatToDDMMYYYY } from '../../components/Utils/dateUtils';
 import { Holiday, HolidayPayload } from '../../services/holiday/Type/type';
+import Loader from '../loader/loader';
+import ReusableTable from '../MUI Table/ReusableTable';
+import { Trash2 } from 'lucide-react';
 
 const HolidayComponent: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
   const [rowData, setRowData] = useState<Holiday[]>([]);
+  const [selectedClasses, setSelectedClasses] = useState<(string | number)[] | 'All'>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [holidayDate, setHolidayDate] = useState({
+    startDate: '',
+    endDate: '',
+    description: '',
+  });
 
   const classes = [
     { value: 'Nursery', label: 'Nursery' },
@@ -26,6 +36,7 @@ const HolidayComponent: React.FC = () => {
   useEffect(() => {
     const loadHolidays = async () => {
       try {
+        setLoading(true);
         const holidays = await fetchHolidayData();
         const formattedData = holidays.flatMap((holiday) =>
           holiday.date.map((dateEntry: any) => ({
@@ -39,6 +50,8 @@ const HolidayComponent: React.FC = () => {
         setRowData(formattedData);
       } catch (error) {
         console.error(error);
+      }finally{
+        setLoading(false);
       }
     };
 
@@ -108,7 +121,7 @@ const HolidayComponent: React.FC = () => {
   };
 
   const columnDefs = [
-    { headerName: 'ID', field: 'id', sortable: true, filter: true },
+    // { headerName: 'ID', field: 'id', sortable: true, filter: true },
     { headerName: 'Class', field: 'className', sortable: true, filter: true },
     { headerName: 'Start Date', field: 'startDate', sortable: true, filter: true },
     { headerName: 'End Date', field: 'endDate', sortable: true, filter: true },
@@ -118,17 +131,22 @@ const HolidayComponent: React.FC = () => {
       headerName: 'Actions',
       cellRenderer: (params: any) => (
         <button
-          className="bi bi-trash text-red-600"
+          className="Trsh"
           onClick={() => handleDeleteButtonClick(params.data.id)}
         >
-          Delete
+            <Trash2 size={20} color='red' />
         </button>
       ),
     },
   ];
 
   return (
-    <div className="box">
+
+    <>
+    {loading ? (
+      <Loader /> // Show loader while data is being fetched
+    ) : (
+    <div className="box ">
       {!showForm ? (
         <>
           <div className="text-right">
@@ -137,7 +155,7 @@ const HolidayComponent: React.FC = () => {
               Add Holiday
             </button>
           </div>
-          <GridView rowData={rowData} columnDefs={columnDefs} />
+          <ReusableTable rows={rowData} columns={columnDefs} />
         </>
       ) : (
         <div className="box">
@@ -221,6 +239,8 @@ const HolidayComponent: React.FC = () => {
         </div>
       )}
     </div>
+    )}
+    </>
   );
 };
 

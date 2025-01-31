@@ -10,6 +10,7 @@ import axiosInstance from "../../services/Utils/apiUtils";
  import { User } from 'lucide-react';
 import axios from "axios";
 import { useLocation } from 'react-router-dom';
+import Loader from "../loader/loader";
 
 
 
@@ -156,6 +157,10 @@ const StudentReport: React.FC = () => {
     
 
     return (
+
+        <>
+        {loading && <Loader />} {/* Show loader when loading */}
+        {!loading && (
         <div className="container-fluid p-5 bg-gray-100 font-sans">
             {studentData && (
                
@@ -345,6 +350,8 @@ const StudentReport: React.FC = () => {
                 </div>
             </div>
         </div>
+        )}
+        </>
     );
 };
 

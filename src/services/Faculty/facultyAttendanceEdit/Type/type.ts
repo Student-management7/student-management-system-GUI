@@ -1,3 +1,5 @@
+import { SetStateAction } from "react";
+
 export interface Faculty {
     factId: string;
     attendance: 'Present' | 'Absent';
@@ -5,6 +7,7 @@ export interface Faculty {
   }
   
   export interface AttendanceEntry {
+    id: SetStateAction<string>;
     date: string;
     factList: Faculty[];
   }

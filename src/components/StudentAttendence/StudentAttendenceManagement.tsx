@@ -6,6 +6,10 @@ import { ClassData, Student, AttendancePayload } from "../../services/StudentAtt
 import { API_ENDPOINTS } from "../../services/StudentAttendence/API/studentAttendenceApi";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { sortArrayByKey } from "../Utils/sortArrayByKey";
+import Loader from "../loader/loader";
+import BackButton from "../Navigation/backButton";
+import ReusableTable from "../MUI Table/ReusableTable";
+import { Columns } from "lucide-react";
 
 
 const StudentManagementSystem: React.FC = () => {
@@ -62,7 +66,8 @@ const StudentManagementSystem: React.FC = () => {
             const filteredStudents = response.data.map((student: any) => ({
                 stdId: student.id,
                 name: student.name,
-                attendance: "Present",
+                attendance: "",
+                remark: "",
             }));
             setStudents(filteredStudents);
         } catch (error) {
@@ -72,15 +77,7 @@ const StudentManagementSystem: React.FC = () => {
         }
     };
 
-    // Update attendance immediately when bulk radio is selected
-    const handleBulkAttendanceChange = (bulkAttendance: string) => {
-        setStudents((prevStudents) =>
-            prevStudents.map((student) => ({
-                ...student,
-                attendance: bulkAttendance,
-            }))
-        );
-    };
+
 
     // Submit attendance
     const submitAttendance = async () => {
@@ -91,7 +88,7 @@ const StudentManagementSystem: React.FC = () => {
                 stdId: student.stdId,
                 remark: student.remark || "",
                 name: student.name,
-                attendance: student.attendance || "Present",
+                attendance: student.attendance || "Absent",
             })),
             masterAttendance: attendanceMode === "master",
         };
@@ -111,13 +108,13 @@ const StudentManagementSystem: React.FC = () => {
     };
 
     // Table columns
-    const columns = [
-        { headerName: "SN", valueGetter: "node.rowIndex + 1", flex: 1 }, // Serial Number Column
-        { headerName: "Student Name", field: "name", flex: 2 },
+    const Column = [
+        { headerName: "SN", valueGetter: "node.rowIndex + 1"}, // Serial Number Column
+        { headerName: "Student Name", field: "name"  },
         {
             headerName: "Attendance",
             field: "attendance",
-            flex: 2,
+            editable: true,
             cellRenderer: (params: any) => (
                 <div className="flex gap-2">
                     {["Present", "Absent", "Half Day", "Late"].map((option) => (
@@ -139,7 +136,6 @@ const StudentManagementSystem: React.FC = () => {
         {
             headerName: "Remarks",
             field: "remark",
-            flex: 2,
             editable: true,
             cellRenderer: (params: any) => (
                 <input
@@ -155,8 +151,21 @@ const StudentManagementSystem: React.FC = () => {
     ];
 
     return (
+
+        
+    <>
+    {loading && <Loader />} {/* Show loader when loading */}
+    {!loading && (
+
+        
+        
         <div className="box">
-            <h2 className="text-2xl font-semibold text-blue-600 mb-4">Student Attendance</h2>
+        <div className="flex items-center space-x-4 mb-4">
+            <span>
+              <BackButton />
+            </span>
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Attendance </h1>
+          </div>
 
             {error && <p className="text-red-500 mb-4">{error}</p>}
 
@@ -222,28 +231,11 @@ const StudentManagementSystem: React.FC = () => {
                 </button>
             </div>
 
-            {/* Bulk Attendance */}
-            <div className="bulk-attendance mb-4 flex items-center">
-    <span className="mr-4 font-semibold">Bulk Attendance:</span>
-    <div className="flex space-x-6">
-        {["Present", "Absent", "Half Day", "Late"].map((option) => (
-            <label key={option} className="inline-flex items-center cursor-pointer">
-                <input
-                    type="radio"
-                    name="bulkAttendance"
-                    value={option}
-                    onChange={() => handleBulkAttendanceChange(option)}
-                    className="form-radio h-4 w-4 text-blue-600"
-                />
-                <span className="ml-2 text-sm">{option}</span>
-            </label>
-        ))}
-    </div>
-</div>
+          
 
             {/* Data Grid */}
             <div className="ag-theme-alpine" style={{ height: "400px", width: "100%", marginTop: "20px" }}>
-                <AgGridReact rowData={students} columnDefs={columns} pagination={true} />
+                <ReusableTable rows={students} columns={Column} />
             </div>
 
             {/* Submit Button */}
@@ -255,6 +247,9 @@ const StudentManagementSystem: React.FC = () => {
                 Submit Attendance
             </button>
         </div>
+        
+    )}
+    </>
     );
 };
 

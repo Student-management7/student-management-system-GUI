@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import GridView from './gridView';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../services/Utils/apiUtils';
 import { formatDate } from '../Utils/dateUtils';
 import { getDateRange } from '../Utils/dateUtils';
-
+import Loader from '../loader/loader';
+import BackButton from '../Navigation/backButton';
+import ReusableTable from '../MUI Table/ReusableTable';
 
 
 
@@ -23,19 +24,21 @@ interface AttendanceEntry {
 
 const FacultyAttendance: React.FC = () => {
   const navigate = useNavigate();
-  const [fromDate, setFromDate] = useState<string>('2024-12-20');
-  const [toDate, setToDate] = useState<string>('2024-12-28');
-  const [rowData, setRowData] = useState<any[]>([]);
-  const [columnDefs, setColumnDefs] = useState<any[]>([
-    { field: 'factId', headerName: 'Faculty ID' },
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
+  const [data, setData] = useState<any[]>([]);
+  
+  const [columns, setColumns] = useState<any[]>([
+    // { field: 'factId', headerName: 'Faculty ID' },
     { field: 'name', headerName: 'Faculty Name' },
+    { field: 'date', headerName: 'Attendance' },
   ]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
     if (fromDate && toDate) {
-      fetchAttendance();
+      
     }
   }, [fromDate, toDate]);
 
@@ -84,17 +87,17 @@ const FacultyAttendance: React.FC = () => {
 
       const rows = mapAttendanceToRows(response.data, dateRange);
 
-      setColumnDefs([
+      setColumns([
         { field: 'name', headerName: 'Faculty Name' },
         // { field: 'factId', headerName: 'Faculty ID' },
         ...dynamicColumns,
       ]);
-      setRowData(rows);
+      setData(rows);
     } catch (err) {
       console.error('Error fetching attendance:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch attendance data');
-      setRowData([]);
-      setColumnDefs([]);
+      setData([]);
+      setColumns([]);
     } finally {
       setLoading(false);
     }
@@ -125,7 +128,19 @@ const FacultyAttendance: React.FC = () => {
   };
 
   return (
+
+
+    <>
+    {loading && <Loader />} {/* Show loader when loading */}
+    {!loading && (
     <div className="box">
+      <div className="flex items-center space-x-4 mb-4">
+            <span>
+              <BackButton />
+            </span>
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Attendance </h1>
+          </div>
+
       <div className="filters space-y-4 md:flex md:space-y-0 md:space-x-4 md:items-center mb-2">
         <div className="space-y-2">
           <label className="text-sm font-medium">From Date:</label>
@@ -167,9 +182,11 @@ const FacultyAttendance: React.FC = () => {
       )}
 
       <div className="box">
-        <GridView rowData={rowData} columnDefs={columnDefs} showAddButton={false} />
+        <ReusableTable rows={data} columns={columns}  />
       </div>
     </div>
+    )}
+    </>
   );
 };
 

@@ -21,6 +21,18 @@
       {
         "aria-valid-attr-value": "off"
       }
+    ],
+    "axe/text-alternatives": [
+      "default",
+      {
+        "image-alt": "off"
+      }
     ]
-  }
+  },
+  "browserslist": [
+    "defaults",
+    "not ie 11",
+    "not ios_saf <= 18.1",
+    "not safari <= 18.1"
+  ]
 }
