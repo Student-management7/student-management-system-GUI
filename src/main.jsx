@@ -40,6 +40,7 @@ import TableComponent from './components/StudentAttendence/studentAttendance';
 import StudentReportForm from './components/studentReport/studentReportForm';
 import StudentReport from './components/studentReport/studentReportView';
 
+
 const App = () => {
   const { isAuthenticated } = useAuth();
 
@@ -49,7 +50,9 @@ const App = () => {
         <>
           
           <div className="mainBody ">
+
             <SideBarController />
+            
             <div className="rhsBox ">
             <HeaderController />
               <Routes>
@@ -83,6 +86,7 @@ const App = () => {
               <Route path="/attendance" element={<TableComponent />} />
               <Route path="/StudentReportForm" element={<StudentReportForm />} />
                <Route path="/StudentReport" element={<StudentReport />} />
+               
               
                
 

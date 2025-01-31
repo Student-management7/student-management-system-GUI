@@ -148,7 +148,7 @@ const FacultyAttendance: React.FC = () => {
         <button
           onClick={fetchAttendance}
           disabled={loading}
-          className="bg-blue-500 text-white rounded px-3 py-1.75 mt-2 disabled:opacity-50"
+          className="button bg-blue-500 text-white rounded px-3 py-1.75 mt-2 disabled:opacity-50"
         >
           {loading ? 'Fetching...' : 'Fetch Attendance'}
         </button>

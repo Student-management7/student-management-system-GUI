@@ -276,7 +276,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                         <button
                           type="button"
                           onClick={() => push({ name: "", amount: 0 })}
-                          className="btn btn-secondary"
+                          className="btn btn-secondary button"
                         >
                           Add Deduction
                         </button>
@@ -287,13 +287,13 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
 
                 {/* Buttons */}
                 <div className="d-flex justify-content-between mt-4">
-                  <button type="submit" className="btn btn-primary">
+                  <button type="submit" className="btn btn-primary button">
                     {isEditMode ? "Update" : "Save"}
                   </button>
                   <button
                     type="button"
                     onClick={onCancel}
-                    className="btn btn-secondary"
+                    className="btn btn-secondary btn-danger"
                   >
                     Cancel
                   </button>

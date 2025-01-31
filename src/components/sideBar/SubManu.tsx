@@ -19,12 +19,13 @@ return(
                     <>
                     
                       <p className='subMenu' key={item.title}>
-                      {Icon && <Icon />}  
-                        <span> <Link to={item.path} className="hover:text-blue-600 transition-colors">{item.title}</Link> </span> 
+                      {Icon && <Icon className=""/>}  
+                        <span> <Link to={item.path} className="submenudata">{item.title}</Link> </span> 
                         </p>
                     </>
                     );
     
+                    
 
             })
     

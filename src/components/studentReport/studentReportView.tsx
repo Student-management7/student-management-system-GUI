@@ -219,7 +219,7 @@ const StudentReport: React.FC = () => {
               </div>
 
             )}
-            <div className="mb-5">
+            {/* <div className="mb-5">
                 <Select value={selectedExamType} onValueChange={setSelectedExamType}>
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select exam type" />
@@ -232,7 +232,7 @@ const StudentReport: React.FC = () => {
                         ))}
                     </SelectContent>
                 </Select>
-            </div>
+            </div> */}
 
 
             <div className="flex flex-col lg:flex-row">
@@ -245,28 +245,28 @@ const StudentReport: React.FC = () => {
                                     <div className="text-2xl">📚</div>
                                 </div>
                                 <p className="text-xs uppercase tracking-wide font-semibold text-gray-600">Exam Type</p>
-                                <p className="text-2xl font-bold mt-2">{filteredExam.examType}</p>
+                                <p className="font-bold mt-2 fs-6">{filteredExam.examType}</p>
                             </div>
                             <div className="bg-white rounded-xl p-5 text-center shadow-md transition-all hover:translate-y-[-5px] hover:shadow-lg">
                                 <div className="flex justify-center items-center mb-2">
                                     <div className="text-2xl">📅</div>
                                 </div>
                                 <p className="text-xs uppercase tracking-wide font-semibold text-gray-600">Exam Date</p>
-                                <p className="text-2xl font-bold mt-2">{filteredExam.examDate}</p>
+                                <p className="font-bold mt-2 fs-6">{filteredExam.examDate}</p>
                             </div>
                             <div className="bg-white rounded-xl p-5 text-center shadow-md transition-all hover:translate-y-[-5px] hover:shadow-lg">
                                 <div className="flex justify-center items-center mb-2">
                                     <div className="text-2xl">📊</div>
                                 </div>
                                 <p className="text-xs uppercase tracking-wide font-semibold text-gray-600">Total Marks</p>
-                                <p className="text-2xl font-bold mt-2">{filteredExam.totalMarks}</p>
+                                <p className="text-2xl font-bold mt-2 fs-6">{filteredExam.totalMarks}</p>
                             </div>
                             <div className="bg-white rounded-xl p-5 text-center shadow-md transition-all hover:translate-y-[-5px] hover:shadow-lg">
                                 <div className="flex justify-center items-center mb-2">
                                     <div className="text-2xl">🏆</div>
                                 </div>
                                 <p className="text-xs uppercase tracking-wide font-semibold text-gray-600">Grade</p>
-                                <p className="text-2xl font-bold mt-2">{filteredExam.grade}</p>
+                                <p className="text-2xl font-bold mt-2 fs-6">{filteredExam.grade}</p>
                             </div>
                         </div>
                     </div>
