@@ -3,7 +3,6 @@ import {
   getStdDetails,
   deleteStudentRecord,
 } from "../../services/studentRegistration/api/StudentRegistration";
-import GridView from "./GridView";
 import FormView from "./FormView";
 import { StudentFormData } from "../../services/studentRegistration/type/StudentRegistrationType";
 import EditStudentForm from "./EditStudentForm";
@@ -15,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import Loader from "../loader/loader"; // Add a Spinner component for loading
 import ReusableTable from "../MUI Table/ReusableTable";
 import BackButton from "../Navigation/backButton";
+
 
 const StudentRegistrationController = () => {
   const navigate = useNavigate();

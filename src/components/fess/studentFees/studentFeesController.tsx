@@ -36,11 +36,7 @@ const StudentFeesController: React.FC = () => {
   const navigate = useNavigate();
 
   const columns: Column[] = [
-    { 
-      field: "id", 
-      headerName: "ID",
-      editable: false  
-    },
+    
     { 
       field: "name", 
       headerName: "Name",

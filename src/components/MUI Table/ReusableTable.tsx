@@ -197,7 +197,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <thead>
-            <tr>
+            <tr className={styles['showMd']}>
               <th>
                 <input
                   type="checkbox"

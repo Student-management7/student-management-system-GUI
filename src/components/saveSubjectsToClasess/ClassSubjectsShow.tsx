@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { Pencil, Trash2 } from "lucide-react";
 import Loader from "../loader/loader";
+import './saveSubject.scss'
 
 
 
@@ -62,8 +63,8 @@ const ClassSubjectShow: React.FC = () => {
     {
       field: "actions",
       headerName: "Actions",
-      renderCell: (row: ClassData) => (
-        <div className="flex gap-2">
+      cellRenderer: (row: ClassData) => (
+        <div className="flex gap-4 items-center justify-center  tableButton">
          
           <button
             onClick={() => handleEdit(row)}
@@ -132,7 +133,7 @@ const ClassSubjectShow: React.FC = () => {
           ) : error ? (
             <div className="text-center text-red-500">{error}</div>
           ) : (
-            <div className="box">
+            <div className="">
               <ReusableTable columns={columns} rows={rows} />
             </div>
           )}

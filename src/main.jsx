@@ -49,7 +49,7 @@ const App = () => {
     <>
        {isAuthenticated ? (
         <>
-        
+          
           <div className="mainBody ">
 
             <SideBarController />
