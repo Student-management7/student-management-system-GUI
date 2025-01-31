@@ -25,6 +25,11 @@ const SideBarController = () => {
         await logout(); // Call the logout function
         navigate('/login'); // Redirect to login page
     };
+
+    const getToggelButton = ()=>{
+        const sidNav: any = document.querySelector('.sideNav');
+            sidNav.classList.toggle('active');
+    }
     return (
         <>
         

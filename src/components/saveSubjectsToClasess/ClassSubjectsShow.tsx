@@ -64,7 +64,7 @@ const ClassSubjectShow: React.FC = () => {
       field: "actions",
       headerName: "Actions",
       renderCell: (row: ClassData) => (
-        <div className="flex gap-2">
+        <div className="flex gap-2 tableButton">
          
           <button
             onClick={() => handleEdit(row)}
@@ -139,7 +139,7 @@ const ClassSubjectShow: React.FC = () => {
           ) : error ? (
             <div className="text-center text-red-500">{error}</div>
           ) : (
-            <div className="box">
+            <div className="">
               <ReusableTable columns={columns} rows={rows} />
             </div>
           )}

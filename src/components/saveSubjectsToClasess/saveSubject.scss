@@ -1,0 +1,15 @@
+.tableButton{
+    display: inline;
+
+    @media (max-width: 480px){
+        button{
+            padding: 5px;
+            
+        }
+        svg{
+            width: 15px;
+        }
+        
+    }
+    
+}
