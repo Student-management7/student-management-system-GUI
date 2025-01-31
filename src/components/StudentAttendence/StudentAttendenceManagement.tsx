@@ -8,6 +8,8 @@ import axiosInstance from "../../services/Utils/apiUtils";
 import { sortArrayByKey } from "../Utils/sortArrayByKey";
 import Loader from "../loader/loader";
 import BackButton from "../Navigation/backButton";
+import ReusableTable from "../MUI Table/ReusableTable";
+import { Columns } from "lucide-react";
 
 
 const StudentManagementSystem: React.FC = () => {
@@ -64,7 +66,8 @@ const StudentManagementSystem: React.FC = () => {
             const filteredStudents = response.data.map((student: any) => ({
                 stdId: student.id,
                 name: student.name,
-                attendance: "Present",
+                attendance: "",
+                remark: "",
             }));
             setStudents(filteredStudents);
         } catch (error) {
@@ -85,7 +88,7 @@ const StudentManagementSystem: React.FC = () => {
                 stdId: student.stdId,
                 remark: student.remark || "",
                 name: student.name,
-                attendance: student.attendance || "Present",
+                attendance: student.attendance || "Absent",
             })),
             masterAttendance: attendanceMode === "master",
         };
@@ -105,13 +108,13 @@ const StudentManagementSystem: React.FC = () => {
     };
 
     // Table columns
-    const column = [
-        { headerName: "SN", valueGetter: "node.rowIndex + 1", flex: 1 }, // Serial Number Column
-        { headerName: "Student Name", field: "name", flex: 2 },
+    const Column = [
+        { headerName: "SN", valueGetter: "node.rowIndex + 1"}, // Serial Number Column
+        { headerName: "Student Name", field: "name"  },
         {
             headerName: "Attendance",
             field: "attendance",
-            flex: 2,
+            editable: true,
             cellRenderer: (params: any) => (
                 <div className="flex gap-2">
                     {["Present", "Absent", "Half Day", "Late"].map((option) => (
@@ -133,7 +136,6 @@ const StudentManagementSystem: React.FC = () => {
         {
             headerName: "Remarks",
             field: "remark",
-            flex: 2,
             editable: true,
             cellRenderer: (params: any) => (
                 <input
@@ -155,7 +157,7 @@ const StudentManagementSystem: React.FC = () => {
     {loading && <Loader />} {/* Show loader when loading */}
     {!loading && (
 
-        <>
+        
         
         <div className="box">
         <div className="flex items-center space-x-4 mb-4">
@@ -223,7 +225,7 @@ const StudentManagementSystem: React.FC = () => {
                 <button
                     onClick={fetchStudents}
                     disabled={!selectedClass}
-                    className="fetch-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="fetch-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 button"
                 >
                     {loading ? "Loading..." : "Fetch Students"}
                 </button>
@@ -233,7 +235,7 @@ const StudentManagementSystem: React.FC = () => {
 
             {/* Data Grid */}
             <div className="ag-theme-alpine" style={{ height: "400px", width: "100%", marginTop: "20px" }}>
-                <AgGridReact rowData={students} columns={column} pagination={true} />
+                <ReusableTable rows={students} columns={Column} />
             </div>
 
             {/* Submit Button */}
@@ -245,7 +247,7 @@ const StudentManagementSystem: React.FC = () => {
                 Submit Attendance
             </button>
         </div>
-        </>
+        
     )}
     </>
     );

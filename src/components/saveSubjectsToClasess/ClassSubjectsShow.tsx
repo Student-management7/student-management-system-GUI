@@ -9,6 +9,7 @@ import axiosInstance from "../../services/Utils/apiUtils";
 import { Pencil, Trash2 } from "lucide-react";
 import Loader from "../loader/loader";
 import BackButton from "../Navigation/backButton";
+import './saveSubject.scss'
 
 
 
@@ -63,8 +64,8 @@ const ClassSubjectShow: React.FC = () => {
     {
       field: "actions",
       headerName: "Actions",
-      renderCell: (row: ClassData) => (
-        <div className="flex gap-2 tableButton">
+      cellRenderer: (row: ClassData) => (
+        <div className="flex gap-4 items-center justify-center  tableButton">
          
           <button
             onClick={() => handleEdit(row)}
@@ -128,7 +129,7 @@ const ClassSubjectShow: React.FC = () => {
           <div className="text-right mb-4">
             <button
               onClick={() => setShowForm(true)}
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 button"
             >
               Add Subject
             </button>

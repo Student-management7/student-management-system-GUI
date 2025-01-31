@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import axiosInstance from '../../services/Utils/apiUtils';
 import { fetchFacultyData, submitAttendance } from '../../services/Faculty/FacultyAttendanceSave/Api';
 import { Faculty } from '../../services/Faculty/FacultyAttendanceSave/Type';
-import ReusableTable from '../StudenAttendanceShow/table/reusabletable';
+import ReusableTable from '../MUI Table/ReusableTable';
 import BackButton from '../Navigation/backButton';
 import Loader from '../loader/loader';
 
@@ -40,7 +40,7 @@ const AttendanceSave: React.FC = () => {
 
   const handleSaveAttendance = async () => {
     try {
-      setLoading(true);
+     
       const response = await submitAttendance(facultyList);
       if (response.status === 200) {
         toast.success('Attendance submitted successfully!', {
@@ -54,6 +54,7 @@ const AttendanceSave: React.FC = () => {
         setFacultyList(updatedData);
       }
     } catch (error) {
+      alert('Error submitting attendance. Please try again.');
       console.error('Error submitting attendance:', error);
       toast.error('Error submitting attendance. Please try again.', {
         position: 'top-right',
@@ -63,7 +64,7 @@ const AttendanceSave: React.FC = () => {
         pauseOnHover: true,
       });
     } finally {
-      setLoading(false);
+      
     }
   };
 
@@ -95,7 +96,7 @@ const AttendanceSave: React.FC = () => {
       headerName: 'Attendance',
       editable: true,
       width: '40%',
-      renderCell: (row: AttendanceRow) => (
+      cellRenderer: (row: AttendanceRow) => (
         <div className="w-full">
           <select
             value={row.attendance}
@@ -136,7 +137,7 @@ const AttendanceSave: React.FC = () => {
             <ReusableTable
               rows={rowData}
               columns={columns}
-              onCellEdit={handleAttendanceChange}
+              onRowUpdate={(row, index) => handleAttendanceChange(row.factId, row.attendance)}
             />
           </div>
 

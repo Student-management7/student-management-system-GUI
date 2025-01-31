@@ -7,14 +7,16 @@
     color: #FFF;
     padding: 10px;
     font-family: Arial, Helvetica, sans-serif;
-    
+
     
     :hover{
         background-color: var(--greenLight-color);
         border-radius: 4px;
       }
   
-      .logo{
+    .logo{
+        transition: 1s;
+
         position: relative;
         margin-bottom: 10px;
         p{
@@ -84,3 +86,7 @@
     }  
 }
 
+.active{
+    margin-left: -250px;
+    transition: 1s;
+}

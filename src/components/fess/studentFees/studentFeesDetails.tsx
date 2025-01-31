@@ -4,6 +4,7 @@ import GridView from "./gridView"; // Ensure this component is correctly impleme
 import axiosInstance from "../../../services/Utils/apiUtils";
 import Loader from "../../loader/loader";
 import BackButton from "../../Navigation/backButton";
+import { useLocation } from "react-router-dom";
 
 // Define types for student data and fee info
 interface FeeInfo {
@@ -21,6 +22,7 @@ interface StudentData {
 
 const StudentFeesDetails = () => {
   const { id } = useParams(); // Get the student ID from URL
+  
   const [studentData, setStudentData] = useState<StudentData | null>(null);
   const [feeInfo, setFeeInfo] = useState<FeeInfo[]>([]);
   const [loading, setLoading] = useState(false);

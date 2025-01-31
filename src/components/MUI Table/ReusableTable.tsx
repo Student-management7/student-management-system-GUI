@@ -1,18 +1,26 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './ReusableTable.module.scss';
 
 interface Column {
   field: string;
   headerName: string;
   renderCell?: (row: any) => React.ReactNode;
-  cellRenderer?: (row: any) => React.ReactNode; // make cellRenderer optional
+  cellRenderer?: (row: any) => React.ReactNode;
+  editable?: boolean; // New property to control which columns are editable
 }
 
+interface EditableCellProps {
+  value: any;
+  row: any;
+  field: string;
+  onSave: (field: string, value: any, row: any) => void;
+}
 
 interface ReusableTableProps {
   columns: Column[];
   rows: Record<string, any>[];
   rowsPerPageOptions?: number[];
+  onRowUpdate?: (row: Record<string, any>, index: number) => void;
 }
 
 // Helper function to access nested fields
@@ -20,10 +28,70 @@ const getNestedValue = (obj: any, path: string) => {
   return path.split('.').reduce((acc, part) => acc && acc[part], obj);
 };
 
+
+const EditableCell: React.FC<EditableCellProps> = ({ value, row, field, onSave }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(value);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
+
+  const handleDoubleClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleBlur = () => {
+    setIsEditing(false);
+    if (editValue !== value) {
+      onSave(field, editValue, row);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      setIsEditing(false);
+      if (editValue !== value) {
+        onSave(field, editValue, row);
+      }
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+      setEditValue(value);
+    }
+  };
+
+  if (isEditing) {
+    return (
+      <input
+        ref={inputRef}
+        type="text"
+        value={editValue}
+        onChange={(e) => setEditValue(e.target.value)}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        className={styles.editableInput}
+      />
+    );
+  }
+
+  return (
+    <div onDoubleClick={handleDoubleClick} className={styles.editableCell}>
+      {value}
+    </div>
+  );
+};
+
+
+
+
 const ReusableTable: React.FC<ReusableTableProps> = ({
   columns,
   rows,
   rowsPerPageOptions = [5, 10, 25],
+  onRowUpdate,
 }) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(rowsPerPageOptions[0]);
@@ -40,6 +108,8 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
       )
     );
   }, [rows, columns, searchQuery]);
+
+
 
   // Sort rows based on sort configuration
   const sortedRows = React.useMemo(() => {
@@ -82,6 +152,20 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
       prev.has(index) ? new Set([...prev].filter((i) => i !== index)) : new Set(prev.add(index))
     );
   };
+
+
+  const handleCellUpdate = (field: string, value: any, row: any) => {
+    const rowIndex = rows.findIndex((r) => r === row);
+    if (rowIndex !== -1 && onRowUpdate) {
+      const updatedRow = {
+        ...row,
+        [field]: value,
+      };
+      onRowUpdate(updatedRow, rowIndex);
+    }
+  };
+
+
 
   // Export to CSV
   const exportToCSV = () => {
@@ -156,9 +240,18 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
                 </td>
                 {columns.map((column) => (
                   <td key={column.field}>
-                    {column.cellRenderer
-                      ? column.cellRenderer({ data: row })
-                      : getNestedValue(row, column.field)}
+                    {column.cellRenderer ? (
+                      column.cellRenderer({ data: row })
+                    ) : column.editable ? (
+                      <EditableCell
+                        value={getNestedValue(row, column.field)}
+                        row={row}
+                        field={column.field}
+                        onSave={handleCellUpdate}
+                      />
+                    ) : (
+                      getNestedValue(row, column.field)
+                    )}
                   </td>
                 ))}
               </tr>

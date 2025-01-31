@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { saveAttendanceEdit } from '../../services/Faculty/facultyAttendanceEdit/Api/api';
 import { formatToDDMMYYYY } from '../Utils/dateUtils';
 import { Faculty } from '../../services/Faculty/facultyAttendanceEdit/Type/type';
-import ReusableTable from '../StudenAttendanceShow/table/reusabletable';
+import ReusableTable from '../MUI Table/ReusableTable';
 import BackButton from '../Navigation/backButton';
 
 interface AttendanceRow {
@@ -124,7 +124,8 @@ const EditAttendance: React.FC = () => {
         <ReusableTable
           rows={rowData}
           columns={columns}
-          onCellEdit={handleAttendanceChange}
+          rowsPerPageOptions={[5, 10, 25]}
+          
         />
       </div>
 

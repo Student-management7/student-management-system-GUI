@@ -8,6 +8,8 @@ import { formatToDDMMYYYY } from '../../components/Utils/dateUtils';
 import { Holiday, HolidayPayload } from '../../services/holiday/Type/type';
 import Loader from '../loader/loader';
 import BackButton from '../Navigation/backButton';
+import ReusableTable from '../MUI Table/ReusableTable';
+import { Trash2 } from 'lucide-react';
 
 const HolidayComponent: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
@@ -120,7 +122,7 @@ const HolidayComponent: React.FC = () => {
   };
 
   const columnDefs = [
-    { headerName: 'ID', field: 'id', sortable: true, filter: true },
+    // { headerName: 'ID', field: 'id', sortable: true, filter: true },
     { headerName: 'Class', field: 'className', sortable: true, filter: true },
     { headerName: 'Start Date', field: 'startDate', sortable: true, filter: true },
     { headerName: 'End Date', field: 'endDate', sortable: true, filter: true },
@@ -130,10 +132,10 @@ const HolidayComponent: React.FC = () => {
       headerName: 'Actions',
       cellRenderer: (params: any) => (
         <button
-          className="bi bi-trash text-red-600"
+          className="Trsh"
           onClick={() => handleDeleteButtonClick(params.data.id)}
         >
-          Delete
+            <Trash2 size={20} color='red' />
         </button>
       ),
     },
@@ -161,7 +163,7 @@ const HolidayComponent: React.FC = () => {
               Add Holiday
             </button>
           </div>
-          <GridView rowData={rowData} columnDefs={columnDefs} />
+          <ReusableTable rows={rowData} columns={columnDefs} />
         </>
       ) : (
         <div className="box">
@@ -229,14 +231,14 @@ const HolidayComponent: React.FC = () => {
           <div className="text-center mt-10">
             <button
               type="button"
-              className="w-1/8 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+              className="w-1/8 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 button"
               onClick={() => formik.handleSubmit()}
             >
               Submit
             </button>
             <button
               type="button"
-              className="w-1/8 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 ml-4"
+              className="w-1/8 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 ml-4 btn-danger"
               onClick={() => setShowForm(false)}
             >
               Cancel

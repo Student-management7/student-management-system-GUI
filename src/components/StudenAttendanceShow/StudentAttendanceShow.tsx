@@ -8,7 +8,7 @@ import type { AttendanceResponse } from "../../services/StudentAttendanceShow/ty
 import { sortArrayByKey } from "../Utils/sortArrayByKey"
 import { Switch } from '@headlessui/react'
 // import ReusableTable from "../MUI Table/ReusableTable"
-import ReusableTable from "./table/reusabletable"
+import ReusableTable from "../MUI Table/ReusableTable"
 import Loader from "../loader/loader"
 import BackButton from "../Navigation/backButton"
 
