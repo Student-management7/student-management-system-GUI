@@ -5,6 +5,7 @@ import FacultySalaryForm from "./FacultySalaryForm";
 import { fetchFacultySalaries, updateFacultySalary, saveFacultySalary } from "../../../services/salary/facultysalary/Api";
 import { Eye, Pencil } from "lucide-react";
 import Loader from "../../loader/loader";
+import BackButton from "../../Navigation/backButton";
 import ReusableTable from "../../MUI Table/ReusableTable";
 // Define types with improved clarity
 type DeductionItem = {
@@ -198,8 +199,12 @@ const FacultySalaryController: React.FC = () => {
       {!showForm ? (
         <>
           <div className="text-right mb-4">
-          <h1 className="text-center text-2xl font-bold mb-2 ">Faculty Salary</h1>
-            <button
+          <div className="flex items-center space-x-4 mb-4 ">
+            <span >
+              <BackButton />
+            </span>
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Faculty Salary </h1>
+          </div>            <button
               onClick={() => {
                 setShowForm(true);
                 setEditData(null);

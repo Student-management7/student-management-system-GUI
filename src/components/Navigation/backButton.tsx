@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react"; // Importing ArrowLeft icon
 
 const BackButton = () => {
     const navigate = useNavigate();
@@ -11,16 +12,10 @@ const BackButton = () => {
         }
     };
 
-
     return (
-        <button
-            onClick={handleBack}
-
-        >
-              <img className="h-7 w-7 "
-              src="/images/button.png"></img>
+        <button onClick={handleBack} className="p-2 rounded-full arrow  transition">
+            <ArrowLeft className="h-7 w-7" />
         </button>
-
     );
 };
 

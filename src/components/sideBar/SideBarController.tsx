@@ -32,6 +32,11 @@ const SideBarController = () => {
     }
     return (
         <>
+        
+            <div className='sideNav'>
+
+                    <p className='fs-4'>EasyWaySolution</p>
+                    <FaBars  className=''/>
             <div id="item" className='sideNav'>
                 <div className="logo flex">
                     <p className='text-xl font-semibold'>EasyWaySolution</p>
@@ -66,6 +71,7 @@ const SideBarController = () => {
                     <FaRightToBracket />
                     <span>Logout</span>
                 </div>
+            </div>
             </div>
         </>
     );

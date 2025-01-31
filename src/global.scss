@@ -70,3 +70,12 @@
     border-radius: 15px;
   }
 }
+.arrow{
+  color: var(--green-color);
+  :hover{
+    background-color: var(--greenLight-color);
+    border-radius: 25px;
+    padding: 5px;
+    color: #ffffff;
+  }
+}

@@ -7,6 +7,7 @@ import { deleteHolidayApi, fetchHolidayData, saveHoliday } from '../../services/
 import { formatToDDMMYYYY } from '../../components/Utils/dateUtils';
 import { Holiday, HolidayPayload } from '../../services/holiday/Type/type';
 import Loader from '../loader/loader';
+import BackButton from '../Navigation/backButton';
 import ReusableTable from '../MUI Table/ReusableTable';
 import { Trash2 } from 'lucide-react';
 
@@ -149,8 +150,15 @@ const HolidayComponent: React.FC = () => {
     <div className="box ">
       {!showForm ? (
         <>
+        
+         
+        <div className="flex items-center space-x-4 mb-4 ">
+            <span >
+              <BackButton />
+            </span>
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Notification Page</h1>
+          </div>
           <div className="text-right">
-            <h1 className="text-2xl text-center font-bold mb-2">Holidays</h1>
             <button onClick={() => setShowForm(true)} className="btn btn-default">
               Add Holiday
             </button>
