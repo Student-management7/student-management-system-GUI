@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import GridView from "./gridView"; // Ensure this component is correctly implemented
 import axiosInstance from "../../../services/Utils/apiUtils";
 import Loader from "../../loader/loader";
 import BackButton from "../../Navigation/backButton";
 import { useLocation } from "react-router-dom";
+import ReusableTable from "../../MUI Table/ReusableTable";
+
 
 // Define types for student data and fee info
 interface FeeInfo {
@@ -29,7 +30,7 @@ const StudentFeesDetails = () => {
 
   // Column definitions for the feeInfo grid
   const columnDefs = [
-    { headerName: "ID", field: "id" },
+    // { headerName: "ID", field: "id" },
     {
       headerName: "Fees Submitted Date",
       field: "creationDateTime",
@@ -74,9 +75,6 @@ const StudentFeesDetails = () => {
         <Loader /> // Show loader while data is being fetched
       ) : (
 
-
-
-
         <div className="box">
 
           <div className="flex items-center space-x-4 mb-4">
@@ -99,7 +97,7 @@ const StudentFeesDetails = () => {
 
           {/* Grid for Fee Info */}
           {feeInfo.length > 0 ? (
-            <GridView rowData={feeInfo} columnDefs={columnDefs} />
+            <ReusableTable rows={feeInfo} columns={columnDefs} />
           ) : (
             <p>No fee information available for this student.</p>
           )}
