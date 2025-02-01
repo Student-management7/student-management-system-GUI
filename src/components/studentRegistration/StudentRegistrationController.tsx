@@ -11,8 +11,13 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Pencil, Trash2, IdCard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+<<<<<<< HEAD
 import Loader from "../loader/loader";
 import ReusableTable from "../MUI Table/ReusableTable";
+=======
+import Loader from "../loader/loader"; // Add a Spinner component for loading
+import ReusableTable from "../StudenAttendanceShow/Table/Table";
+>>>>>>> d964cd0c44877685e3c80f7c5adf163f6dec739b
 import BackButton from "../Navigation/backButton";
 
 const StudentRegistrationController = () => {
@@ -30,8 +35,8 @@ const StudentRegistrationController = () => {
     { field: "city", headerName: "City" },
     { field: "cls", headerName: "Class" },
     { field: "gender", headerName: "Gender" },
-    { field: "familyDetails.stdo_FatherName", headerName: "Father Name" },
-    { field: "familyDetails.stdo_primaryContact", headerName: "Contact" },
+    { field: "familyDetails.stdo_FatherName", headerName: "Father Name", nestedField: 'familyDetails.stdo_FatherName' },
+    { field: "familyDetails.stdo_primaryContact", headerName: "Contact" ,  nestedField: 'familyDetails.stdo_primaryContact' },
     {
       field: "actions",
       headerName: "Actions",
@@ -117,6 +122,10 @@ const StudentRegistrationController = () => {
 
   const handleReport = (id: string) => {
     navigate("/StudentReport", {
+<<<<<<< HEAD
+=======
+
+>>>>>>> d964cd0c44877685e3c80f7c5adf163f6dec739b
       state: { id },
     });
   };
@@ -125,6 +134,7 @@ const StudentRegistrationController = () => {
     <>
       {loading && <Loader />}
       {!loading && (
+<<<<<<< HEAD
         <div className="box">
           {/* ✅ Back Button, Heading & Add Button (Now Above Table) */}
           <div className="flex justify-between items-center mb-4">
@@ -136,6 +146,14 @@ const StudentRegistrationController = () => {
             >
               Add Student
             </button>
+=======
+        <div className="box ">
+          <div className="flex items-center space-x-4 mb-4">
+            <span>
+              <BackButton />
+            </span>
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Registration</h1>
+>>>>>>> d964cd0c44877685e3c80f7c5adf163f6dec739b
           </div>
 
           {!studentData ? (
@@ -164,7 +182,20 @@ const StudentRegistrationController = () => {
                   />
                   <ReusableTable rows={data} columns={columns} />
                 </div>
+<<<<<<< HEAD
               </>
+=======
+                <ToastContainer />
+                <AlertDialog
+                  title="Confirm Deletion"
+                  message={`Are you sure you want to delete the student record for ${dialogData?.name}?`}
+                  isOpen={isDialogOpen}
+                  onConfirm={handleConfirmDelete}
+                  onCancel={handleCancel}
+                />
+                <ReusableTable rows={data} columns={columns}  />
+              </div>
+>>>>>>> d964cd0c44877685e3c80f7c5adf163f6dec739b
             )
           ) : (
             <div className="box">

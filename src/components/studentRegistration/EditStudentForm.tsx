@@ -373,7 +373,7 @@ const EditStudentForm = (props: EditStudentFormProps) =>{
                                         }))
                                     }
                                     //value={singleRowData.familyDetails.stdo_secondaryContact}
-                                    className="form-control"
+                                    className="form-control "
                                     //onChange={handleChange}
                                     placeholder="Enter secondary Contact"
                                 />

@@ -20,13 +20,6 @@ interface FeeData {
   remainingFees: number;
 }
 
-interface Column {
-  field: string;
-  headerName: string;
-  renderCell?: (row: any) => React.ReactNode;
-  editable?: boolean;
-  cellRenderer?: (row: any) => React.ReactNode;
-}
 
 const StudentFeesController: React.FC = () => {
   const [rowData, setRowData] = useState<FeeData[]>([]);
@@ -35,7 +28,7 @@ const StudentFeesController: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const columns: Column[] = [
+  const columns= [
     
     { 
       field: "name", 
@@ -45,46 +38,37 @@ const StudentFeesController: React.FC = () => {
     { 
       field: "familyDetails.stdo_FatherName", 
       headerName: "Father Name",
+      nestedField: 'familyDetails.stdo_FatherName',
       editable: false  
     },
-    // { 
-    //   field: "contact", 
-    //   headerName: "Contact",
-    //   editable: false  
-    // },
-    // { 
-    //   field: "email", 
-    //   headerName: "Email",
-    //   editable: false  
-    // },
+    
     { 
       field: "cls", 
       headerName: "Class",
       editable: false  
     },
     { 
-      field: "totalFees", 
+      field: "totalFee", 
       headerName: "Total Fees",
+      
       editable: false  
+
     },
     { 
       field: "remainingFees", 
       headerName: "Remaining Fees",
       editable: false  
     },
-    {
-      field: "actions",
-      headerName: "View",
-      cellRenderer: (row: FeeData) => (
-        <button
-          onClick={() => navigate(`/studentfeesDetails/${row.id}`)}
-          className="text-blue-600 hover:text-blue-800"
-          aria-label="View Details"
-        >
-          <Eye size={20} />
-        </button>
-      )
-    },
+   { 
+         field: "view",
+         headerName: "View Details",
+         cellRenderer: (params: any) => (
+           <button
+               onClick={() => params.data?.id && handleViewDetails(params.data.id)}
+             >
+              <Eye size={20} color='blue' />
+             </button>
+         )},
     {
       field: "actions",
       headerName: "Edit",
@@ -112,6 +96,11 @@ const StudentFeesController: React.FC = () => {
       )
     }
   ];
+
+
+  const handleViewDetails = (id: string) => {
+    navigate(`/studentFeesDetails/${id}`);
+  };
 
   const handleEdit = (feeData: FeeData) => {
     setEditingFee(feeData);
@@ -153,6 +142,8 @@ const StudentFeesController: React.FC = () => {
     fetchFees();
   }, []);
 
+
+  
   return (
     <>
       {loading && <Loader />}

@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
+
 import { ClassData, Student, AttendancePayload } from "../../services/StudentAttendence/Type/studentAttendenceType";
 import { API_ENDPOINTS } from "../../services/StudentAttendence/API/studentAttendenceApi";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { sortArrayByKey } from "../Utils/sortArrayByKey";
 import Loader from "../loader/loader";
 import BackButton from "../Navigation/backButton";
-import ReusableTable from "../MUI Table/ReusableTable";
-import { Columns } from "lucide-react";
+import ReusableTable from "../StudenAttendanceShow/Table/Table";
+
 
 
 const StudentManagementSystem: React.FC = () => {
@@ -107,10 +105,23 @@ const StudentManagementSystem: React.FC = () => {
         }
     };
 
-    // Table columns
+    const handleCellValueChange = (rowIndex: number, field: string, value: any) => {
+        setStudents(prevStudents => {
+            const newStudents = [...prevStudents];
+            newStudents[rowIndex] = {
+                ...newStudents[rowIndex],
+                [field]: value
+            };
+            return newStudents;
+        });
+    };
+
+
     const Column = [
-        { headerName: "SN", valueGetter: "node.rowIndex + 1"}, // Serial Number Column
-        { headerName: "Student Name", field: "name"  },
+        { 
+            headerName: "Student Name", 
+            field: "name"  
+        },
         {
             headerName: "Attendance",
             field: "attendance",
@@ -143,11 +154,10 @@ const StudentManagementSystem: React.FC = () => {
                     value={params.value || ""}
                     onChange={(e) => params.setValue(e.target.value)}
                     placeholder="Enter remarks"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out placeholder-gray-400 hover:border-gray-400 shadow-sm mb-2"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
             ),
         },
-        
     ];
 
     return (
@@ -233,10 +243,14 @@ const StudentManagementSystem: React.FC = () => {
 
           
 
-            {/* Data Grid */}
-            <div className="ag-theme-alpine" style={{ height: "400px", width: "100%", marginTop: "20px" }}>
-                <ReusableTable rows={students} columns={Column} />
-            </div>
+            <div className="mt-6">
+                        <ReusableTable 
+                            rows={students}
+                            columns={Column}
+                            rowsPerPageOptions={[5, 10, 25]}
+                            onCellValueChange={handleCellValueChange}
+                        />
+                    </div>
 
             {/* Submit Button */}
             <button
@@ -254,4 +268,3 @@ const StudentManagementSystem: React.FC = () => {
 };
 
 export default StudentManagementSystem;
-``
