@@ -23,6 +23,18 @@
     }
   
   }
+  .buttonred{
+    background-color: rgba(192, 59, 59, 0.616);
+    border: none;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  &:hover{
+    background-color: rgb(148, 20, 20);
+    transform: scale(1.05);
+  }
+  }
   
  .head1{
   font-family: Arial, Helvetica, sans-serif;

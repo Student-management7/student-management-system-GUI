@@ -9,12 +9,11 @@ import EditStudentForm from "./EditStudentForm";
 import AlertDialog from "../alert/AlertDialog";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Eye, IdCard, Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, IdCard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Loader from "../loader/loader"; // Add a Spinner component for loading
+import Loader from "../loader/loader";
 import ReusableTable from "../MUI Table/ReusableTable";
 import BackButton from "../Navigation/backButton";
-
 
 const StudentRegistrationController = () => {
   const navigate = useNavigate();
@@ -24,7 +23,7 @@ const StudentRegistrationController = () => {
   const [editFormView, setEditFormView] = useState<boolean>(false);
   const [dialogData, setDialogData] = useState<StudentFormData | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(false); // State for managing loader visibility
+  const [loading, setLoading] = useState(false);
 
   const [columns] = useState<any[]>([
     { field: "name", headerName: "Name" },
@@ -59,7 +58,7 @@ const StudentRegistrationController = () => {
       headerName: "Report Card",
       width: 100,
       cellRenderer: (params: any) => (
-        <button onClick={() => handeleReport(params.data.id)}>
+        <button onClick={() => handleReport(params.data.id)}>
           <IdCard size={20} color="green" />
         </button>
       ),
@@ -67,7 +66,7 @@ const StudentRegistrationController = () => {
   ]);
 
   const fetchStudentDetails = async () => {
-    setLoading(true); // Show loader before the API call
+    setLoading(true);
     try {
       const data = await getStdDetails();
       setData(data);
@@ -75,7 +74,7 @@ const StudentRegistrationController = () => {
       console.error(err);
       toast.error("Failed to fetch student details. Please try again.");
     } finally {
-      setLoading(false); // Hide loader after the API call
+      setLoading(false);
     }
   };
 
@@ -96,7 +95,7 @@ const StudentRegistrationController = () => {
   const handleConfirmDelete = async () => {
     if (!dialogData?.id) return;
 
-    setLoading(true); // Show loader during deletion
+    setLoading(true);
     try {
       await deleteStudentRecord(dialogData.id);
       setData((prev) => prev.filter((row) => row.id !== dialogData.id));
@@ -105,7 +104,7 @@ const StudentRegistrationController = () => {
       console.error(error);
       toast.error("Failed to delete the student record. Please try again.");
     } finally {
-      setLoading(false); // Hide loader after deletion
+      setLoading(false);
       setIsDialogOpen(false);
       setDialogData(null);
     }
@@ -116,23 +115,27 @@ const StudentRegistrationController = () => {
     setDialogData(null);
   };
 
-  const handeleReport = (id: string) => {
+  const handleReport = (id: string) => {
     navigate("/StudentReport", {
-      
       state: { id },
     });
   };
 
   return (
     <>
-      {loading && <Loader />} {/* Show loader when loading */}
+      {loading && <Loader />}
       {!loading && (
-        <div className="box ">
-        <div className="flex items-center space-x-4 mb-4">
-            <span>
-              <BackButton />
-            </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Registration</h1>
+        <div className="box">
+          {/* ✅ Back Button, Heading & Add Button (Now Above Table) */}
+          <div className="flex justify-between items-center mb-4">
+            <BackButton />
+            <h1 className="text-xl font-bold text-[#27727A]">Student Registration</h1>
+            <button
+              onClick={() => setStudentData(true)}
+              className="button btn text-white btn-default"
+            >
+              Add Student
+            </button>
           </div>
 
           {!studentData ? (
@@ -148,25 +151,20 @@ const StudentRegistrationController = () => {
                 {singleRowData && <EditStudentForm singleRowData={singleRowData} />}
               </div>
             ) : (
-              <div className="box">
-                <div className="text-right">
-                  <button
-                    onClick={() => setStudentData(true)}
-                    className="btn btn-default"
-                  >
-                    Add Student
-                  </button>
+              <>
+                {/* ✅ Table Box (Now Below the Add Button) */}
+                <div className="box">
+                  <ToastContainer />
+                  <AlertDialog
+                    title="Confirm Deletion"
+                    message={`Are you sure you want to delete the student record for ${dialogData?.name}?`}
+                    isOpen={isDialogOpen}
+                    onConfirm={handleConfirmDelete}
+                    onCancel={handleCancel}
+                  />
+                  <ReusableTable rows={data} columns={columns} />
                 </div>
-                <ToastContainer />
-                <AlertDialog
-                  title="Confirm Deletion"
-                  message={`Are you sure you want to delete the student record for ${dialogData?.name}?`}
-                  isOpen={isDialogOpen}
-                  onConfirm={handleConfirmDelete}
-                  onCancel={handleCancel}
-                />
-                <ReusableTable rows={data} columns={columns} />
-              </div>
+              </>
             )
           ) : (
             <div className="box">
