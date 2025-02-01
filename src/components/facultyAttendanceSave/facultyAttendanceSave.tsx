@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import axiosInstance from '../../services/Utils/apiUtils';
 import { fetchFacultyData, submitAttendance } from '../../services/Faculty/FacultyAttendanceSave/Api';
 import { Faculty } from '../../services/Faculty/FacultyAttendanceSave/Type';
-import ReusableTable from '../MUI Table/ReusableTable';
+import ReusableTable from '../StudenAttendanceShow/Table/Table';
 import BackButton from '../Navigation/backButton';
 import Loader from '../loader/loader';
 

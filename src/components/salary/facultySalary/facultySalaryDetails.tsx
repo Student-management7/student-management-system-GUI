@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import GridView from "./gridView";
 import axiosInstance from "../../../services/Utils/apiUtils";
 import Loader from "../../loader/loader";
+import ReusableTable from "../../MUI Table/ReusableTable";
 
 // Define interfaces for data structures
 interface FacultySalary {
@@ -84,9 +84,9 @@ const FacultySalaryDetails: React.FC = () => {
 
         <div className="box p-4">
           <h3 className="text-xl font-semibold mb-2">Salary Details</h3>
-          <GridView
-            rowData={faculty.fact_salary.map((salary) => ({
-              id: salary.id,
+          <ReusableTable
+            rows={faculty.fact_salary.map((salary) => ({
+              // id: salary.id,
               creationDateTime: salary.creationDateTime,
               schoolCode: salary.schoolCode,
               facultySalary: salary.facultySalary,
@@ -95,8 +95,8 @@ const FacultySalaryDetails: React.FC = () => {
               facultyDeduction: parseDeductions(salary.facultyDeduction),
               total: salary.total,
             }))}
-            columnDefs={[
-              { field: "id", headerName: "ID" },
+            columns={[
+              // { field: "id", headerName: "ID" },
               { field: "creationDateTime", headerName: "Creation Date" },
               { field: "facultySalary", headerName: "Salary" },
               { field: "facultyTax", headerName: "Tax (%)" },

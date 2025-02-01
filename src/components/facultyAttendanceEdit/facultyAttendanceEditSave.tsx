@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { saveAttendanceEdit } from '../../services/Faculty/facultyAttendanceEdit/Api/api';
 import { formatToDDMMYYYY } from '../Utils/dateUtils';
 import { Faculty } from '../../services/Faculty/facultyAttendanceEdit/Type/type';
-import ReusableTable from '../MUI Table/ReusableTable';
+import ReusableTable from '../StudenAttendanceShow/Table/Table';
 import BackButton from '../Navigation/backButton';
 
 interface AttendanceRow {
@@ -63,31 +63,26 @@ const EditAttendance: React.FC = () => {
     { 
       field: 'name', 
       headerName: 'Faculty Name', 
-      editable: false,
       width: '30%'
     },
     { 
       field: 'factId', 
       headerName: 'Faculty ID', 
-      editable: false,
       width: '30%'
     },
     {
       field: 'attendance',
       headerName: 'Attendance',
-      editable: true,
       width: '40%',
       renderCell: (row: AttendanceRow) => (
-        <div className="w-full">
-          <select
-            value={row.attendance}
-            onChange={(e) => handleAttendanceChange(row.factId, e.target.value)}
-            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="Present">Present</option>
-            <option value="Absent">Absent</option>
-          </select>
-        </div>
+        <select
+          value={row.attendance}
+          onChange={(e) => handleAttendanceChange(row.factId, e.target.value)}
+          className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="Present">Present</option>
+          <option value="Absent">Absent</option>
+        </select>
       ),
     },
   ];
@@ -96,51 +91,57 @@ const EditAttendance: React.FC = () => {
     name: faculty.name,
     factId: faculty.factId,
     attendance: faculty.attendance,
-  }));
+}));
 
-  const handleAttendanceChange = (factId: string, newValue: string) => {
+// ...
+
+const handleAttendanceChange = (factId: string, newValue: string) => {
     setEditedFactList(prevList =>
-      prevList.map(faculty =>
-        faculty.factId === factId
-          ? { ...faculty, attendance: newValue }
-          : faculty
-      )
+        prevList.map(faculty =>
+            faculty.factId === factId
+                ? { ...faculty, attendance: newValue }
+                : faculty
+        )
     );
-  };
+};
 
+ 
   return (
-    <div className="box ">
-      <div className="flex items-center space-x-4 mb-4">
-            <span>
-              <BackButton />
-            </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Attendance Update  </h1>
-          </div>
-      <div className="mb-6">
-        <h2 className="text-gray-600 text-lg">Date: {formatToDDMMYYYY(attendanceData.date)}</h2>
-      </div>
-
-      <div className="box">
-        <ReusableTable
-          rows={rowData}
-          columns={columns}
-          rowsPerPageOptions={[5, 10, 25]}
-          
-        />
-      </div>
-
-      <div className="flex justify-end">
-        <button
-          onClick={handleSaveAttendance}
-          className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 
-                     transition duration-200 ease-in-out focus:outline-none focus:ring-2 
-                     focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50"
-          disabled={!editedFactList.length}
-        >
-          Save Changes
-        </button>
-      </div>
+    <div className="box">
+    <div className="flex items-center space-x-4 mb-4">
+      <span>
+        <BackButton />
+      </span>
+      <h1 className="text-xl items-center font-bold text-[#27727A]">
+        Student Attendance Update
+      </h1>
     </div>
+    <div className="mb-6">
+      <h2 className="text-gray-600 text-lg">
+        Date: {formatToDDMMYYYY(attendanceData.date)}
+      </h2>
+    </div>
+
+    <div className="box">
+      <ReusableTable
+        rows={rowData}
+        columns={columns}
+        rowsPerPageOptions={[5, 10, 25]}
+      />
+    </div>
+
+    <div className="flex justify-end mt-4">
+      <button
+        onClick={handleSaveAttendance}
+        className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 
+                   transition duration-200 ease-in-out focus:outline-none focus:ring-2 
+                   focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50"
+        disabled={!editedFactList.length}
+      >
+        Save Changes
+      </button>
+    </div>
+  </div>
   );
 };
 
