@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "../../../services/Utils/apiUtils";
 import Loader from "../../loader/loader";
 import BackButton from "../../Navigation/backButton";
-import { useLocation } from "react-router-dom";
 import ReusableTable from "../../MUI Table/ReusableTable";
 
 
