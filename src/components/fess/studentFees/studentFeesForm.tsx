@@ -182,7 +182,7 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose, editingData 
                   <div className="d-flex justify-content-between">
                     <button
                       type="submit"
-                      className="btn btn-primary"
+                      className="btn button"
                       disabled={isSubmitting}
                     >
                       {isSubmitting
@@ -193,7 +193,7 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose, editingData 
                     </button>
                     <button
                       type="button"
-                      className="btn btn-secondary"
+                      className="btn buttonred"
                       onClick={onClose}
                     >
                       Cancel

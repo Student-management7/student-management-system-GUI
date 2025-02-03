@@ -390,7 +390,7 @@ const FormView = () => {
               </div>
               <hr className="hr" />
               <div className="titel">
-                <h2>Family Details</h2>
+                <h2 className="head1">Family Details</h2>
               </div>
               <div className="row">
                 <div className="col-md-4">
@@ -542,7 +542,7 @@ const FormView = () => {
               <div className="form-group">
                 <label
                   htmlFor="totalFee"
-                  className="form-label fs-4 text-primary"
+                  className="form-label head1 "
                 >
                   Total Fee
                 </label>

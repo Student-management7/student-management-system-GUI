@@ -209,7 +209,7 @@ const FacultySalaryController: React.FC = () => {
                 setShowForm(true);
                 setEditData(null);
               }}
-              className={`btn btn-default ${loading ? "btn-disabled" : ""}`}
+              className={`btn button ${loading ? "btn-disabled" : ""}`}
               disabled={loading}
             >
               Add Salary

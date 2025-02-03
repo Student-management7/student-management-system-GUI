@@ -373,7 +373,7 @@ const EditStudentForm = (props: EditStudentFormProps) =>{
                                         }))
                                     }
                                     //value={singleRowData.familyDetails.stdo_secondaryContact}
-                                    className="form-control "
+                                    className="form-control"
                                     //onChange={handleChange}
                                     placeholder="Enter secondary Contact"
                                 />
@@ -459,7 +459,7 @@ const EditStudentForm = (props: EditStudentFormProps) =>{
                         <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Update</button>
                     </div>
                     <div className='text-center mt-4 col ' >
-                        <button className="btn buttonred" >Canel</button>
+                        <button className="btn btn-danger" >Canel</button>
                     </div>
                     </div>
                 </form>
