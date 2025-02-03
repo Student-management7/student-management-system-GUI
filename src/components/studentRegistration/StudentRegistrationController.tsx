@@ -165,7 +165,7 @@ const StudentRegistrationController = () => {
                   onConfirm={handleConfirmDelete}
                   onCancel={handleCancel}
                 />
-                <ReusableTable rows={data} columns={columns}  />
+                <ReusableTable rows={data} columns={columns}  tableHeight="70vh" tableWidth="66.6vw" />
               </div>
             )
           ) : (
@@ -177,7 +177,7 @@ const StudentRegistrationController = () => {
                   </div>
                 </h1>
               </div>
-              <FormView />
+              <FormView /> 
             </div>
           )}
         </div>

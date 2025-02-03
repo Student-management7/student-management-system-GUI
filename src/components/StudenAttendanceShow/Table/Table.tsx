@@ -1,43 +1,13 @@
 import React, { useState, useMemo } from 'react';
-import { Download,  } from 'lucide-react';
-import './Table.css'
-
-
-interface Column {
-  field: string;
-  headerName: string;
-  width?: string;
-  editable?: boolean;
-  sortable?: boolean;
-  nestedField?: string;
-  cellRenderer?: (params: CellRendererParams) => React.ReactNode;
-}
-
-interface CellRendererParams {
-  data: any;
-  value: any;
-  setValue: (value: any) => void;
-}
-
-interface TableProps {
-  columns: Column[];
-  rows: any[];
-  rowsPerPageOptions?: number[];
-  onCellValueChange?: (rowIndex: number, field: string, value: any) => void;
-  tableHeight?: string;
-  tableWidth?: string;
-  onEdit?: (row: any) => void;
-  onDelete?: (row: any) => void;
-  onViewReport?: (row: any) => void;
-}
+import { Download } from 'lucide-react';
 
 const ReusableTable: React.FC<TableProps> = ({
   columns,
   rows,
   rowsPerPageOptions = [5, 10, 25],
   onCellValueChange,
-  tableHeight = "500px",
-  tableWidth = "100%",
+  tableHeight = "70vh",
+  tableWidth = "90vw",
   onEdit,
   onDelete,
   onViewReport
@@ -50,12 +20,11 @@ const ReusableTable: React.FC<TableProps> = ({
     direction: null
   });
 
-  // Get nested value
+  // Existing helper functions (getNestedValue, filteredAndSortedRows calculation)
   const getNestedValue = (obj: any, path: string) => {
     return path.split('.').reduce((acc, part) => acc && acc[part], obj);
   };
 
-  // Filter and sort rows
   const filteredAndSortedRows = useMemo(() => {
     let result = rows.filter((row) =>
       Object.entries(row).some(([key, value]) => {
@@ -72,7 +41,6 @@ const ReusableTable: React.FC<TableProps> = ({
         let aVal = a[sortConfig.field];
         let bVal = b[sortConfig.field];
 
-        // Handle nested fields
         const column = columns.find(col => col.field === sortConfig.field);
         if (column?.nestedField) {
           aVal = getNestedValue(a, column.nestedField);
@@ -90,22 +58,21 @@ const ReusableTable: React.FC<TableProps> = ({
     return result;
   }, [rows, searchTerm, sortConfig, columns]);
 
-  // Calculate pagination
   const totalPages = Math.ceil(filteredAndSortedRows.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedRows = filteredAndSortedRows.slice(startIndex, startIndex + rowsPerPage);
 
   return (
-    <div className="space-y-4">
-      {/* Search Bar */}
-      <div className="w-full">
+    <div className="flex flex-col w-full max-w-[95vw] mx-auto space-y-4">
+      {/* Search and Controls Container */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full p-4">
         <div className="relative w-full sm:w-72">
           <input
             type="text"
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-8 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-8 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           <span className="absolute left-2.5 top-2.5">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -115,25 +82,20 @@ const ReusableTable: React.FC<TableProps> = ({
         </div>
       </div>
 
-      {/* Fixed Size Table Container */}
-      <div className="table-container border border-gray-200 rounded-lg overflow-x-auto">
-        <div
-          className="max-w-full overflow-x-auto"
-          style={{ width: tableWidth, height: tableHeight, maxHeight: tableHeight }}
-        >
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 sticky top-0 z-10">
-              <tr>
-                <th
-                  className="sticky top-0 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                >
+      {/* Table Container */}
+      <div className="relative w-full overflow-hidden border rounded-lg shadow-sm">
+        <div className="w-full overflow-auto" style={{ height: tableHeight, maxWidth: tableWidth }}>
+          <table className="w-full border-collapse bg-white">
+            <thead className="bg-gray-50">
+              <tr className="sticky top-0 z-10">
+                <th className="sticky left-0 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   S.No
                 </th>
                 {columns.map((column) => (
                   <th
                     key={column.field}
                     style={{ width: column.width }}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer bg-gray-50"
                     onClick={() => column.sortable !== false && setSortConfig({
                       field: column.field,
                       direction: sortConfig.field === column.field && sortConfig.direction === 'asc' ? 'desc' : 'asc'
@@ -149,19 +111,18 @@ const ReusableTable: React.FC<TableProps> = ({
                     </div>
                   </th>
                 ))}
-
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200">
               {paginatedRows.map((row, rowIndex) => (
                 <tr key={rowIndex} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis">
+                  <td className="sticky left-0 bg-white px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {startIndex + rowIndex + 1}
                   </td>
                   {columns.map((column) => (
                     <td
                       key={`${rowIndex}-${column.field}`}
-                      className="px-6 py-4 whitespace-nowrap"
+                      className="px-6 py-4 whitespace-nowrap text-sm"
                     >
                       {column.cellRenderer ? (
                         column.cellRenderer({
@@ -170,13 +131,12 @@ const ReusableTable: React.FC<TableProps> = ({
                           setValue: (value) => onCellValueChange?.(rowIndex, column.field, value)
                         })
                       ) : (
-                        <div className="text-sm text-gray-900 overflow-hidden overflow-ellipsis">
+                        <div className="text-gray-900 overflow-hidden text-ellipsis">
                           {column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field]}
                         </div>
                       )}
                     </td>
                   ))}
-
                 </tr>
               ))}
             </tbody>
@@ -184,12 +144,12 @@ const ReusableTable: React.FC<TableProps> = ({
         </div>
       </div>
 
-      {/* Table Controls */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="flex items-center gap-4">
+      {/* Footer Controls */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-white rounded-lg shadow-sm">
+        <div className="flex flex-wrap items-center gap-4">
           <button
-            onClick={() => {/* Export CSV logic */ }}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            onClick={() => {/* Export CSV logic */}}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
           >
             <Download size={16} />
             Export CSV
@@ -203,7 +163,7 @@ const ReusableTable: React.FC<TableProps> = ({
                 setRowsPerPage(Number(e.target.value));
                 setCurrentPage(1);
               }}
-              className="border rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
               {rowsPerPageOptions.map((option) => (
                 <option key={option} value={option}>{option}</option>
@@ -212,12 +172,11 @@ const ReusableTable: React.FC<TableProps> = ({
           </div>
         </div>
 
-        {/* Pagination */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="px-3 py-1 border rounded-md hover:bg-gray-100 disabled:opacity-50"
+            className="px-3 py-1 border rounded-md hover:bg-gray-100 disabled:opacity-50 transition-colors"
           >
             Previous
           </button>
@@ -226,10 +185,11 @@ const ReusableTable: React.FC<TableProps> = ({
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 border rounded-md ${currentPage === page
-                  ? 'bg-blue-500 text-white'
-                  : 'hover:bg-gray-100'
-                  }`}
+                className={`px-3 py-1 border rounded-md transition-colors ${
+                  currentPage === page
+                    ? 'bg-blue-500 text-white'
+                    : 'hover:bg-gray-100'
+                }`}
               >
                 {page}
               </button>
@@ -238,7 +198,7 @@ const ReusableTable: React.FC<TableProps> = ({
           <button
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded-md hover:bg-gray-100 disabled:opacity-50"
+            className="px-3 py-1 border rounded-md hover:bg-gray-100 disabled:opacity-50 transition-colors"
           >
             Next
           </button>
