@@ -124,7 +124,7 @@ const ClassSubjectShow: React.FC = () => {
             <span >
               <BackButton />
             </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Subjevt Page</h1>
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Subject Page</h1>
           </div>
           <div className="text-right mb-4">
             <button

@@ -8,6 +8,9 @@
     padding: 10px;
     font-family: Arial, Helvetica, sans-serif;
 
+    @media (max-width: 480px) {
+        text-align: right;
+    }
     
     :hover{
         background-color: var(--greenLight-color);
@@ -47,7 +50,7 @@
 
 
 
-
+  
 
 .menu{
     display: flex;
@@ -56,6 +59,7 @@
     position: relative;
     cursor: pointer;
    
+
 
     svg{
         font-size: 16px;  
@@ -89,4 +93,17 @@
 .active{
     margin-left: -250px;
     transition: 1s;
+    @media (max-width: 480px) {
+        margin-left: -220px;
+        .menu{
+            display: inline-block;
+            text-align: right;
+            span,.menuOpen{
+                display: none;
+            }
+            svg{
+                margin-right: 0 !important;
+            }
+        }
+    }
 }
