@@ -265,7 +265,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                               <button
                                 type="button"
                                 onClick={() => remove(index)}
-                                className="btn btn-danger"
+                                className="btn buttonred"
                                 disabled={values.facultyDeduction.length <= 1}
                               >
                                 Remove
@@ -293,7 +293,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                   <button
                     type="button"
                     onClick={onCancel}
-                    className="btn btn-secondary btn-danger"
+                    className="btn buttonred"
                   >
                     Cancel
                   </button>

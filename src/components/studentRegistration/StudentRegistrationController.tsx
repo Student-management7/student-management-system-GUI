@@ -12,7 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Eye, IdCard, Pencil, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../loader/loader"; // Add a Spinner component for loading
-import ReusableTable from "../StudenAttendanceShow/Table/Table";
+import ReusableTable from "../MUI Table/ReusableTable";
 import BackButton from "../Navigation/backButton";
 
 
@@ -31,8 +31,8 @@ const StudentRegistrationController = () => {
     { field: "city", headerName: "City" },
     { field: "cls", headerName: "Class" },
     { field: "gender", headerName: "Gender" },
-    { field: "familyDetails.stdo_FatherName", headerName: "Father Name", nestedField: 'familyDetails.stdo_FatherName' },
-    { field: "familyDetails.stdo_primaryContact", headerName: "Contact" ,  nestedField: 'familyDetails.stdo_primaryContact' },
+    { field: "familyDetails.stdo_FatherName", headerName: "Father Name" },
+    { field: "familyDetails.stdo_primaryContact", headerName: "Contact" },
     {
       field: "actions",
       headerName: "Actions",
@@ -118,7 +118,7 @@ const StudentRegistrationController = () => {
 
   const handeleReport = (id: string) => {
     navigate("/StudentReport", {
-
+      
       state: { id },
     });
   };
@@ -128,7 +128,7 @@ const StudentRegistrationController = () => {
       {loading && <Loader />} {/* Show loader when loading */}
       {!loading && (
         <div className="box ">
-          <div className="flex items-center space-x-4 mb-4">
+        <div className="flex items-center space-x-4 mb-4">
             <span>
               <BackButton />
             </span>
@@ -165,12 +165,12 @@ const StudentRegistrationController = () => {
                   onConfirm={handleConfirmDelete}
                   onCancel={handleCancel}
                 />
-                <ReusableTable rows={data} columns={columns}  />
+                <ReusableTable rows={data} columns={columns} />
               </div>
             )
           ) : (
             <div className="box">
-              <div className="headding1">
+              <div className="head1">
                 <h1 onClick={() => setStudentData(false)}>
                   <div>
                     <i className="bi bi-arrow-left-circle" /> <span>User Details</span>

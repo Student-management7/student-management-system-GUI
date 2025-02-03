@@ -184,7 +184,7 @@ const FeesForm: React.FC = () => {
 
                         <button
                             type="submit"
-                            className="mt-6 w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                            className="mt-6 p-2 button btn"
                         >
                             Submit
                         </button>

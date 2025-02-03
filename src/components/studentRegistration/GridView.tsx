@@ -27,7 +27,7 @@ const GridView: React.FC<GridViewProps> = ({ rowData, columnDefs, showAddButton,
                     color: 'white',
                     border: 'none',
                     borderRadius: '4px',
-                    cursor: 'pointer',
+                    
                 }}
             >
                 Add

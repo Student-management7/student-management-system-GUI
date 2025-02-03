@@ -162,7 +162,7 @@ const StudentFeesController: React.FC = () => {
               <div className="text-right mb-3">
                 <button
                   onClick={() => setShowForm(true)}
-                  className="btn btn-default"
+                  className="btn button"
                 >
                   Add Fees
                 </button>

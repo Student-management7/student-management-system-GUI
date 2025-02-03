@@ -147,7 +147,7 @@ const StudentAttendanceEdit: React.FC = () => {
         <label>Date:</label>
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
 
-        <button onClick={handleFetchAttendance}>Fetch Attendance</button>
+        <button className="btn button" onClick={handleFetchAttendance}>Fetch Attendance</button>
       </div>
 
       <div className="attendance-table">

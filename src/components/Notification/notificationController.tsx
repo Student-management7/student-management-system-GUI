@@ -10,12 +10,11 @@ const NotificationController = () => {
 
   const handleCreateNotification = () => {
     setLoading(true);
-    // Assuming the create notification API call is handled here
-    // After the API call, set loading to false
+    
     setTimeout(() => {
-      setLoading(false); // Set loading to false after creating notification
-      setShowForm(false); // Close the form after creation
-    }, 2000); // Simulating an API delay, adjust as needed
+      setLoading(false); 
+      setShowForm(false); 
+    }, 2000); 
   };
 
   return (
@@ -35,7 +34,7 @@ const NotificationController = () => {
               <div className="text-right">
                 <button
                   onClick={() => setShowForm(true)}
-                  className="btn btn-default"
+                  className="btn button"
                 >
                   Create Notification
                 </button>
@@ -47,7 +46,7 @@ const NotificationController = () => {
               <NotificationCreate onClose={() => setShowForm(false)} />
               <button
                 onClick={handleCreateNotification}
-                className="btn btn-primary"
+                className="btn button"
               >
                 Submit
               </button>
