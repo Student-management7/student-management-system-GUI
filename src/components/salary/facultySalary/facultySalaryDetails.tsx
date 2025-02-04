@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "../../../services/Utils/apiUtils";
 import Loader from "../../loader/loader";
 import ReusableTable from "../../MUI Table/ReusableTable";
+import BackButton from "../../Navigation/backButton";
 
 // Define interfaces for data structures
 interface FacultySalary {
@@ -72,18 +73,25 @@ const FacultySalaryDetails: React.FC = () => {
 
     return (
       <div className="box p-4">
-        <div className="header mb-4">
-          <h2 className="text-2xl font-bold">Faculty Details</h2>
-          <p>
-            <strong>ID:</strong> {faculty.fact_id}
-          </p>
-          <p>
-            <strong>Name:</strong> {faculty.fact_Name}
-          </p>
+
+
+        <div className="flex items-center space-x-4 mb-4">
+          <span>
+            <BackButton />
+          </span>
+          <h1 className="text-xl items-center font-bold text-[#27727A]">
+            Faculty Details
+          </h1>
         </div>
 
-        <div className="box p-4">
-          <h3 className="text-xl font-semibold mb-2">Salary Details</h3>
+        <p className="ml-6">
+          <span className="text-xl">Name :-</span>
+          <span className="ml-2 text-xl"> {faculty.fact_Name}</span>
+        </p>
+
+
+        <div className=" p-4">
+
           <ReusableTable
             rows={faculty.fact_salary.map((salary) => ({
               // id: salary.id,

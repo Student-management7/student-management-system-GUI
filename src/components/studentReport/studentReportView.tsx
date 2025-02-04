@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@radix-ui/react-select";
 import axiosInstance from "../../services/Utils/apiUtils";
- import { User } from 'lucide-react';
+import { User } from 'lucide-react';
 import axios from "axios";
-import { useLocation } from 'react-router-dom';
 import Loader from "../loader/loader";
-
-
+import { useParams } from "react-router-dom";
+import './studentReportView.css'
 
 interface Subject {
     subject: string;
@@ -47,30 +39,21 @@ interface AttendanceData {
 }
 
 const StudentReport: React.FC = () => {
-    
-    const location = useLocation();
     const [examData, setExamData] = useState<ExamData[]>([]);
     const [selectedExamType, setSelectedExamType] = useState<string>("");
     const [filteredExam, setFilteredExam] = useState<ExamData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [studentData, setStudentData] = useState<StudentData | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { id } = location.state || {};
-    if (!id ) {
-        return <div>Error: Missing Student id </div>;
-      }
+    const { id } = useParams<{ id: string }>();
 
     useEffect(() => {
-        const fetchData = async ( ) => {
+        const fetchData = async () => {
             try {
                 setLoading(true);
                 const [examResponse, attendanceResponse] = await Promise.all([
-                    axiosInstance.get(
-                        `/report/getStudentReport?id=${id}`
-                    ),
-                    axios.get(
-                        "https://716a9f60-27a0-449f-bb20-e8e3518d7858.mock.pstmn.io/get attendance"
-                    )
+                    axiosInstance.get(`/report/getStudentReport?id=${id}`),
+                    axios.get("https://716a9f60-27a0-449f-bb20-e8e3518d7858.mock.pstmn.io/get attendance")
                 ]);
 
                 const examData = examResponse.data;
@@ -81,12 +64,6 @@ const StudentReport: React.FC = () => {
                     ...examData[0].studentInfo,
                     attendance: attendanceData
                 });
-                
-
-                console.log("Exam Data:", examData);
-                console.log("Attendance Data:", attendanceData);
-
-
 
                 if (examData.length > 0) {
                     setSelectedExamType(examData[0].examType);
@@ -99,12 +76,10 @@ const StudentReport: React.FC = () => {
         };
 
         fetchData();
-    }, []);
+    }, [id]);
 
     useEffect(() => {
-        const filtered = examData.find(
-            (exam) => exam.examType === selectedExamType
-        );
+        const filtered = examData.find((exam) => exam.examType === selectedExamType);
         setFilteredExam(filtered || null);
     }, [selectedExamType, examData]);
 
@@ -112,250 +87,176 @@ const StudentReport: React.FC = () => {
 
     if (loading || !studentData) {
         return (
-            <div className="flex justify-center items-center h-screen">
+            <div className="loader-container">
                 <div className="spinner"></div>
             </div>
         );
     }
-    
+
     if (!filteredExam) {
-        return <div className="p-5">No data available</div>;
+        return <div className="no-data">No data available</div>;
     }
 
     const AttendanceCard: React.FC<{ attendance: AttendanceData }> = ({ attendance }) => (
-        <div className="bg-white rounded-xl p-5 shadow-md mb-10">
-            <h3 className="text-xl font-bold text-indigo-600 mb-5">Attendance</h3>
-            <div className="grid grid-cols-2 gap-4">
+        <div className="attendance-card">
+            <h3>Attendance</h3>
+            <div className="attendance-grid">
                 <div>
-                    <p className="text-sm text-gray-600">Total Days</p>
-                    <p className="text-lg font-semibold">{attendance.totalDays}</p>
+                    <p>Total Days</p>
+                    <p>{attendance.totalDays}</p>
                 </div>
                 <div>
-                    <p className="text-sm text-gray-600">Present Days</p>
-                    <p className="text-lg font-semibold">{attendance.presentDays}</p>
+                    <p>Present Days</p>
+                    <p>{attendance.presentDays}</p>
                 </div>
                 <div>
-                    <p className="text-sm text-gray-600">Absent Days</p>
-                    <p className="text-lg font-semibold">{attendance.absentDays}</p>
+                    <p>Absent Days</p>
+                    <p>{attendance.absentDays}</p>
                 </div>
                 <div>
-                    <p className="text-sm text-gray-600">Attendance Percentage</p>
-                    <p className="text-lg font-semibold">{attendance.attendancePercentage}%</p>
+                    <p>Attendance Percentage</p>
+                    <p>{attendance.attendancePercentage}%</p>
                 </div>
             </div>
-            <div className="mt-4">
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div 
-                        className="bg-indigo-600 h-2.5 rounded-full" 
-                        style={{ width: `${attendance.attendancePercentage}%` }}
-                    ></div>
-                </div>
+            <div className="progress-bar">
+                <div 
+                    className="progress" 
+                    style={{ width: `${attendance.attendancePercentage}%` }}
+                ></div>
             </div>
         </div>
     );
 
-    
-
     return (
-
-        <>
-        {loading && <Loader />} {/* Show loader when loading */}
-        {!loading && (
-        <div className="container-fluid p-5 bg-gray-100 font-sans">
-            {studentData && (
-               
-                <div className="mb-8 bg-white rounded-xl p-6 shadow-md">
-                <div className="flex items-start space-x-4">
-                  {/* Avatar Button */}
-                  <div className="relative group">
-                    <button 
-                      onClick={() => setIsModalOpen(true)}
-                      className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-105"
-                    >
-                      <User className="w-6 h-6 text-indigo-600" />
-                    </button>
-                    <div className="hidden group-hover:block absolute -bottom-1 left-1/2 -translate-x-1/2 text-xs text-gray-500">
-                      
-                    </div>
-                  </div>
-          
-                  {/* Student Info Preview */}
-                  <div className="flex-1">
-                    
-                    <div className="flex items-center space-x-4 mt-2">
-                      <h3 className="text-lg font-semibold text-gray-800 text-align-center">{studentData.name}</h3>
-                     
-                    </div>
-                  </div>
-                </div>
-          
-                {/* Basic Modal */}
-                {isModalOpen && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold">Student Details</h3>
-                        <button 
-                          onClick={() => setIsModalOpen(false)}
-                          className="text-gray-500 hover:text-gray-700"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                      
-                      <div className="space-y-4">
-                        <div className="flex flex-col space-y-2">
-                          <label className="text-sm font-medium text-gray-500">Full Name</label>
-                          <p className="text-lg font-semibold">{studentData.name}</p>
-                        </div>
-                         
-                        <div className="flex flex-col space-y-2">
-                          <label className="text-sm font-medium text-gray-500">Roll Number</label>
-                          <p className="text-lg font-semibold">SMS90764389</p>
-                        </div>
-                        <div className="flex flex-col space-y-2">
-                          <label className="text-sm font-medium text-gray-500">Class</label>
-                          <p className="text-lg font-semibold">{studentData.cls+"th Class" || 'Class X-A'}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-            )}
-            {/* <div className="mb-5">
-                <Select value={selectedExamType} onValueChange={setSelectedExamType}>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select exam type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {examTypes.map((type) => (
-                            <SelectItem key={type} value={type}>
-                                {type}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div> */}
-
-
-            <div className="flex flex-col lg:flex-row">
-                <div className="lg:w-3/4 pr-0 lg:pr-8">
-                    <div className="mb-10">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                            {/* Metric Cards */}
-                            <div className="bg-white rounded-xl p-5 text-center shadow-md transition-all hover:translate-y-[-5px] hover:shadow-lg">
-                                <div className="flex justify-center items-center mb-2">
-                                    <div className="text-2xl">📚</div>
-                                </div>
-                                <p className="text-xs uppercase tracking-wide font-semibold text-gray-600">Exam Type</p>
-                                <p className="font-bold mt-2 fs-6">{filteredExam.examType}</p>
+        <div className="student-report">
+            {loading && <Loader />}
+            {!loading && (
+                <div className="container">
+                    {studentData && (
+                        <div className="student-info">
+                            <div className="avatar-container">
+                                <button onClick={() => setIsModalOpen(true)}>
+                                    <User />
+                                </button>
                             </div>
-                            <div className="bg-white rounded-xl p-5 text-center shadow-md transition-all hover:translate-y-[-5px] hover:shadow-lg">
-                                <div className="flex justify-center items-center mb-2">
-                                    <div className="text-2xl">📅</div>
-                                </div>
-                                <p className="text-xs uppercase tracking-wide font-semibold text-gray-600">Exam Date</p>
-                                <p className="font-bold mt-2 fs-6">{filteredExam.examDate}</p>
-                            </div>
-                            <div className="bg-white rounded-xl p-5 text-center shadow-md transition-all hover:translate-y-[-5px] hover:shadow-lg">
-                                <div className="flex justify-center items-center mb-2">
-                                    <div className="text-2xl">📊</div>
-                                </div>
-                                <p className="text-xs uppercase tracking-wide font-semibold text-gray-600">Total Marks</p>
-                                <p className="text-2xl font-bold mt-2 fs-6">{filteredExam.totalMarks}</p>
-                            </div>
-                            <div className="bg-white rounded-xl p-5 text-center shadow-md transition-all hover:translate-y-[-5px] hover:shadow-lg">
-                                <div className="flex justify-center items-center mb-2">
-                                    <div className="text-2xl">🏆</div>
-                                </div>
-                                <p className="text-xs uppercase tracking-wide font-semibold text-gray-600">Grade</p>
-                                <p className="text-2xl font-bold mt-2 fs-6">{filteredExam.grade}</p>
+                            <div className="student-details">
+                                <h3>{studentData.name}</h3>
                             </div>
                         </div>
-                    </div>
-
-                    {/* Subject Performance Table */}
-                    <div className="bg-white rounded-xl p-5 shadow-md">
-                        <h3 className="text-xl font-bold text-indigo-600 mb-5">Subject Performance</h3>
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="border-b border-gray-200">
-                                    <tr>
-                                        <th className="text-left p-3 font-semibold">Subject</th>
-                                        <th className="text-left p-3 font-semibold">Marks Obtained</th>
-                                        <th className="text-left p-3 font-semibold">Max Marks</th>
-                                        <th className="text-left p-3 font-semibold">Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredExam.subjects.map((subject, index) => (
-                                        <tr key={index} className="hover:bg-gray-50">
-                                            <td className="p-3">
-                                                <div className="flex items-center">
-                                                    <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold mr-3">
-                                                        {subject.subject[0]}
-                                                    </div>
-                                                    <div>{subject.subject}</div>
-                                                </div>
-                                            </td>
-                                            <td className="p-3">{subject.marksObtained}</td>
-                                            <td className="p-3">{subject.maxMarks}</td>
-                                            <td className="p-3">
-                                                <span className="px-2 py-1 rounded-full text-xs font-bold bg-green-500 text-white">
-                                                    {subject.remarks}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="lg:w-1/4 mt-10 lg:mt-0">
-                    {studentData.attendance && (
-                        <AttendanceCard attendance={studentData.attendance} />
                     )}
-                    {/* Exam Details Card */}
-                    <div className="bg-white rounded-xl p-5 shadow-md mb-10">
-                        <h3 className="text-xl font-bold text-indigo-600 mb-5">Exam Details</h3>
-                        <p className="text-sm text-gray-600 mb-2">Exam Type: <span className="font-semibold">{filteredExam.examType}</span></p>
-                        <p className="text-sm text-gray-600 mb-2">Exam Date: <span className="font-semibold">{filteredExam.examDate}</span></p>
-                        <p className="text-sm text-gray-600 mb-2">Total Marks: <span className="font-semibold">{filteredExam.totalMarks}</span></p>
-                        <p className="text-sm text-gray-600 mb-2">Average: <span className="font-semibold">{filteredExam.average}</span></p>
-                        <p className="text-sm text-gray-600 mb-2">Grade: <span className="font-semibold">{filteredExam.grade}</span></p>
+
+                    {isModalOpen && (
+                        <div className="modal-overlay">
+                            <div className="modal">
+                                <div className="modal-header">
+                                    <h3>Student Details</h3>
+                                    <button onClick={() => setIsModalOpen(false)}>✕</button>
+                                </div>
+                                <div className="modal-body">
+                                    <div>
+                                        <label>Full Name</label>
+                                        <p>{studentData?.name}</p>
+                                    </div>
+                                    <div>
+                                        <label>Roll Number</label>
+                                        <p>SMS90764389</p>
+                                    </div>
+                                    <div>
+                                        <label>Class</label>
+                                        <p>{studentData?.cls + "th Class" || 'Class X-A'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="exam-metrics">
+                        <div className="metric-card">
+                            <div>📚</div>
+                            <p>Exam Type</p>
+                            <p>{filteredExam.examType}</p>
+                        </div>
+                        <div className="metric-card">
+                            <div>📅</div>
+                            <p>Exam Date</p>
+                            <p>{filteredExam.examDate}</p>
+                        </div>
+                        <div className="metric-card">
+                            <div>📊</div>
+                            <p>Total Marks</p>
+                            <p>{filteredExam.totalMarks}</p>
+                        </div>
+                        <div className="metric-card">
+                            <div>🏆</div>
+                            <p>Grade</p>
+                            <p>{filteredExam.grade}</p>
+                        </div>
                     </div>
 
-                    {/* Performance Chart */}
-                    <div className="bg-white rounded-xl p-5 shadow-md">
-                        <h3 className="text-xl font-bold text-indigo-600 mb-5">Performance Chart</h3>
-                        <div className="mt-5">
+                    <div className="subject-performance">
+                        <h3>Subject Performance</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Marks Obtained</th>
+                                    <th>Max Marks</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredExam.subjects.map((subject, index) => (
+                                    <tr key={index}>
+                                        <td>
+                                            <div className="subject-icon">
+                                                {subject.subject[0]}
+                                            </div>
+                                            <div>{subject.subject}</div>
+                                        </td>
+                                        <td>{subject.marksObtained}</td>
+                                        <td>{subject.maxMarks}</td>
+                                        <td>
+                                            <span className="remarks">{subject.remarks}</span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className="sidebar">
+                        {studentData.attendance && (
+                            <AttendanceCard attendance={studentData.attendance} />
+                        )}
+                        <div className="exam-details">
+                            <h3>Exam Details</h3>
+                            <p>Exam Type: <span>{filteredExam.examType}</span></p>
+                            <p>Exam Date: <span>{filteredExam.examDate}</span></p>
+                            <p>Total Marks: <span>{filteredExam.totalMarks}</span></p>
+                            <p>Average: <span>{filteredExam.average}</span></p>
+                            <p>Grade: <span>{filteredExam.grade}</span></p>
+                        </div>
+
+                        <div className="performance-chart">
+                            <h3>Performance Chart</h3>
                             {filteredExam.subjects.map((subject, index) => (
-                                <div key={index} className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-semibold">{subject.subject}</span>
-                                    <div className="flex-1 mx-3 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div key={index} className="chart-item">
+                                    <span>{subject.subject}</span>
+                                    <div className="chart-bar">
                                         <div
-                                            className="h-full bg-indigo-600"
+                                            className="chart-progress"
                                             style={{ width: `${(subject.marksObtained / subject.maxMarks) * 100}%` }}
                                         ></div>
                                     </div>
-                                    <span className="text-sm font-semibold">{subject.marksObtained}/{subject.maxMarks}</span>
+                                    <span>{subject.marksObtained}/{subject.maxMarks}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
-        )}
-        </>
     );
 };
 
 export default StudentReport;
-
-
-

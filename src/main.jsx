@@ -40,6 +40,13 @@ import TableComponent from './components/StudentAttendence/studentAttendance';
 import StudentReportForm from './components/studentReport/studentReportForm';
 import StudentReport from './components/studentReport/studentReportView';
 import Loader from './components/loader/loader';
+import StudentDetails from './components/studentDeytails/StudentDetails';
+import FacultyDetails from './components/facultyDetails/Facultydetails'
+import  SchoolManagement  from './components/admin/component/SchoolManagement';
+import  InquiryManagement  from './components/admin/component/InquiryManagement';
+import  ReportsAndAnalytics  from './components/admin/component/ReportsAndAnalytics';
+import  NotificationList  from './components/admin/component/NotificationList';
+import  SystemUsersManagement  from './components/admin/component/SystemUsersManagement';
 
 
 const App = () => {
@@ -86,8 +93,15 @@ const App = () => {
               <Route path="/Permission" element={<Permission />} />
               <Route path="/attendance" element={<TableComponent />} />
               <Route path="/StudentReportForm" element={<StudentReportForm />} />
-               <Route path="/StudentReport" element={<StudentReport />} />
+               <Route path="/StudentReport/:id" element={<StudentReport />} />
                <Route path ="/loader" element={<Loader/>} />
+               <Route path ="/StudentDetails/:id" element={<StudentDetails/>} />
+               <Route path ="/FacultyDetails/:id" element={<FacultyDetails/>} />  
+               <Route path ="/SchoolManagement" element={<SchoolManagement/>} />
+               <Route path ="/InquiryManagement" element={<InquiryManagement/>} />
+               <Route path ="/ReportsAndAnalytics" element={<ReportsAndAnalytics/>} />
+               <Route path ="/NotificationList" element={<NotificationList/>} />
+               <Route path ="/SystemUsersManagement" element={<SystemUsersManagement/>} />
               
                
 

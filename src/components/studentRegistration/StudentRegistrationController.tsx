@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   getStdDetails,
   deleteStudentRecord,
@@ -35,9 +35,9 @@ const StudentRegistrationController = () => {
     { field: "familyDetails.stdo_FatherName", headerName: "Father Name", nestedField: 'familyDetails.stdo_FatherName' },
     // { field: "familyDetails.stdo_primaryContact", headerName: "Contact" ,  nestedField: 'familyDetails.stdo_primaryContact' },
     {
-      field: "actions",
-      headerName: "Actions",
-      width: 150,
+      field: "Edit data",
+      headerName: "Edit",
+     
       cellRenderer: (params: any) => (
         <div className="smInline">
           <button
@@ -55,18 +55,51 @@ const StudentRegistrationController = () => {
         </div>
       ),
     },
+
+    {
+      field: "Delete data",
+      headerName: "Delete",
+      
+      cellRenderer: (params: any) => (
+
+        <button
+          onClick={() => getDeleteData(params.data)}
+
+        >
+          <Trash2 size={20} color="red" />
+        </button>
+      )
+    },
+    {
+      field: "View Details",
+      headerName: "Details",
+      
+      cellRenderer: (params: any) => (
+
+        <button className="btn btn-lg btn-view"
+          onClick={() => handleViewDetails(params.data.id)}
+        >
+          <Eye size={20} color="blue" />
+        </button>
+      )
+    },
+
     {
       field: "Report Card",
       headerName: "Report Card",
-      width: 100,
+      
       cellRenderer: (params: any) => (
         <button className="btn" onClick={() => handeleReport(params.data.id)}>
           <IdCard size={20} color="green" />
         </button>
       ),
     },
+
   ]);
 
+
+  
+  
   const fetchStudentDetails = async () => {
     setLoading(true); // Show loader before the API call
     try {
@@ -88,7 +121,7 @@ const StudentRegistrationController = () => {
     setSingleRowData(data);
     setEditFormView(true);
   };
-
+  
   const getDeleteData = (data: StudentFormData) => {
     setDialogData(data);
     setIsDialogOpen(true);
@@ -96,7 +129,7 @@ const StudentRegistrationController = () => {
 
   const handleConfirmDelete = async () => {
     if (!dialogData?.id) return;
-
+    
     setLoading(true); // Show loader during deletion
     try {
       await deleteStudentRecord(dialogData.id);
@@ -111,17 +144,20 @@ const StudentRegistrationController = () => {
       setDialogData(null);
     }
   };
-
+  
   const handleCancel = () => {
     setIsDialogOpen(false);
     setDialogData(null);
   };
 
   const handeleReport = (id: string) => {
-    navigate("/StudentReport", {
-      
-      state: { id },
-    });
+    navigate(`/StudentReport/${id}`);
+  };
+
+
+  const handleViewDetails = (id: string) => {
+    navigate(`/StudentDetails/${id}`);
+    console.log(id);
   };
 
   return (
