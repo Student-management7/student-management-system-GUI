@@ -123,8 +123,8 @@ const StudentReport: React.FC = () => {
     }
 
     const AttendanceCard: React.FC<{ attendance: AttendanceData }> = ({ attendance }) => (
-        <div className="bg-white rounded-xl p-5 shadow-md mb-10">
-            <h3 className="text-xl font-bold text-indigo-600 mb-5">Attendance</h3>
+        <div className="bg-white rounded-xl p-5 shadow-md mb-4">
+            <h3 className=" font-bold head1 mb-3">Attendance</h3>
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <p className="text-sm text-gray-600">Total Days</p>
@@ -194,7 +194,7 @@ const StudentReport: React.FC = () => {
                   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold">Student Details</h3>
+                        <h3 className="head1 ">Student Details</h3>
                         <button 
                           onClick={() => setIsModalOpen(false)}
                           className="text-gray-500 hover:text-gray-700"
@@ -206,16 +206,16 @@ const StudentReport: React.FC = () => {
                       <div className="space-y-4">
                         <div className="flex flex-col space-y-2">
                           <label className="text-sm font-medium text-gray-500">Full Name</label>
-                          <p className="text-lg font-semibold">{studentData.name}</p>
+                          <p className="text-lg ">{studentData.name}</p>
                         </div>
                          
                         <div className="flex flex-col space-y-2">
                           <label className="text-sm font-medium text-gray-500">Roll Number</label>
-                          <p className="text-lg font-semibold">SMS90764389</p>
+                          <p className="text-lg ">SMS90764389</p>
                         </div>
                         <div className="flex flex-col space-y-2">
                           <label className="text-sm font-medium text-gray-500">Class</label>
-                          <p className="text-lg font-semibold">{studentData.cls+"th Class" || 'Class X-A'}</p>
+                          <p className="text-lg ">{studentData.cls+"th Class" || 'Class X-A'}</p>
                         </div>
                       </div>
                     </div>
@@ -224,7 +224,7 @@ const StudentReport: React.FC = () => {
               </div>
 
             )}
-            {/* <div className="mb-5">
+            {/* <div className="mb-4">
                 <Select value={selectedExamType} onValueChange={setSelectedExamType}>
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select exam type" />
@@ -242,15 +242,15 @@ const StudentReport: React.FC = () => {
 
             <div className="flex flex-col lg:flex-row">
                 <div className="lg:w-3/4 pr-0 lg:pr-8">
-                    <div className="mb-10">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div className="mb-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* Metric Cards */}
                             <div className="bg-white rounded-xl p-5 text-center shadow-md transition-all hover:translate-y-[-5px] hover:shadow-lg">
-                                <div className="flex justify-center items-center mb-2">
+                                <div className="flex justify-center items-center mb-1">
                                     <div className="text-2xl">📚</div>
                                 </div>
                                 <p className="text-xs uppercase tracking-wide font-semibold text-gray-600">Exam Type</p>
-                                <p className="font-bold mt-2 fs-6">{filteredExam.examType}</p>
+                                <p className="font-bold uppercase mt-1 fs-6">{filteredExam.examType}</p>
                             </div>
                             <div className="bg-white rounded-xl p-5 text-center shadow-md transition-all hover:translate-y-[-5px] hover:shadow-lg">
                                 <div className="flex justify-center items-center mb-2">
@@ -278,7 +278,7 @@ const StudentReport: React.FC = () => {
 
                     {/* Subject Performance Table */}
                     <div className="bg-white rounded-xl p-5 shadow-md">
-                        <h3 className="text-xl font-bold text-indigo-600 mb-5">Subject Performance</h3>
+                        <h3 className="head1 mb-3">Subject Performance</h3>
                         <div className="overflow-x-auto">
                             <table className="w-full">
                                 <thead className="border-b border-gray-200">
@@ -294,7 +294,7 @@ const StudentReport: React.FC = () => {
                                         <tr key={index} className="hover:bg-gray-50">
                                             <td className="p-3">
                                                 <div className="flex items-center">
-                                                    <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold mr-3">
+                                                    <div className="w-10 h-10 rounded-full bg-[#568e9c] text-white flex items-center justify-center font-bold mr-3">
                                                         {subject.subject[0]}
                                                     </div>
                                                     <div>{subject.subject}</div>
@@ -303,7 +303,7 @@ const StudentReport: React.FC = () => {
                                             <td className="p-3">{subject.marksObtained}</td>
                                             <td className="p-3">{subject.maxMarks}</td>
                                             <td className="p-3">
-                                                <span className="px-2 py-1 rounded-full text-xs font-bold bg-green-500 text-white">
+                                                <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white">
                                                     {subject.remarks}
                                                 </span>
                                             </td>
@@ -320,8 +320,8 @@ const StudentReport: React.FC = () => {
                         <AttendanceCard attendance={studentData.attendance} />
                     )}
                     {/* Exam Details Card */}
-                    <div className="bg-white rounded-xl p-5 shadow-md mb-10">
-                        <h3 className="text-xl font-bold text-indigo-600 mb-5">Exam Details</h3>
+                    <div className="bg-white rounded-xl p-4 shadow-md mb-4">
+                        <h3 className="head1 mb-2">Exam Details</h3>
                         <p className="text-sm text-gray-600 mb-2">Exam Type: <span className="font-semibold">{filteredExam.examType}</span></p>
                         <p className="text-sm text-gray-600 mb-2">Exam Date: <span className="font-semibold">{filteredExam.examDate}</span></p>
                         <p className="text-sm text-gray-600 mb-2">Total Marks: <span className="font-semibold">{filteredExam.totalMarks}</span></p>
@@ -330,12 +330,12 @@ const StudentReport: React.FC = () => {
                     </div>
 
                     {/* Performance Chart */}
-                    <div className="bg-white rounded-xl p-5 shadow-md">
-                        <h3 className="text-xl font-bold text-indigo-600 mb-5">Performance Chart</h3>
-                        <div className="mt-5">
+                    <div className="bg-white rounded-xl p-4 shadow-md">
+                        <h3 className=" head1 mb-4">Performance Chart</h3>
+                        <div className="mt-2">
                             {filteredExam.subjects.map((subject, index) => (
                                 <div key={index} className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-semibold">{subject.subject}</span>
+                                    <span className=" text-sm font-semibold">{subject.subject}</span>
                                     <div className="flex-1 mx-3 h-2 bg-gray-200 rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-indigo-600"

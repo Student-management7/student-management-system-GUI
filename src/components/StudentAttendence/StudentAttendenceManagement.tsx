@@ -6,6 +6,7 @@ import axiosInstance from "../../services/Utils/apiUtils";
 import { sortArrayByKey } from "../Utils/sortArrayByKey";
 import Loader from "../loader/loader";
 import BackButton from "../Navigation/backButton";
+import '../../global.scss'
 import ReusableTable from "../StudenAttendanceShow/Table/Table";
 
 
@@ -256,7 +257,7 @@ const StudentManagementSystem: React.FC = () => {
             <button
                 onClick={submitAttendance}
                 disabled={students.length === 0}
-                className="submit-btn px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 mt-6"
+                className="button p-2 mt-2 float-right"
             >
                 Submit Attendance
             </button>
