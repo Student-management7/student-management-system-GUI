@@ -113,7 +113,7 @@ const handleAttendanceChange = (factId: string, newValue: string) => {
         <BackButton />
       </span>
       <h1 className="text-xl items-center font-bold text-[#27727A]">
-        Faculty Attendance Update
+        Student Attendance Update
       </h1>
     </div>
     <div className="mb-6">
