@@ -301,11 +301,11 @@ const FacultyRegistrationForm: React.FC = () => {
             enableReinitialize={true} // Fixed: Added to handle editing properly
           >
             {({ values, errors, touched, handleSubmit, resetForm }) => (
-              <Form onSubmit={handleSubmit}>
+              <Form className='p-2 m-2' onSubmit={handleSubmit}>
                 {/* Basic  Fields */}
                 <div className="row">
-                   <div onClick={() => setIsFormVisible(false)}>
-                                <i className="bi bi-arrow-left-circle fs-4 text-primary" /> <span className='fs-4 text-primary'>Faculty Details</span>
+                   <div className='mb-3' onClick={() => setIsFormVisible(false)}>
+                                <i className="bi bi-arrow-left-circle head1 p-2" /> <span className='head1'>Faculty Details</span>
                             </div>
                   <div className="col-md-4 mb-3">
                     <label htmlFor="fact_Name" className="form-label">Full Name</label>
@@ -370,7 +370,7 @@ const FacultyRegistrationForm: React.FC = () => {
                   {({ push, remove }) => (
                     <div className="bg-white p-6 rounded-lg shadow-sm">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg  fs-4 text-primary">Qualifications</h3>
+                        <h3 className="head1">Qualifications</h3>
                         <button
                           type="button"
                           onClick={() => push({
@@ -472,7 +472,7 @@ const FacultyRegistrationForm: React.FC = () => {
                   {({ push, remove }) => (
                     <div className="bg-white p-6 rounded-lg shadow-sm">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg  fs-4 text-primary">Classes</h3>
+                        <h3 className="head1">Classes</h3>
                         <button
                           type="button"
                           onClick={() => push({ cls_name: '', cls_sub: [''] })}
@@ -491,7 +491,7 @@ const FacultyRegistrationForm: React.FC = () => {
                                 <Field
                                   name={`Fact_cls[${classIndex}].cls_name`}
                                   placeholder="Class Name"
-                                  className="w-full p-2 border rounded-md"
+                                  className="w-full p-2 border rounded-md mt-2.5"
                                 />
                                 <ErrorMessage
                                   name={`Fact_cls[${classIndex}].cls_name`}
@@ -521,7 +521,7 @@ const FacultyRegistrationForm: React.FC = () => {
                                             <Field
                                               name={`Fact_cls[${classIndex}].cls_sub[${subIndex}]`}
                                               placeholder="Subject"
-                                              className="flex-1 p-2 border rounded-md"
+                                              className="flex-1 p-2  border rounded-md"
                                             />
                                             <button
                                               type="button"
@@ -559,7 +559,7 @@ const FacultyRegistrationForm: React.FC = () => {
                 {/* Status */}
                 <div className="row mt-3 md-1">
                   <div className="col-md-4 ml-6">
-                    <label htmlFor="fact_status" className="form-label fs-4 text-primary ">Status</label>
+                    <label htmlFor="fact_status" className="form-label head1 ">Status</label>
                     <Field as="select" id="fact_status" name="fact_status" className={`form-control ${errors.Fact_status && touched.Fact_status ? 'is-invalid' : ''}`}>
                       <option value="">Select Status</option>
                       <option value="active">Active</option>
@@ -570,7 +570,7 @@ const FacultyRegistrationForm: React.FC = () => {
                 </div>
                 <div className="row mt-3">
                           <div className='mt-3 mb-3'>
-                           <span className='fs-4 text-primary'>Faculty Credentials</span>
+                           <span className='head1'>Faculty Credentials</span>
                             </div>
                
                   <div className="col-md-4 mb-3">
@@ -591,7 +591,7 @@ const FacultyRegistrationForm: React.FC = () => {
                     <button type="submit" className="btn button btn-primary w-50 mb-5   ">{editingFaculty ? 'Update' : 'Submit'}</button>
                   </div>
                   {editingFaculty && <div className="col-md-4">
-                    <button type="button" className="btn btn-danger w-50 mb-5" onClick={() => {
+                    <button type="button" className="btn btnred w-50 mb-5" onClick={() => {
                       setEditingFaculty(null);
                       resetForm();
                       setIsFormVisible(false);

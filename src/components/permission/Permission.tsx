@@ -284,7 +284,7 @@ export default function Permission() {
         {/* Submit Button */}
         <button
           onClick={handleSubmit}
-          className="btn btn-success btn-lg"
+          className="btn button btn-lg"
           disabled={!selectedFaculty}
         >
           Save Permissions

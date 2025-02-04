@@ -119,7 +119,7 @@ const StudentRegistrationController = () => {
 
   const handeleReport = (id: string) => {
     navigate("/StudentReport", {
-
+      
       state: { id },
     });
   };
@@ -168,12 +168,12 @@ const StudentRegistrationController = () => {
                   onConfirm={handleConfirmDelete}
                   onCancel={handleCancel}
                 />
-                <ReusableTable rows={data} columns={columns}  />
+                <ReusableTable rows={data} columns={columns} />
               </div>
             )
           ) : (
             <div className="box">
-              <div className="headding1">
+              <div className="head1">
                 <h1 onClick={() => setStudentData(false)}>
                   <div>
                     <i className="bi bi-arrow-left-circle" /> <span>User Details</span>
