@@ -30,3 +30,35 @@ thead th:first-child {
   background: white;
   z-index: 20;
 }
+
+.mobileView{
+  display: block;
+}
+
+@media screen and (min-width: 479px) {
+
+  .border{width: auto;}
+  .mobileView{
+    display: none;
+  }
+  
+  .mobileView div svg{
+    width: 15px; 
+  }
+  .mobileView button{
+    padding: 2px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .webView{
+    display: none;
+  }
+  .mobileView div{
+    display: inline !important;
+  }
+  .mobileView div button{
+    padding: 2px;
+  }
+}
+
