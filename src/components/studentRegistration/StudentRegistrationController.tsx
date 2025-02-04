@@ -12,8 +12,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { Eye, IdCard, Pencil, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../loader/loader"; // Add a Spinner component for loading
-import ReusableTable from "../MUI Table/ReusableTable";
+import ReusableTable from "../StudenAttendanceShow/Table/Table";
 import BackButton from "../Navigation/backButton";
+import './StudentRegistration.scss'
 
 
 const StudentRegistrationController = () => {
@@ -28,24 +29,31 @@ const StudentRegistrationController = () => {
 
   const [columns] = useState<any[]>([
     { field: "name", headerName: "Name" },
-    { field: "city", headerName: "City" },
+    // { field: "city", headerName: "City" },
     { field: "cls", headerName: "Class" },
     { field: "gender", headerName: "Gender" },
-    { field: "familyDetails.stdo_FatherName", headerName: "Father Name" },
-    { field: "familyDetails.stdo_primaryContact", headerName: "Contact" },
+    { field: "familyDetails.stdo_FatherName", headerName: "Father Name", nestedField: 'familyDetails.stdo_FatherName' },
+    // { field: "familyDetails.stdo_primaryContact", headerName: "Contact" ,  nestedField: 'familyDetails.stdo_primaryContact' },
     {
       field: "Edit data",
       headerName: "Edit",
      
       cellRenderer: (params: any) => (
-
-        <button
-          onClick={() => getSingleData(params.data)}
-          className="btn btn-lg btn-edit"
-        >
-          <Pencil size={20} />
-        </button>
-      )
+        <div className="smInline">
+          <button
+            onClick={() => getSingleData(params.data)}
+            className="btn btn-edit"
+          >
+            <Pencil size={20} />
+          </button>
+          <button
+            onClick={() => getDeleteData(params.data)}
+            className="btn btn-delete"
+          >
+            <Trash2 size={20} color="red" />
+          </button>
+        </div>
+      ),
     },
 
     {
@@ -81,7 +89,7 @@ const StudentRegistrationController = () => {
       headerName: "Report Card",
       
       cellRenderer: (params: any) => (
-        <button onClick={() => handeleReport(params.data.id)}>
+        <button className="btn" onClick={() => handeleReport(params.data.id)}>
           <IdCard size={20} color="green" />
         </button>
       ),
@@ -157,16 +165,18 @@ const StudentRegistrationController = () => {
       {loading && <Loader />} {/* Show loader when loading */}
       {!loading && (
         <div className="box ">
-          <div className="flex items-center space-x-4 mb-4">
-            <span>
-              <BackButton />
-            </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Registration</h1>
+          <div className="headding1">
+            <h1>
+              {/* <span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
+              </span> */}
+              &nbsp;Student Registration
+            </h1>
           </div>
 
           {!studentData ? (
             editFormView ? (
-              <div className="box">
+              <div>
                 <div className="headding1">
                   <h1 onClick={() => setEditFormView(false)}>
                     <div>
@@ -177,8 +187,8 @@ const StudentRegistrationController = () => {
                 {singleRowData && <EditStudentForm singleRowData={singleRowData} />}
               </div>
             ) : (
-              <div className="box">
-                <div className="text-right">
+              <div>
+                <div className="rightButton">
                   <button
                     onClick={() => setStudentData(true)}
                     className="btn btn-default"
