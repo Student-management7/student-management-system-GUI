@@ -14,14 +14,4 @@ export interface Column {
     columns: Column[];
     data: Row[];
     itemsPerPage?: number;
-    onCellValueChange?: (rowIndex: number, field: string, value: any) => void;
-    tableHeight?: string;
-    tableWidth?: string;
-    onEdit?: (row: any) => void;
-    onDelete?: (row: any) => void;
-    onViewReport?: (row: any) => void; 
-    rowsPerPageOptions?: number[];
-    rowsPerPage?: number;
-    rows: any[]; 
-
   }

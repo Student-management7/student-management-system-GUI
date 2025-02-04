@@ -1,4 +1,4 @@
-/* Prevent full-page horizontal scrolling
+Prevent full-page horizontal scrolling
 body {
   overflow-x: hidden;
 }
@@ -13,8 +13,8 @@ body {
   overflow-x: auto;
   display: block;
   white-space: nowrap; /* Prevents text from wrapping */
-/* } */
-/* 
+}
+
 thead th {
   position: sticky;
   top: 0;

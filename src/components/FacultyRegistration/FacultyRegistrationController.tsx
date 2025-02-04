@@ -5,20 +5,18 @@ import { FaPlus, FaMinus, FaTrash } from 'react-icons/fa';
 
 import { facultyValidationSchema } from '../../services/Faculty/fecultyRegistretion/validation';
 import { saveFacultyDetails, getFacultyDetails, updateFacultyDetails, deleteFacultyDetails } from '../../services/Faculty/fecultyRegistretion/API/API';
+import GridView from './GridView';
 import CustomAlert from '../UI/alert';
 import DeleteConfirmationModal from '../../services/DeleteModele/DeleteConfirmationModal';
 import { FacultyFormData } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Pencil, Trash2 ,IdCard, Eye } from 'lucide-react';
+import { Pencil, Trash2 ,IdCard } from 'lucide-react';
 import Loader from '../loader/loader';
-import { useNavigate } from "react-router-dom";
-
 
 import ReusableTable from '../MUI Table/ReusableTable';
 
 const FacultyRegistrationForm: React.FC = () => {
-  const navigate = useNavigate();
   const [rowData, setRowData] = useState<FacultyFormData[]>([]);
   const [editingFaculty, setEditingFaculty] = useState<FacultyFormData | null>(null);
   const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
@@ -26,7 +24,6 @@ const FacultyRegistrationForm: React.FC = () => {
   const [showError, setShowError] = useState<boolean>(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
-
   
   //
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
@@ -199,6 +196,8 @@ const FacultyRegistrationForm: React.FC = () => {
     { field: 'fact_address', headerName: 'Address' },
     { field: 'fact_gender', headerName: 'Gender' },
 
+
+
     {
       field: 'edit',
       headerName: 'Edit',
@@ -225,27 +224,11 @@ const FacultyRegistrationForm: React.FC = () => {
         </button>
       ),
     },
-    {
-      field: 'View',
-      headerName: 'Details',
-      width: 100,
-      cellRenderer: (params: any) => (
-        <button
-          onClick={() => handleViewDetails(params.data.fact_id)}
-         
-        >
-          <Eye size={20} color="blue" />
-        </button>
-      ),
-    },
     
+    
+
+
   ];
-
-
-  const handleViewDetails = (id : string) => {
-    navigate(`/FacultyDetails/${id}`);
-    console.log(id);
-  };
 
 
   return (

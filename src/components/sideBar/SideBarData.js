@@ -1,42 +1,12 @@
 
-import { FaBook, FaChartBar, FaIdCard, FaRegEdit, FaUserEdit,  } from "react-icons/fa";
-import {  FaHandshakeAngle, FaCaretDown, FaCaretUp, FaMoneyBill, FaUserLarge, FaUserTie ,FaBell, FaUserPlus ,FaClipboardList, FaUserGroup , } from "react-icons/fa6";
+import { FaBook, FaIdCard, FaRegEdit, FaUserEdit,  } from "react-icons/fa";
+import { FaHouse, FaHandshakeAngle, FaCaretDown, FaCaretUp, FaMoneyBill, FaUserLarge, FaUserTie ,FaBell, FaUserPlus ,FaClipboardList , } from "react-icons/fa6";
 export const SideBarData = [
 
     {
-        title: 'Admin',
-        path: '/Admin',
-        icon: FaUserLarge,
-        iconClosed: FaCaretUp,
-        iconeOpened: FaCaretDown,
-        subNav :[
-            {
-                title: 'School Management',
-                path: '/SchoolManagement',
-                icon: FaUserPlus,
-            },
-            {
-                title: 'Inquiry Management ',
-                path: '/InquiryManagement',
-                icon: FaChartBar,
-            },
-            {
-                title: 'Reports and Analytics',
-                path: '/ReportsAndAnalytics',
-                icon: FaChartBar,
-            },
-            {
-                title: 'Alerts and Notifications',
-                path: '/NotificationList',
-                icon: FaBell,
-            },
-            {
-                title: 'System Users',
-                path: '/SystemUsersManagement',
-                icon: FaUserGroup,
-            },
-           
-        ]
+        title: 'Home',
+        path: '/Home',
+        icon: FaHouse,
 
     },
     {
