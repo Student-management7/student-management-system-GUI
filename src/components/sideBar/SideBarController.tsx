@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import { SideBarData } from './SideBarData';
 import SubManu from './SubManu';
 import './SideMenu.scss';
-import { FaBars, FaRightToBracket } from "react-icons/fa6"; 
+import { FaRightToBracket, FaChevronLeft, FaChevronRight } from "react-icons/fa6"; 
 import { useNavigate } from 'react-router-dom'; 
 import { useAuth } from '../../context/authContext';
-import '../../global.scss'
+import '../../global.scss';
 
 const SideBarController = () => {
     const [submenu, setSubmenu] = useState<{ [key: number]: boolean }>({});
-    const navigate = useNavigate(); // Navigation hook for redirect
+    const navigate = useNavigate();
+    const { logout } = useAuth();
+
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Track sidebar state
 
     const menuOpen = (index: number) => {
         setSubmenu((prevState) => ({
@@ -18,26 +21,26 @@ const SideBarController = () => {
         }));
     };
 
-    const { logout } = useAuth();
-     
-
     const handleLogout = async () => {
-        await logout(); // Call the logout function
-        navigate('/login'); // Redirect to login page
+        await logout();
+        navigate('/login');
     };
 
-    const getToggelButton = ()=>{
+    const toggleSidebar = () => {
         const sidNav: any = document.querySelector('.sideNav');
-            sidNav.classList.toggle('active');
-    }
+        sidNav.classList.toggle('active');
+        setIsSidebarOpen(!isSidebarOpen);
+        
+    };
+
     return (
         <>
-        
-
             <div id="item" className='sideNav'>
                 <div className="logo flex">
                     <p className='fs-4'>EasyWaySolution</p>
-                    <span onClick={getToggelButton}><FaBars /></span>
+                    <span onClick={toggleSidebar}>
+                        {isSidebarOpen ? <FaChevronLeft /> : <FaChevronRight />}
+                    </span>
                 </div>
 
                 {SideBarData.map((item: any, index: number) => {
@@ -46,37 +49,27 @@ const SideBarController = () => {
 
                     return (
                         <div className='sidebardata' key={index}>
-                            <p className='menu'
-                                onClick={() => menuOpen(index)}
-                                
-                                key={item.title}>
+                            <p className='menu' onClick={() => menuOpen(index)} key={item.title}>
                                 <Icon className="fs-5"/>
                                 <span> <p className='fs-6'>{item.title}</p> </span>
                                 {OpenIcon && <OpenIcon className="menuOpen fs-5" />}
                             </p>
-                            {submenu[index] && ( 
-                                <div className=''>
-                                    {item.subNav && <SubManu  data={item.subNav} />}
+                            {submenu[index] && (
+                                <div>
+                                    {item.subNav && <SubManu data={item.subNav} />}
                                 </div>
                             )}
                         </div>
                     );
                 })}
 
-               
                 <div className='menu' onClick={handleLogout}>
                     <FaRightToBracket />
                     <span>Logout</span>
                 </div>
             </div>
-            
         </>
     );
 };
 
 export default SideBarController;
-
-
-
-
-

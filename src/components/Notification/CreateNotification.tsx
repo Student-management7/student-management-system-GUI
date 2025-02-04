@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import axiosInstance from '../../services/Utils/apiUtils';
 import { formatToDDMMYYYY } from '../Utils/dateUtils';
-
 // Enhanced type definition
 type NotificationPayload = {
   startDate: string;
@@ -115,6 +114,7 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
 
   return (
     <div className="box">
+    
       <div className="container mt-5">
         <div className="row justify-content-center">
           <div className="col-md-6">

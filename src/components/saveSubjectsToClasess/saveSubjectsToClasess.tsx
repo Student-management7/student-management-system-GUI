@@ -241,7 +241,7 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
                 />
                 <button
                   onClick={handleAddCustomSubject}
-                  className="btn btn-primary"
+                  className="btn button"
                 >
                   Add Subject
                 </button>
@@ -252,7 +252,7 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
 <div className="flex justify-between space-x-4">
             <button
               onClick={onClose}
-              className="btn btn-secondary"
+              className="btn buttonred"
             >
               Cancel
             </button>

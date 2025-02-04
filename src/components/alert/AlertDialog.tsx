@@ -82,7 +82,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
           <button className="button" style={styles.confirmButton} onClick={handleConfirm} >
             OK
           </button>
-          <button style={styles.cancelButton} onClick={handleCancel}>
+          <button className="btn buttonred" style={styles.cancelButton} onClick={handleCancel}>
             Cancel
           </button>
         </div>
