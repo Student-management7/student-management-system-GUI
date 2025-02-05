@@ -40,6 +40,7 @@ import TableComponent from './components/StudentAttendence/studentAttendance';
 import StudentReportForm from './components/studentReport/studentReportForm';
 import StudentReport from './components/studentReport/studentReportView';
 import Loader from './components/loader/loader';
+import SuperAdminController from './components/SuperAdmin/SuperAdminController';
 
 
 const App = () => {
@@ -64,6 +65,7 @@ const App = () => {
               <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
               <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />f
               <Route path="/StudentRegistrationController" element={<StudentRegistrationController />} />
+              <Route path='/SuperAdminController' element={<SuperAdminController />} />
 
               <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
               <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />f
