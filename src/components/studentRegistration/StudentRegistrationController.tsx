@@ -29,11 +29,9 @@ const StudentRegistrationController = () => {
 
   const [columns] = useState<any[]>([
     { field: "name", headerName: "Name" },
-    // { field: "city", headerName: "City" },
     { field: "cls", headerName: "Class" },
     { field: "gender", headerName: "Gender" },
     { field: "familyDetails.stdo_FatherName", headerName: "Father Name", nestedField: 'familyDetails.stdo_FatherName' },
-    // { field: "familyDetails.stdo_primaryContact", headerName: "Contact" ,  nestedField: 'familyDetails.stdo_primaryContact' },
     {
       field: "actions",
       headerName: "Actions",
