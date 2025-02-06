@@ -71,7 +71,7 @@ export const SideBarData = [
         subNav: [
 
             {
-                title: 'Admin Fees',
+                title: 'Class Fees',
                 path: '/fees',
                 icon: FaMoneyBill,
             },

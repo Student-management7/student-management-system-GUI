@@ -150,15 +150,14 @@ const StudentFeesController: React.FC = () => {
       {!loading && (
         <div className="box">
           <div className="flex items-center space-x-4 mb-4">
-            <span>
-              <BackButton />
-            </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]">
-              Student Fees
-            </h1>
+           
+            
           </div>
           {!showForm ? (
             <>
+            <h1 className="head1">
+              Student Fees
+            </h1>
               <div className="text-right mb-3">
                 <button
                   onClick={() => setShowForm(true)}

@@ -224,20 +224,7 @@ const StudentReport: React.FC = () => {
               </div>
 
             )}
-            {/* <div className="mb-4">
-                <Select value={selectedExamType} onValueChange={setSelectedExamType}>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select exam type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {examTypes.map((type) => (
-                            <SelectItem key={type} value={type}>
-                                {type}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div> */}
+
 
 
             <div className="flex flex-col lg:flex-row">
@@ -303,7 +290,7 @@ const StudentReport: React.FC = () => {
                                             <td className="p-3">{subject.marksObtained}</td>
                                             <td className="p-3">{subject.maxMarks}</td>
                                             <td className="p-3">
-                                                <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white">
+                                                <span className="px-2 py-1 rounded-full text-xs font-bold bg-green-500 text-white">
                                                     {subject.remarks}
                                                 </span>
                                             </td>

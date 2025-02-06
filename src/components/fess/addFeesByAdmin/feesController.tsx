@@ -141,7 +141,7 @@ const FeesController: React.FC = () => {
             <span >
               <BackButton />
             </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Admin Fee Page</h1>
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Class Fee Page</h1>
           </div>            <button onClick={() => setShowForm(true)} className="btn button">
               Add Fee
             </button>

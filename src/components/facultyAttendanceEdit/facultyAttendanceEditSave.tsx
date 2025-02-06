@@ -96,8 +96,10 @@ const EditAttendance: React.FC = () => {
 // ...
 
 const handleAttendanceChange = (factId: string, newValue: string) => {
-    setEditedFactList(prevList =>
-        prevList.map(faculty =>
+    setEditedFactList(
+      ( prevList: any) =>
+      
+      prevList.map((faculty: any) =>
             faculty.factId === factId
                 ? { ...faculty, attendance: newValue }
                 : faculty
@@ -113,7 +115,7 @@ const handleAttendanceChange = (factId: string, newValue: string) => {
         <BackButton />
       </span>
       <h1 className="text-xl items-center font-bold text-[#27727A]">
-        Student Attendance Update
+        Faculty Attendance Update
       </h1>
     </div>
     <div className="mb-6">
