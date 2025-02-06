@@ -8,7 +8,7 @@ import type { AttendanceResponse } from "../../services/StudentAttendanceShow/ty
 import { sortArrayByKey } from "../Utils/sortArrayByKey"
 import { Switch } from '@headlessui/react'
 // import ReusableTable from "../MUI Table/ReusableTable"
-import ReusableTable from "../MUI Table/ReusableTable"
+import ReusableTable from "./Table/Table"
 import Loader from "../loader/loader"
 import BackButton from "../Navigation/backButton"
 
@@ -306,7 +306,7 @@ const StudentAttendanceShow: React.FC = () => {
                     columns={[
                       {
                         field: 'name', headerName: 'Student Name',
-                        renderCell: undefined
+                        
                       },
                       ...getDateRange(fromDate, toDate).map((date) => ({
                         field: date,

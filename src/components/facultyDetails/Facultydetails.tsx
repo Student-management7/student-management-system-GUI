@@ -130,55 +130,18 @@ const FacultyProfile:  React.FC = () => {
     </div>
   )
 
-  const renderSalaryInfo = () => (
-    <div className="details-grid">
-      {faculty.fact_salary.map((salary, index) => (
-        <div key={salary.id} className="salary-info">
-          <h3>Salary Information {index + 1}</h3>
-          <div className="detail-row">
-            <span className="detail-label">School Code</span>
-            <span className="detail-value">{salary.schoolCode}</span>
-          </div>
-          <div className="detail-row">
-            <span className="detail-label">Salary</span>
-            <span className="detail-value">₹{salary.facultySalary}</span>
-          </div>
-          <div className="detail-row">
-            <span className="detail-label">Tax</span>
-            <span className="detail-value">{salary.facultyTax}%</span>
-          </div>
-          <div className="detail-row">
-            <span className="detail-label">Transport</span>
-            <span className="detail-value">₹{salary.facultyTransport}</span>
-          </div>
-          <div className="detail-row">
-            <span className="detail-label">Deduction</span>
-            <span className="detail-value">{salary.facultyDeduction}</span>
-          </div>
-          <div className="detail-row">
-            <span className="detail-label">Total</span>
-            <span className="detail-value">₹{salary.total}</span>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-
   return (
 
     <div className="box">
     <div className="profile-container">
       <nav className="top-nav">
         <div className="nav-brand">Faculty Profile</div>
-        <div className="nav-links">
-          <button>Update</button>
-          <button>Delete</button>
-        </div>
+        
       </nav>
 
       <div className="profile-content">
         <div className="profile-header">
-          <div className="profile-image-container">
+          <div className="profile-icon-container">
            <img src="/images/student-icon.png" alt="img" />
           </div>
           <div className="profile-basic-info">
@@ -200,34 +163,33 @@ const FacultyProfile:  React.FC = () => {
           </div>
         </div>
 
-        <div className="details-section">
-          <div className="corner-ribbon">Details</div>
-          <div className="tab-buttons">
-            <button
-              className={`tab-button ${activeTab === "personal" ? "active" : ""}`}
-              onClick={() => setActiveTab("personal")}
-            >
-              Personal Information
-            </button>
-            <button
-              className={`tab-button ${activeTab === "professional" ? "active" : ""}`}
-              onClick={() => setActiveTab("professional")}
-            >
-              Professional Details
-            </button>
-            <button
-              className={`tab-button ${activeTab === "salary" ? "active" : ""}`}
-              onClick={() => setActiveTab("salary")}
-            >
-              Salary Information
-            </button>
+
+        <div className="details-section p-4 bg-white shadow-md rounded-lg">
+            <div className="flex space-x-4 border-b pb-2">
+              <button
+                className={`py-2 px-4 rounded-md transition ${activeTab === "personal" ? "bg-blue-500 text-white" : "bg-gray-200"
+                  }`}
+                onClick={() => setActiveTab("personal")}
+              >
+                Personal Information
+              </button>
+              <button
+                className={`py-2 px-4 rounded-md transition ${activeTab === "professional" ? "bg-blue-500 text-white" : "bg-gray-200"
+                  }`}
+                onClick={() => setActiveTab("professional")}
+              >
+                Professional Details
+              </button>
+              
+            </div>
+            <div className="mt-4">
+              {activeTab === "personal" && renderPersonalInfo()}
+              {activeTab === "professional" && renderProfessionalInfo()}
+             
+            </div>
           </div>
-          <div className="tab-content">
-            {activeTab === "personal" && renderPersonalInfo()}
-            {activeTab === "professional" && renderProfessionalInfo()}
-            {activeTab === "salary" && renderSalaryInfo()}
-          </div>
-        </div>
+
+       
       </div>
     </div>
     </div>

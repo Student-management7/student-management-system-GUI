@@ -1,13 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';  // Changed import statement
+import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from "react-router-dom";
 
-interface DecodedToken extends JwtPayload {
+// Define interfaces
+interface DecodedToken {
   userId?: string;
-  [key: string]: any;
-}
-
-// Add JwtPayload interface since we removed it from jwt-decode import
-interface JwtPayload {
   exp?: number;
   [key: string]: any;
 }
@@ -26,78 +23,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<DecodedToken | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    console.warn('AUTH STATE CHANGED:', {
-      isAuthenticated,
-      user,
-      token: localStorage.getItem('token'),
-    });
-  }, [isAuthenticated, user]);
-
-  const login = async (email: string, password: string): Promise<void> => {
+  // Function to check token validity
+  const checkTokenValidity = (token: string) => {
     try {
-      setIsLoading(true);
-      const response = await fetch('https://s-m-s-keyw.onrender.com/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': getCsrfToken(),
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include',
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
-
-      const { token } = data;
-
-      // Decode the token
-      const decoded = jwtDecode<DecodedToken>(token);
-
-      localStorage.setItem('token', token);
-      document.cookie = `Authorization=Bearer ${token}; path=/; secure; samesite=strict`;
-
-      setIsAuthenticated(true);
-      setUser(decoded);
-    } catch (err: any) {
-      console.error('Login Error:', err);
-      setIsAuthenticated(false);
-      setUser(null);
-      throw err;
-    } finally {
-      setIsLoading(false);
+      const decoded: DecodedToken = jwtDecode<DecodedToken>(token);
+      const currentTime = Date.now() / 1000;
+      return decoded.exp ? decoded.exp > currentTime : false;
+    } catch {
+      return false;
     }
   };
 
-  useEffect(() => {
-    const checkInitialToken = async () => {
-      setIsLoading(true);
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const decoded = jwtDecode<DecodedToken>(token);
-          const currentTime = Date.now() / 1000;
-
-          if (decoded.exp && currentTime < decoded.exp) {  // Added null check for exp
-            setIsAuthenticated(true);
-            setUser(decoded);
-          } else {
-            await logout();
-          }
-        } catch (error) {
-          await logout();
-        }
-      }
-      setIsLoading(false);
-    };
-    checkInitialToken();
-  }, []);
-
+  // Function to handle logout
   const logout = async () => {
     try {
       await fetch('https://s-m-s-keyw.onrender.com/auth/logout', {
@@ -113,9 +52,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAuthenticated(false);
       setUser(null);
       setIsLoading(false);
+      navigate('/login'); // Redirect to login after logout
     }
   };
 
+  // Function to get CSRF token
   const getCsrfToken = () => {
     const metaToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     const cookieToken = document.cookie
@@ -126,26 +67,76 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return metaToken || cookieToken || '';
   };
 
+  // Handle login
+  const login = async (email: string, password: string): Promise<void> => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('https://s-m-s-keyw.onrender.com/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': getCsrfToken(),
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Login failed');
+
+      const { token } = data;
+      localStorage.setItem('token', token);
+      document.cookie = `Authorization=Bearer ${token}; path=/; secure; samesite=strict`;
+
+      setIsAuthenticated(true);
+      setUser(jwtDecode<DecodedToken>(token));
+    } catch (err: any) {
+      console.error('Login Error:', err);
+      setIsAuthenticated(false);
+      setUser(null);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Effect to check token on initial load
+  useEffect(() => {
+    const checkInitialToken = () => {
+      const token = localStorage.getItem('token');
+      if (token && checkTokenValidity(token)) {
+        setIsAuthenticated(true);
+        setUser(jwtDecode<DecodedToken>(token));
+      } else {
+        logout();
+      }
+      setIsLoading(false);
+    };
+    
+    checkInitialToken();
+
+    // **🔄 Auto Logout on Token Expiry**  
+    const interval = setInterval(() => {
+      const token = localStorage.getItem('token');
+      if (token && !checkTokenValidity(token)) {
+        logout();
+      }
+    }, 60000); // Check token expiry every 60 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        user,
-        login,
-        logout,
-        isLoading,
-      }}
-    >
-      {children}
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, isLoading }}>
+      {!isLoading && children} {/* Prevent flickering while loading */}
     </AuthContext.Provider>
   );
 };
 
+// Custom Hook for Authentication
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
 

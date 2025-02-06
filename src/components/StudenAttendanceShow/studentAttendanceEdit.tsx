@@ -4,6 +4,7 @@ import { validateAttendanceForm } from "../../services/StudentAttendanceShow/val
 import "./Attendence.scss";
 import AttendanceTable from "./AttendanceTable";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const StudentAttendanceEdit: React.FC = () => {
   const navigate = useNavigate();
@@ -13,8 +14,10 @@ const StudentAttendanceEdit: React.FC = () => {
   const [date, setDate] = useState<string>("2024-11-07");
   const [rowData, setRowData] = useState<any[]>([]);
   const [columnDefs, setColumnDefs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading
     const loadClassData = async () => {
       try {
         const data = await fetchClassData();
@@ -27,6 +30,8 @@ const StudentAttendanceEdit: React.FC = () => {
       } catch (error: any) {
         console.error("Failed to fetch class data:", error);
         alert(`Error fetching class data: ${error.message || "Unknown error"}`);
+      }finally{
+        setLoading(false)
       }
     };
 

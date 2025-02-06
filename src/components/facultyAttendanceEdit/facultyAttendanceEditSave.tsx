@@ -23,6 +23,7 @@ const EditAttendance: React.FC = () => {
     factList: [] as Faculty[]
   });
   
+
   // Initialize state from location on component mount
   useEffect(() => {
     const { id, date, factList } = location.state || {};
@@ -63,27 +64,28 @@ const EditAttendance: React.FC = () => {
     { 
       field: 'name', 
       headerName: 'Faculty Name', 
-      width: '30%'
+     
     },
     { 
       field: 'factId', 
       headerName: 'Faculty ID', 
-      width: '30%'
+    
     },
     {
       field: 'attendance',
       headerName: 'Attendance',
-      width: '40%',
-      renderCell: (row: AttendanceRow) => (
+      editable: true,
+      cellRenderer: (row: any, onValueChange: (value: string) => void) => (
         <select
-          value={row.attendance}
-          onChange={(e) => handleAttendanceChange(row.factId, e.target.value)}
+          value={row.attendance || ''}
+          onChange={(e) => onValueChange(e.target.value)}
           className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
+          <option value="" disabled>Select</option>
           <option value="Present">Present</option>
           <option value="Absent">Absent</option>
         </select>
-      ),
+      )
     },
   ];
 
@@ -95,14 +97,15 @@ const EditAttendance: React.FC = () => {
 
 // ...
 
-const handleAttendanceChange = (factId: string, newValue: string) => {
-    setEditedFactList(prevList =>
-        prevList.map(faculty =>
-            faculty.factId === factId
-                ? { ...faculty, attendance: newValue }
-                : faculty
-        )
-    );
+const handleAttendanceChange = (rowIndex: number, field: string, value: string) => {
+  setEditedFactList(prevList => {
+    const newList = [...prevList];
+    newList[rowIndex] = {
+      ...newList[rowIndex],
+      attendance: value,
+    };
+    return newList;
+  });
 };
 
  
@@ -127,6 +130,8 @@ const handleAttendanceChange = (factId: string, newValue: string) => {
         rows={rowData}
         columns={columns}
         rowsPerPageOptions={[5, 10, 25]}
+        onCellValueChange={handleAttendanceChange}
+       
       />
     </div>
 

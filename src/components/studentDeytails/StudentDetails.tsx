@@ -8,48 +8,48 @@ import { useParams } from "react-router-dom"
 // import Image from "../studentDeytails/"
 
 interface FamilyDetails {
-    stdo_FatherName: string
-    stdo_MotherName: string
-    stdo_primaryContact: string
-    stdo_secondaryContact: string
-    stdo_address: string | null
-    stdo_city: string
-    stdo_state: string
-    stdo_email: string
-  }
-  
-  interface Student {
-    id: string
-    creationDateTime: string
-    name: string
-    address: string
-    city: string
-    state: string
-    familyDetails: FamilyDetails
-    contact: string
-    gender: string
-    dob: string
-    email: string
-    cls: string
-    department: string
-    category: string
-  }
-  
-  
-  const StudentProfile: React.FC = () => {
-    const { id } = useParams<{ id: string }>();  
-    const [activeTab, setActiveTab] = useState<"personal" | "academic" | "family">("personal");
-    const [student, setStudent] = useState<Student | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-  
-   
-console.log("studentdetails id ",id)
+  stdo_FatherName: string
+  stdo_MotherName: string
+  stdo_primaryContact: string
+  stdo_secondaryContact: string
+  stdo_address: string | null
+  stdo_city: string
+  stdo_state: string
+  stdo_email: string
+}
+
+interface Student {
+  id: string
+  creationDateTime: string
+  name: string
+  address: string
+  city: string
+  state: string
+  familyDetails: FamilyDetails
+  contact: string
+  gender: string
+  dob: string
+  email: string
+  cls: string
+  department: string
+  category: string
+}
+
+
+const StudentProfile: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const [activeTab, setActiveTab] = useState<"personal" | "academic" | "family">("personal");
+  const [student, setStudent] = useState<Student | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+
+  console.log("studentdetails id ", id)
 
   useEffect(() => {
     const fetchStudentDetails = async () => {
       try {
-        const response = await axiosInstance.get(`/student/findAllStudent?id=${id}`);        setStudent(response.data[0])
+        const response = await axiosInstance.get(`/student/findAllStudent?id=${id}`); setStudent(response.data[0])
         setLoading(false)
       } catch (err) {
         setError("Failed to fetch student details")
@@ -102,7 +102,7 @@ console.log("studentdetails id ",id)
         <span className="detail-label">State</span>
         <span className="detail-value">{student.state}</span>
       </div>
-  
+
     </div>
   )
 
@@ -116,7 +116,7 @@ console.log("studentdetails id ",id)
         <span className="detail-label">Department</span>
         <span className="detail-value">{student.department}</span>
       </div>
-    
+
       <div className="detail-row">
         <span className="detail-label">Category</span>
         <span className="detail-value">{student.category}</span>
@@ -151,75 +151,75 @@ console.log("studentdetails id ",id)
 
   return (
     <div className="box">
-    <div className="profile-container">
-      <nav className="top-nav">
-        <div className="nav-brand">Student Profile</div>
-        <div className="nav-links">
-          <button>Reports</button>
-          <button>Delete</button>
-        </div>
-      </nav>
+      <div className="profile-container">
+        <nav className="top-nav">
+          <div className="nav-brand">Student Profile</div>
 
-      <div className="profile-content">
-        <div className="profile-header">
-          <div className="profile-image-container">
-            {/* <Image
+        </nav>
+
+        <div className="profile-content">
+          <div className="profile-header">
+            <div className="profile-image-container">
+              {/* <Image
               src="/placeholder.svg?height=150&width=150"
               alt="Student Profile"
               width={150}
               height={150}
               className="profile-image"
             /> */}
-          </div>
-          <div className="profile-basic-info">
-            <h1>{student.name}</h1>
-            <div className="info-grid">
-              <div className="info-item">
-                <span className="label">Name:</span>
-                <span className="value">{student.name}</span>
-              </div>
-              <div className="info-item">
-                <span className="label">Class:</span>
-                <span className="value">{student.cls}</span>
-              </div>
-              <div className="info-item">
-                <span className="label"> Roll Number  :</span>
-                <span className="value">{student.id}</span>
+            </div>
+            <div className="profile-basic-info">
+              <h1>{student.name}</h1>
+              <div className="info-grid">
+                <div className="info-item">
+                  <span className="label">Name:</span>
+                  <span className="value">{student.name}</span>
+                </div>
+                <div className="info-item">
+                  <span className="label">Class:</span>
+                  <span className="value">{student.cls}</span>
+                </div>
+                <div className="info-item">
+                  <span className="label"> Roll Number  :</span>
+                  <span className="value">{student.id}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="details-section">
-          <div className="corner-ribbon">Details</div>
-          <div className="tab-buttons">
-            <button
-              className={`tab-button ${activeTab === "personal" ? "active" : ""}`}
-              onClick={() => setActiveTab("personal")}
-            >
-              Personal Information
-            </button>
-            <button
-              className={`tab-button ${activeTab === "academic" ? "active" : ""}`}
-              onClick={() => setActiveTab("academic")}
-            >
-              Academic Details
-            </button>
-            <button
-              className={`tab-button ${activeTab === "family" ? "active" : ""}`}
-              onClick={() => setActiveTab("family")}
-            >
-              Family Details
-            </button>
+          <div className="details-section p-4 bg-white shadow-md rounded-lg">
+            <div className="flex space-x-4 border-b pb-2">
+              <button
+                className={`py-2 px-4 rounded-md transition ${activeTab === "personal" ? "bg-blue-500 text-white" : "bg-gray-200"
+                  }`}
+                onClick={() => setActiveTab("personal")}
+              >
+                Personal Information
+              </button>
+              <button
+                className={`py-2 px-4 rounded-md transition ${activeTab === "academic" ? "bg-blue-500 text-white" : "bg-gray-200"
+                  }`}
+                onClick={() => setActiveTab("academic")}
+              >
+                Academic Details
+              </button>
+              <button
+                className={`py-2 px-4 rounded-md transition ${activeTab === "family" ? "bg-blue-500 text-white" : "bg-gray-200"
+                  }`}
+                onClick={() => setActiveTab("family")}
+              >
+                Family Details
+              </button>
+            </div>
+            <div className="mt-4">
+              {activeTab === "personal" && renderPersonalInfo()}
+              {activeTab === "academic" && renderAcademicInfo()}
+              {activeTab === "family" && renderFamilyInfo()}
+            </div>
           </div>
-          <div className="tab-content">
-            {activeTab === "personal" && renderPersonalInfo()}
-            {activeTab === "academic" && renderAcademicInfo()}
-            {activeTab === "family" && renderFamilyInfo()}
-          </div>
+
         </div>
       </div>
-    </div>
     </div>
   )
 }
