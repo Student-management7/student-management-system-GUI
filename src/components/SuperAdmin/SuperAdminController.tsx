@@ -89,6 +89,7 @@ const SuperAdminController = () => {
 
     const handleEdit = (data: any) => {
         setEditData(data);
+        console.log(data);
         setSuperAdminData(true);
     };
 
