@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/Utils/apiUtils";
 import BackButton from "../Navigation/backButton";
+import { toast } from "react-toastify";
 export default function Permission() {
   const [facultyData, setFacultyData] = useState<any[]>([]);
   const [selectedFaculty, setSelectedFaculty] = useState<{
@@ -92,7 +93,7 @@ export default function Permission() {
   // Handle form submission
   const handleSubmit = async () => {
     if (!selectedFaculty) {
-      alert("Please select a faculty member.");
+      toast.warning("Please select a faculty member.");
       return;
     }
 
@@ -109,9 +110,9 @@ export default function Permission() {
           Authorization: `Bearer ${token}`,
         },
       });
-      alert("Permissions updated successfully!");
+      toast.success("Permissions updated successfully!");
     } catch (error) {
-      console.error("Error updating permissions:", error);
+      toast.error("Error updating permissions:");
     }
   };
 

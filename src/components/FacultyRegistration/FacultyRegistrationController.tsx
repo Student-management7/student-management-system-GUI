@@ -238,7 +238,7 @@ const FacultyRegistrationForm: React.FC = () => {
     {!loading && (
     <>
 
-   <ToastContainer/>
+      <ToastContainer position="top-right" autoClose={3000} />
       {!isFormVisible ? (
         <div className="box">
           <div className='text-right'>

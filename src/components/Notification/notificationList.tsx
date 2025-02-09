@@ -4,6 +4,8 @@ import axiosInstance from "../../services/Utils/apiUtils";
 import './Notification.scss';
 import { formatToDDMMYYYY } from "../../components/Utils/dateUtils";
 import Loader from "../loader/loader"; 
+import AlertDialog from "../alert/AlertDialog"; // Import the AlertDialog component
+import { toast, ToastContainer } from "react-toastify";
 
 interface Notification {
   id: string;
@@ -21,22 +23,21 @@ const NotificationList: React.FC = () => {
   const [category, setCategory] = useState("All");
   const [classFilter, setClassFilter] = useState("All");
   const [loading, setLoading] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
 
   useEffect(() => {
-    // Set loading to true when the data is being fetched
     setLoading(true);
-
-    // Fetch notifications using Axios
     axiosInstance
-      .get("https://s-m-s-keyw.onrender.com/notification/getAllNotification") // Replace with real API
+      .get("https://s-m-s-keyw.onrender.com/notification/getAllNotification")
       .then((res) => {
         setNotifications(res.data);
         setFilteredNotifications(res.data);
-        setLoading(false); // Set loading to false when data is fetched
+        setLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching notifications", err);
-        setLoading(false); // Set loading to false if there's an error
+        setLoading(false);
       });
   }, []);
 
@@ -55,28 +56,33 @@ const NotificationList: React.FC = () => {
     setFilteredNotifications(filtered);
   };
 
-  const handleDelete = (id: string) => {
-    // Make DELETE API 
-    if (!window.confirm("Are you sure you want to delete this notification?")) {
-      return;
-    }
-    axiosInstance
-      .post(`https://s-m-s-keyw.onrender.com/notification/delete?id=${id}`)
-      .then(() => {
-        // Remove deleted notification from state
-        const updatedNotifications = notifications.filter((note) => note.id !== id);
-        setNotifications(updatedNotifications);
-        setFilteredNotifications(updatedNotifications);
-      })
-      .catch((err) => console.error("Error deleting notification", err));
+  const confirmDelete = (notification: Notification) => {
+    setSelectedNotification(notification);
+    setAlertOpen(true);
   };
 
-  function handleEdit(id: string): void {
-    throw new Error("Function not implemented.");
-  }
+  const handleDelete = () => {
+    if (!selectedNotification) return;
+
+    axiosInstance
+      .post(`https://s-m-s-keyw.onrender.com/notification/delete?id=${selectedNotification.id}`)
+      .then(() => {
+        const updatedNotifications = notifications.filter((note) => note.id !== selectedNotification.id);
+        setNotifications(updatedNotifications);
+        setFilteredNotifications(updatedNotifications);
+        toast.success("Notification Delete Successfully")
+      })
+      .catch((err) => toast.error("Error deleting notification"))
+      .finally(() => {
+        setAlertOpen(false);
+        setSelectedNotification(null);
+      });
+  };
 
   return (
     <div className="container my-4">
+                <ToastContainer position="top-right" autoClose={3000} />
+
       {/* Filters */}
       <div className="d-flex justify-content-between mb-3">
         <input
@@ -86,10 +92,7 @@ const NotificationList: React.FC = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
-        <select
-          className="form-select w-25 mx-2"
-          onChange={(e) => setCategory(e.target.value)}
-        >
+        <select className="form-select w-25 mx-2" onChange={(e) => setCategory(e.target.value)}>
           <option value="All">All Categories</option>
           <option value="Student">Student</option>
           <option value="Teacher">Teacher</option>
@@ -99,12 +102,9 @@ const NotificationList: React.FC = () => {
           <option value="Event">Event</option>
         </select>
 
-        <select
-          className="form-select w-25"
-          onChange={(e) => setClassFilter(e.target.value)}
-        >
+        <select className="form-select w-25" onChange={(e) => setClassFilter(e.target.value)}>
           <option value="All">All Classes</option>
-          <option value="1">Class Nursury</option>
+          <option value="1">Class Nursery</option>
           <option value="2">Class LKG</option>
           <option value="3">Class UKG</option>
           <option value="1">Class 1</option>
@@ -125,10 +125,9 @@ const NotificationList: React.FC = () => {
       {/* Loader Component */}
       {loading ? (
         <div className="d-flex justify-content-center my-5">
-          <Loader /> {/* Assuming Loader is a component you have for loading */}
+          <Loader />
         </div>
       ) : (
-        // Notification List
         <div>
           {filteredNotifications.map((notification) => (
             <div key={notification.id} className="mb-2">
@@ -144,11 +143,23 @@ const NotificationList: React.FC = () => {
               {/* Delete Button */}
               <button
                 className="bi bi-x-circle text-red-600"
-                onClick={() => handleDelete(notification.id)}
+                onClick={() => confirmDelete(notification)}
               ></button>
             </div>
           ))}
         </div>
+      )}
+               <ToastContainer position="top-right" autoClose={3000} />
+
+      {/* Alert Dialog for Deletion */}
+      {alertOpen && selectedNotification && (
+        <AlertDialog
+          title="Confirm Delete"
+          message={`Are you sure you want to delete this notification: "${selectedNotification.description}"?`}
+          isOpen={alertOpen}
+          onConfirm={handleDelete}
+          onCancel={() => setAlertOpen(false)}
+        />
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { formatToDDMMYYYY } from "../Utils/dateUtils";
+import { toast, ToastContainer } from "react-toastify";
 
 type NotificationPayload = {
   startDate: string;
@@ -78,12 +79,12 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    
     if (!isFormValid()) {
-      alert("Please fill all required fields correctly");
+      toast.warning("Please fill all required fields correctly");
       return;
     }
-
+    
     const formattedData = {
       ...formData,
       startDate: formatToDDMMYYYY(formData.startDate),
@@ -94,17 +95,20 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
       await axiosInstance.post(
         "https://s-m-s-keyw.onrender.com/notification/save",
         formattedData,
-        {
+         {
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
 
-      alert("Notification created successfully!");
+      toast.success("Notification created successfully!");
       resetForm();
+      
+
+
     } catch (error: unknown) {
-      alert(`Error creating notification: ${error}`);
+      toast.error(`Error creating notification: ${error}`);
       console.error("Submission Error:", error);
     }
   };
@@ -115,11 +119,15 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
 
   return (
     <div className="box">
+      
+      <ToastContainer position="top-right" autoClose={3000} />
+      
       <div className="container mt-4">
         <div className="row justify-content-center">
           <div className="col-md-10">
             <div className="card shadow-sm p-4">
-              <h2 className="head1 text-center">Create Notification</h2>
+           
+              <h2 className="head1 text-center"> <i onClick={onClose} className="bi bi-arrow-left-circle m-2" />Create Notification</h2>
 
               <form onSubmit={handleSubmit}>
                 <div className="row row-cols-1 row-cols-md-2 g-3">
@@ -219,6 +227,7 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
 
                   <div className="col-12 text-center mt-3">
                     <button
+                      
                       type="submit"
                       className={`btn button ${
                         isFormValid() ? "btn-primary" : "btn-secondary"

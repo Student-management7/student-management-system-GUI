@@ -105,12 +105,13 @@ const AttendanceSave: React.FC = () => {
       {!loading && (
         <div className="box p-4">
           <div className="flex items-center space-x-4 mb-4">
-            <span><BackButton /></span>
-            <h1 className="text-xl font-bold text-[#27727A]">Student Attendance Update</h1>
+           
+            <h1 className="text-xl font-bold text-[#27727A]">Fa Attendance Update</h1>
           </div>
 
           <div className="mb-6">
-            <ToastContainer/>
+                  <ToastContainer position="top-right" autoClose={3000} />
+            
             <ReusableTable
               rows={rowData}
               columns={columns}

@@ -31,6 +31,7 @@ const ClassSubjectShow: React.FC = () => {
       if (result && result.classData) {
         setData(result.classData);
       } else {
+        toast.error("Invalid response structure")
         throw new Error("Invalid response structure");
       }
       console.log("Fetched data:", data); // Log the fetched data
@@ -117,13 +118,10 @@ const ClassSubjectShow: React.FC = () => {
       <Loader /> // Show loader while data is being fetched
     ) : (
     <div className="box">
-      <ToastContainer />
+                     <ToastContainer position="top-right" autoClose={3000} />
       {!showForm ? (
         <>
          <div className="flex items-center space-x-4 mb-4 ">
-            <span >
-              <BackButton />
-            </span>
             <h1 className="text-xl items-center font-bold text-[#27727A]" >Subject Page</h1>
           </div>
           <div className="text-right mb-4">

@@ -4,6 +4,7 @@ import axiosInstance from "../../../services/Utils/apiUtils";
 import Loader from "../../loader/loader";
 import BackButton from "../../Navigation/backButton";
 import ReusableTable from "../../MUI Table/ReusableTable";
+import { toast, ToastContainer } from "react-toastify";
 
 
 // Define types for student data and fee info
@@ -56,9 +57,10 @@ const StudentFeesDetails = () => {
           setStudentData(data); // Store student data
           setFeeInfo(data.feeInfo || []); // Extract feeInfo array
         } else {
-          console.error("Unexpected API response format or empty data.");
+          toast.error("Unexpected API response format or empty data.");
         }
       } catch (error) {
+        toast.error("Error fetching student data")
         console.error("Error fetching student data:", error);
       } finally {
         setLoading(false);
@@ -70,6 +72,8 @@ const StudentFeesDetails = () => {
 
   return (
     <>
+              <ToastContainer position="top-right" autoClose={3000} />
+    
       {loading ? (
         <Loader /> 
       ) : (

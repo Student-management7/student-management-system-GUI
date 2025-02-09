@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import GridView from './GridView'; // Import your GridView component
 import { formatToDDMMYYYY } from '../Utils/dateUtils';
 import axiosInstance from '../../services/Utils/apiUtils';
+import { toast, ToastContainer } from 'react-toastify';
 
 const StudentAttendanceEditSave: React.FC = () => {
   const location = useLocation();
@@ -28,11 +29,11 @@ const StudentAttendanceEditSave: React.FC = () => {
         'https://s-m-s-keyw.onrender.com/attendance/update',
         payload
       );
-      alert('Attendance updated successfully!');
+      toast.success('Attendance updated successfully!');
       navigate('/studentAttendance'); // Redirect back to the main page
     } catch (err) {
       console.error(err);
-      alert('Failed to save changes. Please try again.');
+      toast.error('Failed to save changes. Please try again.');
     }
   };
 
@@ -67,6 +68,8 @@ const StudentAttendanceEditSave: React.FC = () => {
   };
 
   return (
+    <>
+    <ToastContainer/>
     <div className="box">
       <h2 className="text-lg font-bold mb-4">Date: {date}</h2>
       <h3>Class: {className}</h3> {/* Display className */}
@@ -85,6 +88,7 @@ const StudentAttendanceEditSave: React.FC = () => {
         Save Changes
       </button>
     </div>
+    </>
   );
 };
 

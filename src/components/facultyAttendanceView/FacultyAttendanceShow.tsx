@@ -135,9 +135,7 @@ const FacultyAttendance: React.FC = () => {
     {!loading && (
     <div className="box">
       <div className="flex items-center space-x-4 mb-4">
-            <span>
-              <BackButton />
-            </span>
+           
             <h1 className="text-xl items-center font-bold text-[#27727A]" >Faculty Attendance </h1>
           </div>
 
