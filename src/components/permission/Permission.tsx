@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/Utils/apiUtils";
+<<<<<<< HEAD
 import BackButton from "../Navigation/backButton";
+=======
+>>>>>>> 11a374a (solved bugs 09/02/25)
 import { toast, ToastContainer } from "react-toastify";
 export default function Permission() {
   const [facultyData, setFacultyData] = useState<any[]>([]);
@@ -93,30 +96,42 @@ export default function Permission() {
  
 
   // Handle form submission
-  const handleSubmit = async () => {
-    if (!selectedFaculty) {
-      toast.warning("Please select a faculty member.");
-      return;
-    }
+// Handle form submission
+const handleSubmit = async () => {
+  if (!selectedFaculty) {
+    toast.warning("Please select a faculty member.");
+    return;
+  }
 
-    try {
-      const token = localStorage.getItem("authToken");
-      const payload = {
-        facultyId: selectedFaculty.id,
-        email: selectedFaculty.email,
-        permissions,
-      };
-      console.log("Submitting permissions:", payload);
-      await axiosInstance.post("/permissions/save", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      toast.success("Permissions updated successfully!");
-    } catch (error) {
-      toast.error("Error updating permissions:");
-    }
-  };
+  // Check if at least one permission is selected
+  const isAnyPermissionSelected = Object.values(permissions).some(section =>
+    Object.values(section).some(value => value === true)
+  );
+
+  if (!isAnyPermissionSelected) {
+    toast.warning("Please select at least one permission.");
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("authToken");
+    const payload = {
+      facultyId: selectedFaculty.id,
+      email: selectedFaculty.email,
+      permissions,
+    };
+    console.log("Submitting permissions:", payload);
+    await axiosInstance.post("/permissions/save", payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    toast.success("Permissions updated successfully!");
+  } catch (error) {
+    toast.error("Error updating permissions");
+  }
+};
+
 
   return (
     <div className="container mt-5">
