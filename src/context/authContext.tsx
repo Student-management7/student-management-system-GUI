@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';  // Changed import statement
+import { toast } from 'react-toastify';
 
 interface DecodedToken extends JwtPayload {
   userId?: string;
@@ -56,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const { token } = data;
 
-      // Decode the token
+      
       const decoded = jwtDecode<DecodedToken>(token);
 
       localStorage.setItem('token', token);
@@ -75,28 +76,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    const checkInitialToken = async () => {
-      setIsLoading(true);
-      const token = localStorage.getItem('token');
+    const checkTokenExpiration = () => {
+      const token = localStorage.getItem("token");
+  
       if (token) {
         try {
           const decoded = jwtDecode<DecodedToken>(token);
           const currentTime = Date.now() / 1000;
-
-          if (decoded.exp && currentTime < decoded.exp) {  // Added null check for exp
-            setIsAuthenticated(true);
-            setUser(decoded);
-          } else {
-            await logout();
+  
+          if (decoded.exp && currentTime >= decoded.exp) {
+            console.warn("Token expired! Logging out...");
+            logout();
           }
         } catch (error) {
-          await logout();
+          console.warn("Invalid token detected. Logging out...");
+          logout();
         }
       }
-      setIsLoading(false);
     };
-    checkInitialToken();
+  
+    
+    const interval = setInterval(checkTokenExpiration, 30000);
+  
+    return () => clearInterval(interval);
   }, []);
+  
 
   const logout = async () => {
     try {
@@ -110,11 +114,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }).catch(err => console.warn('Logout API call failed:', err));
     } finally {
       localStorage.removeItem('token');
+      toast.warn("Time limit Expire Please Login again")
       setIsAuthenticated(false);
       setUser(null);
       setIsLoading(false);
+      window.location.href = "/login"; 
     }
   };
+  
 
   const getCsrfToken = () => {
     const metaToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');

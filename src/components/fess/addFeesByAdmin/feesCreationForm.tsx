@@ -49,6 +49,8 @@ const FeesForm: React.FC = () => {
                 {({ values }) => (
                     <Form>
                         <div className="mb-4">
+                        <ToastContainer position="top-right" autoClose={3000} />
+
                             <label className="block mb-2 font-semibold" htmlFor="className">
                                 Class Name
                             </label>
