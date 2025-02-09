@@ -1,4 +1,3 @@
-
 import { Faculty } from './Type';
 import axiosInstance from '../../Utils/apiUtils';
 
@@ -8,19 +7,10 @@ export const fetchFacultyData = async (): Promise<Faculty[]> => {
     const response = await axiosInstance.get(`${API_URL}/faculty/findAllFaculty`);
     return response.data.map((faculty: Faculty) => ({
         ...faculty,
-        attendance: '',
+        attendance: faculty.attendance || 'Select',
     }));
 };
 
-export const submitAttendance = async (facultyList: Faculty[]) => {
-    const factsWithAttendance = facultyList.filter(faculty => faculty.attendance);
-    const payload = {
-        factList: factsWithAttendance.map(faculty => ({
-            factId: faculty.fact_id,
-            name: faculty.fact_Name,
-            attendance: faculty.attendance,
-        })),
-    };
-    const response = await axiosInstance.post(`${API_URL}/faculty/attendanceSave`, payload);
-    return response;
+export const submitAttendance = async (payload: any) => {
+    return await axiosInstance.post(`${API_URL}/faculty/attendanceSave`, payload);
 };

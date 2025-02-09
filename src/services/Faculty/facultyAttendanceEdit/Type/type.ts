@@ -1,6 +1,8 @@
 import { SetStateAction } from "react";
 
 export interface Faculty {
+    fact_id: any;
+    fact_Name: any;
     factId: string;
     attendance: 'Present' | 'Absent';
     name: string;

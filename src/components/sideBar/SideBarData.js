@@ -115,7 +115,7 @@ export const SideBarData = [
         subNav: [
 
             {
-                title: 'Admin Fees',
+                title: 'Class Fees',
                 path: '/fees',
                 icon: FaMoneyBill,
             },
@@ -150,7 +150,7 @@ export const SideBarData = [
                 icon: FaBell,
             },
             {
-                title: 'Hollyday',
+                title: 'Holiday',
                 path: '/holiday',
                 icon: FaBell,
             },

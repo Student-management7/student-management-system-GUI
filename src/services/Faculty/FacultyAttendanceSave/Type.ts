@@ -1,4 +1,3 @@
-// types.ts
 export interface Faculty {
   id: string;
   fact_id: string;
@@ -11,12 +10,11 @@ export interface Faculty {
   fact_state: string;
   attendance?: string;
 }
+
 export interface FacultyTableProps {
   facultyList: Faculty[];
   onAttendanceSelect: (value: string, name: string) => void;
 }
-
-
 
 export interface AttendancePayload {
   date: string;
@@ -27,5 +25,3 @@ export interface AttendancePayload {
       name: string;
   }[];
 }
-
-

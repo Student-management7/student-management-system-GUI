@@ -6,10 +6,9 @@ import axiosInstance from "../../services/Utils/apiUtils";
 import { sortArrayByKey } from "../Utils/sortArrayByKey";
 import Loader from "../loader/loader";
 import BackButton from "../Navigation/backButton";
+import '../../global.scss'
 import ReusableTable from "../StudenAttendanceShow/Table/Table";
-
-
-
+import { toast, ToastContainer, } from "react-toastify";
 const StudentManagementSystem: React.FC = () => {
     const [classes, setClasses] = useState<ClassData[]>([]);
     const [subjects, setSubjects] = useState<string[]>([]);
@@ -19,34 +18,36 @@ const StudentManagementSystem: React.FC = () => {
     const [attendanceMode, setAttendanceMode] = useState<"subject" | "master">("subject");
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
+    const [bulkAttendance, setBulkAttendance] = useState<string>('');
+
 
     // Fetch class data
     const fetchClasses = async () => {
         try {
-          setError("");
-          setLoading(true);
-          const response = await axiosInstance.get("/class/data");
-          const sortedClasses = sortArrayByKey(response.data.classData, "className"); // Sort data by className
-          setClasses(sortedClasses); // Set the sorted class data
+            setError("");
+            setLoading(true);
+            const response = await axiosInstance.get("/class/data");
+            const sortedClasses = sortArrayByKey(response.data.classData, "className"); // Sort data by className
+            setClasses(sortedClasses); // Set the sorted class data
         } catch (error) {
-          setError("Failed to fetch class data");
+            setError("Failed to fetch class data");
         } finally {
-          setLoading(false);
+            setLoading(false);
         }
-      };
-      
-      useEffect(() => {
+    };
+
+    useEffect(() => {
         fetchClasses();
-      }, []);
-      
-      // Handle class change
-      const handleClassChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    }, []);
+
+    // Handle class change
+    const handleClassChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedClassName = event.target.value;
         setSelectedClass(selectedClassName);
         const classData = classes.find((cls) => cls.className === selectedClassName);
         setSubjects(classData ? classData.subject : []);
-      };
-      
+    };
+
 
     // Handle subject change
     const handleSubjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -68,7 +69,12 @@ const StudentManagementSystem: React.FC = () => {
                 remark: "",
             }));
             setStudents(filteredStudents);
+            if (filteredStudents.length === 0) {
+                toast.warning("No students found for the selected class.");
+            }
+
         } catch (error) {
+
             setError("Failed to fetch student data");
         } finally {
             setLoading(false);
@@ -116,11 +122,28 @@ const StudentManagementSystem: React.FC = () => {
         });
     };
 
+    // Handle bulk attendance
+    const handleBulkAttendanceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setBulkAttendance(event.target.value);
+    };
+
+    const applyBulkAttendance = () => {
+        if (!bulkAttendance) {
+            toast.warning("Please select an attendance status before applying.");
+            return;
+        }
+
+
+        setStudents((prevList: any) =>
+            prevList.map((faculty: any) => ({ ...faculty, attendance: bulkAttendance }))
+        );
+    };
+
 
     const Column = [
-        { 
-            headerName: "Student Name", 
-            field: "name"  
+        {
+            headerName: "Student Name",
+            field: "name"
         },
         {
             headerName: "Attendance",
@@ -128,7 +151,7 @@ const StudentManagementSystem: React.FC = () => {
             editable: true,
             cellRenderer: (params: any) => (
                 <div className="flex gap-2">
-                    {["Present", "Absent", "Half Day", "Late"].map((option) => (
+                    {["Present", "Absent", "Half Day", "Late", "Leave"].map((option) => (
                         <label key={option} className="flex items-center gap-1">
                             <input
                                 type="radio"
@@ -162,108 +185,125 @@ const StudentManagementSystem: React.FC = () => {
 
     return (
 
-        
-    <>
-    {loading && <Loader />} {/* Show loader when loading */}
-    {!loading && (
 
-        
-        
-        <div className="box">
-        <div className="flex items-center space-x-4 mb-4">
-            <span>
-              <BackButton />
-            </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Attendance </h1>
-          </div>
+        <>
+            <ToastContainer position="top-right" autoClose={3000} />
+            {loading && <Loader />} {/* Show loader when loading */}
+            {!loading && (
 
-            {error && <p className="text-red-500 mb-4">{error}</p>}
+                <div className="box">
+                    <div className="box grid grid-cols-1 gap-6 p-6">
+                        <div className="flex items-center space-x-4">
+                            <span>
+                                <BackButton />
+                            </span>
+                            <h1 className="text-xl font-bold text-[#27727A]">Student Attendance</h1>
+                        </div>
 
-            {/* Attendance Mode Selector */}
-            <div className="attendance-mode-selector mb-4">
-                <label className="mr-4">
-                    <input
-                        type="radio"
-                        name="attendanceMode"
-                        value="subject"
-                        checked={attendanceMode === "subject"}
-                        onChange={() => setAttendanceMode("subject")}
-                    />{" "}
-                    Subject-Wise Attendance
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        name="attendanceMode"
-                        value="master"
-                        checked={attendanceMode === "master"}
-                        onChange={() => setAttendanceMode("master")}
-                    />{" "}
-                    Master Attendance
-                </label>
-            </div>
+                        {error && <p className="text-red-500">{error}</p>}
 
-            {/* Dropdowns */}
-            <div className="dropdowns-container flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
-                <select
-                    value={selectedClass}
-                    onChange={handleClassChange}
-                    className="custom-dropdown p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option value="">Select Class</option>
-                    {classes.map((cls) => (
-                        <option key={cls.className} value={cls.className}>
-                            Class {cls.className}
-                        </option>
-                    ))}
-                </select>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                            <div className="attendance-mode-selector flex items-center space-x-4">
+                                <span className="font-medium">
+                                    {attendanceMode === "subject" ? "Subject-Wise Attendance" : "Master Attendance"}
+                                </span>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only peer"
+                                        checked={attendanceMode === "master"}
+                                        onChange={() =>
+                                            setAttendanceMode(attendanceMode === "subject" ? "master" : "subject")
+                                        }
+                                    />
+                                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
 
-                <select
-                    value={selectedSubject}
-                    onChange={handleSubjectChange}
-                    disabled={attendanceMode === "master"}
-                    className="custom-dropdown p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option value="">Select Subject</option>
-                    {subjects.map((sub, index) => (
-                        <option key={index} value={sub}>
-                            {sub}
-                        </option>
-                    ))}
-                </select>
+                            <div className="bulk-attendance flex items-center space-x-4 justify-end">
+                                <select
+                                    value={bulkAttendance}
+                                    onChange={handleBulkAttendanceChange}
+                                    className="border rounded p-2"
+                                >
+                                    <option value="">Select Attendance</option>
+                                    <option value="Present">Present</option>
+                                    <option value="Absent">Absent</option>
+                                    <option value="Late">Late</option>
+                                    <option value="Half Day">Half Day</option>
+                                    <option value="Leave">Leave</option>
+                                </select>
+                                <button
+                                    onClick={applyBulkAttendance}
+                                    className="head1 btn button text-white py-2 px-4"
+                                >
+                                    Apply to All
+                                </button>
+                            </div>
+                        </div>
 
-                <button
-                    onClick={fetchStudents}
-                    disabled={!selectedClass}
-                    className="fetch-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 button"
-                >
-                    {loading ? "Loading..." : "Fetch Students"}
-                </button>
-            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                            <select
+                                value={selectedClass}
+                                onChange={handleClassChange}
+                                className="custom-dropdown p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="">Select Class</option>
+                                {classes.map((cls) => (
+                                    <option key={cls.className} value={cls.className}>
+                                        Class {cls.className}
+                                    </option>
+                                ))}
+                            </select>
 
-          
+                            <select
+                                value={selectedSubject}
+                                onChange={handleSubjectChange}
+                                hidden={attendanceMode === "master"}
 
-            <div className="mt-6">
-                        <ReusableTable 
-                            rows={students}
-                            columns={Column}
-                            rowsPerPageOptions={[5, 10, 25]}
-                            onCellValueChange={handleCellValueChange}
-                        />
+                                className="custom-dropdown p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="">Select Subject</option>
+                                {subjects.map((sub, index) => (
+                                    <option key={index} value={sub}>
+                                        {sub}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <button
+                                onClick={fetchStudents}
+                                disabled={!selectedClass}
+                                className="fetch-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 button"
+                            >
+                                {loading ? "Loading..." : "Fetch Students"}
+                            </button>
+                        </div>
+
+                        <div className="overflow-x-auto">
+                            <ReusableTable
+                                rows={students}
+                                columns={Column}
+                                rowsPerPageOptions={[5, 10, 25]}
+                                onCellValueChange={handleCellValueChange}
+                            />
+                        </div>
+
+                        <div className="flex justify-center">
+                            <button
+                                onClick={submitAttendance}
+                                disabled={students.length === 0}
+                                className="mt-4 button py-2 px-4 bg-[#27727A] text-white"
+                            >
+                                Submit Attendance
+                            </button>
+                        </div>
                     </div>
+                </div>
 
-            {/* Submit Button */}
-            <button
-                onClick={submitAttendance}
-                disabled={students.length === 0}
-                className="submit-btn px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 mt-6"
-            >
-                Submit Attendance
-            </button>
-        </div>
-        
-    )}
-    </>
+
+            )}
+        </>
     );
 };
 

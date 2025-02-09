@@ -174,8 +174,8 @@ export default function Permission() {
 
         {/* Permissions Section */}
         <div className="card shadow-sm mb-4">
-          <div className="card-header bg-secondary text-white">
-            <h5>Student Permissions</h5>
+          <div className="card-header bg-[#3a8686] text-white">
+            <h5 >Student Permissions</h5>
           </div>
           <div className="card-body">
             {Object.keys(permissions.Student).map((key) => (
@@ -196,7 +196,7 @@ export default function Permission() {
         </div>
 
         <div className="card shadow-sm mb-4">
-          <div className="card-header bg-secondary text-white">
+          <div className="card-header text-white bg-[#3a8686]">
             <h5>Faculty Permissions</h5>
           </div>
           <div className="card-body">
@@ -218,7 +218,7 @@ export default function Permission() {
         </div>
 
         <div className="card shadow-sm mb-4">
-          <div className="card-header bg-secondary text-white">
+          <div className="card-header bg-[#3a8686] text-white">
             <h5>Finance Permissions</h5>
           </div>
           <div className="card-body">
@@ -239,7 +239,7 @@ export default function Permission() {
           </div>
         </div>
         <div className="card shadow-sm mb-4">
-          <div className="card-header bg-secondary text-white">
+          <div className="card-header bg-[#3a8686] text-white">
             <h5>Notification Permissions</h5>
           </div>
           <div className="card-body">
@@ -260,7 +260,7 @@ export default function Permission() {
           </div>
         </div>
         <div className="card shadow-sm mb-4">
-          <div className="card-header bg-secondary text-white">
+          <div className="card-header bg-[#3a8686] text-white">
             <h5>Subject  Permissions</h5  >
           </div>
           <div className="card-body">

@@ -75,7 +75,7 @@ const StudentFeesDetails = () => {
   return (
     <>
       {loading ? (
-        <Loader /> // Show loader while data is being fetched
+        <Loader /> 
       ) : (
 
         <div className="box">

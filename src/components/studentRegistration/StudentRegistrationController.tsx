@@ -160,9 +160,7 @@ const StudentRegistrationController = () => {
         <div className="box ">
           <div className="headding1">
             <h1>
-              {/* <span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
-              </span> */}
+              
               &nbsp;Student Registration
             </h1>
           </div>
@@ -184,7 +182,7 @@ const StudentRegistrationController = () => {
                 <div className="rightButton">
                   <button
                     onClick={() => setStudentData(true)}
-                    className="btn btn-default"
+                    className="btn button head1 text-white"
                   >
                     Add Student
                   </button>
@@ -209,7 +207,7 @@ const StudentRegistrationController = () => {
                   </div>
                 </h1>
               </div>
-              <FormView />
+              <FormView  onCancel={() => setEditFormView(false)} />
             </div>
           )}
         </div>

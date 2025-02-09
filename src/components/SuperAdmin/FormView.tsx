@@ -65,6 +65,7 @@ const FormView = ({ editData, onSubmitSuccess }: any) => {
     };
     return (
         <>
+        <ToastContainer position="top-right" autoClose={3000} />
             <Formik
                 initialValues={initialValues}
                 validatations={validationSchema}
@@ -325,7 +326,7 @@ const FormView = ({ editData, onSubmitSuccess }: any) => {
                                 </div>
                             </div>
                         </div>
-                        <ToastContainer />
+
                         <button className="btn btn-primary button mt-3" type="submit" disabled={isSubmitting}>
                             {editData ? "Update" : "Save"}
                         </button>

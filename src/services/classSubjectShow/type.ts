@@ -1,6 +1,7 @@
 // services/classSubjectShow/type.ts
 export interface ClassData {
   
+  
   className: string;
   subject: string[]; // Array of subjects
 }

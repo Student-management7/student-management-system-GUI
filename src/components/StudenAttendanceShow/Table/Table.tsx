@@ -105,9 +105,12 @@ const ReusableTable: React.FC<TableProps> = ({
 
   }
   return (
-    <div>
+    
+      <>
+
       {/* Search Bar */}
-      <div className='mb-3'>
+      <div className="mb-3 ">
+
         <div className="sm:w-72 position-relative">
           <input
             type="text"
@@ -228,11 +231,11 @@ const ReusableTable: React.FC<TableProps> = ({
       </div>
 
       {/* Table Controls */}
-      <div className="flex mt-2 sm:flex-row justify-between">
+      <div className="flex mt-3 sm:flex-row justify-between">
         <div className="flex items-center gap-4">
           <button
             onClick={() => {/* Export CSV logic */ }}
-            className="flex webView items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            className="flex webView items-center gap-2 px-4  head1 btn button text-white"
           >
             <Download size={16} />
             Export CSV
@@ -270,7 +273,7 @@ const ReusableTable: React.FC<TableProps> = ({
                 onClick={() => setCurrentPage(page)}
                 className={`px-3 py-1 border rounded-md transition-colors ${
                   currentPage === page
-                    ? 'bg-blue-500 text-white'
+                    ? 'bg-[#3a8686] text-white'
                     : 'hover:bg-gray-100'
                 }`}
               >
@@ -287,7 +290,8 @@ const ReusableTable: React.FC<TableProps> = ({
           </button>
         </div>
       </div>
-    </div>
+      </>
+
   );
 };
 

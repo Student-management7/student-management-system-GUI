@@ -79,7 +79,7 @@ const SuperAdminController = () => {
             const response = await axiosInstance.get("/school/get");
             setRows(response.data);
         } catch (error) {
-            console.error("Error fetching data:", error);
+            toast.error("Error fetching data:");
         } finally {
             setLoading(false); // Hide loader
         }
@@ -138,6 +138,8 @@ const SuperAdminController = () => {
     return (
 
       <>
+                  <ToastContainer position="top-right" autoClose={3000} />
+
         {loading && <Loader />} {/* Show loader when loading */}
             {!loading && (
 
@@ -175,7 +177,6 @@ const SuperAdminController = () => {
                     Add Student
                 </button>
             </div>
-            <ToastContainer />
             <AlertDialog
                 title="Confirm Deletion"
                 message={`Are you sure you want to delete the school record for ${dialogData?.schoolName}?`}

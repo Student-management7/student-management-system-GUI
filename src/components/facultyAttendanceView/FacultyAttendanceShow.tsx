@@ -5,18 +5,14 @@ import { formatDate } from '../Utils/dateUtils';
 import { getDateRange } from '../Utils/dateUtils';
 import Loader from '../loader/loader';
 import BackButton from '../Navigation/backButton';
-import ReusableTable from '../MUI Table/ReusableTable';
-
-
-
-
+import ReusableTable from '../StudenAttendanceShow/Table/Table';
+import { Pencil } from 'lucide-react';
 
 interface Faculty {
   factId: string;
   attendance: 'Present' | 'Absent';
   name: string;
 }
-
 interface AttendanceEntry {
   date: string;
   factList: Faculty[];
@@ -27,7 +23,7 @@ const FacultyAttendance: React.FC = () => {
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
   const [data, setData] = useState<any[]>([]);
-  
+
   const [columns, setColumns] = useState<any[]>([
     // { field: 'factId', headerName: 'Faculty ID' },
     { field: 'name', headerName: 'Faculty Name' },
@@ -38,7 +34,7 @@ const FacultyAttendance: React.FC = () => {
 
   useEffect(() => {
     if (fromDate && toDate) {
-      
+
     }
   }, [fromDate, toDate]);
 
@@ -78,10 +74,10 @@ const FacultyAttendance: React.FC = () => {
         field: date,
         headerName: date,
         cellStyle: (params: { value: string }) => ({
-          backgroundColor: params.value === 'Present' ? '	#FFFFFF' : 
-                          params.value === 'Absent' ? '#	#FFFFFF' : '#FFFFFF',
-          color: params.value === 'Present' ? '#3C763D' : 
-                 params.value === 'Absent' ? '#A94442' : '#000000',
+          backgroundColor: params.value === 'Present' ? '	#FFFFFF' :
+            params.value === 'Absent' ? '#	#FFFFFF' : '#FFFFFF',
+          color: params.value === 'Present' ? '#3C763D' :
+            params.value === 'Absent' ? '#A94442' : '#000000',
         }),
       }));
 
@@ -131,61 +127,71 @@ const FacultyAttendance: React.FC = () => {
 
 
     <>
-    {loading && <Loader />} {/* Show loader when loading */}
-    {!loading && (
-    <div className="box">
-      <div className="flex items-center space-x-4 mb-4">
+      {loading && <Loader />} {/* Show loader when loading */}
+      {!loading && (
+        <div className="box">
+          <div className="flex items-center space-x-4 mb-4">
             <span>
               <BackButton />
             </span>
             <h1 className="text-xl items-center font-bold text-[#27727A]" >Faculty Attendance </h1>
           </div>
 
-      <div className="filters space-y-4 md:flex md:space-y-0 md:space-x-4 md:items-center mb-2">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">From Date:</label>
-          <input
-            type="date"
-            value={fromDate}
-            onChange={e => setFromDate(e.target.value)}
-            className="border rounded p-2"
-          />
+          <div className=" flex items-center space-x-4 mb-4  ">
+            <div className="space-y-2">
+              <label className="text-sm font-medium mr-3">From Date:</label>
+              <input
+                type="date"
+                value={fromDate}
+                onChange={e => setFromDate(e.target.value)}
+                className="border rounded p-2"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium mr-3">To Date:</label>
+              <input
+                type="date"
+                value={toDate}
+                onChange={e => setToDate(e.target.value)}
+                className="border rounded p-2"
+              />
+            </div>
+            
+
+            <span className='button btn mt-1  '>
+            <button 
+              onClick={handleEditRedirect}
+              className="pt-1"
+            >
+              <Pencil size={20} color='white ' />
+            </button>
+
+            </span>
+
+
+          </div>
+
+          {error && (
+            <div className="bg-red-100 text-red-600 p-3 rounded">{error}</div>
+          )}
+
+          <span className='float-right pb-2'>
+            <button
+              onClick={fetchAttendance}
+              disabled={loading}
+              className="button btn head1 text-white text-lg  p-2 "
+            >
+              {loading ? 'Fetching...' : 'Fetch Attendance'}
+            </button>
+
+
+            
+          </span>
+
+          <ReusableTable rows={data} columns={columns} />
+
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium">To Date:</label>
-          <input
-            type="date"
-            value={toDate}
-            onChange={e => setToDate(e.target.value)}
-            className="border rounded p-2"
-          />
-        </div>
-        <button
-          onClick={fetchAttendance}
-          disabled={loading}
-          className="button bg-blue-500 text-white rounded px-3 py-1.75 mt-2 disabled:opacity-50"
-        >
-          {loading ? 'Fetching...' : 'Fetch Attendance'}
-        </button>
-
-          
-        <button
-          onClick={handleEditRedirect}
-          className="bi bi-pencil-square red-button mt-2 ml-2"
-        >
-        </button>
-
-      </div>
-
-      {error && (
-        <div className="bg-red-100 text-red-600 p-3 rounded">{error}</div>
       )}
-
-      <div className="box">
-        <ReusableTable rows={data} columns={columns}  />
-      </div>
-    </div>
-    )}
     </>
   );
 };

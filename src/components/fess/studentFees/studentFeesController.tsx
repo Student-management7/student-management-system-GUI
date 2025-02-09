@@ -4,8 +4,8 @@ import { Eye, Pencil, Trash2 } from "lucide-react";
 import axiosInstance from "../../../services/Utils/apiUtils";
 import StudentFeesForm from "./studentFeesForm";
 import Loader from "../../loader/loader";
-import BackButton from "../../Navigation/backButton";
-import ReusableTable from "../../MUI Table/ReusableTable";
+// import BackButton from "../../Navigation/backButton";
+import ReusableTable from "../../StudenAttendanceShow/Table/Table";
 
 interface FeeData {
   id: string;
@@ -29,6 +29,8 @@ const StudentFeesController: React.FC = () => {
   const navigate = useNavigate();
 
   const columns= [
+    
+   
     
     { 
       field: "name", 
@@ -85,9 +87,15 @@ const StudentFeesController: React.FC = () => {
     {
       field: "actions",
       headerName: "Delete",
-      cellRenderer: (row: FeeData) => (
+      cellRenderer: (params: any) => (
         <button
-          onClick={() => handleDelete(row.id)}
+          onClick={() => {
+            if (params.data?.id) {
+              handleDelete(params.data.id);
+            } else {
+              console.error("ID is undefined:", params.data);
+            }
+          }}
           className="text-red-600 hover:text-red-800"
           aria-label="Delete Record"
         >
@@ -95,6 +103,7 @@ const StudentFeesController: React.FC = () => {
         </button>
       )
     }
+    
   ];
 
 
@@ -110,7 +119,7 @@ const StudentFeesController: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this fee record?")) {
       try {
-        await axiosInstance.delete(`https://s-m-s-keyw.onrender.com/student/fees/${id}`);
+        await axiosInstance.post(`/student/deleteFees?id=${id}`);
         fetchFees();
       } catch (error) {
         alert("Failed to delete fee record");
@@ -129,7 +138,7 @@ const StudentFeesController: React.FC = () => {
   const fetchFees = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get<FeeData[]>("https://s-m-s-keyw.onrender.com/student/findAllStudent");
+      const response = await axiosInstance.get<FeeData[]>("/student/findAllStudent");
       setRowData(response.data);
     } catch (error) {
       console.error("Error fetching fees:", error);
@@ -150,15 +159,14 @@ const StudentFeesController: React.FC = () => {
       {!loading && (
         <div className="box">
           <div className="flex items-center space-x-4 mb-4">
-            <span>
-              <BackButton />
-            </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]">
-              Student Fees
-            </h1>
+           
+            
           </div>
           {!showForm ? (
             <>
+            <h1 className="head1">
+              Student Fees
+            </h1>
               <div className="text-right mb-3">
                 <button
                   onClick={() => setShowForm(true)}

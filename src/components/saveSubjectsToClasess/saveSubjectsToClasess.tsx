@@ -32,21 +32,23 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
 
   useEffect(() => {
     if (editableRow) {
-      // Properly handle the incoming subjects array
-      const normalizedSubjects = Array.isArray(editableRow.subject) 
-        ? editableRow.subject.map(sub => typeof sub === 'string' ? sub.trim() : '').filter(Boolean)
-        : [];
-      
       setSelectedClass(editableRow.className || "");
+
+      // Ensure subjects are correctly set from editableRow
+      const normalizedSubjects = Array.isArray(editableRow.subject)
+        ? editableRow.subject.map(sub => (typeof sub === 'string' ? sub.trim() : '')).filter(Boolean)
+        : [];
+
       setSelectedSubjects(normalizedSubjects);
-      
-      // Add any new subjects from editableRow to availableSubjects
-      const newSubjects = normalizedSubjects.filter(sub => !availableSubjects.includes(sub));
-      if (newSubjects.length > 0) {
-        setAvailableSubjects(prev => [...prev, ...newSubjects]);
-      }
+
+      // Add subjects to availableSubjects if missing
+      setAvailableSubjects(prevSubjects => {
+        const newSubjects = normalizedSubjects.filter(sub => !prevSubjects.includes(sub));
+        return [...prevSubjects, ...newSubjects];
+      });
     }
   }, [editableRow]);
+
 
   const handleClassSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedClass(event.target.value);
@@ -100,12 +102,12 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
       toast.error("Please select a class!");
       return false;
     }
-  
+
     if (selectedSubjects.length === 0) {
       toast.error("Please select at least one subject!");
       return false;
     }
-  
+
     return true;
   };
 
@@ -123,11 +125,11 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
   const handleSaveNewClass = async () => {
     if (!validateInputs()) return;
     setLoading(true);
-  
+
     try {
       const payload = preparePayload();
       console.log("Save Payload:", payload);
-      
+
       const response = await axiosInstance.post("class/save", payload);
       toast.success("Class and subjects saved successfully!");
       onSave(response.data);
@@ -140,15 +142,15 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
       setLoading(false);
     }
   };
-  
+
   const handleUpdateClass = async () => {
     if (!validateInputs()) return;
     setLoading(true);
-  
+
     try {
       const payload = preparePayload();
       console.log("Update Payload:", payload);
-      
+
       if (!editableRow?.className?.trim()) {
         throw new Error("Invalid class name for update.");
       }
@@ -157,7 +159,7 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
         `class/edit?className=${encodeURIComponent(editableRow.className.trim())}`,
         payload
       );
-      
+
       toast.success("Class and subjects updated successfully!");
       onSave(response.data);
     } catch (error: any) {
@@ -195,17 +197,17 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
               </select>
             </label>
 
-            <div className="flex gap-2 mb-4">
+            <div className="flex gap-2 mb-4" hidden = {!!editableRow}>
               <input
                 type="text"
                 value={newClass}
                 onChange={(e) => setNewClass(e.target.value)}
-                placeholder="Enter new class name"
+                placeholder={!!editableRow ? "hidden" : "Add New Class"} 
                 className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 onClick={handleAddNewClass}
-                className="btn btn-primary"
+                className="btn button text-white md:block"
               >
                 Add Class
               </button>
@@ -249,22 +251,21 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
             </div>
           )}
 
-<div className="flex justify-between space-x-4">
+          <div className="flex justify-between space-x-4">
             <button
               onClick={onClose}
               className="btn buttonred"
             >
               Cancel
             </button>
-            
+
             <button
               onClick={editableRow ? handleUpdateClass : handleSaveNewClass}
-              disabled={loading || !selectedClass || selectedSubjects.length === 0}
-              className={`py-2 px-4 rounded-md ${
-                loading || !selectedClass || selectedSubjects.length === 0
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600"
-              } text-white`}
+              disabled={loading || !selectedClass}
+              className={`py-2 px-4 rounded-md ${loading || !selectedClass || selectedSubjects.length === 0
+                  ? "btn button "
+                  : "btn button "
+                } text-white`}
             >
               {loading ? "Saving..." : editableRow ? "Update" : "Save"}
             </button>

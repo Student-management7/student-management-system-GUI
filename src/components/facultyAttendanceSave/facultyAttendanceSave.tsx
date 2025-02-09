@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import axiosInstance from '../../services/Utils/apiUtils';
 import { fetchFacultyData, submitAttendance } from '../../services/Faculty/FacultyAttendanceSave/Api';
 import { Faculty } from '../../services/Faculty/FacultyAttendanceSave/Type';
@@ -16,6 +16,8 @@ interface AttendanceRow {
 const AttendanceSave: React.FC = () => {
   const [facultyList, setFacultyList] = useState<Faculty[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [bulkAttendance, setBulkAttendance] = useState<string>('');
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,12 +45,11 @@ const AttendanceSave: React.FC = () => {
     fetchData();
   }, []);
 
-  const handleAttendanceChange = (rowIndex: number, field: string, value: string) => {
+
+  const handleCellValueChange = (factId: string, field: string, value: any) => {
     setFacultyList((prevList) =>
-      prevList.map((faculty, index) =>
-        index === rowIndex
-          ? { ...faculty, attendance: value }
-          : faculty
+      prevList.map((faculty) =>
+        faculty.fact_id === factId ? { ...faculty, [field]: value } : faculty
       )
     );
   };
@@ -65,7 +66,15 @@ const AttendanceSave: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await submitAttendance(facultyList);
+      const payload = {
+        factList: facultyList.map(faculty => ({
+          factId: faculty.fact_id,
+          name: faculty.fact_Name,
+          attendance: faculty.attendance,
+        })),
+      };
+
+      const response = await submitAttendance(payload);
       if (response.status === 200) {
         toast.success('Attendance submitted successfully!', {
           position: 'top-right',
@@ -86,31 +95,28 @@ const AttendanceSave: React.FC = () => {
   };
 
   const columns = [
+    { headerName: "Faculty Name", field: "name" },
     {
-      field: 'name',
-      headerName: 'Faculty Name',
-      editable: false,
-    },
-    {
-      field: 'factId',
-      headerName: 'Faculty ID',
-      editable: false,
-    },
-    {
-      field: 'attendance',
-      headerName: 'Attendance',
+      headerName: "Attendance",
+      field: "attendance",
       editable: true,
-      cellRenderer: (row: any, onValueChange: (value: string) => void) => (
-        <select
-          value={row.attendance || ''}
-          onChange={(e) => onValueChange(e.target.value)}
-          className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="" disabled>Select</option>
-          <option value="Present">Present</option>
-          <option value="Absent">Absent</option>
-        </select>
-      )
+      cellRenderer: (params: any) => (
+        <div className="flex gap-2">
+          {["Present", "Absent", "Leave"].map((option) => (
+            <label key={option} className="flex items-center gap-1">
+              <input
+                type="radio"
+                name={`attendance-${params.data.factId}`}
+                value={option}
+                checked={params.data.attendance === option}
+                onChange={() => handleCellValueChange(params.data.factId, "attendance", option)}
+                className="form-radio h-4 w-4 text-blue-600"
+              />
+              <span className="text-sm">{option}</span>
+            </label>
+          ))}
+        </div>
+      ),
     },
   ];
 
@@ -121,6 +127,25 @@ const AttendanceSave: React.FC = () => {
   });
 
   const rowData = facultyList.map(transformFacultyData);
+
+
+  // bulk attendance 
+
+  const handleBulkAttendanceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setBulkAttendance(event.target.value);
+  };
+
+  const applyBulkAttendance = () => {
+    if (!bulkAttendance) {
+      toast.warning("Please select an attendance status before applying.");
+      return;
+    }
+
+
+    setFacultyList((prevList:any) =>
+      prevList.map((faculty:any) => ({ ...faculty, attendance: bulkAttendance }))
+    );
+  };
 
   return (
     <>
@@ -136,21 +161,42 @@ const AttendanceSave: React.FC = () => {
             </h1>
           </div>
 
-          <div className="mb-6">
+
+          <span className=" float-right mb-4 flex items-center space-x-4 mb-4">
+            <select
+              value={bulkAttendance}
+              onChange={handleBulkAttendanceChange}
+              className="border rounded p-2 mr-2 mb-2" 
+            >
+              <option value="">Select Attendance</option>
+              <option value="Present">Present</option>
+              <option value="Absent">Absent</option>
+              <option value="Leave">Leave</option>
+            </select>
+
+            <button
+              onClick={applyBulkAttendance}
+              className="head1 btn button text-white pt-2 pb-2 pl-4 pr-4  "
+            >
+              Apply to All
+            </button>
+          </span>
+
+          <span className="mb-6">
+            
+            <ToastContainer />
             <ReusableTable
               rows={rowData}
               columns={columns}
               rowsPerPageOptions={[5, 10, 25]}
-              onCellValueChange={handleAttendanceChange}
+              onCellValueChange={handleCellValueChange}
             />
-          </div>
+          </span>
 
-          <div className="flex justify-end">
+          <div className="flex justify-center mt-4">
             <button
               onClick={handleSaveAttendance}
-              className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 
-                       transition duration-200 ease-in-out focus:outline-none focus:ring-2 
-                       focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50"
+              className="head1 btn button text-white pt-2 pb-2 pl-4 pr-4 "
               disabled={!facultyList.length}
             >
               Save Changes

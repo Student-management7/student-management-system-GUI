@@ -1,79 +1,38 @@
-import  { AxiosResponse } from 'axios';
-import { FacultyFormData ,ApiError , ApiResponse, } from '../Type/FecultyRegistrationType';
+
+
+
+
+import { AxiosResponse } from 'axios';
 import axiosInstance from '../../../Utils/apiUtils';
-
+import { FacultyFormData } from '../Type/FecultyRegistrationType';
+import {  ApiError , ApiResponse, } from '../Type/FecultyRegistrationType';
 const API_URL = 'https://s-m-s-keyw.onrender.com';
-
-
-// Get Faculty Details
-export const getFacultyDetails = async (): Promise<ApiResponse<FacultyFormData[]>> => {
+export const saveFacultyDetails = async (data: any) => {
   try {
-    const response: AxiosResponse = await axiosInstance.get(`${API_URL}/faculty/findAllFaculty`);
-    
-    // Log the response for debugging
-    console.log('Get Faculty Response:', response);
-
-    return {
-      status: response.status,
-      data: response.data,
-      message: 'Faculty details retrieved successfully'
-    };
-  } catch (error: any) {
-    console.error("Error fetching faculty details:", error);
-    
-    // Properly format error response
-    const apiError: ApiError = {
-      message: error.response?.data?.message || 'Failed to fetch faculty details',
-      status: error.response?.status || 500
-    };
-    
-    throw apiError;
+    const response = await axiosInstance.post(`/faculty/save`, data);
+    return response;
+  } catch (error) {
+    console.error('Error saving faculty details:', error);
+    throw error;
   }
 };
 
-// Save Faculty Details
-export const saveFacultyDetails = async (data: FacultyFormData): Promise<ApiResponse<FacultyFormData>> => {
+export const getFacultyDetails = async () => {
   try {
-    // Remove any undefined or null values from the data
+    const response = await axiosInstance.get(`/faculty/findAllFaculty`);
+    return response;
+  } catch (error) {
+    console.error('Error fetching faculty details:', error);
+    throw error;
+  }
+};
+
+export const updateFacultyDetails = async (data: FacultyFormData, ): Promise<ApiResponse<FacultyFormData>> => {
+  try {
     const cleanData = Object.fromEntries(
       Object.entries(data).filter(([_, value]) => value !== null && value !== undefined)
     );
 
-    const response: AxiosResponse = await axiosInstance.post(`${API_URL}/faculty/save`, cleanData, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    // Log the response for debugging
-    console.log('Save Faculty Response:', response);
-
-    return {
-      status: response.status,
-      data: response.data,
-      message: 'Faculty details saved successfully'
-    };
-  } catch (error: any) {
-    console.error("Error saving faculty details:", error);
-    
-    const apiError: ApiError = {
-      message: error.response?.data?.message || 'Failed to save faculty details',
-      status: error.response?.status || 500
-    };
-    
-    throw apiError;
-  }
-};
-
-// Update Faculty Details
-export const updateFacultyDetails = async (data: FacultyFormData, factId: string): Promise<ApiResponse<FacultyFormData>> => {
-  try {
-    // Clean the data before sending
-    const cleanData = Object.fromEntries(
-      Object.entries(data).filter(([_, value]) => value !== null && value !== undefined)
-    );
-
-    // Fixed the URL structure and using axios consistently
     const response: AxiosResponse = await axiosInstance.post(
       `${API_URL}/faculty/Update`, 
       cleanData,
@@ -105,37 +64,12 @@ export const updateFacultyDetails = async (data: FacultyFormData, factId: string
 };
 
 
-// export const deleteFacultyDetails = async (factId: string): Promise<ApiResponse<void>> => {
-//   try {
-//     const response: AxiosResponse = await axios.delete(`${API_URL}/faculty/delete${factId}`);
-
-//     return {
-//       status: response.status,
-//       data: response.data,
-//       message: 'Faculty deleted successfully'
-//     };
-//   } catch (error: any) {
-//     console.error("Error deleting faculty:", error);
-    
-//     const apiError: ApiError = {
-//       message: error.response?.data?.message || 'Failed to delete faculty',
-//       status: error.response?.status || 500
-//     };
-    
-//     throw apiError;
-//   }
-// };
-
-
-
-export const deleteFacultyDetails = async (facultyId: string) => {
+export const deleteFacultyDetails = async (id: string) => {
   try {
-    const response = await axiosInstance.post(
-      `${API_URL}/faculty/delete?id=${facultyId}`
-    );
+    const response = await axiosInstance.post(`/faculty/delete?id=${id}`);
     return response;
   } catch (error) {
-    console.error('Error deleting faculty:', error);
+    console.error('Error deleting faculty details:', error);
     throw error;
   }
 };
