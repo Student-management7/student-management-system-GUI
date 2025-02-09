@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/Utils/apiUtils";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import BackButton from "../Navigation/backButton";
+=======
+>>>>>>> 11a374a (solved bugs 09/02/25)
 =======
 >>>>>>> 11a374a (solved bugs 09/02/25)
 import { toast, ToastContainer } from "react-toastify";
