@@ -35,6 +35,7 @@ const SideBarController = () => {
 
     return (
         <>
+        <div></div>
             <div id="item" className='sideNav'>
                 <div className="logo flex">
                     <p className='fs-4'>EasyWaySolution</p>
