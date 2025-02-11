@@ -1,18 +1,20 @@
 import React, {useState, useEffect} from "react";
 import { StudentFormData } from "../../services/studentRegistration/type/StudentRegistrationType";
 import { updateStudentDeteails } from '../../services/studentRegistration/api/StudentRegistration';
-//import {onSave} from "../"
+import { toast, ToastContainer } from "react-toastify";
+
 
 interface EditStudentFormProps  {
     singleRowData: StudentFormData;
-    
+    onClose: () => void;
 }
 
-const EditStudentForm = (props: EditStudentFormProps) =>{
+const EditStudentForm: React.FC<EditStudentFormProps>  = ({ singleRowData, onClose }) =>{
 
     const [editFormView, setEditFormView] = useState<boolean>(false);
-    const {singleRowData} = props;
-
+    // const {singleRowData} = props;
+      const [isDialogOpen, setIsDialogOpen] = useState(false);
+    
     if (!singleRowData) return <div>Loading...</div>;
     console.log('singleRowData', singleRowData);
 
@@ -83,17 +85,16 @@ const EditStudentForm = (props: EditStudentFormProps) =>{
 
    
     const handleSubmit = (e: any) => {
-        e.preventDefault();
-        // Here, you can handle the save logic, e.g., send data to API
         updateStudentDeteails(formData); 
-        console.log(formData)
+        toast.success("Student data Updated Successfully") 
         
     };
 
 
     return(
         <>
-             <div>            
+             <div>   
+                <ToastContainer/>         
                 <form >
                     <div className='row'>
                         <div className='col-md-4'>
@@ -298,7 +299,6 @@ const EditStudentForm = (props: EditStudentFormProps) =>{
                                             },
                                         }))
                                     }
-                                    //value={singleRowData.familyDetails.stdo_FatherName}
                                     className="form-control"
                                     //onChange={handleChange}
                                     placeholder="Enter father's name"
@@ -446,9 +446,7 @@ const EditStudentForm = (props: EditStudentFormProps) =>{
                                             },
                                         }))
                                     }
-                                    //value={singleRowData.familyDetails.stdo_email}
                                     className="form-control"
-                                    //onChange={handleChange}
                                     placeholder="Enter family Email"
                                 />
                             </div>
@@ -459,7 +457,7 @@ const EditStudentForm = (props: EditStudentFormProps) =>{
                         <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Update</button>
                     </div>
                     <div className='text-center mt-4 col ' >
-                        <button className="btn btn-danger" >Canel</button>
+                        <button onClick={onClose} className="btn btn-danger" >Canel</button>
                     </div>
                     </div>
                 </form>

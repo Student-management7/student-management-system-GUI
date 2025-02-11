@@ -4,6 +4,7 @@ import { validateAttendanceForm } from "../../services/StudentAttendanceShow/val
 import "./Attendence.scss";
 import AttendanceTable from "./AttendanceTable";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 const StudentAttendanceEdit: React.FC = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const StudentAttendanceEdit: React.FC = () => {
         }
       } catch (error: any) {
         console.error("Failed to fetch class data:", error);
-        alert(`Error fetching class data: ${error.message || "Unknown error"}`);
+        toast.error(`Error fetching class data: ${error.message || "Unknown error"}`);
       }
     };
 
@@ -39,7 +40,7 @@ const StudentAttendanceEdit: React.FC = () => {
 
   const handleFetchAttendance = async () => {
     if (!validateAttendanceForm(date, date, classSelected, subjectSelected)) {
-      alert("Please fill all required fields.");
+      toast.warning("Please fill all required fields.");
       return;
     }
 
@@ -47,7 +48,7 @@ const StudentAttendanceEdit: React.FC = () => {
       const attendanceData = await fetchAttendanceData(date, date, classSelected, subjectSelected);
 
       if (!attendanceData || attendanceData.length === 0) {
-        alert(`No attendance data found for ${date}.`);
+        toast.warning(`No attendance data found for ${date}.`);
         setRowData([]); // Clear the table if no data is found
         return;
       }
@@ -84,7 +85,7 @@ const StudentAttendanceEdit: React.FC = () => {
       setRowData(rows);
     } catch (error: any) {
       console.error("Failed to fetch attendance:", error);
-      alert(`Error fetching attendance: ${error.message || "Unknown error"}`);
+      toast.error(`Error fetching attendance: ${error.message || "Unknown error"}`);
     }
   };
   
@@ -122,7 +123,10 @@ const StudentAttendanceEdit: React.FC = () => {
   };
 
   return (
-    <div className="box">
+    <>
+   <ToastContainer/>
+   <div className="box">
+      
       <div className="filters">
         <label>Class:</label>
         <select value={classSelected} onChange={handleClassSelect}>
@@ -154,6 +158,7 @@ const StudentAttendanceEdit: React.FC = () => {
         <AttendanceTable rowData={rowData} columnDefs={columnDefs} />
       </div>
     </div>
+    </>
   );
 };
 

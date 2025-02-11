@@ -11,6 +11,7 @@ import { Switch } from '@headlessui/react'
 import ReusableTable from "../MUI Table/ReusableTable"
 import Loader from "../loader/loader"
 import BackButton from "../Navigation/backButton"
+import { toast, ToastContainer } from "react-toastify"
 
 
 const StudentAttendanceShow: React.FC = () => {
@@ -75,7 +76,7 @@ const StudentAttendanceShow: React.FC = () => {
       : validateAttendanceForm(fromDate, toDate, classSelected, subjectSelected, attendanceModeLabel); // Subject required for Subject-wise Mode
 
     if (!isFormValid) {
-      alert("Please fill in all required fields with valid values.");
+      toast.warning("Please fill in all required fields with valid values.");
       return;
     }
 
@@ -84,7 +85,7 @@ const StudentAttendanceShow: React.FC = () => {
 
     // Validate date range
     if (fromDateObj > toDateObj) {
-      alert("From date cannot be later than To date.");
+      toast.warning("From date cannot be later than To date.");
       return;
     }
 
@@ -93,15 +94,15 @@ const StudentAttendanceShow: React.FC = () => {
       const data = await fetchAttendanceData(fromDate, toDate, classSelected, subjectSelected, AttendanceMode);
 
       if (!data || data.length === 0) {
-        alert("No attendance records found for the selected criteria.");
+        toast.warning("No attendance records found for the selected criteria.");
         setAttendanceData([]);
         return;
       }
 
       setAttendanceData(data);
-      alert("Attendance data fetched successfully.");
+      toast.success("Attendance data fetched successfully.");
     } catch (err: any) {
-      alert(`Failed to fetch attendance: ${err.message || "Unknown error"}`);
+      toast.error(`No data found on this range of time`);
     } finally {
       setLoading(false);
     }
@@ -159,10 +160,10 @@ const StudentAttendanceShow: React.FC = () => {
 
       await updateAttendance(payload);
 
-      alert("Attendance updated successfully.");
+      toast.success("Attendance updated successfully.");
       handleFetchAttendance(); // Refresh 
     } catch (err) {
-      alert("Failed to update attendance.");
+      toast.error("Failed to update attendance.");
     } finally {
       setLoading(false);
       setIsEditModalOpen(false);
@@ -181,12 +182,11 @@ const StudentAttendanceShow: React.FC = () => {
 
 
         <>
-
+          <ToastContainer position="top-right" autoClose={3000} />
+             
           <div className="box">
           <div className="flex items-center space-x-4 mb-4">
-            <span>
-              <BackButton />
-            </span>
+            
             <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Attendance View</h1>
           </div>
 

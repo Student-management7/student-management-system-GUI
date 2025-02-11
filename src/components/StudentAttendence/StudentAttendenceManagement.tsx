@@ -8,6 +8,7 @@ import Loader from "../loader/loader";
 import BackButton from "../Navigation/backButton";
 import '../../global.scss'
 import ReusableTable from "../StudenAttendanceShow/Table/Table";
+import { toast, ToastContainer } from "react-toastify";
 
 
 
@@ -31,8 +32,11 @@ const StudentManagementSystem: React.FC = () => {
           setClasses(sortedClasses); // Set the sorted class data
         } catch (error) {
           setError("Failed to fetch class data");
+          toast.error("Failed to fetch class data")
         } finally {
           setLoading(false);
+          toast.error("Failed to fetch class data")
+
         }
       };
       
@@ -71,6 +75,7 @@ const StudentManagementSystem: React.FC = () => {
             setStudents(filteredStudents);
         } catch (error) {
             setError("Failed to fetch student data");
+            toast.error("Failed to fetch student data try again")
         } finally {
             setLoading(false);
         }
@@ -97,12 +102,12 @@ const StudentManagementSystem: React.FC = () => {
             const response = await axiosInstance.post(endpoint, payload);
 
             if (response.status === 200) {
-                alert("Attendance submitted successfully!");
+                toast.success("Attendance submitted successfully!");
             } else {
                 throw new Error("Failed to submit attendance");
             }
         } catch (error) {
-            alert("Error submitting attendance: " + error);
+            toast.error("Error submitting attendance");
         }
     };
 
@@ -165,6 +170,9 @@ const StudentManagementSystem: React.FC = () => {
 
         
     <>
+                         <ToastContainer position="top-right" autoClose={3000} />
+    
+    
     {loading && <Loader />} {/* Show loader when loading */}
     {!loading && (
 
