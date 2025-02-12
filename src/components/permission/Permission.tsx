@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/Utils/apiUtils";
-import BackButton from "../Navigation/backButton";
+import { toast, ToastContainer } from "react-toastify";
 export default function Permission() {
   const [facultyData, setFacultyData] = useState<any[]>([]);
   const [selectedFaculty, setSelectedFaculty] = useState<{
@@ -67,6 +67,7 @@ export default function Permission() {
     fetchFaculty();
   }, []);
 
+
   // Handle email selection
   const handleEmailChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedEmail = event.target.value;
@@ -88,39 +89,51 @@ export default function Permission() {
       },
     }));
   };
+ 
 
   // Handle form submission
-  const handleSubmit = async () => {
-    if (!selectedFaculty) {
-      alert("Please select a faculty member.");
-      return;
-    }
+// Handle form submission
+const handleSubmit = async () => {
+  if (!selectedFaculty) {
+    toast.warning("Please select a faculty member.");
+    return;
+  }
 
-    try {
-      const token = localStorage.getItem("authToken");
-      const payload = {
-        facultyId: selectedFaculty.id,
-        email: selectedFaculty.email,
-        permissions,
-      };
-      console.log("Submitting permissions:", payload);
-      await axiosInstance.post("/permissions/save", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      alert("Permissions updated successfully!");
-    } catch (error) {
-      console.error("Error updating permissions:", error);
-    }
-  };
+  // Check if at least one permission is selected
+  const isAnyPermissionSelected = Object.values(permissions).some(section =>
+    Object.values(section).some(value => value === true)
+  );
+
+  if (!isAnyPermissionSelected) {
+    toast.warning("Please select at least one permission.");
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("authToken");
+    const payload = {
+      facultyId: selectedFaculty.id,
+      email: selectedFaculty.email,
+      permissions,
+    };
+    console.log("Submitting permissions:", payload);
+    await axiosInstance.post("/permissions/save", payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    toast.success("Permissions updated successfully!");
+  } catch (error) {
+    toast.error("Error updating permissions");
+  }
+};
+
 
   return (
     <div className="container mt-5">
+      <ToastContainer position="top-right" autoClose={3000}/>
   <div className="flex items-center space-x-4 mb-4 ">
-            <span >
-              <BackButton />
-            </span>
+          
             <h1 className="text-xl items-center font-bold text-[#27727A]" >Manage Faculty Permission</h1>
           </div>
 
@@ -174,8 +187,8 @@ export default function Permission() {
 
         {/* Permissions Section */}
         <div className="card shadow-sm mb-4">
-          <div className="card-header bg-secondary text-white">
-            <h5>Student Permissions</h5>
+          <div className="card-header bg-[#3a8686] text-white">
+            <h5 >Student Permissions</h5>
           </div>
           <div className="card-body">
             {Object.keys(permissions.Student).map((key) => (
@@ -196,7 +209,7 @@ export default function Permission() {
         </div>
 
         <div className="card shadow-sm mb-4">
-          <div className="card-header bg-secondary text-white">
+          <div className="card-header text-white bg-[#3a8686]">
             <h5>Faculty Permissions</h5>
           </div>
           <div className="card-body">
@@ -218,7 +231,7 @@ export default function Permission() {
         </div>
 
         <div className="card shadow-sm mb-4">
-          <div className="card-header bg-secondary text-white">
+          <div className="card-header bg-[#3a8686] text-white">
             <h5>Finance Permissions</h5>
           </div>
           <div className="card-body">
@@ -239,7 +252,7 @@ export default function Permission() {
           </div>
         </div>
         <div className="card shadow-sm mb-4">
-          <div className="card-header bg-secondary text-white">
+          <div className="card-header bg-[#3a8686] text-white">
             <h5>Notification Permissions</h5>
           </div>
           <div className="card-body">
@@ -260,7 +273,7 @@ export default function Permission() {
           </div>
         </div>
         <div className="card shadow-sm mb-4">
-          <div className="card-header bg-secondary text-white">
+          <div className="card-header bg-[#3a8686] text-white">
             <h5>Subject  Permissions</h5  >
           </div>
           <div className="card-body">

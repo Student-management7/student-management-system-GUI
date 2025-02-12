@@ -10,6 +10,20 @@ export const SideBarData = [
 
     },
     {
+        title: 'Super Admin',
+        path: '/',
+        icon: FaUserLarge,
+        iconClosed: FaCaretUp,
+        iconeOpened: FaCaretDown,
+        subNav: [
+            {
+                title: 'Super Admin Registration',
+                path: '/SuperAdminController',
+                icon: FaUserPlus,
+            }
+        ]
+    },
+    {
         title: 'Student',
         path: '/',
         icon: FaUserLarge,
@@ -71,7 +85,7 @@ export const SideBarData = [
         subNav: [
 
             {
-                title: 'Admin Fees',
+                title: 'Class Fees',
                 path: '/fees',
                 icon: FaMoneyBill,
             },

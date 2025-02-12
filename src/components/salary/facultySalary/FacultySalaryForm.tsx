@@ -3,6 +3,7 @@ import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import { FacultySalaryFormValues, FacultySalaryFormProps } from "../../../services/salary/facultysarayform/type";
 import { SalaryValidationSchema } from "../../../services/salary/facultysarayform/validation";
 import axiosInstance from "../../../services/Utils/apiUtils";
+import { toast, ToastContainer } from "react-toastify";
 
 interface FacultyData {
   fact_id: string;
@@ -35,7 +36,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
       setFacultyData(response.data);
     } catch (err) {
       setError("Failed to fetch faculty data. Please try again later.");
-      console.error("Error fetching faculty data:", err);
+      toast.error("Error fetching faculty data");
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +83,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
         try {
           await onSave(payload);
         } catch (error) {
-          console.error("Salary save/update error:", error);
+          toast.error("Salary save/update error");
         }
       };
 
@@ -101,7 +102,9 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
   return (
     <div className="box mt-4">
        
-        <h1 className="text-center mt-4 text-3xl">{isEditMode ? "Edit Faculty Salary" : "Add Faculty Salary"}</h1>
+                     <ToastContainer position="top-right" autoClose={3000} />
+                    
+        <h1 className="text-center mt-4 text-3xl"> <i onClick={()=> onCancel()} className="bi bi-arrow-left-circle m-4" />{isEditMode ? "Edit Faculty Salary" : "Add Faculty Salary"}</h1>
           
         <div className="card-body">
           <Formik

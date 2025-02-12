@@ -29,11 +29,9 @@ const StudentRegistrationController = () => {
 
   const [columns] = useState<any[]>([
     { field: "name", headerName: "Name" },
-    // { field: "city", headerName: "City" },
     { field: "cls", headerName: "Class" },
     { field: "gender", headerName: "Gender" },
     { field: "familyDetails.stdo_FatherName", headerName: "Father Name", nestedField: 'familyDetails.stdo_FatherName' },
-    // { field: "familyDetails.stdo_primaryContact", headerName: "Contact" ,  nestedField: 'familyDetails.stdo_primaryContact' },
     {
       field: "actions",
       headerName: "Actions",
@@ -126,14 +124,14 @@ const StudentRegistrationController = () => {
 
   return (
     <>
+     <ToastContainer position="top-right" autoClose={3000} />
+    
       {loading && <Loader />} {/* Show loader when loading */}
       {!loading && (
         <div className="box ">
           <div className="headding1">
             <h1>
-              {/* <span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
-              </span> */}
+            
               &nbsp;Student Registration
             </h1>
           </div>
@@ -144,11 +142,11 @@ const StudentRegistrationController = () => {
                 <div className="headding1">
                   <h1 onClick={() => setEditFormView(false)}>
                     <div>
-                      <i className="bi bi-arrow-left-circle" /> <span>User Edit</span>
+                      <i className="bi bi-arrow-left-circle m-1" /> <span>User Edit</span>
                     </div>
                   </h1>
                 </div>
-                {singleRowData && <EditStudentForm singleRowData={singleRowData} />}
+                {singleRowData && <EditStudentForm  onClose={() => setEditFormView(false)} singleRowData={singleRowData} />}
               </div>
             ) : (
               <div>
@@ -160,7 +158,7 @@ const StudentRegistrationController = () => {
                     Add Student
                   </button>
                 </div>
-                <ToastContainer />
+                <ToastContainer position="top-right" autoClose={3000} />
                 <AlertDialog
                   title="Confirm Deletion"
                   message={`Are you sure you want to delete the student record for ${dialogData?.name}?`}
@@ -179,6 +177,7 @@ const StudentRegistrationController = () => {
                     <i className="bi bi-arrow-left-circle" /> <span>User Details</span>
                   </div>
                 </h1>
+
               </div>
               <FormView />
             </div>

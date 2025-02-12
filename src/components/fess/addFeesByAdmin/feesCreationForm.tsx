@@ -3,6 +3,7 @@ import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import { validationSchema } from "../../../services/feesServices/AdminFeescreationForm/validation";
 import { FeeFormValues } from "../../../services/feesServices/AdminFeescreationForm/type";
 import { saveFees } from "../../../services/feesServices/AdminFeescreationForm/api";
+import { toast, ToastContainer } from "react-toastify";
 
 const initialValues: FeeFormValues = {
     className: "",
@@ -26,15 +27,19 @@ const FeesForm: React.FC = () => {
     const handleSubmit = async (values: FeeFormValues) => {
         try {
             const response = await saveFees(values);
+            toast.success("Save fees successfully")
             console.log("Response:", response);
         } catch (error: any) {
+            toast.error("Problem occur during saving fees try aain")
             setError(error.message || "An unexpected error occurred.");
         }
     };
 
     return (
-
+      <>
         <div className="box max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-md">
+        <ToastContainer position="top-right" autoClose={3000} />
+            
             <h2 className="text-xl font-bold mb-4 text-center">Fees Creation Form</h2>
             <Formik
                 initialValues={initialValues}
@@ -44,6 +49,8 @@ const FeesForm: React.FC = () => {
                 {({ values }) => (
                     <Form>
                         <div className="mb-4">
+                        <ToastContainer position="top-right" autoClose={3000} />
+
                             <label className="block mb-2 font-semibold" htmlFor="className">
                                 Class Name
                             </label>
@@ -192,7 +199,7 @@ const FeesForm: React.FC = () => {
                 )}
             </Formik>
         </div>
-
+        </>
     );
 };
 

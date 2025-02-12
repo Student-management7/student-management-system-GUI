@@ -15,7 +15,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
   onConfirm,
   onCancel,
 }) => {
-  if (!isOpen) return null; // Don't render the dialog if it's not open
+  if (!isOpen) return null; 
   console.log("Rendering AlertDialog");
   const styles = {
     overlay: {

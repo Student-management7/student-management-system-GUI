@@ -2,6 +2,7 @@
     
     --green-color:#126666;
     --greenLight-color:  #3a8686;
+    --greenDark-color:  #0c38389f;
     --black-color:#69686a;
     --white-color:#ffffff;
     --whiteBack-color:#f3f3f3;
@@ -12,6 +13,7 @@
   .button {
     background-color: var(--greenLight-color);
     border: none;
+    
     border-radius: 4px;
     color: #ffffff;
     font-family: Arial, sans-serif;
@@ -62,11 +64,14 @@
   font-weight: 300;
  }
  .header{
-  background-color: var(--greenLight-color);
+  padding: 5px;
+  background-color: var(--green-color);
+  margin-left: -2px;
+ 
   
  }
  .headerMenu {
-  background-color: var(--green-color);
+  background-color: var(--greenDark-color);
   border-radius: 30px;
   box-shadow: 20 14px 2px rgba(0, 0, 0, 0.2); 
 
@@ -74,18 +79,18 @@
 }
 
 .headerMenu:hover {
-  background-color: #16d8df81; 
+  background-color: var(--greenLight-color); 
 }
 
 .headerMenu:active {
   transform: translateY(1px);
 }
 .HeaderMenuItem {
-  background-color: var(--greenLight-color);
+  background-color: var(--green-color);
   border-radius: 5px;
   
   :hover{
-    background-color: var(--green-color);
+    background-color: var(--greenDark-color);
     border-radius: 15px;
   }
 }
@@ -97,4 +102,8 @@
     padding: 5px;
     color: #ffffff;
   }
+}
+
+.red{
+  color: #FF0000;
 }

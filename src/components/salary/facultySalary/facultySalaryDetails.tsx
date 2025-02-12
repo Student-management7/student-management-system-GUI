@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "../../../services/Utils/apiUtils";
 import Loader from "../../loader/loader";
 import ReusableTable from "../../MUI Table/ReusableTable";
+import { toast, ToastContainer } from "react-toastify";
 
 // Define interfaces for data structures
 interface FacultySalary {
@@ -41,9 +42,10 @@ const FacultySalaryDetails: React.FC = () => {
         if (response.data && Array.isArray(response.data) && response.data.length > 0) {
           setFaculty(response.data[0]); // Assuming the response is an array
         } else {
-          setError("No data found for the given ID.");
+          toast.error("No data found for the given ID.");
         }
       } catch (err) {
+        toast.error("An error occurred while fetching data")
         setError((err as Error).message || "An error occurred while fetching data.");
       } finally {
         setLoading(false);
@@ -72,6 +74,8 @@ const FacultySalaryDetails: React.FC = () => {
 
     return (
       <div className="box p-4">
+                      <ToastContainer position="top-right" autoClose={3000} />
+        
         <div className="header mb-4">
           <h2 className="text-2xl font-bold">Faculty Details</h2>
           <p>

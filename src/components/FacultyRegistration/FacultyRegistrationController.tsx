@@ -7,7 +7,7 @@ import { facultyValidationSchema } from '../../services/Faculty/fecultyRegistret
 import { saveFacultyDetails, getFacultyDetails, updateFacultyDetails, deleteFacultyDetails } from '../../services/Faculty/fecultyRegistretion/API/API';
 import GridView from './GridView';
 import CustomAlert from '../UI/alert';
-import DeleteConfirmationModal from '../../services/DeleteModele/DeleteConfirmationModal';
+// import DeleteConfirmationModal from '../../services/DeleteModele/DeleteConfirmationModal';
 import { FacultyFormData } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -238,7 +238,7 @@ const FacultyRegistrationForm: React.FC = () => {
     {!loading && (
     <>
 
-   <ToastContainer/>
+      <ToastContainer position="top-right" autoClose={3000} />
       {!isFormVisible ? (
         <div className="box">
           <div className='text-right'>

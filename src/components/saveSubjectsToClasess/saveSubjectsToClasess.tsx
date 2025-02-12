@@ -174,8 +174,8 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
     <div>
       <div>
         <div>
-          <h2 className="text-2xl font-bold mb-4 text-center text-gray-700">
-            {editableRow ? "Update Subjects" : "Save Subjects"}
+          <h2 className="head1 mb-4 text-center text-gray-700">
+            <i  onClick={onClose} className="bi bi-arrow-left-circle m-3"/>{editableRow ? "Update Subjects" : "Save Subjects"}
           </h2>
 
           <div className="mb-6">
