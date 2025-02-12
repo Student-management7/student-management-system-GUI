@@ -155,12 +155,14 @@ const StudentRegistrationController = () => {
 
   return (
     <>
+     <ToastContainer position="top-right" autoClose={3000} />
+    
       {loading && <Loader />} {/* Show loader when loading */}
       {!loading && (
         <div className="box ">
           <div className="headding1">
             <h1>
-              
+            
               &nbsp;Student Registration
             </h1>
           </div>
@@ -171,11 +173,11 @@ const StudentRegistrationController = () => {
                 <div className="headding1">
                   <h1 onClick={() => setEditFormView(false)}>
                     <div>
-                      <i className="bi bi-arrow-left-circle" /> <span>User Edit</span>
+                      <i className="bi bi-arrow-left-circle m-1" /> <span>User Edit</span>
                     </div>
                   </h1>
                 </div>
-                {singleRowData && <EditStudentForm singleRowData={singleRowData} />}
+                {singleRowData && <EditStudentForm  onClose={() => setEditFormView(false)} singleRowData={singleRowData} />}
               </div>
             ) : (
               <div>
@@ -187,7 +189,7 @@ const StudentRegistrationController = () => {
                     Add Student
                   </button>
                 </div>
-                <ToastContainer />
+                <ToastContainer position="top-right" autoClose={3000} />
                 <AlertDialog
                   title="Confirm Deletion"
                   message={`Are you sure you want to delete the student record for ${dialogData?.name}?`}
@@ -206,6 +208,7 @@ const StudentRegistrationController = () => {
                     <i className="bi bi-arrow-left-circle" /> <span>User Details</span>
                   </div>
                 </h1>
+
               </div>
               <FormView  onCancel={() => setEditFormView(false)} />
             </div>

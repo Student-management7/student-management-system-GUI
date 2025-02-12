@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axiosInstance from "../../../services/Utils/apiUtils";
+import { toast, ToastContainer } from "react-toastify";
 
 interface Student {
   id: string;
@@ -85,6 +86,7 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose, editingData 
 
   return (
     <div className="container mt-3">
+      
       <div className="row mb-3">
        <i onClick={onClose} className="bi bi-arrow-left-circle head1 col-1" />
        <h3 className="col head1 mb-4">{editingData ? "Edit Student Fee" : "Add Student Fee"}</h3>
@@ -107,12 +109,13 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose, editingData 
             alert(editingData ? "Fee updated successfully!" : "Fee added successfully!");
             onClose();
           } catch (error) {
-            alert("Failed to save fee. Please try again.");
+            toast.error("Failed to save fee. Please try again.");
           }
         }}
         enableReinitialize
       >
         {({ setFieldValue }) => (
+         
           <Form>
             {/* Search & Class Selection */}
             <div className="row mb-3 ">
@@ -189,7 +192,10 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose, editingData 
             </div>
           </Form>
         )}
+        
       </Formik>
+      <ToastContainer position="top-right" autoClose={3000} />
+
     </div>
   );
 };

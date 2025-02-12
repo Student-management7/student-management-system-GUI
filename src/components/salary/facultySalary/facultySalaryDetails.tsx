@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "../../../services/Utils/apiUtils";
 import Loader from "../../loader/loader";
 import ReusableTable from "../../MUI Table/ReusableTable";
-import BackButton from "../../Navigation/backButton";
+import { toast, ToastContainer } from "react-toastify";
 
 // Define interfaces for data structures
 interface FacultySalary {
@@ -42,9 +42,10 @@ const FacultySalaryDetails: React.FC = () => {
         if (response.data && Array.isArray(response.data) && response.data.length > 0) {
           setFaculty(response.data[0]); // Assuming the response is an array
         } else {
-          setError("No data found for the given ID.");
+          toast.error("No data found for the given ID.");
         }
       } catch (err) {
+        toast.error("An error occurred while fetching data")
         setError((err as Error).message || "An error occurred while fetching data.");
       } finally {
         setLoading(false);
@@ -73,15 +74,16 @@ const FacultySalaryDetails: React.FC = () => {
 
     return (
       <div className="box p-4">
-
-
-        <div className="flex items-center space-x-4 mb-4">
-          <span>
-            <BackButton />
-          </span>
-          <h1 className="text-xl items-center font-bold text-[#27727A]">
-            Faculty Details
-          </h1>
+                      <ToastContainer position="top-right" autoClose={3000} />
+        
+        <div className="header mb-4">
+          <h2 className="head1">Faculty Details</h2>
+          <p>
+            <strong>ID:</strong> {faculty.fact_id}
+          </p>
+          <p>
+            <strong>Name:</strong> {faculty.fact_Name}
+          </p>
         </div>
 
         <p className="ml-6">

@@ -4,8 +4,9 @@ import { Eye, Pencil, Trash2 } from "lucide-react";
 import axiosInstance from "../../../services/Utils/apiUtils";
 import StudentFeesForm from "./studentFeesForm";
 import Loader from "../../loader/loader";
-// import BackButton from "../../Navigation/backButton";
-import ReusableTable from "../../StudenAttendanceShow/Table/Table";
+import AlertDialog from "../../alert/AlertDialog";
+import ReusableTable from "../../MUI Table/ReusableTable";
+import { toast, ToastContainer } from "react-toastify";
 
 interface FeeData {
   id: string;
@@ -20,12 +21,13 @@ interface FeeData {
   remainingFees: number;
 }
 
-
 const StudentFeesController: React.FC = () => {
   const [rowData, setRowData] = useState<FeeData[]>([]);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editingFee, setEditingFee] = useState<FeeData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const columns= [
@@ -40,49 +42,29 @@ const StudentFeesController: React.FC = () => {
     { 
       field: "familyDetails.stdo_FatherName", 
       headerName: "Father Name",
-      nestedField: 'familyDetails.stdo_FatherName',
-      editable: false  
+      nestedField: "familyDetails.stdo_FatherName",
+      editable: false,
     },
-    
-    { 
-      field: "cls", 
-      headerName: "Class",
-      editable: false  
+    { field: "cls", headerName: "Class", editable: false },
+    { field: "totalFee", headerName: "Total Fees", editable: false },
+    { field: "remainingFees", headerName: "Remaining Fees", editable: false },
+    {
+      field: "view",
+      headerName: "View Details",
+      cellRenderer: (params: any) => (
+        <button onClick={() => params.data?.id && handleViewDetails(params.data.id)}>
+          <Eye size={20} color="blue" />
+        </button>
+      ),
     },
-    { 
-      field: "totalFee", 
-      headerName: "Total Fees",
-      
-      editable: false  
-
-    },
-    { 
-      field: "remainingFees", 
-      headerName: "Remaining Fees",
-      editable: false  
-    },
-   { 
-         field: "view",
-         headerName: "View Details",
-         cellRenderer: (params: any) => (
-           <button
-               onClick={() => params.data?.id && handleViewDetails(params.data.id)}
-             >
-              <Eye size={20} color='blue' />
-             </button>
-         )},
     {
       field: "actions",
       headerName: "Edit",
       cellRenderer: (row: FeeData) => (
-        <button
-          onClick={() => handleEdit(row)}
-          className="text-yellow-600 hover:text-yellow-800"
-          aria-label="Edit Details"
-        >
+        <button onClick={() => handleEdit(row)} className="text-yellow-600 hover:text-yellow-800">
           <Pencil size={20} />
         </button>
-      )
+      ),
     },
     {
       field: "actions",
@@ -97,7 +79,6 @@ const StudentFeesController: React.FC = () => {
             }
           }}
           className="text-red-600 hover:text-red-800"
-          aria-label="Delete Record"
         >
           <Trash2 size={20} />
         </button>
@@ -105,7 +86,6 @@ const StudentFeesController: React.FC = () => {
     }
     
   ];
-
 
   const handleViewDetails = (id: string) => {
     navigate(`/studentFeesDetails/${id}`);
@@ -117,22 +97,17 @@ const StudentFeesController: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this fee record?")) {
+    if (deleteId) {
       try {
         await axiosInstance.post(`/student/deleteFees?id=${id}`);
         fetchFees();
       } catch (error) {
-        alert("Failed to delete fee record");
+        toast.error("Failed to delete fee record");
+      } finally {
+        setAlertOpen(false);
+        setDeleteId(null);
       }
     }
-  };
-
-  const handleRowUpdate = (updatedRow: any, rowIndex: number) => {
-    const newRows = [...rowData];
-    newRows[rowIndex] = updatedRow;
-    setRowData(newRows);
-    // Here you can also make an API call to update the data on the server
-    // Example: axiosInstance.put(`/student/fees/${updatedRow.id}`, updatedRow);
   };
 
   const fetchFees = async () => {
@@ -141,6 +116,7 @@ const StudentFeesController: React.FC = () => {
       const response = await axiosInstance.get<FeeData[]>("/student/findAllStudent");
       setRowData(response.data);
     } catch (error) {
+      toast.error("Errorfetching Fee")
       console.error("Error fetching fees:", error);
     } finally {
       setLoading(false);
@@ -151,37 +127,21 @@ const StudentFeesController: React.FC = () => {
     fetchFees();
   }, []);
 
-
-  
   return (
     <>
+          <ToastContainer position="top-right" autoClose={3000} />
+    
       {loading && <Loader />}
       {!loading && (
         <div className="box">
-          <div className="flex items-center space-x-4 mb-4">
-           
-            
+          <h1 className="head1">Student Fees</h1>
+          <div className="text-right mb-3">
+            <button onClick={() => setShowForm(true)} className="btn button">
+              Add Fees
+            </button>
           </div>
           {!showForm ? (
-            <>
-            <h1 className="head1">
-              Student Fees
-            </h1>
-              <div className="text-right mb-3">
-                <button
-                  onClick={() => setShowForm(true)}
-                  className="btn button"
-                >
-                  Add Fees
-                </button>
-              </div>
-              <ReusableTable 
-                rows={rowData} 
-                columns={columns}
-                onRowUpdate={handleRowUpdate}
-                rowsPerPageOptions={[5, 10, 25]}
-              />
-            </>
+            <ReusableTable rows={rowData} columns={columns} rowsPerPageOptions={[5, 10, 25]} />
           ) : (
             <StudentFeesForm
               onClose={() => {
@@ -189,11 +149,17 @@ const StudentFeesController: React.FC = () => {
                 setEditingFee(null);
                 fetchFees();
               }}
-              // editingData={editingFee}
             />
           )}
         </div>
       )}
+      <AlertDialog
+        title="Delete Confirmation"
+        message="Are you sure you want to delete this fee record?"
+        isOpen={alertOpen}
+        onConfirm={handleDelete}
+        onCancel={() => setAlertOpen(false)}
+      />
     </>
   );
 };

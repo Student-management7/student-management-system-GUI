@@ -41,7 +41,7 @@ const FormView  =({ onCancel }) => {
         const sortedData = sortArrayByKey(data, "className");
         setClasses(sortedData);
       } catch (error) {
-        console.error("Error fetching classes:", error);
+        toast.error("Error fetching classes:");
       }
     };
 
@@ -167,7 +167,7 @@ const FormView  =({ onCancel }) => {
   return (
     <>
       <div>
-        <ToastContainer />
+                     <ToastContainer position="top-right" autoClose={3000} />
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}

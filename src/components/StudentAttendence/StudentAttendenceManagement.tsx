@@ -8,17 +8,21 @@ import Loader from "../loader/loader";
 import BackButton from "../Navigation/backButton";
 import '../../global.scss'
 import ReusableTable from "../StudenAttendanceShow/Table/Table";
-import { toast, ToastContainer, } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+
+
 const StudentManagementSystem: React.FC = () => {
     const [classes, setClasses] = useState<ClassData[]>([]);
     const [subjects, setSubjects] = useState<string[]>([]);
     const [selectedClass, setSelectedClass] = useState<string>("");
     const [selectedSubject, setSelectedSubject] = useState<string>("");
     const [students, setStudents] = useState<Student[]>([]);
-    const [attendanceMode, setAttendanceMode] = useState<"subject" | "master">("subject");
+    const [AttendanceMode, setAttendanceMode] = useState<"subject" | "master">("subject");
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
     const [bulkAttendance, setBulkAttendance] = useState<string>('');
+
+
 
 
     // Fetch class data
@@ -26,13 +30,18 @@ const StudentManagementSystem: React.FC = () => {
         try {
             setError("");
             setLoading(true);
+
             const response = await axiosInstance.get("/class/data");
-            const sortedClasses = sortArrayByKey(response.data.classData, "className"); // Sort data by className
+            const sortedClasses = sortArrayByKey(response.data.classData, "className");
             setClasses(sortedClasses); // Set the sorted class data
+            setAttendanceMode("master")
         } catch (error) {
-            setError("Failed to fetch class data");
+
+            toast.error("Failed to fetch class data")
         } finally {
             setLoading(false);
+
+
         }
     };
 
@@ -60,7 +69,7 @@ const StudentManagementSystem: React.FC = () => {
         try {
             setError("");
             setLoading(true);
-            const endpoint = API_ENDPOINTS.STUDENT_DATA(selectedClass, attendanceMode === "master");
+            const endpoint = API_ENDPOINTS.STUDENT_DATA(selectedClass, AttendanceMode === "master");
             const response = await axiosInstance.get(endpoint);
             const filteredStudents = response.data.map((student: any) => ({
                 stdId: student.id,
@@ -76,6 +85,7 @@ const StudentManagementSystem: React.FC = () => {
         } catch (error) {
 
             setError("Failed to fetch student data");
+            toast.error("Failed to fetch student data try again")
         } finally {
             setLoading(false);
         }
@@ -87,27 +97,27 @@ const StudentManagementSystem: React.FC = () => {
     const submitAttendance = async () => {
         const payload: AttendancePayload = {
             className: selectedClass,
-            subject: attendanceMode === "master" ? "" : selectedSubject,
+            subject: AttendanceMode === "master" ? "" : selectedSubject,
             studentList: students.map((student) => ({
                 stdId: student.stdId,
                 remark: student.remark || "",
                 name: student.name,
                 attendance: student.attendance || "Absent",
             })),
-            masterAttendance: attendanceMode === "master",
+            masterAttendance: AttendanceMode === "master",
         };
 
         try {
-            const endpoint = API_ENDPOINTS.SAVE_ATTENDANCE(attendanceMode === "master");
+            const endpoint = API_ENDPOINTS.SAVE_ATTENDANCE(AttendanceMode === "master");
             const response = await axiosInstance.post(endpoint, payload);
 
             if (response.status === 200) {
-                alert("Attendance submitted successfully!");
+                toast.success("Attendance submitted successfully!");
             } else {
                 throw new Error("Failed to submit attendance");
             }
         } catch (error) {
-            alert("Error submitting attendance: " + error);
+            toast.error("Error submitting attendance");
         }
     };
 
@@ -202,25 +212,66 @@ const StudentManagementSystem: React.FC = () => {
 
                         {error && <p className="text-red-500">{error}</p>}
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
                             <div className="attendance-mode-selector flex items-center space-x-4">
                                 <span className="font-medium">
-                                    {attendanceMode === "subject" ? "Subject-Wise Attendance" : "Master Attendance"}
+                                    {AttendanceMode === "subject" ? "Subject-Wise Attendance" : "Master Attendance"}
                                 </span>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input
                                         type="checkbox"
                                         className="sr-only peer"
-                                        checked={attendanceMode === "master"}
+                                        checked={AttendanceMode === "master"}
                                         onChange={() =>
-                                            setAttendanceMode(attendanceMode === "subject" ? "master" : "subject")
+                                            setAttendanceMode(AttendanceMode === "subject" ? "master" : "subject")
                                         }
                                     />
-                                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#3a8686] dark:peer-focus:ring-[#3a8686] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3a8686]"></div>
                                 </label>
                             </div>
 
-                            <div className="bulk-attendance flex items-center space-x-4 justify-end">
+                            <select
+                                value={selectedClass}
+                                onChange={handleClassChange}
+                                className="custom-dropdown p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="">Select Class</option>
+                                {classes.map((cls) => (
+                                    <option key={cls.className} value={cls.className}>
+                                        Class {cls.className}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <select
+                                value={selectedSubject}
+                                onChange={handleSubjectChange}
+                                hidden={AttendanceMode === "master"}
+
+                                className="custom-dropdown p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="">Select Subject</option>
+                                {subjects.map((sub, index) => (
+                                    <option key={index} value={sub}>
+                                        {sub}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <button
+                                onClick={fetchStudents}
+                                disabled={!selectedClass}
+                                className="fetch-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 button"
+                            >
+                                {loading ? "Loading..." : "Fetch Students"}
+                            </button>
+
+                        </div>
+
+
+                        <div className="overflow-x-auto">
+
+                            <div className="bulk-attendance flex items-center space-x-4 float-right">
                                 <select
                                     value={bulkAttendance}
                                     onChange={handleBulkAttendanceChange}
@@ -240,47 +291,7 @@ const StudentManagementSystem: React.FC = () => {
                                     Apply to All
                                 </button>
                             </div>
-                        </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                            <select
-                                value={selectedClass}
-                                onChange={handleClassChange}
-                                className="custom-dropdown p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">Select Class</option>
-                                {classes.map((cls) => (
-                                    <option key={cls.className} value={cls.className}>
-                                        Class {cls.className}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <select
-                                value={selectedSubject}
-                                onChange={handleSubjectChange}
-                                hidden={attendanceMode === "master"}
-
-                                className="custom-dropdown p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">Select Subject</option>
-                                {subjects.map((sub, index) => (
-                                    <option key={index} value={sub}>
-                                        {sub}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <button
-                                onClick={fetchStudents}
-                                disabled={!selectedClass}
-                                className="fetch-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 button"
-                            >
-                                {loading ? "Loading..." : "Fetch Students"}
-                            </button>
-                        </div>
-
-                        <div className="overflow-x-auto">
                             <ReusableTable
                                 rows={students}
                                 columns={Column}

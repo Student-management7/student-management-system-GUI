@@ -5,7 +5,7 @@ import { formatToDDMMYYYY } from '../Utils/dateUtils';
 import { Faculty } from '../../services/Faculty/facultyAttendanceEdit/Type/type';
 import ReusableTable from '../StudenAttendanceShow/Table/Table';
 import BackButton from '../Navigation/backButton';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 
 interface AttendanceRow {
   name: string;
@@ -67,11 +67,11 @@ const EditAttendance: React.FC = () => {
         factList: editedFactList,
       };
       await saveAttendanceEdit(payload);
-      alert('Attendance updated successfully!');
+      toast.success('Attendance updated successfully!');
       navigate('/facultyAttendanceShow');
     } catch (error) {
       console.error('Save error:', error);
-      alert('Failed to save changes. Please try again.');
+      toast.error('Failed to save changes. Please try again.');
     }
   };
 
@@ -122,6 +122,9 @@ const handleCellValueChange = (factId: string, field: string, value: any) => {
 
  
   return (
+    <>
+      <ToastContainer position="top-right" autoClose={3000} />
+    
     <div className="box">
     <div className="flex items-center space-x-4 mb-4">
       <span>
@@ -158,6 +161,7 @@ const handleCellValueChange = (factId: string, field: string, value: any) => {
       </button>
     </div>
   </div>
+  </>
   );
 };
 

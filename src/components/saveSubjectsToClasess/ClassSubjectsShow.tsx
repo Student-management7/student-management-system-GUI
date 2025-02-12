@@ -27,6 +27,7 @@ const ClassSubjectShow: React.FC = () => {
       if (result && result.classData) {
         setData(result.classData);
       } else {
+        toast.error("Invalid response structure")
         throw new Error("Invalid response structure");
       }
     } catch (err: any) {

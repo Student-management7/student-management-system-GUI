@@ -2,20 +2,24 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import GridView from './gridView';
 import { deleteHolidayApi, fetchHolidayData, saveHoliday } from '../../services/holiday/Api/api';
 import { formatToDDMMYYYY } from '../../components/Utils/dateUtils';
 import { Holiday, HolidayPayload } from '../../services/holiday/Type/type';
 import Loader from '../loader/loader';
-import BackButton from '../Navigation/backButton';
+import AlertDialog from '../alert/AlertDialog';
 import ReusableTable from '../MUI Table/ReusableTable';
 import { Trash2 } from 'lucide-react';
+import { toast, ToastContainer } from 'react-toastify';
 
 const HolidayComponent: React.FC = () => {
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
   const [showForm, setShowForm] = useState<boolean>(false);
   const [rowData, setRowData] = useState<Holiday[]>([]);
   const [selectedClasses, setSelectedClasses] = useState<(string | number)[] | 'All'>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [deleteName, setDeleteName] = useState<string>("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [holidayDate, setHolidayDate] = useState({
     startDate: '',
     endDate: '',
@@ -58,18 +62,23 @@ const HolidayComponent: React.FC = () => {
 
     loadHolidays();
   }, []);
-
-  const handleDeleteButtonClick = async (holidayId: string) => {
-    if (window.confirm('Are you sure you want to delete this holiday?')) {
+  const confirmDelete = async () => {
+    if (deleteId) {
       try {
-        await deleteHolidayApi(holidayId);
-        setRowData((prevData) => prevData.filter((row) => row.id !== holidayId));
-        alert('Holiday deleted successfully!');
+        await deleteHolidayApi(deleteId);
+        setRowData((prevData) => prevData.filter((row) => row.id !== deleteId));
+        toast.success("holiday deleted successfully")
       } catch (error) {
-        console.error('Error deleting holiday:', error);
-        alert('Failed to delete the holiday. Please try again.');
+        toast.error('Error deleting holiday');
       }
     }
+    setIsDialogOpen(false);
+    setDeleteId(null);
+  };
+  const handleDeleteButtonClick = (holidayId: string, holidayName: string) => {
+    setDeleteId(holidayId);
+    setDeleteName(holidayName);
+    setIsDialogOpen(true);
   };
 
   const formik = useFormik({
@@ -104,11 +113,11 @@ const HolidayComponent: React.FC = () => {
 
       try {
         await saveHoliday(payload);
-        alert('Holiday Created Successfully!');
+        toast.success('Holiday Created Successfully!');
         setShowForm(false);
       } catch (error) {
         console.error('Error creating holiday:', error);
-        alert('Failed to create holiday. Please try again.');
+        toast.error('Failed to create holiday. Please try again.');
       }
     },
   });
@@ -133,9 +142,9 @@ const HolidayComponent: React.FC = () => {
       cellRenderer: (params: any) => (
         <button
           className="Trsh"
-          onClick={() => handleDeleteButtonClick(params.data.id)}
+          onClick={() => handleDeleteButtonClick(params.data.id, params.data.description)}
         >
-            <Trash2 size={20} color='red' />
+          <Trash2 size={20} color='red' />
         </button>
       ),
     },
@@ -144,19 +153,26 @@ const HolidayComponent: React.FC = () => {
   return (
 
     <>
+              <ToastContainer position="top-right" autoClose={3000} />
+
     {loading ? (
       <Loader /> // Show loader while data is being fetched
     ) : (
     <div className="box ">
+      <AlertDialog
+            title="Confirm Deletion"
+            message={`Are you sure you want to delete the holiday: ${deleteName}?`}
+            isOpen={isDialogOpen}
+            onConfirm={confirmDelete}
+            onCancel={() => setIsDialogOpen(false)}
+          />
       {!showForm ? (
         <>
         
          
         <div className="flex items-center space-x-4 mb-4 ">
-            <span >
-              <BackButton />
-            </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Notification Page</h1>
+          
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Holiday Page</h1>
           </div>
           <div className="text-right">
             <button onClick={() => setShowForm(true)} className="btn btn-default">
@@ -167,7 +183,7 @@ const HolidayComponent: React.FC = () => {
         </>
       ) : (
         <div className="box">
-          <h2 className="text-2xl font-bold mb-10 text-center">Holiday</h2>
+          <h2 className="head1 mb-10 text-center"><i onClick={() => setShowForm(false)} className="bi bi-arrow-left-circle m-2" />Holiday</h2>
           <div className="flex flex-row items-center justify-center space-x-10">
             <div className="mb-4 w-1/2">
               <h3 className="font-semibold mb-2">Select Classes:</h3>
@@ -227,6 +243,7 @@ const HolidayComponent: React.FC = () => {
               )}
             </div>
           </div>
+          <ToastContainer position="top-right" autoClose={3000} />
 
           <div className="text-center mt-10">
             <button

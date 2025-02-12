@@ -1,16 +1,14 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../../context/authContext'; // Assuming auth context is set up
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../../context/authContext";
 
 const ProtectedRoute = () => {
-  const { isAuthenticated } = useAuth(); // Get the auth state
+  const { isAuthenticated, isLoading } = useAuth();
 
-  // If not authenticated, redirect to login page
-  if (!isAuthenticated) {
-    return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
+  if (isLoading) {
+    return <div>Loading...</div>; // Show loading until authentication is confirmed
   }
 
-  // If authenticated, render the protected content
-  return <Outlet />;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

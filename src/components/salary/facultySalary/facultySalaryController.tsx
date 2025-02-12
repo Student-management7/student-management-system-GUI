@@ -6,6 +6,7 @@ import { Eye, Pencil } from "lucide-react";
 import Loader from "../../loader/loader";
 import BackButton from "../../Navigation/backButton";
 import ReusableTable from "../../MUI Table/ReusableTable";
+import { toast, ToastContainer } from "react-toastify";
 // Define types with improved clarity
 type DeductionItem = {
   name: string;
@@ -126,7 +127,7 @@ const FacultySalaryController: React.FC = () => {
       const transformedData = transformFacultySalaryData(data);
       setRowData(transformedData);
     } catch (error) {
-      console.error("Error fetching faculty salary details:", error);
+      toast.error("Error fetching faculty salary details");
       setError("Failed to fetch salary details. Please try again.");
     } finally {
       setLoading(false);
@@ -175,6 +176,8 @@ const FacultySalaryController: React.FC = () => {
   return (
 
     <>
+              <ToastContainer position="top-right" autoClose={3000} />
+    
     {loading ? (
       <Loader /> // Show loader while data is being fetched
     ) : (
@@ -199,9 +202,7 @@ const FacultySalaryController: React.FC = () => {
         <>
           <div className="text-right mb-4">
           <div className="flex items-center space-x-4 mb-4 ">
-            <span >
-              <BackButton />
-            </span>
+            
             <h1 className="text-xl items-center font-bold text-[#27727A]" >Faculty Salary </h1>
           </div>            <button
               onClick={() => {

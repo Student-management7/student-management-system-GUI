@@ -169,12 +169,17 @@ const StudentReportForm: React.FC = () => {
     return (
 
         <>
+        
+        
+                            <ToastContainer position="top-right" autoClose={3000} />
+       
         {loading ? (
           <Loader /> // Show loader while data is being fetched
         ) : (
         <div className="box p-4 mb-4">
+                                 <ToastContainer position="top-right" autoClose={3000} />
+            
             <h2 className="text-center mb-4 fs-4 fw-bold">Student Report Form</h2>
-            <ToastContainer position="top-right" autoClose={5000} />
             <div className="card p-4">
                 <div className="row">
                     <div className="col-md-3">
