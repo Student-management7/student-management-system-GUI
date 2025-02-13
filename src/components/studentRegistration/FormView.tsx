@@ -11,9 +11,11 @@ import AlertDialog from "../alert/AlertDialog";
 import { sortArrayByKey } from "../Utils/sortArrayByKey";
 
 interface FormViewProps {
-  onCancel: () => void;
+  setStudentData: (arg: boolean) => void;
 }
-const FormView  =({ onCancel }) => {
+
+const FormView: React.FC<FormViewProps> = ({ setStudentData  }) => {
+
   const [classes, setClasses] = React.useState<ClassData[]>([]);
   const [selectedFee, setSelectedFee] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -155,15 +157,15 @@ const FormView  =({ onCancel }) => {
     }
   };
 
-  const handleCancel = () => {
-    setIsDialogOpen(false); // Close the dialog on cancel
-  };
+ 
 
   const handleConfirmSubmit = (values: StudentFormData, formikHelpers: any) => {
     setIsDialogOpen(false); // Close the dialog on confirm
     handleSubmit(values, formikHelpers);
     // setIsDialogOpen(false); // Call the submit function
   };
+
+
   return (
     <>
       <div>
@@ -570,9 +572,12 @@ const FormView  =({ onCancel }) => {
                   Submit
                 </button>
                 <button
-                  onClick={() => onCancel}
+                 
                   type="button"
                   className="btn buttonred head1 text-white"
+                  onClick={() => { 
+                    setStudentData(false);
+                  }}
                 >
                   Cancel
                 </button>
@@ -585,7 +590,7 @@ const FormView  =({ onCancel }) => {
                   message="Are you sure you want to submit this item?"
                   isOpen={isDialogOpen}
                   onConfirm={async () => handleConfirmSubmit(values, formikHelpers)} // Pass values and helpers here
-                  onCancel={handleCancel}
+                  onCancel={() => setIsDialogOpen(false)}
                 />
               </div>
             </Form>

@@ -13,8 +13,9 @@ import { Eye, IdCard, Pencil, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../loader/loader"; // Add a Spinner component for loading
 import ReusableTable from "../StudenAttendanceShow/Table/Table";
-
+import * as XLSX from "xlsx";
 import './StudentRegistration.scss'
+import axiosInstance from "../../services/Utils/apiUtils";
 
 
 const StudentRegistrationController = () => {
@@ -26,7 +27,9 @@ const StudentRegistrationController = () => {
   const [dialogData, setDialogData] = useState<StudentFormData | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false); // State for managing loader visibility
-
+  const [file, setFile] = useState<File | null>(null);
+  const [jsonData, setJsonData] = useState<any[]>([]); // Store JSON data
+  
   const [columns] = useState<any[]>([
     { field: "name", headerName: "Name" },
     { field: "cls", headerName: "Class" },
@@ -35,7 +38,7 @@ const StudentRegistrationController = () => {
     {
       field: "Edit data",
       headerName: "Edit",
-     
+
       cellRenderer: (params: any) => (
         <div className="smInline">
           <button
@@ -44,7 +47,7 @@ const StudentRegistrationController = () => {
           >
             <Pencil size={20} />
           </button>
-         
+
         </div>
       ),
     },
@@ -52,7 +55,7 @@ const StudentRegistrationController = () => {
     {
       field: "Delete data",
       headerName: "Delete",
-      
+
       cellRenderer: (params: any) => (
 
         <button
@@ -66,7 +69,7 @@ const StudentRegistrationController = () => {
     {
       field: "View Details",
       headerName: "Details",
-      
+
       cellRenderer: (params: any) => (
 
         <button className="btn btn-lg btn-view"
@@ -80,7 +83,7 @@ const StudentRegistrationController = () => {
     {
       field: "Report Card",
       headerName: "Report Card",
-      
+
       cellRenderer: (params: any) => (
         <button className="btn" onClick={() => handeleReport(params.data.id)}>
           <IdCard size={20} color="green" />
@@ -91,8 +94,8 @@ const StudentRegistrationController = () => {
   ]);
 
 
-  
-  
+
+
   const fetchStudentDetails = async () => {
     setLoading(true); // Show loader before the API call
     try {
@@ -114,7 +117,7 @@ const StudentRegistrationController = () => {
     setSingleRowData(data);
     setEditFormView(true);
   };
-  
+
   const getDeleteData = (data: StudentFormData) => {
     setDialogData(data);
     setIsDialogOpen(true);
@@ -122,7 +125,7 @@ const StudentRegistrationController = () => {
 
   const handleConfirmDelete = async () => {
     if (!dialogData?.id) return;
-    
+
     setLoading(true); // Show loader during deletion
     try {
       await deleteStudentRecord(dialogData.id);
@@ -137,7 +140,7 @@ const StudentRegistrationController = () => {
       setDialogData(null);
     }
   };
-  
+
   const handleCancel = () => {
     setIsDialogOpen(false);
     setDialogData(null);
@@ -153,16 +156,69 @@ const StudentRegistrationController = () => {
     console.log(id);
   };
 
+  
+   // Convert Excel to JSON
+   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const uploadedFile = event.target.files[0];
+      setFile(uploadedFile);
+
+      const reader = new FileReader();
+      reader.readAsBinaryString(uploadedFile);
+
+      reader.onload = (e) => {
+        const binaryData = e.target?.result;
+        const workbook = XLSX.read(binaryData, { type: "binary" });
+
+        // Read first sheet
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+
+        // Convert sheet to JSON
+        const parsedData = XLSX.utils.sheet_to_json(sheet);
+        console.log("Excel Converted JSON:", parsedData);
+        setJsonData(parsedData); // Set JSON Data in State
+      };
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      toast.warning("Please select a file before uploading!");
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    console.log("Uploading file:", file);  // Debugging
+    console.log("FormData:", formData.get("file")); // Check if file is added
+  
+    try {
+      const response = await axiosInstance.post("/student/bulkupload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+  
+      toast.success(response.data.message);
+    } catch (error) {
+      // console.error("Error uploading file:", error.response?.data || error);
+      toast.error("Upload failed!");
+    }
+  };
+  
+  
+  
+
   return (
     <>
-     <ToastContainer position="top-right" autoClose={3000} />
-    
+      <ToastContainer position="top-right" autoClose={3000} />
+
       {loading && <Loader />} {/* Show loader when loading */}
       {!loading && (
         <div className="box ">
           <div className="headding1">
             <h1>
-            
+
               &nbsp;Student Registration
             </h1>
           </div>
@@ -177,11 +233,20 @@ const StudentRegistrationController = () => {
                     </div>
                   </h1>
                 </div>
-                {singleRowData && <EditStudentForm  onClose={() => setEditFormView(false)} singleRowData={singleRowData} />}
+                {singleRowData && <EditStudentForm onClose={() => setEditFormView(false)} singleRowData={singleRowData} />}
               </div>
             ) : (
               <div>
+
+               {/* bulk Upload */}
+                <div className="p-4">
+                  <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
+                  <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 ml-2">Upload</button>
+                </div>
+
+
                 <div className="rightButton">
+
                   <button
                     onClick={() => setStudentData(true)}
                     className="btn button head1 text-white"
@@ -210,7 +275,7 @@ const StudentRegistrationController = () => {
                 </h1>
 
               </div>
-              <FormView  onCancel={() => setEditFormView(false)} />
+              <FormView   setStudentData={() => setStudentData(false)} />
             </div>
           )}
         </div>

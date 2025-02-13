@@ -3,18 +3,21 @@ import ReusableTable from "../StudenAttendanceShow/Table/Table";
 import './../../global.scss';
 import FormView from "./FormView";
 import axiosInstance from "../../services/Utils/apiUtils";
-import { Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2, View } from "lucide-react";
 import AlertDialog from "../alert/AlertDialog";
 import { toast, ToastContainer } from "react-toastify";
 import Loader from "../loader/loader";
+import { useNavigate } from "react-router-dom";
 
 const SuperAdminController = () => {
+    const navigate = useNavigate();
     const [superAdminData, setSuperAdminData] = useState<boolean>(false);
     const [rows, setRows] = useState<any[]>([]);
     const [editData, setEditData] = useState<any>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogData, setDialogData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
+
 
 
     const [columns] = useState<any[]>([
@@ -56,6 +59,30 @@ const SuperAdminController = () => {
                 </button>
             )
         },
+        {
+            field: "View",
+            headerName:"view",
+
+            cellRenderer: (prams:any)=>(
+
+                <button 
+                 onClick={()=>handeleViewDetails(prams.data.id)}
+             
+                >
+                
+
+                 <Eye size={20} color="blue" />  
+                </button>
+
+            )
+
+        }
+
+
+
+
+
+
         // { field: "status", headerName: "Status" },
         // { field: "serviceStartDate", headerName: "Service Start Date" },
         // { field: "renewalDate", headerName: "Renewal Date" },
@@ -133,7 +160,11 @@ const SuperAdminController = () => {
     };
 
 
+   const handeleViewDetails=(id:any)=>{
 
+    navigate(`/SchoolsDetails/${id}`);
+    console.log(id);
+   }
 
     return (
 
@@ -174,7 +205,7 @@ const SuperAdminController = () => {
                         setSuperAdminData(true);
                     }}
                 >
-                    Add Student
+                    Add School
                 </button>
             </div>
             <AlertDialog
