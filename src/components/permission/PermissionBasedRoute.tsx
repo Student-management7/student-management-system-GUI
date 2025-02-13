@@ -20,6 +20,7 @@ import HolidayFormController from '../Holidays/holidayFormController'
 import FacultyAttendanceEditSave from '../facultyAttendanceEdit/facultyAttendanceEditSave'
 import FacultyAttendanceEdit from '../facultyAttendanceEdit/facultyAttendanceEdit'
 import FacultyAttendanceShow from '../facultyAttendanceView/FacultyAttendanceShow'
+
 interface Permission {
   [module: string]: {
     [route: string]: boolean;
@@ -37,12 +38,12 @@ const PermissionBasedRoute: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate an API call to fetch permissions
     const fetchPermissions = async () => {
       try {
-        const response = await fetch(""); // Replace with your actual API endpoint
+        const response = await fetch(""); 
         const data: PermissionPayload = await response.json();
         setPermissions(data.permissions);
+       console.log(setPermissions)
       } catch (error) {
         console.error("Error fetching permissions", error);
       } finally {
