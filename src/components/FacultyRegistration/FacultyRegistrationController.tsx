@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -6,7 +6,7 @@ import Loader from '../loader/loader';
 import ReusableTable from '../StudenAttendanceShow/Table/Table';
 import FacultyForm from './FacultyForm';
 import { FacultyFormData } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
-import {  getFacultyDetails, deleteFacultyDetails } from '../../services/Faculty/fecultyRegistretion/API/API';
+import { getFacultyDetails, deleteFacultyDetails } from '../../services/Faculty/fecultyRegistretion/API/API';
 import { Pencil, Trash2, Eye } from 'lucide-react';
 import AlertDialog from '../alert/AlertDialog';
 
@@ -15,7 +15,6 @@ const FacultyRegistrationController: React.FC = () => {
   const [rowData, setRowData] = useState<FacultyFormData[]>([]);
   const [editingFaculty, setEditingFaculty] = useState<FacultyFormData | null>(null);
   const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
-
   const [loading, setLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [selectedFacultyToDelete, setSelectedFacultyToDelete] = useState<FacultyFormData | null>(null);
@@ -32,43 +31,28 @@ const FacultyRegistrationController: React.FC = () => {
         setRowData(response.data);
       } else {
         console.error('Unexpected data format:', response);
-       
       }
     } catch (error) {
       console.error('Failed to fetch faculty details:', error);
-     
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEdit = async (facultyData: FacultyFormData) => {
-    try {
-      if (!facultyData.fact_id) {
-        console.error('Faculty ID is missing');
-        return;
-      }
-
-      const response = await getFacultyDetails();
-      const selectedFaculty = response.data.find(
-        (faculty:any) => faculty.fact_id === facultyData.fact_id
-      );
-
-      if (selectedFaculty) {
-        setIsFormVisible(true);
-        setEditingFaculty(selectedFaculty);
-      } else {
-        console.error('Faculty not found');
-      }
-    } catch (error) {
-      console.error('Error fetching faculty details:', error);
+  const handleEdit = useCallback((facultyData: FacultyFormData) => {
+    const selectedFaculty = rowData.find((faculty) => faculty.fact_id === facultyData.fact_id);
+    if (selectedFaculty) {
+      setIsFormVisible(true);
+      setEditingFaculty(selectedFaculty);
+    } else {
+      console.error('Faculty not found');
     }
-  };
+  }, [rowData]);
 
-  const handleDelete = async (facultyData: FacultyFormData) => {
+  const handleDelete = useCallback((facultyData: FacultyFormData) => {
     setSelectedFacultyToDelete(facultyData);
     setShowDeleteModal(true);
-  };
+  }, []);
 
   const confirmDelete = async () => {
     try {
@@ -80,24 +64,21 @@ const FacultyRegistrationController: React.FC = () => {
       const response = await deleteFacultyDetails(selectedFacultyToDelete.fact_id);
 
       if (response?.status === 200) {
-        
         await fetchFacultyDetails();
         setShowDeleteModal(false);
         toast.success('Faculty deleted successfully!');
         setSelectedFacultyToDelete(null);
       } else {
-       
         console.error('Delete failed:', response);
       }
     } catch (error) {
       console.error('Error deleting faculty:', error);
-     
     }
   };
 
-  const handleViewDetails = (id: string) => {
+  const handleViewDetails = useCallback((id: string) => {
     navigate(`/FacultyDetails/${id}`);
-  };
+  }, [navigate]);
 
   const columns = [
     { field: 'fact_Name', headerName: 'Name' },
@@ -160,12 +141,8 @@ const FacultyRegistrationController: React.FC = () => {
                   onCancel={() => setShowDeleteModal(false)}
                   isOpen={showDeleteModal}
                   title="Delete Faculty"
-                  
                 />
               )}
-
-
-
             </div>
           ) : (
             <FacultyForm
