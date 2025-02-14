@@ -1,14 +1,9 @@
 
 import { FaBook, FaIdCard, FaRegEdit, FaUserEdit,  } from "react-icons/fa";
-import { FaHouse, FaHandshakeAngle, FaCaretDown, FaCaretUp, FaMoneyBill, FaUserLarge, FaUserTie ,FaBell, FaUserPlus ,FaClipboardList , } from "react-icons/fa6";
+import {  FaHandshakeAngle, FaCaretDown, FaCaretUp, FaMoneyBill, FaUserLarge, FaUserTie ,FaBell, FaUserPlus ,FaClipboardList , } from "react-icons/fa6";
 export const SideBarData = [
 
-    {
-        title: 'Home',
-        path: '/Home',
-        icon: FaHouse,
-
-    },
+   
     {
         title: 'Super Admin',
         path: '/',
@@ -120,7 +115,7 @@ export const SideBarData = [
                 icon: FaBell,
             },
             {
-                title: 'Hollyday',
+                title: 'Holiday',
                 path: '/holiday',
                 icon: FaBell,
             },

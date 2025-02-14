@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../../services/Utils/apiUtils";
 import Loader from "../../loader/loader";
 import BackButton from "../../Navigation/backButton";
 import ReusableTable from "../../MUI Table/ReusableTable";
+import { changeFormatToDDMMYYYY } from "../../Utils/dateUtils";
 import { toast, ToastContainer } from "react-toastify";
 
 
 // Define types for student data and fee info
 interface FeeInfo {
   id: string;
-  creationDateTime: string;
+  creationDateTime : string
   fee: number;
 }
 
@@ -23,7 +24,7 @@ interface StudentData {
 
 const StudentFeesDetails = () => {
   const { id } = useParams(); // Get the student ID from URL
-  
+
   const [studentData, setStudentData] = useState<StudentData | null>(null);
   const [feeInfo, setFeeInfo] = useState<FeeInfo[]>([]);
   const [loading, setLoading] = useState(false);
@@ -34,9 +35,12 @@ const StudentFeesDetails = () => {
     {
       headerName: "Fees Submitted Date",
       field: "creationDateTime",
-      valueFormatter: (params: any) =>
-        params.value ? new Date(params.value).toLocaleString() : "N/A",
-    },
+      valueFormatter: (params: { value: string; }) => changeFormatToDDMMYYYY(params.value)
+      },
+     
+   
+
+
     { headerName: "Fee", field: "fee" },
   ];
 
@@ -80,20 +84,29 @@ const StudentFeesDetails = () => {
 
         <div className="box">
 
+
+
+
           <div className="flex items-center space-x-4 mb-4">
             <span>
               <BackButton />
             </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Fees Details</h1>
+            <h1 className="text-xl items-center font-bold text-[#27727A]">
+              Student Fees Details
+            </h1>
           </div>
+
+
+
 
           {/* Display Student ID and Name */}
           {studentData ? (
-            <div style={{ marginBottom: "20px" }}>
-              <p>
-                <strong>Name:- </strong> {studentData.name || "N/A"}
-              </p>
-            </div>
+
+            <p className="mb-4">
+              <span className="text-xl">Name :-</span>
+              <span className="ml-2 text-xl"> {studentData?.name}</span>
+            </p>
+
           ) : (
             <p>No student data found.</p>
           )}

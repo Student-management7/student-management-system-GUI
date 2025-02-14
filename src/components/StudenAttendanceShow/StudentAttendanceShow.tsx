@@ -8,7 +8,7 @@ import type { AttendanceResponse } from "../../services/StudentAttendanceShow/ty
 import { sortArrayByKey } from "../Utils/sortArrayByKey"
 import { Switch } from '@headlessui/react'
 // import ReusableTable from "../MUI Table/ReusableTable"
-import ReusableTable from "../MUI Table/ReusableTable"
+import ReusableTable from "./Table/Table"
 import Loader from "../loader/loader"
 import BackButton from "../Navigation/backButton"
 import { toast, ToastContainer } from "react-toastify"
@@ -23,8 +23,8 @@ const StudentAttendanceShow: React.FC = () => {
   const [attendanceData, setAttendanceData] = useState<AttendanceResponse[]>([])
   const [AttendanceMode, setAttendanceMode] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-    const [loading, setLoading] = useState(false);
-  
+  const [loading, setLoading] = useState(false);
+
 
   const [editingAttendance, setEditingAttendance] = useState<{
 
@@ -33,11 +33,6 @@ const StudentAttendanceShow: React.FC = () => {
     attendance: string
     remark: string
   } | null>(null)
-
-
-
-
-
 
   useEffect(() => {
     const loadClassData = async () => {
@@ -182,25 +177,32 @@ const StudentAttendanceShow: React.FC = () => {
 
 
         <>
-          <ToastContainer position="top-right" autoClose={3000} />
+                                  <ToastContainer position="top-right" autoClose={3000} />
              
           <div className="box">
-          <div className="flex items-center space-x-4 mb-4">
-            
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Attendance View</h1>
-          </div>
+            <div className="flex items-center space-x-4 mb-4">
+              <span>
+                <BackButton />
+              </span>
+              <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Attendance View</h1>
+            </div>
 
             <div className="box">
-              <div className="flex items-center justify-between mb-6">
-                <span className="text-gray-700">
+              <div className="flex items-center space-x-7 mb-10">
+                <span className="text-gray-900 font-semibold ">
                   {AttendanceMode ? "Master Attendance" : "Subject-wise Attendance"}
                 </span>
                 <Switch
                   checked={AttendanceMode}
                   onChange={setAttendanceMode}
                   disabled={loading}
-                  className={`${AttendanceMode ? 'bg-blue-600' : 'bg-gray-200'
-                    } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                  className={`
+    float-left 
+    ${AttendanceMode ? 'bg-[#3a8686]' : 'bg-gray-200'}  // Active/Inactive track colors
+    relative inline-flex h-6 w-11 items-center rounded-full transition-colors 
+    focus:outline-none focus:ring-2 focus:ring-[#126666]-500 focus:ring-offset-2 mt-1
+  `}
+
                 >
                   <span className="sr-only">Toggle attendance mode</span>
                   <span
@@ -290,7 +292,7 @@ const StudentAttendanceShow: React.FC = () => {
 
               <div className="text-center">
                 <button
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  className="button btn head1 text-white"
                   onClick={handleFetchAttendance}
                   disabled={loading}
                 >
@@ -306,7 +308,7 @@ const StudentAttendanceShow: React.FC = () => {
                     columns={[
                       {
                         field: 'name', headerName: 'Student Name',
-                        renderCell: undefined
+
                       },
                       ...getDateRange(fromDate, toDate).map((date) => ({
                         field: date,

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import NotificationList from "./notificationList";
 import NotificationCreate from "./CreateNotification";
 import Loader from "../loader/loader";
-import BackButton from "../Navigation/backButton";
 
 const NotificationController = () => {
   const [showForm, setShowForm] = useState(false);
@@ -40,15 +39,10 @@ const NotificationController = () => {
               <NotificationList />
             </>
           ) : (
-            <div className="box">
+            
               <NotificationCreate onClose={() => setShowForm(false)} />
-              <button
-                onClick={handleCreateNotification}
-                className="btn button"
-              >
-                Submit
-              </button>
-            </div>
+              
+            
           )}
         </div>
       )}
