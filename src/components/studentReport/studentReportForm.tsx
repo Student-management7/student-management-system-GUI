@@ -7,6 +7,7 @@ import { handleApiError } from "../Utility/toastUtils";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { formatToDDMMYYYY } from "../../components/Utils/dateUtils";
 import Loader from "../loader/loader";
+import Select from 'react-select';
 
 interface Student {
     familyDetails: any;
@@ -32,6 +33,8 @@ const StudentReportForm: React.FC = () => {
     const [examType, setExamType] = useState("");
     const [examDate, setExamDate] = useState(new Date().toISOString().split('T')[0]);
     const [rows, setRows] = useState<SubjectMarks[]>([]);
+    const [searchTerm, setSearchTerm] = useState("");
+
 
     const calculateTotalAverageGrade = (marks: SubjectMarks[]) => {
         if (marks.length === 0) return { totalMarks: 0, average: 0, grade: 'N/A' };
@@ -166,6 +169,18 @@ const StudentReportForm: React.FC = () => {
         }
     };
 
+
+     // Filter students based on search term
+     const filteredStudents = students.filter((student) =>
+        student.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Format students for react-select
+    const studentOptions = filteredStudents.map((student) => ({
+        value: student.id,
+        label: `${student.name} - ${student.familyDetails?.stdo_FatherName}`,
+    }));
+
     return (
 
         <>
@@ -201,22 +216,21 @@ const StudentReportForm: React.FC = () => {
                     </div>
 
                     <div className="col-md-3">
-                        <label htmlFor="studentSelect" className="form-label">Student:</label>
-                        <select
-                            id="studentSelect"
-                            className="form-select"
-                            value={studentSelected}
-                            onChange={(e) => setStudentSelected(e.target.value)}
-                            disabled={loading || !classSelected}
-                        >
-                            <option value="">Select Student</option>
-                            {students.map((student) => (
-                                <option key={student.id} value={student.id}>
-                                    {student.name} - {student.familyDetails?.stdo_FatherName}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                                <label htmlFor="studentSelect" className="form-label">Student:</label>
+                                <Select
+                                    id="studentSelect"
+                                    options={studentOptions}
+                                    value={studentOptions.find((option) => option.value === studentSelected)}
+                                    onChange={(selectedOption) =>
+                                        setStudentSelected(selectedOption?.value || "")
+                                    }
+                                    onInputChange={(inputValue) => setSearchTerm(inputValue)}
+                                    isDisabled={loading || !classSelected}
+                                    placeholder="Select Student"
+                                    isSearchable
+                                    noOptionsMessage={() => "No students found"}
+                                />
+                            </div>
 
                     <div className="col-md-3">
                         <label htmlFor="examTypeSelect" className="form-label">Exam Type:</label>
