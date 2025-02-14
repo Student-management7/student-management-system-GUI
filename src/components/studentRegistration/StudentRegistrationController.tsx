@@ -268,9 +268,9 @@ const StudentRegistrationController = () => {
           ) : (
             <div className="box">
               <div className="head1">
-                <h1 >
+                <h1 onClick={() => setStudentData(false)}>
                   <div>
-                    <i onClick={() => setStudentData(false)} className="bi bi-arrow-left-circle" /> <span>User Details</span>
+                    <i className="bi bi-arrow-left-circle" /> <span>User Details</span>
                   </div>
                 </h1>
 
