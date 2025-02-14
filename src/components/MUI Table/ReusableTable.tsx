@@ -38,9 +38,7 @@ const ReusableTable: React.FC<TableProps> = ({
   onCellValueChange,
   tableHeight = "5/00px",
   tableWidth = "100%",
-  onEdit,
-  onDelete,
-  onViewReport
+  
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);

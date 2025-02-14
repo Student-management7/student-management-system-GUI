@@ -11,6 +11,14 @@ export const formatToDDMMYYYY = (date: string): string => {
 
 
 
+
+export const changeFormatToDDMMYYYY = (dateString: string): string => {
+  if (!dateString) return "";  // Handle null or undefined values
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-GB"); // "dd/mm/yyyy" format
+};
+
+
 export const formatDate = (date: string): string => {
   const d = new Date(date);
   return `${d.getDate().toString().padStart(2, '0')}/${

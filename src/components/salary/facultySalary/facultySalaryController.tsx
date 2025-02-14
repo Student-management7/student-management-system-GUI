@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import GridView from "./gridView";
 import FacultySalaryForm from "./FacultySalaryForm";
 import { fetchFacultySalaries, updateFacultySalary, saveFacultySalary } from "../../../services/salary/facultysalary/Api";
 import { Eye, Pencil } from "lucide-react";

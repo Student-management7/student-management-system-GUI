@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import axiosInstance from '../../services/Utils/apiUtils';
 import { fetchFacultyData, submitAttendance } from '../../services/Faculty/FacultyAttendanceSave/Api';
 import { Faculty } from '../../services/Faculty/FacultyAttendanceSave/Type';
 import ReusableTable from '../StudenAttendanceShow/Table/Table';
 import BackButton from '../Navigation/backButton';
 import Loader from '../loader/loader';
-import { ToastContainer } from "react-toastify";
 
 interface AttendanceRow {
   name: string;
@@ -17,87 +16,136 @@ interface AttendanceRow {
 const AttendanceSave: React.FC = () => {
   const [facultyList, setFacultyList] = useState<Faculty[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [bulkAttendance, setBulkAttendance] = useState<string>('');
+
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await fetchFacultyData();
-        setFacultyList(response);
+        const response = await axiosInstance.get('/faculty/findAllFaculty');
+        if (response.data) {
+          const initializedFacultyList = response.data.map((faculty: Faculty) => ({
+            ...faculty,
+            attendance: faculty.attendance || ''
+          }));
+          setFacultyList(initializedFacultyList);
+        }
       } catch (error) {
         console.error('Error fetching attendance data:', error);
-        toast.error('Failed to fetch faculty data. Please try again.');
+        toast.error('Failed to fetch faculty data. Please try again.', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  const handleSaveAttendance = async () => {
-    // ✅ 1️⃣ Check if all faculty have marked attendance
-    const isAllMarked = facultyList.every(faculty => faculty.attendance && faculty.attendance !== 'Select');
 
-    if (!isAllMarked) {
-      toast.warn('Please mark attendance for all faculty before saving.', {
+  const handleCellValueChange = (factId: string, field: string, value: any) => {
+    setFacultyList((prevList) =>
+      prevList.map((faculty) =>
+        faculty.fact_id === factId ? { ...faculty, [field]: value } : faculty
+      )
+    );
+  };
+
+  const handleSaveAttendance = async () => {
+    const hasUnmarkedAttendance = facultyList.some(faculty => !faculty.attendance);
+    if (hasUnmarkedAttendance) {
+      toast.warning('Please mark attendance for all faculty members.', {
         position: 'top-right',
         autoClose: 3000,
       });
       return;
     }
 
+    setLoading(true);
     try {
-      const response = await submitAttendance(facultyList);
+      const payload = {
+        factList: facultyList.map(faculty => ({
+          factId: faculty.fact_id,
+          name: faculty.fact_Name,
+          attendance: faculty.attendance,
+        })),
+      };
+
+      const response = await submitAttendance(payload);
       if (response.status === 200) {
-        toast.success('Attendance submitted successfully!');
+        toast.success('Attendance submitted successfully!', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
         const updatedData = await fetchFacultyData();
         setFacultyList(updatedData);
       }
-    } catch (error: any) {
-      if (error.response && error.response.status === 400 && error.response.data.detail === 'Attendance already present') {
-        toast.info('Attendance already present', { position: 'top-right', autoClose: 3000 });
-      } else {
-        toast.error('Error submitting attendance. Please try again.');
-      }
+    } catch (error) {
+      console.error('Error submitting attendance:', error);
+      toast.error('Error submitting attendance. Please try again.', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleAttendanceChange = (factId: string, newValue: string) => {
-    setFacultyList(prevList =>
-      prevList.map(faculty =>
-        faculty.fact_id === factId ? { ...faculty, attendance: newValue } : faculty
-      )
-    );
-  };
-
   const columns = [
-    { field: 'name', headerName: 'Faculty Name', editable: false, width: '30%' },
-    { field: 'factId', headerName: 'Faculty ID', editable: false, width: '30%' },
+    { headerName: "Faculty Name", field: "name" },
     {
-      field: 'attendance',
-      headerName: 'Attendance',
+      headerName: "Attendance",
+      field: "attendance",
       editable: true,
-      width: '40%',
-      cellRenderer: (row: AttendanceRow) => (
-        <div className="w-full">
-          <select
-            value={row.attendance}
-            onChange={e => handleAttendanceChange(row.factId, e.target.value)}
-            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="Select">Select</option>
-            <option value="Present">Present</option>
-            <option value="Absent">Absent</option>
-            <option value="Leave">Leave</option>
-          </select>
+      cellRenderer: (params: any) => (
+        <div className="flex gap-2">
+          {["Present", "Absent", "Leave"].map((option) => (
+            <label key={option} className="flex items-center gap-1">
+              <input
+                type="radio"
+                name={`attendance-${params.data.factId}`}
+                value={option}
+                checked={params.data.attendance === option}
+                onChange={() => handleCellValueChange(params.data.factId, "attendance", option)}
+                className="form-radio h-4 w-4 text-blue-600"
+              />
+              <span className="text-sm">{option}</span>
+            </label>
+          ))}
         </div>
       ),
     },
   ];
 
-  const rowData = facultyList.map(faculty => ({
+  const transformFacultyData = (faculty: Faculty) => ({
     name: faculty.fact_Name,
     factId: faculty.fact_id,
-    attendance: faculty.attendance || 'Select',
-  }));
+    attendance: faculty.attendance || '',
+  });
+
+  const rowData = facultyList.map(transformFacultyData);
+
+
+  // bulk attendance 
+
+  const handleBulkAttendanceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setBulkAttendance(event.target.value);
+  };
+
+  const applyBulkAttendance = () => {
+    if (!bulkAttendance) {
+      toast.warning("Please select an attendance status before applying.");
+      return;
+    }
+
+
+    setFacultyList((prevList:any) =>
+      prevList.map((faculty:any) => ({ ...faculty, attendance: bulkAttendance }))
+    );
+  };
 
   return (
     <>
@@ -105,24 +153,50 @@ const AttendanceSave: React.FC = () => {
       {!loading && (
         <div className="box p-4">
           <div className="flex items-center space-x-4 mb-4">
-           
-            <h1 className="text-xl font-bold text-[#27727A]">Fa Attendance Update</h1>
+            <span>
+              <BackButton />
+            </span>
+            <h1 className="text-xl items-center font-bold text-[#27727A]">
+              Faculty Attendance Update
+            </h1>
           </div>
 
-          <div className="mb-6">
-                  <ToastContainer position="top-right" autoClose={3000} />
+
+          <span className=" float-right mb-4 flex items-center space-x-4 mb-4">
+            <select
+              value={bulkAttendance}
+              onChange={handleBulkAttendanceChange}
+              className="border rounded p-2 mr-2 mb-2" 
+            >
+              <option value="">Select Attendance</option>
+              <option value="Present">Present</option>
+              <option value="Absent">Absent</option>
+              <option value="Leave">Leave</option>
+            </select>
+
+            <button
+              onClick={applyBulkAttendance}
+              className="head1 btn button text-white pt-2 pb-2 pl-4 pr-4  "
+            >
+              Apply to All
+            </button>
+          </span>
+
+          <span className="mb-6">
             
+            <ToastContainer />
             <ReusableTable
               rows={rowData}
               columns={columns}
-              onRowUpdate={(row, index) => handleAttendanceChange(row.factId, row.attendance)}
+              rowsPerPageOptions={[5, 10, 25]}
+              onCellValueChange={handleCellValueChange}
             />
-          </div>
+          </span>
 
-          <div className="flex justify-end">
+          <div className="flex justify-center mt-4">
             <button
               onClick={handleSaveAttendance}
-              className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 transition duration-200 ease-in-out disabled:opacity-50"
+              className="head1 btn button text-white pt-2 pb-2 pl-4 pr-4 "
               disabled={!facultyList.length}
             >
               Save Changes
