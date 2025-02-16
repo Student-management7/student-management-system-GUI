@@ -97,13 +97,13 @@ const FormView = ({ editData, onSubmitSuccess }: any) => {
                             </div>
                             <div className="col-md-4">
                                 <div className="form-group">
-                                    <label htmlFor="address" className="form-label">
+                                    <label htmlFor="schoolAddress" className="form-label">
                                        School Address <span className="red">*</span>
                                     </label>
                                     <Field
                                         type="text"
-                                        id="address"
-                                        name="address"
+                                        id="schoolAddress"
+                                        name="schoolAddress"
                                         className={`form-control ${errors.schoolAddress && touched.schoolAddress ? 'is-invalid' : ''}`}
                                         placeholder="Enter address"
                                     />

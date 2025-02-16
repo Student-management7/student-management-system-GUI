@@ -20,7 +20,7 @@ export default function Permission() {
       StudentAttendanceShow:false
     },
     faculty: {
-     
+      
       FacultySalaryDetails:false,
       FacultySalaryController:false,
       FacultyAttendanceEditSave:false,
@@ -117,10 +117,11 @@ const handleSubmit = async () => {
       permissions,
     };
     console.log("Submitting permissions:", payload);
-    await axiosInstance.post("/permissions/save", payload, {
+      await axiosInstance.post("/permissions/save", payload, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      
     });
     toast.success("Permissions updated successfully!");
   } catch (error) {

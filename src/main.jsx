@@ -58,35 +58,35 @@ const App = () => {
               {/* Protected Routes */}
               <Route element={<ProtectedRoute />}>
                 <Route path="/main" element={<MasterController />} />
-                <Route path="/StudentAttendenceManagement" element={<StudentAttendenceManagement />} />
-                <Route path="/SaveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
-                <Route path="/FacultyRegistration" element={<FacultyRegistrationForm />} />
-                <Route path="/StudentRegistrationController" element={<StudentRegistrationController />} />
-                <Route path="/SuperAdminController" element={<SuperAdminController />} />
-                <Route path="/StudentAttendanceShow" element={<StudentAttendanceShow />} />
+                <Route path="/studentAttendenceManagement" element={<StudentAttendenceManagement />} />
+                <Route path="/saveSubjectsToClasses" element={<SaveSubjectsToClasses />} />
+                <Route path="/facultyRegistration" element={<FacultyRegistrationForm />} />
+                <Route path="/studentRegistrationController" element={<StudentRegistrationController />} />
+                <Route path="/superAdminController" element={<SuperAdminController />} />
+                <Route path="/studentAttendanceShow" element={<StudentAttendanceShow />} />
                 <Route path="/facultyAttendanceSave" element={<FacultyAttendanceSave />} />
-                <Route path="/FacultyAttendanceShow" element={<FacultyAttendanceShow />} />
+                <Route path="/facultyAttendanceShow" element={<FacultyAttendanceShow />} />
                 <Route path="/facultyAttendanceEdit" element={<FacultyAttendanceEdit />} />
                 <Route path="/facultyAttendanceEditSave" element={<FacultyAttendanceEditSave />} />
                 <Route path="/studentAttendanceEdit" element={<StudentAttendanceEdit />} />
-                <Route path="/FacultySalary" element={<FacultySalaryController />} />
+                <Route path="/facultySalary" element={<FacultySalaryController />} />
                 <Route path="/studentAttendanceEditSave" element={<StudentAttendanceEditSave />} />
                 <Route path="/fees" element={<FeesController />} />
                 <Route path="/holiday" element={<HolidayFormController />} />
-                <Route path="/FacultySalaryDetails/:id" element={<FacultySalaryDetails />} />
-                <Route path="/StudentFeesController" element={<StudentFeesController />} />
-                <Route path="/StudentFeesForm" element={<StudentFeesForm />} />
-                <Route path="/StudentFeesDetails/:id" element={<StudentFeesDetails />} />
-                <Route path="/StudenAttendance" element={<StudenAttendance />} />
-                <Route path="/Notification" element={<NotificationController />} />
-                <Route path="/ClassSubjectShow" element={<ClassSubjectShow />} />
-                <Route path="/Permission" element={<Permission />} />
+                <Route path="/facultySalaryDetails/:id" element={<FacultySalaryDetails />} />
+                <Route path="/studentFeesController" element={<StudentFeesController />} />
+                <Route path="/studentFeesForm" element={<StudentFeesForm />} />
+                <Route path="/studentFeesDetails/:id" element={<StudentFeesDetails />} />
+                <Route path="/studenAttendance" element={<StudenAttendance />} />
+                <Route path="/sotification" element={<NotificationController />} />
+                <Route path="/classSubjectShow" element={<ClassSubjectShow />} />
+                <Route path="/permission" element={<Permission />} />
                 <Route path="/attendance" element={<TableComponent />} />
-                <Route path="/StudentReportForm" element={<StudentReportForm />} />
-                <Route path="/StudentReport" element={<StudentReport />} />
-                <Route path="/StudentDetails/:id" element={<StudentDetails />} />
-                <Route path="/FacultyDetails/:id" element={<FacultyDetails />} />
-                <Route path="/SchoolsDetails/:id" element={<SchoolsDetails />} />
+                <Route path="/studentReportForm" element={<StudentReportForm />} />
+                <Route path="/studentReport" element={<StudentReport />} />
+                <Route path="/studentDetails/:id" element={<StudentDetails />} />
+                <Route path="/facultyDetails/:id" element={<FacultyDetails />} />
+                <Route path="/schoolsDetails/:id" element={<SchoolsDetails />} />
                 
                 <Route path="/loader" element={<Loader />} />
               </Route>
