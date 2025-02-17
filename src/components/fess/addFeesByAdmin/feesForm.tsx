@@ -114,14 +114,14 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
               <>
                 <button
                   type="submit"
-                  className="p-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                  className="btn button  text-white"
                 >
                   Update
                 </button>
                 <button
                   type="button"
                   onClick={onCancel}
-                  className="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                  className="btn buttonred  text-white  "
                 >
                   Cancel
                 </button>
@@ -130,14 +130,14 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
               <>
                 <button
                   type="submit"
-                  className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 button"
+                  className="btn button  text-white"
                 >
                   Save
                 </button>
                 <button
                   type="button"
                   onClick={onCancel}
-                  className="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 btn-danger"
+                  className="btn buttonred  text-white "
                 >
                   Cancel
                 </button>

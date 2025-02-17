@@ -3,15 +3,12 @@ import { SideBarData } from './SideBarData';
 import SubManu from './SubManu';
 import './SideMenu.scss';
 import { FaRightToBracket, FaChevronLeft, FaChevronRight } from "react-icons/fa6"; 
-import { useNavigate } from 'react-router-dom'; 
-import { useAuth } from '../../context/authContext';
+
 import '../../global.scss';
 
 const SideBarController = () => {
     const [submenu, setSubmenu] = useState<{ [key: number]: boolean }>({});
-    const navigate = useNavigate();
-    const { logout } = useAuth();
-
+   
     const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Track sidebar state
 
     const menuOpen = (index: number) => {
@@ -21,10 +18,7 @@ const SideBarController = () => {
         }));
     };
 
-    const handleLogout = async () => {
-        await logout();
-        navigate('/login');
-    };
+  
 
     const toggleSidebar = () => {
         const sidNav: any = document.querySelector('.sideNav');
@@ -64,10 +58,7 @@ const SideBarController = () => {
                     );
                 })}
 
-                <div className='menu' onClick={handleLogout}>
-                    <FaRightToBracket />
-                    <span>Logout</span>
-                </div>
+                
             </div>
         </>
     );

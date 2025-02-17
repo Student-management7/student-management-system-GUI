@@ -12,6 +12,7 @@ import axios from "axios";
 import { useLocation } from 'react-router-dom';
 import Loader from "../loader/loader";
 import { toast } from "react-toastify";
+import { useParams } from "react-router-dom";
 
 
 
@@ -56,7 +57,9 @@ const StudentReport: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [studentData, setStudentData] = useState<StudentData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { id } = location.state || {};
+
+  const { id } = useParams<{ id: string }>();
+  
   if (!id) {
     return <div>Error: Missing Student id </div>;
   }

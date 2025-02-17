@@ -83,7 +83,7 @@ const App = () => {
                 <Route path="/Permission" element={<Permission />} />
                 <Route path="/attendance" element={<TableComponent />} />
                 <Route path="/StudentReportForm" element={<StudentReportForm />} />
-                <Route path="/StudentReport" element={<StudentReport />} />
+                <Route path="/StudentReport/:id" element={<StudentReport />} />
                 <Route path="/StudentDetails/:id" element={<StudentDetails />} />
                 <Route path="/FacultyDetails/:id" element={<FacultyDetails />} />
                 <Route path="/SchoolsDetails/:id" element={<SchoolsDetails />} />

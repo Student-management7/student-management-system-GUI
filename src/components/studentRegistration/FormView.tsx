@@ -43,7 +43,7 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData  }) => {
         const sortedData = sortArrayByKey(data, "className");
         setClasses(sortedData);
       } catch (error) {
-        toast.error("Error fetching classes:");
+        toast.warning("Please create class first");
       }
     };
 

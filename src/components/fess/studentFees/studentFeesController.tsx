@@ -135,11 +135,10 @@ const StudentFeesController: React.FC = () => {
       {!loading && (
         <div className="box">
           <h1 className="head1">Student Fees</h1>
-          <div className="text-right mb-3">
-            <button onClick={() => setShowForm(true)} className="btn button">
+          
+            <button onClick={() => setShowForm(true)} className="btn button float-right mt-1">
               Add Fees
             </button>
-          </div>
           {!showForm ? (
             <ReusableTable rows={rowData} columns={columns} rowsPerPageOptions={[5, 10, 25]} />
           ) : (
