@@ -78,7 +78,7 @@ const StudentReportForm: React.FC = () => {
                 return;
             }
 
-            setLoading(true);
+            // setLoading(true);
             try {
                 const response = await axiosInstance.get(`/student/findAllStudent?cls=${classSelected}`);
                 if (response.status === 200) {
@@ -170,8 +170,8 @@ const StudentReportForm: React.FC = () => {
     };
 
 
-     // Filter students based on search term
-     const filteredStudents = students.filter((student) =>
+    // Filter students based on search term
+    const filteredStudents = students.filter((student) =>
         student.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -184,38 +184,38 @@ const StudentReportForm: React.FC = () => {
     return (
 
         <>
-        
-        
-                            <ToastContainer position="top-right" autoClose={3000} />
-       
-        {loading ? (
-          <Loader /> // Show loader while data is being fetched
-        ) : (
-        <div className="box p-4 mb-4">
-                                 <ToastContainer position="top-right" autoClose={3000} />
-            
-            <h2 className="text-center mb-4 fs-4 fw-bold">Student Report Form</h2>
-            <div className="card p-4">
-                <div className="row">
-                    <div className="col-md-3">
-                        <label htmlFor="classSelect" className="form-label">Class:</label>
-                        <select
-                            id="classSelect"
-                            className="form-select"
-                            value={classSelected}
-                            onChange={(e) => setClassSelected(e.target.value)}
-                            disabled={loading}
-                        >
-                            <option value="">Select Class</option>
-                            {classData.map(({ className }) => (
-                                <option key={className} value={className}>
-                                    Class {className}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
 
-                    <div className="col-md-3">
+
+            <ToastContainer position="top-right" autoClose={3000} />
+
+            {loading ? (
+                <Loader /> // Show loader while data is being fetched
+            ) : (
+                <div className="box p-4 mb-4">
+                    <ToastContainer position="top-right" autoClose={3000} />
+
+                    <h2 className="head1 ">Student Report Form</h2>
+                    <div className="card p-4">
+                        <div className="row">
+                            <div className="col-md-3">
+                                <label htmlFor="classSelect" className="form-label">Class:</label>
+                                <select
+                                    id="classSelect"
+                                    className="form-select"
+                                    value={classSelected}
+                                    onChange={(e) => setClassSelected(e.target.value)}
+                                    disabled={loading}
+                                >
+                                    <option value="">Select Class</option>
+                                    {classData.map(({ className }) => (
+                                        <option key={className} value={className}>
+                                            Class {className}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="col-md-3">
                                 <label htmlFor="studentSelect" className="form-label">Student:</label>
                                 <Select
                                     id="studentSelect"
@@ -229,121 +229,135 @@ const StudentReportForm: React.FC = () => {
                                     placeholder="Select Student"
                                     isSearchable
                                     noOptionsMessage={() => "No students found"}
+                                    menuPlacement="auto" // Opens upwards if there's no space below
+                                    menuShouldScrollIntoView={true} // Ensures the menu is scrollable
+                                    styles={{
+                                        menu: (provided) => ({
+                                            ...provided,
+                                            maxHeight: "200px", // Set max height for scrollability
+                                            overflowY: "auto", // Enable vertical scrolling
+                                            zIndex: 9999, // Ensure dropdown appears above other elements
+                                        }),
+                                        control: (provided) => ({
+                                            ...provided,
+                                            zIndex: 1, // Ensure input field is below the dropdown menu
+                                        }),
+                                    }}
                                 />
                             </div>
 
-                    <div className="col-md-3">
-                        <label htmlFor="examTypeSelect" className="form-label">Exam Type:</label>
-                        <select
-                            id="examTypeSelect"
-                            className="form-select"
-                            value={examType}
-                            onChange={(e) => setExamType(e.target.value)}
-                            disabled={loading}
-                        >
-                            <option value="">Select Exam Type</option>
-                            <option value="Test">Test</option>
-                            <option value="Quarterly">Quarterly</option>
-                            <option value="Half Yearly">Half Yearly</option>
-                            <option value="Final Year">Final Year</option>
-                        </select>
+                            <div className="col-md-3">
+                                <label htmlFor="examTypeSelect" className="form-label">Exam Type:</label>
+                                <select
+                                    id="examTypeSelect"
+                                    className="form-select"
+                                    value={examType}
+                                    onChange={(e) => setExamType(e.target.value)}
+                                    disabled={loading}
+                                >
+                                    <option value="">Select Exam Type</option>
+                                    <option value="Test">Test</option>
+                                    <option value="Quarterly">Quarterly</option>
+                                    <option value="Half Yearly">Half Yearly</option>
+                                    <option value="Final Year">Final Year</option>
+                                </select>
+                            </div>
+
+                            <div className="col-md-3">
+                                <label htmlFor="examDate" className="form-label">Exam Date:</label>
+                                <input
+                                    type="date"
+                                    id="examDate"
+                                    className="form-control"
+                                    value={examDate}
+                                    onChange={(e) => setExamDate(e.target.value)}
+                                    disabled={loading}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="table-responsive mt-4">
+                            <table className="table table-bordered">
+                                <thead className="table-light">
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Marks Obtained</th>
+                                        <th>Maximum Marks</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {rows.map((row, index) => (
+                                        <tr key={row.subject}>
+                                            <td>{row.subject}</td>
+                                            <td>
+                                                <input
+                                                    type="number"
+                                                    className="form-control"
+                                                    min="0"
+                                                    max={row.maxMarks}
+                                                    value={row.marksObtained}
+                                                    onChange={(e) => {
+                                                        const value = parseFloat(e.target.value) || 0;
+                                                        setRows(prevRows =>
+                                                            prevRows.map((r, i) =>
+                                                                i === index ? { ...r, marksObtained: value } : r
+                                                            )
+                                                        );
+                                                    }}
+                                                    disabled={loading}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="number"
+                                                    className="form-control"
+                                                    min="1"
+                                                    value={row.maxMarks}
+                                                    onChange={(e) => {
+                                                        const value = parseFloat(e.target.value) || 0;
+                                                        setRows(prevRows =>
+                                                            prevRows.map((r, i) =>
+                                                                i === index ? { ...r, maxMarks: value } : r
+                                                            )
+                                                        );
+                                                    }}
+                                                    disabled={loading}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={row.remarks}
+                                                    onChange={(e) => {
+                                                        setRows(prevRows =>
+                                                            prevRows.map((r, i) =>
+                                                                i === index ? { ...r, remarks: e.target.value } : r
+                                                            )
+                                                        );
+                                                    }}
+                                                    disabled={loading}
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="mt-4 text-center">
+                            <button
+                                onClick={handleSubmit}
+                                className="btn button "
+                                disabled={loading}
+                            >
+                                {loading ? 'Submitting...' : 'Submit'}
+                            </button>
+                        </div>
                     </div>
-
-                    <div className="col-md-3">
-                        <label htmlFor="examDate" className="form-label">Exam Date:</label>
-                        <input
-                            type="date"
-                            id="examDate"
-                            className="form-control"
-                            value={examDate}
-                            onChange={(e) => setExamDate(e.target.value)}
-                            disabled={loading}
-                        />
-                    </div>
                 </div>
-
-                <div className="table-responsive mt-4">
-                    <table className="table table-bordered">
-                        <thead className="table-light">
-                            <tr>
-                                <th>Subject</th>
-                                <th>Marks Obtained</th>
-                                <th>Maximum Marks</th>
-                                <th>Remarks</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {rows.map((row, index) => (
-                                <tr key={row.subject}>
-                                    <td>{row.subject}</td>
-                                    <td>
-                                        <input
-                                            type="number"
-                                            className="form-control"
-                                            min="0"
-                                            max={row.maxMarks}
-                                            value={row.marksObtained}
-                                            onChange={(e) => {
-                                                const value = parseFloat(e.target.value) || 0;
-                                                setRows(prevRows =>
-                                                    prevRows.map((r, i) =>
-                                                        i === index ? { ...r, marksObtained: value } : r
-                                                    )
-                                                );
-                                            }}
-                                            disabled={loading}
-                                        />
-                                    </td>
-                                    <td>
-                                        <input
-                                            type="number"
-                                            className="form-control"
-                                            min="1"
-                                            value={row.maxMarks}
-                                            onChange={(e) => {
-                                                const value = parseFloat(e.target.value) || 0;
-                                                setRows(prevRows =>
-                                                    prevRows.map((r, i) =>
-                                                        i === index ? { ...r, maxMarks: value } : r
-                                                    )
-                                                );
-                                            }}
-                                            disabled={loading}
-                                        />
-                                    </td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={row.remarks}
-                                            onChange={(e) => {
-                                                setRows(prevRows =>
-                                                    prevRows.map((r, i) =>
-                                                        i === index ? { ...r, remarks: e.target.value } : r
-                                                    )
-                                                );
-                                            }}
-                                            disabled={loading}
-                                        />
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                <div className="mt-4">
-                    <button
-                        onClick={handleSubmit}
-                        className="btn btn-primary"
-                        disabled={loading}
-                    >
-                        {loading ? 'Submitting...' : 'Submit'}
-                    </button>
-                </div>
-            </div>
-        </div>
-        )}
+            )}
         </>
     );
 };
