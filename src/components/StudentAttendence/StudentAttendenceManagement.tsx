@@ -37,7 +37,7 @@ const StudentManagementSystem: React.FC = () => {
             setAttendanceMode("master")
         } catch (error) {
 
-            toast.error("Failed to fetch class data")
+            toast.warning("Failed to fetch class data")
         } finally {
             setLoading(false);
 

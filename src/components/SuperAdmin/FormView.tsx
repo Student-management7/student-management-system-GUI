@@ -105,7 +105,7 @@ const FormView = ({ editData, onSubmitSuccess }: any) => {
                                         id="schoolAddress"
                                         name="schoolAddress"
                                         className={`form-control ${errors.schoolAddress && touched.schoolAddress ? 'is-invalid' : ''}`}
-                                        placeholder="Enter address"
+                                        placeholder="Enter schoolAddress"
                                     />
 
                                 </div>

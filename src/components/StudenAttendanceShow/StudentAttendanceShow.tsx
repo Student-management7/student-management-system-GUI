@@ -48,10 +48,10 @@ const StudentAttendanceShow: React.FC = () => {
           setSubjectSelected("")
           setAttendanceMode(true)  // Explicitly set to true on component mount
         } else {
-          alert("No class data found.")
+          toast.warning("No class data found.")
         }
       } catch (err) {
-        alert("Failed to load class data.")
+        toast.warning("Failed to load class data.")
       } finally {
         setLoading(false)
         setLoading(false);

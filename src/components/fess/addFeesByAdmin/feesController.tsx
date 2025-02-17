@@ -5,10 +5,8 @@ import { fetchFees, updateFee, saveFees, deleteFeeRecord } from "../../../servic
 import { Pencil, Trash2 } from "lucide-react";
 import Loader from "../../loader/loader";
 import ReusableTable from "../../MUI Table/ReusableTable";
-import BackButton from "../../Navigation/backButton";
 import AlertDialog from "../../alert/AlertDialog";
 import { toast, ToastContainer } from "react-toastify";
-import { error } from "console";
 
 const FeesController: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
@@ -80,7 +78,7 @@ const FeesController: React.FC = () => {
     try {
       if (editData) {
         await updateFee(editData.id, data);
-        toast.success("fee save successfully")
+        toast.success("fee Update successfully")
       } else {
         await saveFees(data);
       }
@@ -88,8 +86,8 @@ const FeesController: React.FC = () => {
       setShowForm(false);
       setEditData(null);
     } catch (error) {
-      toast.error("Error saving Fee")
-      console.error("Error saving fee details:", error);
+      toast.error("Error Update Fee")
+      console.error("Error Update fee details:", error);
     }
   };
 
