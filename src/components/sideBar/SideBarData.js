@@ -13,7 +13,7 @@ export const SideBarData = [
         subNav: [
             {
                 title: 'Super Admin Registration',
-                path: '/SuperAdminController',
+                path: '/superAdminController',
                 icon: FaUserPlus,
             }
         ]
@@ -27,17 +27,17 @@ export const SideBarData = [
         subNav: [
             {
                 title: 'Student Registration',
-                path: '/StudentRegistrationController',
+                path: '/studentRegistrationController',
                 icon: FaUserPlus,
             },
             {
                 title: 'Student Attendance View',
-                path: '/StudentAttendanceShow',
+                path: '/studentAttendanceShow',
                 icon: FaClipboardList,
             },
             {
                 title: 'Studence Attendance ',
-                path: '/StudentAttendenceManagement',
+                path: '/studentAttendenceManagement',
                 icon: FaUserEdit,
             }
         ]
@@ -52,12 +52,12 @@ export const SideBarData = [
         subNav: [
             {
                 title: 'Faculty Registration',
-                path: '/FacultyRegistration',
+                path: '/facultyRegistration',
                 icon: FaUserPlus,
             },
             {
                 title: 'Faculty Attendance View',
-                path: '/FacultyAttendanceShow',
+                path: '/facultyAttendanceShow',
                 icon: FaClipboardList,
             },
             {
@@ -86,12 +86,12 @@ export const SideBarData = [
             },
             {
                 title: 'Student Fees',
-                path: '/StudentFeesController',
+                path: '/studentFeesController',
                 icon: FaMoneyBill,
             },
             {
                 title: 'Faculty Salary',
-                path: '/FacultySalary',
+                path: '/facultySalary',
                 icon: FaMoneyBill,
             },
             {
@@ -111,7 +111,7 @@ export const SideBarData = [
 
             {
                 title: 'Notification',
-                path: '/Notification',
+                path: '/notification',
                 icon: FaBell,
             },
             {
@@ -132,7 +132,7 @@ export const SideBarData = [
 
             {
                 title: 'Save Subjects',
-                path: '/ClassSubjectShow',
+                path: '/classSubjectShow',
                 icon: FaBook,
             },
             
@@ -148,7 +148,7 @@ export const SideBarData = [
 
             {
                 title: 'Create Report',
-                path: '/StudentReportForm',
+                path: '/studentReportForm',
                 icon: FaIdCard,
             },
             

@@ -1,26 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, Outlet, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import FacultySalaryController from "../salary/facultySalary/facultySalaryController";
 import FeesController from "../fess/addFeesByAdmin/feesController";
 import StudentAttendanceEdit from "../StudenAttendanceShow/studentAttendanceEdit";
 import MasterController from "../main/MasterController";
 import FacultySalaryDetails from "../salary/facultySalary/facultySalaryDetails";
-import StudentAttendenceManagement from '../StudentAttendence/StudentAttendenceManagement'
+import StudentAttendenceManagement from "../StudentAttendence/StudentAttendenceManagement";
 import StudentAttendanceEditSave from "../StudenAttendanceShow/studentAttendanceEditSave";
-import SaveSubjectsToClasses from "../saveSubjectsToClasess/saveSubjectsToClasess";
 import StudentRegistrationController from "../studentRegistration/StudentRegistrationController";
 import NotificationList from "../Notification/notificationList";
 import FacultyRegistrationForm from "../FacultyRegistration/FacultyRegistrationController";
 import FacultyAttendanceSave from "../facultyAttendanceSave/facultyAttendanceSave";
 import StudentAttendanceShow from "../StudenAttendanceShow/StudentAttendanceShow";
-
-
-import CreateNotification from '../Notification/CreateNotification'
-import HolidayFormController from '../Holidays/holidayFormController'
-import FacultyAttendanceEditSave from '../facultyAttendanceEdit/facultyAttendanceEditSave'
-import FacultyAttendanceEdit from '../facultyAttendanceEdit/facultyAttendanceEdit'
-import FacultyAttendanceShow from '../facultyAttendanceView/FacultyAttendanceShow'
+import CreateNotification from "../Notification/CreateNotification";
+import HolidayFormController from "../Holidays/holidayFormController";
+import FacultyAttendanceEditSave from "../facultyAttendanceEdit/facultyAttendanceEditSave";
+import FacultyAttendanceEdit from "../facultyAttendanceEdit/facultyAttendanceEdit";
+import FacultyAttendanceShow from "../facultyAttendanceView/FacultyAttendanceShow";
+import SaveSubjectsToClasses from "../saveSubjectsToClasess/saveSubjectsToClasess";
+import SuperAdminController from "../SuperAdmin/SuperAdminController";
+import SchoolsDetails from "../SuperAdmin/SchoolsDetails";
 import axiosInstance from "../../services/Utils/apiUtils";
+import NotificationController from "../Notification/notificationController";
+import ClassSubjectShow from "../saveSubjectsToClasess/ClassSubjectsShow";
+import StudentReportForm from "../studentReport/studentReportForm";
+import StudentFeesController from "../fess/studentFees/studentFeesController";
+import Permission from "./Permission";
 
 interface Permission {
   [module: string]: {
@@ -28,135 +33,96 @@ interface Permission {
   };
 }
 
-interface PermissionPayload {
-  facultyId: string;
-  email: string;
-  permissions: Permission;
-}
+// interface PermissionPayload {
+//   facultyId: string;
+//   email: string;
+//   permissions: Permission;
+//   role: string; // Add role to the API response
+// }
 
 const PermissionBasedRoute: React.FC = () => {
   const [permissions, setPermissions] = useState<Permission | null>(null);
+  const [role, setRole] = useState<string>(""); // State to store the role
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
-        const response = await axiosInstance.get<PermissionPayload>("/self"); 
-        const data = response.data;
-        setPermissions(data.permissions);
-       console.log(setPermissions)
+    
+        const response = await axiosInstance.get("/self");
+        const data = response.data; 
+        console.log("Fetched Permissions:", data);
+  
+        if (!data.permission || !data.permission.permissions) {
+          console.error("Permissions data is missing.");
+          setPermissions(null);
+          setLoading(false);
+          return;
+        }
+  
+        
+        const role = data.role; 
+       
+        
+        const permissions = data.permission.permissions; 
+       
+        
+        setPermissions(permissions);
+        setRole(role); // Set the role from the API response
       } catch (error) {
         console.error("Error fetching permissions", error);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchPermissions();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+if (loading) return <div>Loading...</div>;
+if (!permissions) return <div>Access Denied: Permissions missing.</div>;
+console.log(permissions);
 
-  if (!permissions) return <Navigate to="/Access_denied" />; // Redirect if no permissions
-
-  // Define route visibility based on permissions
-  const accessibleRoutes = [
-    { path: "/main", element: <MasterController />, visible: true },
-    {
-      path: "/StudentAttendenceManagement",
-      element: < StudentAttendenceManagement/>,
-      visible: permissions.Student?.studentAttendance || false,
-    },
-    {
-      path: "/StudentAttendanceShow",
-      element: < StudentAttendanceShow/>,
-      visible: permissions.Student?.StudentAttendanceShow || false,
-    },
-    {
-      path: "/StudentAttendanceEdit",
-      element: <StudentAttendanceEdit />,
-      visible: permissions.Student?.StudentAttendanceEdit || false,
-    },
-    {
-      path: "/StudentAttendanceEditSave",
-      element: <StudentAttendanceEditSave />,
-      visible: permissions.Student?.StudentAttendanceEditSave || false,
-    },
-    {
-      path: "/StudentRegistrationController",
-      element: <StudentRegistrationController />,
-      visible: permissions.Student?.StudentRegistrationController || false,
-    },
-    {
-      path: "/fees",
-      element: <FeesController />,
-      visible: permissions.Student?.StudentFees || false,
-    },
-    {
-      path: "/FacultySalary",
-      element: <FacultySalaryController />,
-      visible: permissions.faculty?.FacultySalaryController || false,
-    },
-    {
-      path: "/facultyAttendanceEditSave",
-      element: <FacultyAttendanceEditSave />,
-      visible: permissions.faculty?.FacultyAttendanceEditSave || false,
-    },
-    {
-      path: "/FacultyRegistration",
-      element: <FacultyRegistrationForm />,
-      visible: permissions.faculty?.FacultyRegistrationForm || false,
-    },
-    {
-      path: "/facultyAttendanceEdit",
-      element: <FacultyAttendanceEdit />,
-      visible: permissions.faculty?.FacultyAttendanceEdit || false,
-    },
-    {
-      path: "/FacultyAttendanceShow",
-      element: <FacultyAttendanceShow />,
-      visible: permissions.faculty?.FacultyAttendanceShow || false,
-    },
-    {
-      path: "/FacultyAttendanceSave",
-      element: <FacultyAttendanceSave />,
-      visible: permissions.faculty?.FacultyAttendanceSave|| false,
-    },
-    {
-      path: "/FacultySalaryDetails",
-      element: <FacultySalaryDetails />,
-      visible: permissions.faculty?.FacultySalaryDetails|| false,
-    },
  
+const allRoutes = [
+  { path: "/main", element: <MasterController />, visible: true }, 
+  { path: "/studentAttendenceManagement", element: <StudentAttendenceManagement />, visible: role === "user" || (role === "sub-user" && permissions?.Student?.StudentAttendenceManagement) },
+  { path: "/studentAttendanceShow", element: <StudentAttendanceShow />, visible: role === "user" || (role === "sub-user" && permissions?.Student?.StudentAttendanceShow) },
+  { path: "/studentAttendanceEdit", element: <StudentAttendanceEdit />, visible: role === "user" || (role === "sub-user" && permissions?.Student?.StudentAttendanceEdit) },
+  { path: "/studentAttendanceEditSave", element: <StudentAttendanceEditSave />, visible: role === "user" || (role === "sub-user" && permissions?.Student?.StudentAttendanceEditSave) },
+  { path: "/studentRegistrationController", element: <StudentRegistrationController />, visible: role === "user" || (role === "sub-user" && permissions?.Student?.StudentRegistrationController) },
+  { path: "/fees", element: <FeesController />, visible: role === "user" || (role === "sub-user" && permissions?.finance?.adminFees) },
+  { path: "/facultySalary", element: <FacultySalaryController />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.FacultySalaryController) },
+  { path: "/facultyAttendanceEditSave", element: <FacultyAttendanceEditSave />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.FacultyAttendanceEditSave) },
+  { path: "/facultyRegistration", element: <FacultyRegistrationForm />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.FacultyRegistrationForm) },
+  { path: "/facultyAttendanceEdit", element: <FacultyAttendanceEdit />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.FacultyAttendanceEdit) },
+  { path: "/facultyAttendanceShow", element: <FacultyAttendanceShow />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.FacultyAttendanceShow) },
+  { path: "/facultyAttendanceSave", element: <FacultyAttendanceSave />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.FacultyAttendanceSave) },
+  { path: "/facultySalaryDetails", element: <FacultySalaryDetails />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.FacultySalaryDetails) },
+  { path: "/saveSubjectsToClasses", element: <SaveSubjectsToClasses />, visible: role === "user" || (role === "sub-user" && permissions?.subject?.SaveSubjectsToClasses) },
+  { path: "/viewNotification", element: <NotificationList />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.NotificationList) },
+  { path: "/createNotification", element: <CreateNotification />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.CreateNotification) },
+  { path: "/holiday", element: <HolidayFormController />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.HolidayFormController) },
+    
   
-    {
-      path: "/SaveSubjectsToClasses",
-      element: <SaveSubjectsToClasses />,
-      visible: permissions.Subject?.SaveSubjectsToClasses || false,
-    },
-    {
-      path: "/ViewNotification",
-      element: <NotificationList />,
-      visible: permissions.Notification?.NotificationList || false,
-    },
-    {
-      path: "/CreateNotification",
-      element: <CreateNotification/>,
-      visible: permissions.Notification?.CreateNotification || false,
-    },
-    {
-      path: "/holiday",
-      element: < HolidayFormController/>,
-      visible: permissions.Notification?.HolidayFormController || false,
-    },
-    // Add more routes here based on the permissions
-  ];
-
-  const filteredRoutes = accessibleRoutes.filter((route) => route.visible);
+  { path: "//ClassSubjectShow", element: <ClassSubjectShow />, visible: role === "user" },
+  { path: "/notification", element: <NotificationController />, visible: role === "user" },
+  { path: "/studentReportForm", element: <StudentReportForm />, visible: role === "user" },
+  { path: "/studentFeesController", element: <StudentFeesController />, visible: role === "user" }, // Only visible for admin
+  { path: "/permission", element: <Permission />, visible: role === "user" }, // Only visible for admin
+  { path: "/superAdminController", element: <SuperAdminController />, visible: role === "admin" }, // Only visible for admin
+  { path: "/schoolsDetails/:id", element: <SchoolsDetails />, visible: role === "admin" }, // Only visible for admin
+];
+// useEffect(() => {
+//   console.log("Current Role:", role);
+//   console.log("Current Permissions:", permissions);
+// }, [role, permissions]);
+  // Filter routes based on role and permissions
+  const finalRoutes = allRoutes.filter(({ visible }) => visible);
 
   return (
     <Routes>
-      {filteredRoutes.map(({ path, element }) => (
+      {finalRoutes.map(({ path, element }) => (
         <Route key={path} path={path} element={element} />
       ))}
       <Route path="*" element={<Navigate to="/unauthorized" />} />
