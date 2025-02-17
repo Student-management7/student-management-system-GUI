@@ -86,29 +86,46 @@ console.log(permissions);
  
 const allRoutes = [
   { path: "/main", element: <MasterController />, visible: true }, 
-  { path: "/studentAttendenceManagement", element: <StudentAttendenceManagement />, visible: role === "user" || (role === "sub-user" && permissions?.Student?.StudentAttendenceManagement) },
-  { path: "/studentAttendanceShow", element: <StudentAttendanceShow />, visible: role === "user" || (role === "sub-user" && permissions?.Student?.StudentAttendanceShow) },
-  { path: "/studentAttendanceEdit", element: <StudentAttendanceEdit />, visible: role === "user" || (role === "sub-user" && permissions?.Student?.StudentAttendanceEdit) },
-  { path: "/studentAttendanceEditSave", element: <StudentAttendanceEditSave />, visible: role === "user" || (role === "sub-user" && permissions?.Student?.StudentAttendanceEditSave) },
-  { path: "/studentRegistrationController", element: <StudentRegistrationController />, visible: role === "user" || (role === "sub-user" && permissions?.Student?.StudentRegistrationController) },
+  { path: "/studentAttendenceManagement", element: <StudentAttendenceManagement />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentAttendenceManagement) },
+  { path: "/studentAttendanceShow", element: <StudentAttendanceShow />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentAttendanceShow) },
+  { path: "/studentAttendanceEdit", element: <StudentAttendanceEdit />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentAttendanceEdit) },
+  { path: "/studentAttendanceEditSave", element: <StudentAttendanceEditSave />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentAttendanceEditSave) },
+  { path: "/studentRegistrationController", element: <StudentRegistrationController />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentRegistrationController) },
   { path: "/fees", element: <FeesController />, visible: role === "user" || (role === "sub-user" && permissions?.finance?.adminFees) },
-  { path: "/facultySalary", element: <FacultySalaryController />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.FacultySalaryController) },
-  { path: "/facultyAttendanceEditSave", element: <FacultyAttendanceEditSave />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.FacultyAttendanceEditSave) },
-  { path: "/facultyRegistration", element: <FacultyRegistrationForm />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.FacultyRegistrationForm) },
-  { path: "/facultyAttendanceEdit", element: <FacultyAttendanceEdit />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.FacultyAttendanceEdit) },
-  { path: "/facultyAttendanceShow", element: <FacultyAttendanceShow />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.FacultyAttendanceShow) },
-  { path: "/facultyAttendanceSave", element: <FacultyAttendanceSave />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.FacultyAttendanceSave) },
-  { path: "/facultySalaryDetails", element: <FacultySalaryDetails />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.FacultySalaryDetails) },
-  { path: "/saveSubjectsToClasses", element: <SaveSubjectsToClasses />, visible: role === "user" || (role === "sub-user" && permissions?.subject?.SaveSubjectsToClasses) },
-  { path: "/viewNotification", element: <NotificationList />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.NotificationList) },
-  { path: "/createNotification", element: <CreateNotification />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.CreateNotification) },
-  { path: "/holiday", element: <HolidayFormController />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.HolidayFormController) },
+  { path: "/facultySalary", element: <FacultySalaryController />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultySalaryController) },
+  { path: "/facultyAttendanceEditSave", element: <FacultyAttendanceEditSave />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultyAttendanceEditSave) },
+  { path: "/facultyRegistration", element: <FacultyRegistrationForm />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultyRegistrationForm) },
+  { path: "/facultyAttendanceEdit", element: <FacultyAttendanceEdit />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultyAttendanceEdit) },
+  { path: "/facultyAttendanceShow", element: <FacultyAttendanceShow />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultyAttendanceShow) },
+  { path: "/facultyAttendanceSave", element: <FacultyAttendanceSave />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultyAttendanceSave) },
+  { path: "/facultySalaryDetails", element: <FacultySalaryDetails />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultySalaryDetails) },
+  { path: "/saveSubjectsToClasses", element: <SaveSubjectsToClasses />, visible: role === "user" || (role === "sub-user" && permissions?.subject?.saveSubjectsToClasses) },
+  { path: "/viewNotification", element: <NotificationList />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.notificationList) },
+  { path: "/createNotification", element: <CreateNotification />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.createNotification) },
+  { path: "/holiday", element: <HolidayFormController />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.holidayFormController) },
     
   
-  { path: "//ClassSubjectShow", element: <ClassSubjectShow />, visible: role === "user" },
-  { path: "/notification", element: <NotificationController />, visible: role === "user" },
-  { path: "/studentReportForm", element: <StudentReportForm />, visible: role === "user" },
-  { path: "/studentFeesController", element: <StudentFeesController />, visible: role === "user" }, // Only visible for admin
+  { 
+    path: "/ClassSubjectShow", 
+    element: <ClassSubjectShow />, 
+    visible: role === "user" || (role === "sub-user" && permissions?.subject?.classSubjectShow) 
+  },
+  { 
+    path: "/notification", 
+    element: <NotificationController />, 
+    visible: role === "user" || (role === "sub-user" && permissions?.notification?.notificationController) 
+  },
+  { 
+    path: "/studentReportForm", 
+    element: <StudentReportForm />, 
+    visible: role === "user" || (role === "sub-user" && permissions?.student?.studentReportForm) 
+  },
+  { 
+    path: "/studentFeesController", 
+    element: <StudentFeesController />, 
+    visible: role === "user" || (role === "sub-user" && permissions?.student?.studentFeesController) 
+  },
+  // Only visible for admin
   { path: "/permission", element: <Permission />, visible: role === "user" }, // Only visible for admin
   { path: "/superAdminController", element: <SuperAdminController />, visible: role === "admin" }, // Only visible for admin
   { path: "/schoolsDetails/:id", element: <SchoolsDetails />, visible: role === "admin" }, // Only visible for admin
