@@ -4,7 +4,6 @@ import { useAuth } from './context/authContext';
 import { AuthProvider } from './context/authContext';
 import './App.css';
 import './index.css';
-import ProtectedRoute from './Pages/Login/ProtectedRoute';
 import Login from './Pages/Login/Login';
 import SideBarController from './components/sideBar/SideBarController';
 import HeaderController from './components/main/HeaderController';
