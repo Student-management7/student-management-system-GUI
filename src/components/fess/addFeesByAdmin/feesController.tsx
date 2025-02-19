@@ -127,11 +127,11 @@ const FeesController: React.FC = () => {
               <div className="text-right">
                 <div className="flex items-center space-x-4">
                 
-                  <h1 className="text-xl font-bold text-[#27727A]">Class Fee Page</h1>
+                  <h1 className="text-xl mb-4 font-bold text-[#27727A]">Class Fee Page</h1>
                 </div>
-                <button onClick={() => setShowForm(true)} className="btn button">
+                <span onClick={() => setShowForm(true)} className="btn button float-right">
                   Add Fee
-                </button>
+                </span>
               </div>
               <ReusableTable rows={rowData} columns={columnDefs} />
             </>
