@@ -175,9 +175,9 @@ const HolidayComponent: React.FC = () => {
             <h1 className="text-xl items-center font-bold text-[#27727A]" >Holiday Page</h1>
           </div>
           <div className="text-right">
-            <button onClick={() => setShowForm(true)} className="btn btn-default">
+            <span onClick={() => setShowForm(true)} className="btn button float-right ">
               Add Holiday
-            </button>
+            </span>
           </div>
           <ReusableTable rows={rowData} columns={columnDefs} />
         </>

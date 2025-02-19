@@ -9,6 +9,7 @@ import SideBarController from './components/sideBar/SideBarController';
 import HeaderController from './components/main/HeaderController';
 import FooterController from './components/main/FooterController';
 import PermissionBasedRoute from './components/permission/PermissionBasedRoute'; 
+import AccessDenied from './components/permission/AccessDenied';
 
 const App = () => {
   const { isAuthenticated } = useAuth();
@@ -29,6 +30,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Login />} />
           <Route path="*" element={<Login />} />
+          
         </Routes>
       )}
     </>
