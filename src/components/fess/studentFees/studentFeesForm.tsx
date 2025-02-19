@@ -106,7 +106,7 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose, editingData 
               : "https://s-m-s-keyw.onrender.com/student/saveFees";
 
             await axiosInstance.post(endpoint, values);
-            alert(editingData ? "Fee updated successfully!" : "Fee added successfully!");
+            toast.success(editingData ? "Fee updated successfully!" : "Fee added successfully!");
             onClose();
           } catch (error) {
             toast.error("Failed to save fee. Please try again.");

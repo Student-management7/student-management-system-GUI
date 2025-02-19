@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClassData } from "../../services/SaveSubjects/Type";
 import axiosInstance from "../../services/Utils/apiUtils";
@@ -174,6 +174,7 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
 
   return (
     <div>
+      <ToastContainer position="top-right" autoClose={3000}/>
       <div>
         <div>
           <h2 className="head1 mb-4 text-center text-gray-700">

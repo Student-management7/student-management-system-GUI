@@ -95,31 +95,32 @@ const FacultySalaryController: React.FC = () => {
       field: "edit",
       headerName: "Edit",
       cellRenderer: (params: any) => (
-        
-          <button
-            onClick={() => params.data && handleEditButtonClick(params.data)}
-          >
-           <Pencil size={20} color='orange' />
-          </button>
-         
+
+        <button
+          onClick={() => params.data && handleEditButtonClick(params.data)}
+        >
+          <Pencil size={20} color='orange' />
+        </button>
+
       ),
     },
-    { 
+    {
       field: "view",
       headerName: "View Details",
       cellRenderer: (params: any) => (
         <button
-            onClick={() => params.data?.facultyID && handleViewDetails(params.data.facultyID)}
-          >
-           <Eye size={20} color='blue' />
-          </button>
-      )},
+          onClick={() => params.data?.facultyID && handleViewDetails(params.data.facultyID)}
+        >
+          <Eye size={20} color='blue' />
+        </button>
+      )
+    },
 
-      
+
   ];
 
   const fetchSalaryDetails = useCallback(async () => {
-    
+
     setError(null);
     try {
       setLoading(true);
@@ -131,7 +132,7 @@ const FacultySalaryController: React.FC = () => {
       setError("Failed to fetch salary details. Please try again.");
     } finally {
       setLoading(false);
-      
+
     }
   }, []);
 
@@ -176,68 +177,68 @@ const FacultySalaryController: React.FC = () => {
   return (
 
     <>
-              <ToastContainer position="top-right" autoClose={3000} />
-    
-    {loading ? (
-      <Loader /> // Show loader while data is being fetched
-    ) : (
-    <div className="box">
-      {error && (
-        <div className="alert alert-error mb-4">
-          {error}
-          <button onClick={() => setError(null)} className="ml-2">
-            Dismiss
-          </button>
-        </div>
-      )}
+      <ToastContainer position="top-right" autoClose={3000} />
 
-      {loading && (
-        <div className="text-center my-4">
-          <span className="loading loading-spinner loading-lg"></span>
-          <p>Loading...</p>
-        </div>
-      )}
-
-      {!showForm ? (
-        <>
-          <div className="text-right mb-4">
-          <div className="flex items-center space-x-4 mb-4 ">
-            
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Faculty Salary </h1>
-          </div>            <button
-              onClick={() => {
-                setShowForm(true);
-                setEditData(null);
-              }}
-              className={`btn button ${loading ? "btn-disabled" : ""}`}
-              disabled={loading}
-            >
-              Add Salary
-            </button>
-
-          </div>
-          <ReusableTable
-            rows={rowData}
-            columns={columns}
-          // loading={loading}
-          />
-        </>
+      {loading ? (
+        <Loader /> // Show loader while data is being fetched
       ) : (
-        <FacultySalaryForm
-          initialData={editData || {
-            facultyID: "",
-            facultySalary: 0,
-            facultyTax: 0,
-            facultyTransport: 0,
-            facultyDeduction: [],
+        <div className="box">
+          {error && (
+            <div className="alert alert-error mb-4">
+              {error}
+              <button onClick={() => setError(null)} className="ml-2">
+                Dismiss
+              </button>
+            </div>
+          )}
 
-          }}
-          onSave={handleSave}
-          onCancel={handleCancel}
-        />
+          {loading && (
+            <div className="text-center my-4">
+              <span className="loading loading-spinner loading-lg"></span>
+              <p>Loading...</p>
+            </div>
+          )}
+
+          {!showForm ? (
+            <>
+              <div className="text-right mb-4">
+                <div className="flex items-center space-x-4 mb-4 ">
+
+                  <h1 className="text-xl items-center font-bold text-[#27727A]" >Faculty Salary </h1>
+                </div>            <span
+                  onClick={() => {
+                    setShowForm(true);
+                    setEditData(null);
+                  }}
+                  className={`btn float-right button ${loading ? "btn-disabled" : ""}`}
+                  disabled={loading}
+                >
+                  Add Salary
+                </span>
+
+              </div>
+              <ReusableTable
+                rows={rowData}
+                columns={columns}
+              // loading={loading}
+              />
+            </>
+          ) : (
+            <FacultySalaryForm
+              initialData={editData || {
+                facultyID: "",
+                facultySalary: 0,
+                facultyTax: 0,
+                facultyTransport: 0,
+                facultyDeduction: [],
+
+              }}
+              onSave={handleSave}
+              onCancel={handleCancel}
+            />
+          )}
+        </div>
       )}
-    </div>
-    )}
     </>
   );
 };
