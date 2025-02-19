@@ -451,6 +451,7 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData  }) => {
                       className="form-label"
                     >
                       Primary Contact
+                      <span className="red">*</span>
                     </label>
                     <Field
                       type="text"
@@ -586,6 +587,7 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData  }) => {
 
                 
                 <AlertDialog
+                  
                   title="Confirm Submit"
                   message="Are you sure you want to submit this item?"
                   isOpen={isDialogOpen}

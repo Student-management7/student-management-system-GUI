@@ -26,7 +26,7 @@ import ClassSubjectShow from "../saveSubjectsToClasess/ClassSubjectsShow";
 import StudentReportForm from "../studentReport/studentReportForm";
 import StudentFeesController from "../fess/studentFees/studentFeesController";
 import Permission from "./Permission";
-
+import AccessDenied from "./AccessDenied";
 interface Permission {
   [module: string]: {
     [route: string]: boolean;
@@ -142,7 +142,9 @@ const allRoutes = [
       {finalRoutes.map(({ path, element }) => (
         <Route key={path} path={path} element={element} />
       ))}
-      <Route path="*" element={<Navigate to="/unauthorized" />} />
+      <Route path="*" element={<Navigate to="/AccessDenied" />} />
+      <Route path="/AccessDenied" element={<AccessDenied />} />
+
     </Routes>
   );
 };
