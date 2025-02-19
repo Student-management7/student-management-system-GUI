@@ -1,23 +1,37 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';  // Changed import statement
+import { jwtDecode } from 'jwt-decode';
 
 interface DecodedToken extends JwtPayload {
   userId?: string;
   [key: string]: any;
 }
 
-// Add JwtPayload interface since we removed it from jwt-decode import
 interface JwtPayload {
   exp?: number;
   [key: string]: any;
 }
 
+interface UserDetails {
+  email: string;
+  role: string;
+  facultyInfo?: {
+    fact_Name: string;
+  };
+  schoolCreationEntity?: {
+    ownerName: string;
+  };
+  adminCreationEntity?: {
+    name: string;
+  };
+}
+
 interface AuthContextType {
   isAuthenticated: boolean;
   user: DecodedToken | null;
+  userDetails: UserDetails | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  setUserDetails: (details: UserDetails | null) => void;
   isLoading: boolean;
 }
 
@@ -26,15 +40,37 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<DecodedToken | null>(null);
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.warn('AUTH STATE CHANGED:', {
-      isAuthenticated,
-      user,
-      token: localStorage.getItem('token'),
-    });
-  }, [isAuthenticated, user]);
+    const checkInitialToken = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const decoded = jwtDecode<DecodedToken>(token);
+          const currentTime = Date.now() / 1000;
+
+          if (decoded.exp && currentTime < decoded.exp) {
+            setIsAuthenticated(true);
+            setUser(decoded);
+
+            // Retrieve userDetails from localStorage
+            const storedUserDetails = localStorage.getItem('userDetails');
+            if (storedUserDetails) {
+              setUserDetails(JSON.parse(storedUserDetails));
+            }
+          } else {
+            await logout();
+          }
+        } catch (error) {
+          await logout();
+        }
+      }
+      setIsLoading(false);
+    };
+    checkInitialToken();
+  }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
     try {
@@ -75,30 +111,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  useEffect(() => {
-    const checkInitialToken = async () => {
-      setIsLoading(true);
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const decoded = jwtDecode<DecodedToken>(token);
-          const currentTime = Date.now() / 1000;
-
-          if (decoded.exp && currentTime < decoded.exp) {  // Added null check for exp
-            setIsAuthenticated(true);
-            setUser(decoded);
-          } else {
-            await logout();
-          }
-        } catch (error) {
-          await logout();
-        }
-      }
-      setIsLoading(false);
-    };
-    checkInitialToken();
-  }, []);
-
   const logout = async () => {
     try {
       await fetch('https://s-m-s-keyw.onrender.com/auth/logout', {
@@ -111,8 +123,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }).catch(err => console.warn('Logout API call failed:', err));
     } finally {
       localStorage.removeItem('token');
+      localStorage.removeItem('userDetails'); // Clear user details from localStorage
       setIsAuthenticated(false);
       setUser(null);
+      setUserDetails(null);
       setIsLoading(false);
     }
   };
@@ -132,8 +146,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         isAuthenticated,
         user,
+        userDetails,
         login,
         logout,
+        setUserDetails: (details) => {
+          setUserDetails(details);
+          if (details) {
+            localStorage.setItem('userDetails', JSON.stringify(details));
+          } else {
+            localStorage.removeItem('userDetails');
+          }
+        },
         isLoading,
       }}
     >
