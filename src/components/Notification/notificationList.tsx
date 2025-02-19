@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import NotificationCard from "./notificationCard";
+import NotificationCard from "./notificationCard"
 import axiosInstance from "../../services/Utils/apiUtils";
 import './Notification.scss';
-import { formatToDDMMYYYY } from "../../components/Utils/dateUtils";
+import { formatToDDMMYYYY } from "../Utils/dateUtils";
 import Loader from "../loader/loader"; 
 import AlertDialog from "../alert/AlertDialog"; // Import the AlertDialog component
 import { toast, ToastContainer } from "react-toastify";

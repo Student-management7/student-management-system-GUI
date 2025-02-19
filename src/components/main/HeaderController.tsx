@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { UserCircleIcon, LogOutIcon, SettingsIcon, UserIcon } from 'lucide-react';
-import { IconType } from 'react-icons';
 import { FaCaretDown } from 'react-icons/fa';
-import '../../global.scss'
+import '../../global.scss';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/authContext';
 
 // Types
-
-
 interface UserDetails {
   email: string;
+  role: string;
   facultyInfo?: {
     fact_Name: string;
+  };
+  schoolCreationEntity?: {
+    ownerName: string;
+  };
+  adminCreationEntity?: {
+    name: string;
   };
 }
 
@@ -19,26 +25,54 @@ interface UserDetails {
 const HeaderController: React.FC = () => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
+    // Read user details from localStorage synchronously
     const storedDetails = localStorage.getItem('userDetails');
     if (storedDetails) {
-      setUserDetails(JSON.parse(storedDetails));
+      try {
+        const parsedDetails = JSON.parse(storedDetails);
+        setUserDetails(parsedDetails); // Set user details immediately
+      } catch (error) {
+        console.error('Error parsing user details from localStorage:', error);
+      }
     }
-
+  
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
-
+  
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, []); 
+  const getUserName = () => {
+    if (!userDetails) return 'Guest User';
 
-  const userName = userDetails?.facultyInfo?.fact_Name || 'Guest User';
+    switch (userDetails.role) {
+      case 'admin':
+        return userDetails.adminCreationEntity?.name || 'Admin';
+      case 'user':
+        return userDetails.schoolCreationEntity?.ownerName || 'School Owner';
+      case 'sub-user':
+        return userDetails.facultyInfo?.fact_Name || 'Faculty';
+      default:
+        return 'Guest User';
+    }
+  };
+
+  const userName = getUserName();
+
+  const handleLogout = async () => {
+    localStorage.removeItem('userDetails');  
+    await logout(); 
+    navigate('/login'); 
+  };
 
   return (
     <header
-      className={`sticky top-0 header  z-50 transition-all duration-300 
+      className={`sticky top-0 header z-50 transition-all duration-300 
       ${isScrolled ? 'shadow-lg' : 'shadow-sm'}`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,7 +89,7 @@ const HeaderController: React.FC = () => {
           <Menu as="div" className="relative headerMenu">
             {({ open }) => (
               <>
-                <Menu.Button className=" flex items-center space-x-3 p-2 rounded-full transition-colors duration-200">
+                <Menu.Button className="flex items-center space-x-3 p-2 rounded-full transition-colors duration-200">
                   <UserCircleIcon className="h-8 w-8 text-white" />
                   <span className="hidden sm:inline text-sm font-medium text-white">
                     {userName}
@@ -101,15 +135,18 @@ const HeaderController: React.FC = () => {
                     </Menu.Item>
                     <Menu.Item>
                       {({ active }) => (
-                        <a
-                          href="#logout"
+                        <span
+                          role="button"
+                          tabIndex={0}
                           className={`${
                             active ? '' : ''
-                          } flex items-center px-4 py-2 text-sm text-white`}
+                          } flex items-center px-4 py-2 text-sm text-white cursor-pointer`}
+                          onClick={handleLogout}
+                          onKeyDown={(e) => e.key === 'Enter' && handleLogout()}
                         >
                           <LogOutIcon className="mr-3 h-4 w-4" />
                           Logout
-                        </a>
+                        </span>
                       )}
                     </Menu.Item>
                   </Menu.Items>

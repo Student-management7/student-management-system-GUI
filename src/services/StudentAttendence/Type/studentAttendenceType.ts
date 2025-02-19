@@ -1,4 +1,5 @@
 export interface ClassData {
+    
     className: string;
     subject: string[];
 }

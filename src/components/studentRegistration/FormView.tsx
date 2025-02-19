@@ -9,12 +9,19 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AlertDialog from "../alert/AlertDialog";
 import { sortArrayByKey } from "../Utils/sortArrayByKey";
-const FormView = () => {
+
+interface FormViewProps {
+  setStudentData: (arg: boolean) => void;
+}
+
+const FormView: React.FC<FormViewProps> = ({ setStudentData  }) => {
+
   const [classes, setClasses] = React.useState<ClassData[]>([]);
   const [selectedFee, setSelectedFee] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   // const [formikValues, setFormikValues] = useState<any>(null); // Store form values temporarily
   const [formikHelpers, setFormikHelpers] = useState<any>(null);
+  
   interface ClassData {
     id: string;
     className: string;
@@ -36,7 +43,7 @@ const FormView = () => {
         const sortedData = sortArrayByKey(data, "className");
         setClasses(sortedData);
       } catch (error) {
-        toast.error("Error fetching classes:");
+        toast.warning("Please create class first");
       }
     };
 
@@ -150,15 +157,15 @@ const FormView = () => {
     }
   };
 
-  const handleCancel = () => {
-    setIsDialogOpen(false); // Close the dialog on cancel
-  };
+ 
 
   const handleConfirmSubmit = (values: StudentFormData, formikHelpers: any) => {
     setIsDialogOpen(false); // Close the dialog on confirm
     handleSubmit(values, formikHelpers);
     // setIsDialogOpen(false); // Call the submit function
   };
+
+
   return (
     <>
       <div>
@@ -176,7 +183,7 @@ const FormView = () => {
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="name" className="form-label">
-                      Full Name (Required)
+                      Full Name  <span className="red">*</span>
                     </label>
                     <Field
                       type="text"
@@ -251,7 +258,7 @@ const FormView = () => {
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="contact" className="form-label">
-                      Contact
+                      Contact  <span className="red">*</span>
                     </label>
                     <Field
                       type="text"
@@ -269,7 +276,7 @@ const FormView = () => {
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="gender" className="form-label">
-                      Gender
+                      Gender  <span className="red">*</span>
                     </label>
                     <Field
                       as="select"
@@ -293,7 +300,7 @@ const FormView = () => {
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="dob" className="form-label">
-                      Date Of Birth
+                      Date Of Birth  <span className="red">*</span>
                     </label>
                     <Field
                       type="date"
@@ -310,7 +317,7 @@ const FormView = () => {
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="email" className="form-label">
-                      Email
+                      Email 
                     </label>
                     <Field
                       type="email"
@@ -325,7 +332,7 @@ const FormView = () => {
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="cls" className="form-label">
-                      Admission Class
+                      Admission Class  <span className="red">*</span>
                     </label>
                     <Field
                       as="select"
@@ -366,7 +373,7 @@ const FormView = () => {
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="category" className="form-label">
-                      Category
+                      Category   <span className="red">*</span>
                     </label>
                     <Field
                       as="select"
@@ -376,9 +383,9 @@ const FormView = () => {
                     >
                       <option value="">Select Category</option>
                       <option value="category1">General</option>
-                      <option value="category1">OBC</option>
-                      <option value="category2">SC</option>
-                      <option value="category3">ST</option>
+                      <option value="category2">OBC</option>
+                      <option value="category3">SC</option>
+                      <option value="category4">ST</option>
                       {/* Add more options as needed */}
                     </Field>
                     {errors.category && touched.category && (
@@ -399,7 +406,7 @@ const FormView = () => {
                       htmlFor="familyDetails.stdo_FatherName"
                       className="form-label"
                     >
-                      Father's Name
+                      Father's Name  <span className="red">*</span>
                     </label>
                     <Field
                       type="text"
@@ -444,6 +451,7 @@ const FormView = () => {
                       className="form-label"
                     >
                       Primary Contact
+                      <span className="red">*</span>
                     </label>
                     <Field
                       type="text"
@@ -556,22 +564,35 @@ const FormView = () => {
                 />
               </div>
 
-              <div className="text-center mt-4">
+              <div className="row-1 mt-4 flex justify-around justify-center items-center md-4">
                 <button
                   onClick={() => setIsDialogOpen(true)}
                   type="button"
-                  className="btn btn-primary"
+                  className="btn button head1 text-white"
                 >
                   Submit
                 </button>
+                <button
+                 
+                  type="button"
+                  className="btn buttonred head1 text-white"
+                  onClick={() => { 
+                    setStudentData(false);
+                  }}
+                >
+                  Cancel
+                </button>
+
+                
 
                 
                 <AlertDialog
+                  
                   title="Confirm Submit"
                   message="Are you sure you want to submit this item?"
                   isOpen={isDialogOpen}
                   onConfirm={async () => handleConfirmSubmit(values, formikHelpers)} // Pass values and helpers here
-                  onCancel={handleCancel}
+                  onCancel={() => setIsDialogOpen(false)}
                 />
               </div>
             </Form>

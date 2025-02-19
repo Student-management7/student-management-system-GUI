@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Download,  } from 'lucide-react';
-import './Table.css'
-
+import { Download } from 'lucide-react';
+import './Table.css';
 
 interface Column {
   field: string;
@@ -36,8 +35,8 @@ const ReusableTable: React.FC<TableProps> = ({
   rows,
   rowsPerPageOptions = [5, 10, 25],
   onCellValueChange,
-  tableHeight = "500px",
-  tableWidth = "100%",
+  tableHeight = "70vh",
+  tableWidth = "90vw",
   onEdit,
   onDelete,
   onViewReport
@@ -50,16 +49,15 @@ const ReusableTable: React.FC<TableProps> = ({
     direction: null
   });
 
-  // Get nested value
+  // Existing helper functions (getNestedValue, filteredAndSortedRows calculation)
   const getNestedValue = (obj: any, path: string) => {
     return path.split('.').reduce((acc, part) => acc && acc[part], obj);
   };
 
-  // Filter and sort rows
   const filteredAndSortedRows = useMemo(() => {
-    let result = rows.filter((row) =>
+    let result = rows.filter((row: any) =>
       Object.entries(row).some(([key, value]) => {
-        if (columns.find(col => col.field === key)) {
+        if (columns.find((col: any) => col.field === key)) {
           const searchValue = value?.toString().toLowerCase() || '';
           return searchValue.includes(searchTerm.toLowerCase());
         }
@@ -72,8 +70,7 @@ const ReusableTable: React.FC<TableProps> = ({
         let aVal = a[sortConfig.field];
         let bVal = b[sortConfig.field];
 
-        // Handle nested fields
-        const column = columns.find(col => col.field === sortConfig.field);
+        const column = columns.find((col: any) => col.field === sortConfig.field);
         if (column?.nestedField) {
           aVal = getNestedValue(a, column.nestedField);
           bVal = getNestedValue(b, column.nestedField);
@@ -90,39 +87,51 @@ const ReusableTable: React.FC<TableProps> = ({
     return result;
   }, [rows, searchTerm, sortConfig, columns]);
 
-  // Calculate pagination
   const totalPages = Math.ceil(filteredAndSortedRows.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedRows = filteredAndSortedRows.slice(startIndex, startIndex + rowsPerPage);
 
-  console.log('rows--->',rows);
+  console.log('rows--->', rows);
   console.log('columns--->', columns);
 
-  const actionbuttons = (id: any) =>{
+  const actionbuttons = (id: any) => {
     console.log(id);
-    return(
-        <div>
-          <button onClick={()=>onEdit}>Edit</button>
-          <button>Delete</button>
-        </div>
+    return (
+      <div>
+        <button onClick={() => onEdit}>Edit</button>
+        <button>Delete</button>
+      </div>
     )
 
   }
   return (
-    <div>
-      {/* Search Bar */}
-      <div className='mb-3'>
-        <div className="sm:w-72 position-relative">
+
+    <>
+
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-4">
+        {/* Search Bar */}
+        <div className="relative w-full max-w-md">
           <input
             type="text"
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-8 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-8 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           <span className="absolute left-2.5 top-2.5">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </span>
         </div>
@@ -137,7 +146,7 @@ const ReusableTable: React.FC<TableProps> = ({
                 <th>
                   ID
                 </th>
-                {columns.map((column) => (
+                {columns.map((column: any) => (
                   <th
                     key={column.field}
                     onClick={() => column.sortable !== false && setSortConfig({
@@ -155,26 +164,25 @@ const ReusableTable: React.FC<TableProps> = ({
                     </div>
                   </th>
                 ))}
-
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {paginatedRows.map((row, rowIndex) => (
+            <tbody className="divide-y divide-gray-200">
+              {paginatedRows.map((row: any, rowIndex: any) => (
                 <tr key={rowIndex} className="hover:bg-gray-50">
                   <td className="text-ellipsis">
                     <p className='pull-left'>{startIndex + rowIndex + 1}</p>
                     <div className='ml-4 mobileView'>
-                      {columns.map((column) => (
-                        
+                      {columns.map((column: any) => (
+
                         <p className='m-0'
                           key={`${rowIndex}-${column.field}`}
                         >
-                          {column.headerName}: 
+                          {column.headerName}:
                           {column.cellRenderer ? (
                             column.cellRenderer({
                               data: row,
                               value: column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field],
-                              setValue: (value) => onCellValueChange?.(rowIndex, column.field, value)
+                              setValue: (value: number) => onCellValueChange?.(rowIndex, column.field, value)
                             })
                           ) : (
                             <span className="text-sm text-gray-900 overflow-hidden overflow-ellipsis">
@@ -184,9 +192,9 @@ const ReusableTable: React.FC<TableProps> = ({
                         </p>
                       ))}
                     </div>
-                    
+
                   </td>
-                  {columns.map((column) => (
+                  {columns.map((column: any) => (
                     <td className='webView'
                       key={`${rowIndex}-${column.field}`}
                     >
@@ -194,16 +202,15 @@ const ReusableTable: React.FC<TableProps> = ({
                         column.cellRenderer({
                           data: row,
                           value: column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field],
-                          setValue: (value) => onCellValueChange?.(rowIndex, column.field, value)
+                          setValue: (value: number) => onCellValueChange?.(rowIndex, column.field, value)
                         })
                       ) : (
-                        <div className="text-sm text-gray-900 overflow-hidden overflow-ellipsis">
+                        <div className="text-gray-900 overflow-hidden text-ellipsis">
                           {column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field]}
                         </div>
                       )}
                     </td>
                   ))}
-
                 </tr>
               ))}
 
@@ -234,11 +241,27 @@ const ReusableTable: React.FC<TableProps> = ({
       </div>
 
       {/* Table Controls */}
-      <div className="flex mt-2 sm:flex-row justify-between">
+      <div className="flex mt-3 sm:flex-row justify-between">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => {/* Export CSV logic */ }}
-            className="flex webView items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            onClick={() => {
+              const csvData = filteredAndSortedRows.map((row: any) => {
+                return columns.map((column: any) => column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field]);
+              });
+
+              const csvContent = csvData.map((row: any) => row.join(',')).join('\n');
+              const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.setAttribute('href', url);
+              link.setAttribute('download', 'data.csv');
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              URL.revokeObjectURL(url);
+
+            }}
+            className="flex webView items-center gap-2 px-4  head1 btn button text-white"
           >
             <Download size={16} />
             Export CSV
@@ -252,16 +275,15 @@ const ReusableTable: React.FC<TableProps> = ({
                 setRowsPerPage(Number(e.target.value));
                 setCurrentPage(1);
               }}
-              className="border rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
-              {rowsPerPageOptions.map((option) => (
+              {rowsPerPageOptions.map((option: any) => (
                 <option key={option} value={option}>{option}</option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* Pagination */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => setCurrentPage(currentPage - 1)}
@@ -275,8 +297,8 @@ const ReusableTable: React.FC<TableProps> = ({
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 border rounded-md ${currentPage === page
-                  ? 'bg-blue-500 text-white'
+                className={`px-3 py-1 border rounded-md transition-colors ${currentPage === page
+                  ? 'bg-[#3a8686] text-white'
                   : 'hover:bg-gray-100'
                   }`}
               >
@@ -293,7 +315,8 @@ const ReusableTable: React.FC<TableProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </>
+
   );
 };
 

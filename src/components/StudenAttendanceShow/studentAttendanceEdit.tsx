@@ -4,6 +4,7 @@ import { validateAttendanceForm } from "../../services/StudentAttendanceShow/val
 import "./Attendence.scss";
 import AttendanceTable from "./AttendanceTable";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 
 const StudentAttendanceEdit: React.FC = () => {
@@ -14,8 +15,10 @@ const StudentAttendanceEdit: React.FC = () => {
   const [date, setDate] = useState<string>("2024-11-07");
   const [rowData, setRowData] = useState<any[]>([]);
   const [columnDefs, setColumnDefs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading
     const loadClassData = async () => {
       try {
         const data = await fetchClassData();

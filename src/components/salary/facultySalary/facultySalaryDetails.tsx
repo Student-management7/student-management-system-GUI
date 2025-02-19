@@ -77,7 +77,7 @@ const FacultySalaryDetails: React.FC = () => {
                       <ToastContainer position="top-right" autoClose={3000} />
         
         <div className="header mb-4">
-          <h2 className="text-2xl font-bold">Faculty Details</h2>
+          <h2 className="head1">Faculty Details</h2>
           <p>
             <strong>ID:</strong> {faculty.fact_id}
           </p>
@@ -86,8 +86,14 @@ const FacultySalaryDetails: React.FC = () => {
           </p>
         </div>
 
-        <div className="box p-4">
-          <h3 className="text-xl font-semibold mb-2">Salary Details</h3>
+        <p className="ml-6">
+          <span className="text-xl">Name :-</span>
+          <span className="ml-2 text-xl"> {faculty.fact_Name}</span>
+        </p>
+
+
+        <div className=" p-4">
+
           <ReusableTable
             rows={faculty.fact_salary.map((salary) => ({
               // id: salary.id,

@@ -11,21 +11,6 @@ export const fetchFacultyData = async (): Promise<Faculty[]> => {
     }));
 };
 
-export const submitAttendance = async (facultyList: Faculty[]) => {
-    // ✅ 2️⃣ Ensure Faculty Data is Sent in Payload
-    const factsWithAttendance = facultyList.filter(faculty => faculty.attendance && faculty.attendance !== 'Select');
-
-    if (factsWithAttendance.length === 0) {
-        throw new Error('No attendance data provided');
-    }
-
-    const payload = {
-        factList: factsWithAttendance.map(faculty => ({
-            factId: faculty.fact_id,
-            name: faculty.fact_Name,
-            attendance: faculty.attendance,
-        })),
-    };
-
+export const submitAttendance = async (payload: any) => {
     return await axiosInstance.post(`${API_URL}/faculty/attendanceSave`, payload);
 };
