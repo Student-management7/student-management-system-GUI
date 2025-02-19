@@ -10,11 +10,13 @@ export const SideBarData = [
         icon: FaUserLarge,
         iconClosed: FaCaretUp,
         iconeOpened: FaCaretDown,
+       
         subNav: [
             {
                 title: 'Super Admin Registration',
                 path: '/superAdminController',
                 icon: FaUserPlus,
+                
             }
         ]
     },
