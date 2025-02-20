@@ -23,6 +23,7 @@ const FacultyRegistrationController: React.FC = () => {
     fetchFacultyDetails();
   }, []);
 
+
   const fetchFacultyDetails = async () => {
     try {
       setLoading(true);

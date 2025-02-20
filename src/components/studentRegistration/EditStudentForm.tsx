@@ -1,47 +1,48 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { StudentFormData } from "../../services/studentRegistration/type/StudentRegistrationType";
 import { updateStudentDeteails } from '../../services/studentRegistration/api/StudentRegistration';
 import { toast, ToastContainer } from "react-toastify";
 
 
-interface EditStudentFormProps  {
+interface EditStudentFormProps {
     singleRowData: StudentFormData;
     onClose: () => void;
 }
 
-const EditStudentForm: React.FC<EditStudentFormProps>  = ({ singleRowData, onClose }) =>{
+const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClose }) => {
 
     const [editFormView, setEditFormView] = useState<boolean>(false);
     // const {singleRowData} = props;
-      const [isDialogOpen, setIsDialogOpen] = useState(false);
-    
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+ const [error , setError] = useState('');   
+
     if (!singleRowData) return <div>Loading...</div>;
     console.log('singleRowData', singleRowData);
 
-     const [formData, setFormData] = useState<StudentFormData>(
+    const [formData, setFormData] = useState<StudentFormData>(
         {
-        name: '',
-        address: '',
-        city: '',
-        state: '',
-        contact: '',
-        gender: '',
-        dob: '',
-        email: '',
-        cls: '',
-        department: '',
-        category: '',
-        familyDetails: {
-            stdo_FatherName: '',
-            stdo_MotherName: '',
-            stdo_primaryContact: '',
-            stdo_secondaryContact: '',
-            stdo_address: '',
-            stdo_city: '',
-            stdo_state: '',
-            stdo_email: ''
+            name: '',
+            address: '',
+            city: '',
+            state: '',
+            contact: '',
+            gender: '',
+            dob: '',
+            email: '',
+            cls: '',
+            department: '',
+            category: '',
+            familyDetails: {
+                stdo_FatherName: '',
+                stdo_MotherName: '',
+                stdo_primaryContact: '',
+                stdo_secondaryContact: '',
+                stdo_address: '',
+                stdo_city: '',
+                stdo_state: '',
+                stdo_email: ''
+            }
         }
-    }
     );
 
     useEffect(() => {
@@ -78,29 +79,49 @@ const EditStudentForm: React.FC<EditStudentFormProps>  = ({ singleRowData, onClo
     const handleChange = (e: any) => {
         const { name, value } = e.target;
 
-        setFormData({...formData, [name]:[value]})
+        setFormData({ ...formData, [name]: [value] })
     };
-   
 
 
-   
+    const validateForm = () => {
+        const requiredFields = ['name', 'contact', 'email', 'cls', 'gender', 'dob',"familyDetails.stdo_FatherName","category","familyDetails.stdo_primaryContact"];
+        const missingFields = requiredFields.filter(field => !formData[field]);
+
+        if (missingFields.length > 0) {
+            setError(`The following fields are required: ${missingFields.join(', ')}`);
+            return false;
+        }
+
+        setError('');
+        return true;
+    };
+
     const handleSubmit = (e: any) => {
-        updateStudentDeteails(formData); 
-        toast.success("Student data Updated Successfully") 
-        
+        e.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
+        updateStudentDeteails(formData);
+        toast.success("Student data Updated Successfully");
     };
 
 
-    return(
+
+
+    return (
         <>
-             <div>   
-                <ToastContainer/>         
+            <div>
+                <ToastContainer />
                 <form >
                     <div className='row'>
                         <div className='col-md-4'>
                             <div className='form-group'>
-                                <label htmlFor="name" className="form-label">Full Name (Required)</label>
-                                <input type="text" name="name" className="form-control" value={formData.name} onChange={(e: any) => setFormData({...formData, name: e.target.value})  } />
+                                <label htmlFor="name" className="form-label">Full Name <span className="red">*</span>  </label>
+                                <input type="text" name="name" className="form-control" value={formData.name} onChange={(e: any) => setFormData({ ...formData, name: e.target.value })} />
+                                {error.includes('name') && <span className="text-danger">Name is required</span>}
+                                
                             </div>
                         </div>
                         <div className='col-md-4'>
@@ -111,13 +132,13 @@ const EditStudentForm: React.FC<EditStudentFormProps>  = ({ singleRowData, onClo
                                     id="address"
                                     name="address"
                                     value={formData.address}
-                                    onChange={(e: any) => setFormData({...formData, address: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, address: e.target.value })}
                                     //value={singleRowData.address}
                                     //onChange={handleChange}
                                     className="form-control"
                                     placeholder='Enter Address'
                                 />
-                                
+
                             </div>
                         </div>
                         <div className='col-md-4'>
@@ -128,13 +149,13 @@ const EditStudentForm: React.FC<EditStudentFormProps>  = ({ singleRowData, onClo
                                     id="city"
                                     name="city"
                                     value={formData.city}
-                                    onChange={(e: any) => setFormData({...formData, city: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, city: e.target.value })}
                                     //value={singleRowData.city}
                                     className="form-control"
                                     placeholder='Enter city'
-                                    //onChange={handleChange}
+                                //onChange={handleChange}
                                 />
-                                
+
                             </div>
                         </div>
                     </div>
@@ -148,100 +169,106 @@ const EditStudentForm: React.FC<EditStudentFormProps>  = ({ singleRowData, onClo
                                     id="state"
                                     name="state"
                                     value={formData.state}
-                                    onChange={(e: any) => setFormData({...formData, state: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, state: e.target.value })}
                                     //value={singleRowData.state}
                                     className="form-control"
                                     placeholder='Enter state'
-                                    //onChange={handleChange}
+                                //onChange={handleChange}
                                 />
-                                 
+
                             </div>
                         </div>
                         <div className='col-md-4'>
                             <div className='form-group'>
-                                <label htmlFor="contact" className="form-label">Contact</label>
+                                <label htmlFor="contact" className="form-label">Contact <span className="red">*</span></label>
                                 <input
                                     type="text"
                                     id="contact"
                                     name="contact"
                                     value={formData.contact}
-                                    onChange={(e: any) => setFormData({...formData, contact: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, contact: e.target.value })}
                                     //value={singleRowData.contact}
                                     className="form-control"
                                     placeholder='Enter contact'
-                                    //onChange={handleChange}
+                                //onChange={handleChange}
                                 />
+                                   {error.includes('contact') && <span className="text-danger">Contact is required</span>}
                             </div>
                         </div>
                         <div className='col-md-4'>
                             <div className='form-group'>
-                                <label htmlFor="gender" className="form-label">Gender</label>
+                                <label htmlFor="gender" className="form-label">Gender <span className="red">*</span> </label>
                                 <select
-                                    
+
                                     id="gender"
                                     name="gender"
                                     className="form-control"
                                     value={formData.gender}
-                                    onChange={(e: any) => setFormData({...formData, gender: e.target.value})  }
-                                    // value={singleRowData.gender}
-                                    // onChange={handleChange}
-                                    
+                                    onChange={(e: any) => setFormData({ ...formData, gender: e.target.value })}
+                                // value={singleRowData.gender}
+                                // onChange={handleChange}
+
                                 >
                                     <option value="">Select</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                     <option value="Other">Other</option>
                                 </select>
-                               
+
+                                {error.includes('gender') && <span className="text-danger">Gender is required</span>}
+
                             </div>
                         </div>
                     </div>
                     <div className='row'>
                         <div className='col-md-4'>
                             <div className='form-group'>
-                                <label htmlFor="dob" className="form-label">Date Of Birth</label>
+                                <label htmlFor="dob" className="form-label">Date Of Birth <span className="red">*</span> </label>
                                 <input
                                     type="date"
                                     id="dob"
                                     //onChange={handleChange}
                                     value={formData.dob}
-                                    onChange={(e: any) => setFormData({...formData, dob: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, dob: e.target.value })}
                                     name="dob"
                                     //value={singleRowData.dob}
                                     className="form-control"
-                                />                       
+                                />
+                                {error.includes('dob') && <span className="text-danger">Date of birth is required</span>}
                             </div>
                         </div>
                         <div className='col-md-4'>
                             <div className='form-group'>
-                                <label htmlFor="email" className="form-label">Email</label>
+                                <label htmlFor="email" className="form-label">Email <span className="red">*</span> </label>
                                 <input
                                     type="email"
                                     id="email"
                                     name="email"
                                     value={formData.email}
-                                    onChange={(e: any) => setFormData({...formData, email: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, email: e.target.value })}
                                     //value={singleRowData.email}
                                     className="form-control"
                                     //onChange={handleChange}
                                     placeholder='Enter email'
                                 />
+                                 {error.includes('email') && <span className="text-danger">Email is required</span>}
                             </div>
                         </div>
                         <div className='col-md-4'>
                             <div className='form-group'>
-                                <label htmlFor="cls" className="form-label">Admission Class</label>
+                                <label htmlFor="cls" className="form-label">Admission Class <span className="red">*</span> </label>
                                 <input
                                     type="text"
                                     id="cls"
                                     name="cls"
                                     className="form-control"
                                     value={formData.cls}
-                                    onChange={(e: any) => setFormData({...formData, cls: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, cls: e.target.value })}
                                     //value={singleRowData.cls}
                                     //onChange={handleChange}
                                     placeholder='Enter Class'
                                 />
+                                {error.includes('cls') && <span className="text-danger">Class is required</span>}
                             </div>
                         </div>
                     </div>
@@ -255,7 +282,7 @@ const EditStudentForm: React.FC<EditStudentFormProps>  = ({ singleRowData, onClo
                                     name="department"
                                     //value={singleRowData.department}
                                     value={formData.department}
-                                    onChange={(e: any) => setFormData({...formData, department: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, department: e.target.value })}
                                     className="form-control"
                                     //onChange={handleChange}
                                     placeholder='Enter Department'
@@ -264,18 +291,19 @@ const EditStudentForm: React.FC<EditStudentFormProps>  = ({ singleRowData, onClo
                         </div>
                         <div className='col-md-4'>
                             <div className='form-group'>
-                                <label htmlFor="category" className="form-label">Category</label>
+                                <label htmlFor="category" className="form-label">Category <span className="red">*</span> </label>
                                 <input
                                     type="text"
                                     id="category"
                                     name="category"
                                     value={formData.category}
-                                    onChange={(e: any) => setFormData({...formData, category: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, category: e.target.value })}
                                     //value={singleRowData.category}
                                     className="form-control"
                                     //onChange={handleChange}
                                     placeholder='Enter category'
                                 />
+                                {error.includes('category') && <span className="text-danger">Category is required</span>}
                             </div>
                         </div>
                     </div>
@@ -284,7 +312,7 @@ const EditStudentForm: React.FC<EditStudentFormProps>  = ({ singleRowData, onClo
                     <div className='row'>
                         <div className='col-md-4'>
                             <div className='form-group'>
-                                <label htmlFor="familyDetails.stdo_FatherName" className="form-label">Father's Name</label>
+                                <label htmlFor="familyDetails.stdo_FatherName" className="form-label">Father's Name   </label>
                                 <input
                                     type="text"
                                     id="familyDetails.stdo_FatherName"
@@ -331,7 +359,7 @@ const EditStudentForm: React.FC<EditStudentFormProps>  = ({ singleRowData, onClo
                         </div>
                         <div className='col-md-4'>
                             <div className='form-group'>
-                                <label htmlFor="familyDetails.stdo_primaryContact" className="form-label">Primary Contact</label>
+                                <label htmlFor="familyDetails.stdo_primaryContact" className="form-label">Primary Contact  </label>
                                 <input
                                     type="text"
                                     id="familyDetails.stdo_primaryContact"
@@ -453,15 +481,15 @@ const EditStudentForm: React.FC<EditStudentFormProps>  = ({ singleRowData, onClo
                         </div>
                     </div>
                     <div className="row">
-                    <div className='text-center mt-4 col' >
-                        <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Update</button>
-                    </div>
-                    <div className='text-center mt-4 col ' >
-                        <button onClick={onClose} className="btn btn-danger" >Canel</button>
-                    </div>
+                        <div className='text-center mt-4 col' >
+                            <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Update</button>
+                        </div>
+                        <div className='text-center mt-4 col ' >
+                            <button onClick={onClose} className="btn btn-danger" >Canel</button>
+                        </div>
                     </div>
                 </form>
-                      
+
             </div>
         </>
     );

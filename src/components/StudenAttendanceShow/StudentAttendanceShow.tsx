@@ -177,8 +177,8 @@ const StudentAttendanceShow: React.FC = () => {
 
 
         <>
-                                  <ToastContainer position="top-right" autoClose={3000} />
-             
+          <ToastContainer position="top-right" autoClose={3000} />
+
           <div className="box">
             <div className="flex items-center space-x-4 mb-4">
               <span>
@@ -212,14 +212,14 @@ const StudentAttendanceShow: React.FC = () => {
                 </Switch>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label htmlFor="classSelect" className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="row form-group ">
+                <div className="col-md-6">
+                  <label htmlFor="classSelect" className="form-label">
                     Class:
                   </label>
                   <select
                     id="classSelect"
-                    className="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="form-control"
                     value={classSelected}
                     onChange={(e) => setClassSelected(e.target.value)}
                     disabled={loading}
@@ -236,13 +236,13 @@ const StudentAttendanceShow: React.FC = () => {
                 </div>
 
                 {!AttendanceMode && (
-                  <div>
-                    <label htmlFor="subjectSelect" className="block text-sm font-medium text-gray-700 mb-1">
+                  <div className="col-md-6">
+                    <label htmlFor="subjectSelect" className="form-label">
                       Subject:
                     </label>
                     <select
                       id="subjectSelect"
-                      className="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="form-control"
                       value={subjectSelected}
                       onChange={(e) => setSubjectSelected(e.target.value)}
                       disabled={loading}
@@ -261,38 +261,43 @@ const StudentAttendanceShow: React.FC = () => {
                   </div>
                 )}
 
-                <div>
-                  <label htmlFor="fromDate" className="block text-sm font-medium text-gray-700 mb-1">
+              </div>
+
+              <div className="row form-group">
+
+                <div className="col-md-6">
+                  <label htmlFor="fromDate" className="form-label">
                     From Date:
                   </label>
                   <input
                     type="date"
                     id="fromDate"
-                    className="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="form-control"
                     value={fromDate}
                     onChange={(e) => setFromDate(e.target.value)}
                     disabled={loading}
                   />
                 </div>
 
-                <div>
-                  <label htmlFor="toDate" className="block text-sm font-medium text-gray-700 mb-1">
+                <div className="col-md-6">
+                  <label htmlFor="toDate" className="form-label">
                     To Date:
                   </label>
                   <input
                     type="date"
                     id="toDate"
-                    className="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="form-control"
                     value={toDate}
                     onChange={(e) => setToDate(e.target.value)}
                     disabled={loading}
                   />
                 </div>
+
               </div>
 
-              <div className="text-center">
+              <div className="text-center mt-4">
                 <button
-                  className="button btn head1 text-white"
+                  className="button btn "
                   onClick={handleFetchAttendance}
                   disabled={loading}
                 >

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import axiosInstance from "../../services/Utils/apiUtils"
 import Loader from "../loader/loader"
+import BackButton from "../Navigation/backButton"
 
 interface School {
   id: string
@@ -57,8 +58,14 @@ const SchoolsDetails: React.FC = () => {
     <div className="box">
 
     <div className="max-w-4xl mx-auto p-4 sm:p-6 bg-white shadow-lg rounded-lg border border-gray-200">
-      <h2 className="text-2xl font-bold head1 text-center mb-4">{schoolData.schoolName}</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+
+    <div className="items flex items-center ">
+            <span> <BackButton /></span>
+            <span className="head1 mt-2 ml-2 ">{schoolData.schoolName}</span>
+        </div>
+
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 mt-4">
         <InfoItem label="School Code" value={schoolData.schoolCode} />
         <InfoItem label="Address" value={`${schoolData.schoolAddress}, ${schoolData.city}, ${schoolData.state}`} />
         <InfoItem label="Admin Contact" value={schoolData.adminContact} />

@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import "./FacultyDetails.css"
 import axiosInstance from "../../services/Utils/apiUtils"
 import { useParams } from "react-router-dom"
+import BackButton from "../Navigation/backButton"
 
 
 interface FacultySalary {
@@ -134,10 +135,10 @@ const FacultyProfile:  React.FC = () => {
 
     <div className="box">
     <div className="profile-container">
-      <nav className="top-nav">
-        <div className="nav-brand">Faculty Profile</div>
-        
-      </nav>
+    <nav className="items flex items-center ">
+            <span> <BackButton /></span>
+            <span className="head1 mt-2 ml-2 ">Faculty Profile</span>
+        </nav>
 
       <div className="profile-content">
         <div className="profile-header">
