@@ -16,7 +16,7 @@ const FacultyAttendance: React.FC = () => {
 
   useEffect(() => {
     if (selectedDate) {
-      
+
     }
   }, [selectedDate]);
 
@@ -65,7 +65,7 @@ const FacultyAttendance: React.FC = () => {
 
   const mapAttendanceToRows = (data: AttendanceEntry[], date: string): any[] => {
     const facultyMap: { [id: string]: any } = {};
-  
+
     data.forEach((entry) => {
       entry.factList.forEach((faculty) => {
         if (!facultyMap[faculty.factId]) {
@@ -78,7 +78,7 @@ const FacultyAttendance: React.FC = () => {
         }
       });
     });
-  
+
     return Object.values(facultyMap);
   };
 
@@ -87,7 +87,7 @@ const FacultyAttendance: React.FC = () => {
       console.error('Error: Missing date or factList', { id, date, factList });
       return;
     }
-    
+
     navigate('/facultyAttendanceEditSave', {
       state: { id, date, factList },
     });
@@ -96,41 +96,48 @@ const FacultyAttendance: React.FC = () => {
   return (
 
     <>
-     {loading && <Loader />} 
-     {!loading && (
-    <div className="box">
-      <div className="flex items-center space-x-4 mb-4">
+      {loading && <Loader />} {/* Show loader when loading */}
+      {!loading && (
+        <div className="box">
+          <div className="flex items-center space-x-4 mb-4">
             <span>
               <BackButton />
             </span>
             <h1 className="text-xl items-center font-bold text-[#27727A]" >Faculty Attendance Edit </h1>
           </div>
-      <div className="filters space-y-4 md:flex md:space-y-0 md:space-x-4 md:items-center mb-2">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Select Date:</label>
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={e => setSelectedDate(e.target.value)}
-            className="border rounded p-2"
-          />
+
+
+          <div className="row form-group d-flex align-items-end">
+            <span className="col-md-6 ">
+              <label className="form-label">Select Date:</label>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={e => setSelectedDate(e.target.value)}
+                className="form-control "
+              />
+            </span>
+            <span className="col-md-6 d-flex align-items-end mb-1">
+
+              <button
+                onClick={fetchAttendanceData}
+                disabled={loading}
+                className="button btn mt-4  "
+              >
+                {loading ? 'Fetching...' : 'Fetch Attendance'}
+              </button>
+            </span>
+          </div>
+
+
+          {error && (
+            <div className="bg-red-100 text-red-600 p-3 rounded">{error}</div>
+          )}
+          <div className="">
+            <ReusableTable rows={rowData} columns={columnDefs} rowsPerPageOptions={[5, 10, 20]} />
+          </div>
         </div>
-        <button
-          onClick={fetchAttendanceData}
-          disabled={loading}
-          className="bg-blue-500 text-white rounded px-3 py-1.75 mt-2 disabled:opacity-50"
-        >
-          {loading ? 'Fetching...' : 'Fetch Attendance'}
-        </button>
-      </div>
-      {error && (
-        <div className="bg-red-100 text-red-600 p-3 rounded">{error}</div>
       )}
-      <div className="box">
-        <ReusableTable rows={rowData} columns={columnDefs} rowsPerPageOptions={[5, 10, 20]}  />
-      </div>
-    </div>
-     )}
     </>
   );
 };

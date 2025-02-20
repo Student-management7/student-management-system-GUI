@@ -69,16 +69,17 @@ const StudentReport: React.FC = () => {
       try {
         setLoading(true);
         const [examResponse, attendanceResponse] = await Promise.all([
-          axiosInstance.get(
-            `/report/getStudentReport?id=${id}`
-          ),
-          axios.get(
-            "https://716a9f60-27a0-449f-bb20-e8e3518d7858.mock.pstmn.io/get attendance"
-          )
+          axios.get(`/report/getStudentReport?id=${id}`),
+          axios.get("https://716a9f60-27a0-449f-bb20-e8e3518d7858.mock.pstmn.io/get attendance")
         ]);
 
         const examData = examResponse.data;
         const attendanceData = attendanceResponse.data;
+
+        // Check if examData is empty
+        if (examData.length === 0) {
+          throw new Error("No data found for the given ID.");
+        }
 
         setExamData(examData);
         setStudentData({
@@ -86,20 +87,21 @@ const StudentReport: React.FC = () => {
           attendance: attendanceData
         });
 
-
         console.log("Exam Data:", examData);
         console.log("Attendance Data:", attendanceData);
-
-
 
         if (examData.length > 0) {
           setSelectedExamType(examData[0].examType);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+        if (error.message === "No data found for the given ID.") {
+          toast.error("No data found for the provided ID. Please check the ID and try again.");
+        } else {
+          toast.error("Failed to fetch data. Please try again or check your network connection.");
+        }
       } finally {
         setLoading(false);
-        toast.error("try again or check network connection")
       }
     };
 

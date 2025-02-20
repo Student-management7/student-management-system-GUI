@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import GridView from './GridView'; // Import your GridView component
+import GridView from './GridView';
 import { formatToDDMMYYYY } from '../Utils/dateUtils';
 import axiosInstance from '../../services/Utils/apiUtils';
 import { toast, ToastContainer } from 'react-toastify';
@@ -8,7 +8,8 @@ import { toast, ToastContainer } from 'react-toastify';
 const StudentAttendanceEditSave: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { studentData, date, className, subject } = location.state || {}; // Extract className and subject
+
+  const { studentData, date, className, subject, AttendanceMode } = location.state || {};
 
   if (!studentData || !date || !className || !subject) {
     return <div>Error: Missing attendance data</div>;
@@ -20,9 +21,9 @@ const StudentAttendanceEditSave: React.FC = () => {
     try {
       const payload = {
         date: formatToDDMMYYYY(date),
-        className, // Add className to the payload
-        subject,   // Add subject to the payload
-        studentList: editedStudentList, // Rename to `studentList` for consistency
+        className,
+        subject,
+        studentList: editedStudentList,
       };
 
       await axiosInstance.post(
@@ -30,7 +31,7 @@ const StudentAttendanceEditSave: React.FC = () => {
         payload
       );
       toast.success('Attendance updated successfully!');
-      navigate('/studentAttendance'); // Redirect back to the main page
+      navigate('/studentAttendance');
     } catch (err) {
       console.error(err);
       toast.error('Failed to save changes. Please try again.');
@@ -40,9 +41,9 @@ const StudentAttendanceEditSave: React.FC = () => {
   const columnDefs = [
     { headerName: 'Student Name', field: 'name', editable: false },
     { headerName: 'Student ID', field: 'stdId', editable: false },
-    { 
-      headerName: 'Attendance', 
-      field: 'attendance', 
+    {
+      headerName: 'Attendance',
+      field: 'attendance',
       editable: true,
       cellEditor: 'agSelectCellEditor',
       cellEditorParams: {
@@ -69,25 +70,26 @@ const StudentAttendanceEditSave: React.FC = () => {
 
   return (
     <>
-    <ToastContainer/>
-    <div className="box">
-      <h2 className="text-lg font-bold mb-4">Date: {date}</h2>
-      <h3>Class: {className}</h3> {/* Display className */}
-      <h3>Subject: {subject}</h3> {/* Display subject */}
-      
-      <GridView 
-        rowData={rowData} 
-        columnDefs={columnDefs} 
-        onCellValueChanged={onCellValueChanged}
-      />
+      <ToastContainer />
+      <div className="box">
+        <h2 className="text-lg font-bold mb-4">Date: {date}</h2>
+        <h3>Class: {className}</h3>
+        <h3>Subject: {subject}</h3>
+        <h3>Attendance Mode: {AttendanceMode ? 'Enabled' : 'Disabled'}</h3>
 
-      <button
-        onClick={saveEditedAttendance}
-        className="bg-blue-500 text-white rounded px-3 py-1 mt-4"
-      >
-        Save Changes
-      </button>
-    </div>
+        <GridView
+          rowData={rowData}
+          columnDefs={columnDefs}
+          onCellValueChanged={onCellValueChanged}
+        />
+
+        <button
+          onClick={saveEditedAttendance}
+          className="bg-blue-500 text-white rounded px-3 py-1 mt-4"
+        >
+          Save Changes
+        </button>
+      </div>
     </>
   );
 };
