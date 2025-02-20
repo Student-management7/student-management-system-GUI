@@ -66,24 +66,24 @@ const StudentFeesController: React.FC = () => {
         </button>
       ),
     },
-    {
-      field: "actions",
-      headerName: "Delete",
-      cellRenderer: (params: any) => (
-        <button
-          onClick={() => {
-            if (params.data?.id) {
-              handleDelete(params.data.id);
-            } else {
-              console.error("ID is undefined:", params.data);
-            }
-          }}
-          className="text-red-600 hover:text-red-800"
-        >
-          <Trash2 size={20} />
-        </button>
-      )
-    }
+    // {
+    //   field: "actions",
+    //   headerName: "Delete",
+    //   cellRenderer: (params: any) => (
+    //     <button
+    //       onClick={() => {
+    //         if (params.data?.id) {
+    //           handleDelete(params.data.id);
+    //         } else {
+    //           console.error("ID is undefined:", params.data);
+    //         }
+    //       }}
+    //       className="text-red-600 hover:text-red-800"
+    //     >
+    //       <Trash2 size={20} />
+    //     </button>
+    //   )
+    // }
     
   ];
 
