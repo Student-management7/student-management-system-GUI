@@ -96,7 +96,7 @@ const FacultyAttendance: React.FC = () => {
   return (
 
     <>
-     {loading && <Loader />} {/* Show loader when loading */}
+     {loading && <Loader />} 
      {!loading && (
     <div className="box">
       <div className="flex items-center space-x-4 mb-4">
