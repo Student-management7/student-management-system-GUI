@@ -5,10 +5,10 @@ const ProtectedRoute = () => {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div>Loading...</div>; // Show loading until authentication is confirmed
+    return <div>Loading...</div>;
   }
 
-  
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;};
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+};
 
-export default ProtectedRoute;
+export default ProtectedRoute;

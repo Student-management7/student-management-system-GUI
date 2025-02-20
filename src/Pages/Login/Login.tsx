@@ -21,7 +21,7 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formErrors, setFormErrors] = useState<{ email?: string; password?: string }>({});
 
-  const { login } = useAuth();
+  const { login, setUserDetails } = useAuth();
   const navigate = useNavigate();
 
   const validateForm = useCallback(() => {

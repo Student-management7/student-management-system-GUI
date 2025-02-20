@@ -23,30 +23,19 @@ interface UserDetails {
 
 // Header Component
 const HeaderController: React.FC = () => {
-  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const { userDetails, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
-  const { logout } = useAuth();
 
   useEffect(() => {
-    // Read user details from localStorage synchronously
-    const storedDetails = localStorage.getItem('userDetails');
-    if (storedDetails) {
-      try {
-        const parsedDetails = JSON.parse(storedDetails);
-        setUserDetails(parsedDetails); // Set user details immediately
-      } catch (error) {
-        console.error('Error parsing user details from localStorage:', error);
-      }
-    }
-  
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
-  
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []); 
+  }, []);
+
   const getUserName = () => {
     if (!userDetails) return 'Guest User';
 
@@ -65,24 +54,20 @@ const HeaderController: React.FC = () => {
   const userName = getUserName();
 
   const handleLogout = async () => {
-    localStorage.removeItem('userDetails');  
-    await logout(); 
-    navigate('/login'); 
+    await logout();
+    navigate('/login');
   };
 
   return (
     <header
-      className={`sticky top-0 header z-50 transition-all duration-300 
-      ${isScrolled ? 'shadow-lg' : 'shadow-sm'}`}
+      className={`sticky top-0 header z-50 transition-all duration-300 ${isScrolled ? 'shadow-lg' : 'shadow-sm'}`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Left Side: Username */}
           <div className="flex items-center space-x-4">
             <img src="/images/logo.png" alt="Logo" className="h-8 w-auto" />
-            <span className="text-xl text-white">
-              {userName}
-            </span>
+            <span className="text-xl text-white">{userName}</span>
           </div>
 
           {/* Right Side: Menu */}
@@ -111,9 +96,7 @@ const HeaderController: React.FC = () => {
                       {({ active }) => (
                         <a
                           href="#profile"
-                          className={`${
-                            active ? '' : ''
-                          } flex items-center px-4 py-2 text-sm text-white`}
+                          className={`${active ? '' : ''} flex items-center px-4 py-2 text-sm text-white`}
                         >
                           <UserIcon className="mr-3 h-4 w-4" />
                           Profile
@@ -124,9 +107,7 @@ const HeaderController: React.FC = () => {
                       {({ active }) => (
                         <a
                           href="#settings"
-                          className={`${
-                            active ? '' : ''
-                          } flex items-center px-4 py-2 text-sm text-white`}
+                          className={`${active ? '' : ''} flex items-center px-4 py-2 text-sm text-white`}
                         >
                           <SettingsIcon className="mr-3 h-4 w-4" />
                           Settings
@@ -138,9 +119,7 @@ const HeaderController: React.FC = () => {
                         <span
                           role="button"
                           tabIndex={0}
-                          className={`${
-                            active ? '' : ''
-                          } flex items-center px-4 py-2 text-sm text-white cursor-pointer`}
+                          className={`${active ? '' : ''} flex items-center px-4 py-2 text-sm text-white cursor-pointer`}
                           onClick={handleLogout}
                           onKeyDown={(e) => e.key === 'Enter' && handleLogout()}
                         >

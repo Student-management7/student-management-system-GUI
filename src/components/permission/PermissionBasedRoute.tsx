@@ -48,25 +48,25 @@ const PermissionBasedRoute: React.FC = () => {
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
-    
+
         const response = await axiosInstance.get("/self");
-        const data = response.data; 
+        const data = response.data;
         console.log("Fetched Permissions:", data);
-  
+
         if (!data.permission || !data.permission.permissions) {
           console.error("Permissions data is missing.");
           setPermissions(null);
           setLoading(false);
           return;
         }
-  
-        
-        const role = data.role; 
-       
-        
-        const permissions = data.permission.permissions; 
-       
-        
+
+
+        const role = data.role;
+
+
+        const permissions = data.permission.permissions;
+
+
         setPermissions(permissions);
         setRole(role); // Set the role from the API response
       } catch (error) {
@@ -75,13 +75,13 @@ const PermissionBasedRoute: React.FC = () => {
         setLoading(false);
       }
     };
-  
+
     fetchPermissions();
   }, []);
 
-if (loading) return <div>Loading...</div>;
-if (!permissions) return <div>Access Denied: Permissions missing.</div>;
-console.log(permissions);
+  if (loading) return <div>Loading...</div>;
+  if (!permissions) return <div>Access Denied: Permissions missing.</div>;
+  console.log(permissions);
 
  
 const allRoutes = [
