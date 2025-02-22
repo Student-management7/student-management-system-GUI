@@ -4,7 +4,6 @@ import axiosInstance from '../../services/Utils/apiUtils';
 import { formatDate } from '../Utils/dateUtils';
 import { getDateRange } from '../Utils/dateUtils';
 import Loader from '../loader/loader';
-import BackButton from '../Navigation/backButton';
 import ReusableTable from '../StudenAttendanceShow/Table/Table';
 import { Pencil } from 'lucide-react';
 
@@ -156,10 +155,10 @@ const FacultyAttendance: React.FC = () => {
             </div>
             
 
-            <span className='button btn mt-1  '>
+            <span className=' mt-1  '>
             <button 
               onClick={handleEditRedirect}
-              className="pt-1"
+              className="pt-1 button btn "
             >
               <Pencil size={20} color='white ' />
             </button>
@@ -177,7 +176,7 @@ const FacultyAttendance: React.FC = () => {
             <button
               onClick={fetchAttendance}
               disabled={loading}
-              className="button btn head1 text-white text-lg  p-2 "
+              className="button btn  text-white  "
             >
               {loading ? 'Fetching...' : 'Fetch Attendance'}
             </button>

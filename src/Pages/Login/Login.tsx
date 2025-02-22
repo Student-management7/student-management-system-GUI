@@ -52,6 +52,16 @@ const Login: React.FC = () => {
     setIsLoading(true);
     try {
       await login(email, password);
+      const response = await fetch('https://s-m-s-keyw.onrender.com/self', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to fetch user details.');
+      const data = await response.json();
+      setUserDetails(data); // Update context with user details
+      localStorage.setItem('userDetails', JSON.stringify(data));
+      
       navigate('/main');
     } catch (error) {
       setErrorMessage('Login failed. Please check your credentials.');
