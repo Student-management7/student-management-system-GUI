@@ -31,6 +31,7 @@ import AccessDenied from "./AccessDenied";
 import StudentDetails from "../studentDetails/StudentDetails";
 import Facultydetails from "../facultyDetails/Facultydetails";
 import path from "path";
+import StudentFeesDetails from "../fess/studentFees/studentFeesDetails";
 interface Permission {
   [module: string]: {
     [route: string]: boolean;
@@ -111,6 +112,10 @@ const allRoutes = [
   { path: "/studentDetails/:id", element: <StudentDetails />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentDetails) },
   {path : "/facultyDetails/:id", element: <Facultydetails />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultyDetails) },
   
+  
+  {path : "/studentFeesDetails/:id", element: <StudentFeesDetails />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentFeesDetails) },
+  {path : "/FacultySalaryDetails/:id", element: <FacultySalaryDetails />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultySalaryDetails) },
+
   { 
     path: "/ClassSubjectShow", 
     element: <ClassSubjectShow />, 

@@ -3,6 +3,8 @@ import { useAuth } from '../../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import './login.scss';
+import axiosInstance from '../../services/Utils/apiUtils';
+import { toast, ToastContainer } from 'react-toastify';
 
 const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -13,6 +15,7 @@ const validatePassword = (password: string): boolean => {
   return password.length >= 3;
 };
 
+
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,6 +23,8 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formErrors, setFormErrors] = useState<{ email?: string; password?: string }>({});
+  const [showForgotPassword, setShowForgotPassword] = useState(false); // State for forgot password form
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState(''); // State for forgot password email input
 
   const { login, setUserDetails } = useAuth();
   const navigate = useNavigate();
@@ -66,8 +71,34 @@ const Login: React.FC = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!validateEmail(forgotPasswordEmail)) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+  
+    setIsLoading(true);
+    setErrorMessage(null);
+  
+    try {
+      const response = await axiosInstance.post('/auth/forget-password', {
+        email: forgotPasswordEmail,
+      });
+  
+      toast.success('Password reset instructions have been sent to your email.');
+      setShowForgotPassword(false); // Hide forgot password form
+    } catch (error) {
+      setErrorMessage(error.response?.data?.message || 'Failed to send password reset email.');
+      console.error('Forgot Password Error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+
   return (
     <div className="flex h-screen md:bg-[white] ">
+      <ToastContainer position='top-right' autoClose={3000}/>
       <div className="hidden md:flex w-1/2 bg-[#126666]  justify-center items-center relative overflow-hidden">
         <div className="absolute bottom-10 animate-bounce text-white text-4xl font-bold">School Management</div>
       </div>
@@ -75,49 +106,91 @@ const Login: React.FC = () => {
         <div className="bg-gray shadow-lg rounded-lg p-8 w-full max-w-md">
           <h1 className="text-3xl font-bold text-center mb-6  text-[#126666]">Login</h1>
           {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-[#126666]">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="form-control"
-                placeholder="Enter your email"
-                required
-              />
-              {formErrors.email && <p className="text-red-500 text-sm">{formErrors.email}</p>}
-            </div>
-            <div className="relative">
-              <label className="block text-[#126666]">Password</label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="form-control"
-                placeholder="Enter your password"
-                required
-              />
+
+          {!showForgotPassword ? (
+            // Login Form
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-[#126666]">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="form-control"
+                  placeholder="Enter your email"
+                  required
+                />
+                {formErrors.email && <p className="text-red-500 text-sm">{formErrors.email}</p>}
+              </div>
+              <div className="relative">
+                <label className="block text-[#126666]">Password</label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="form-control"
+                  placeholder="Enter your password"
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-10 transform -translate-y-1/2"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff className="text-gray-500" /> : <Eye className="text-gray-500" />}
+                </button>
+                {formErrors.password && <p className="text-red-500 text-sm">{formErrors.password}</p>}
+              </div>
+              <button
+                type="submit"
+                className="w-full py-2 bg-[#126666] text-white rounded hover:bg-[#3a8686] transition duration-300"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Logging in...' : 'Login'}
+              </button>
+              <div className="text-center mt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-[#126666] hover:underline"
+                >
+                  Forgot Password?
+                </button>
+              </div>
+            </form>
+          ) : (
+            // Forgot Password Form
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[#126666]">Email</label>
+                <input
+                  type="email"
+                  value={forgotPasswordEmail}
+                  onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                  className="form-control"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
               <button
                 type="button"
-                className="absolute right-3 top-10 transform -translate-y-1/2"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={handleForgotPassword}
+                className="w-full py-2 bg-[#126666] text-white rounded hover:bg-[#3a8686] transition duration-300"
+                disabled={isLoading}
               >
-                {showPassword ? <EyeOff className="text-gray-500" /> : <Eye className="text-gray-500" />}
+                {isLoading ? 'Sending...' : 'Send Reset Link'}
               </button>
-              {formErrors.password && <p className="text-red-500 text-sm">{formErrors.password}</p>}
+              <div className="text-center mt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(false)}
+                  className="text-[#126666] hover:underline"
+                >
+                  Back to Login
+                </button>
+              </div>
             </div>
-            <button
-              type="submit"
-              className="w-full py-2 bg-[#126666] text-white rounded hover:bg-[#3a8686] transition duration-300"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Logging in...' : 'Login'}
-            </button>
-            <div className="text-center mt-4">
-              <a href="/forgot-password" className="text-[#126666] hover:underline">Forgot Password?</a>
-            </div>
-          </form>
+          )}
         </div>
       </div>
     </div>
