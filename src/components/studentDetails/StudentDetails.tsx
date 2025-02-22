@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import "./StudentDetails.css"
 import axiosInstance from "../../services/Utils/apiUtils"
 import { useParams } from "react-router-dom"
+import BackButton from "../Navigation/backButton"
 
 // import Image from "../studentDeytails/"
 
@@ -152,22 +153,16 @@ const StudentProfile: React.FC = () => {
   return (
     <div className="box">
       <div className="profile-container">
-        <nav className="top-nav">
-          <div className="nav-brand">Student Profile</div>
-
+       <nav className="items flex items-center ">
+            <span> <BackButton /></span>
+            <span className="head1 mt-2 ml-2 ">Student Profile</span>
         </nav>
 
         <div className="profile-content">
-          <div className="profile-header">
-            <div className="profile-image-container">
-              {/* <Image
-              src="/placeholder.svg?height=150&width=150"
-              alt="Student Profile"
-              width={150}
-              height={150}
-              className="profile-image"
-            /> */}
-            </div>
+        <div className="profile-header">
+          <div className="profile-icon-container">
+           <img src="/images/student-icon.png" alt="img" />
+          </div>
             <div className="profile-basic-info">
               <h1>{student.name}</h1>
               <div className="info-grid">

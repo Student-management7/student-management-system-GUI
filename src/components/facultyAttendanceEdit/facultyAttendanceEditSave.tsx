@@ -17,14 +17,13 @@ const EditAttendance: React.FC = () => {
   const [facultyList, setFacultyList] = useState<Faculty[]>([]);
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   // Use state to store the location data
   const [attendanceData, setAttendanceData] = useState({
     id: '',
     date: '',
     factList: [] as Faculty[]
   });
-  
 
   // Initialize state from location on component mount
   useEffect(() => {
@@ -47,18 +46,14 @@ const EditAttendance: React.FC = () => {
   }
 
   const handleSaveAttendance = async () => {
-
     const hasUnmarkedAttendance = facultyList.some(faculty => !faculty.attendance);
-       if (hasUnmarkedAttendance) {
-         toast.warning('Please mark attendance for all faculty members.', {
-           position: 'top-right',
-           autoClose: 3000,
-         });
-         return;
-       }
-
-
-
+    if (hasUnmarkedAttendance) {
+      toast.warning('Please mark attendance for all faculty members.', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+      return;
+    }
 
     try {
       const payload = {
@@ -75,31 +70,40 @@ const EditAttendance: React.FC = () => {
     }
   };
 
-  
-
   const columns = [
     { headerName: "Faculty Name", field: "name" },
     {
       headerName: "Attendance",
       field: "attendance",
       editable: true,
-      cellRenderer: (params: any) => (
-        <div className="flex gap-2">
-          {["Present", "Absent", "Half Day", "Late"].map((option) => (
-            <label key={option} className="flex items-center gap-1">
-              <input
-                type="radio"
-                name={`attendance-${params.data.factId}`}
-                value={option}
-                checked={params.data.attendance === option} 
-                onChange={() => handleCellValueChange(params.data.factId, "attendance", option)} 
-                className="form-radio h-4 w-4 text-blue-600"
-              />
-              <span className="text-sm">{option}</span>
-            </label>
-          ))}
-        </div>
-      ),
+      cellRenderer: (params: any) => {
+        const [selectedValue, setSelectedValue] = React.useState(params.value);
+
+        React.useEffect(() => {
+          setSelectedValue(params.value);
+        }, [params.value]);
+
+        return (
+          <div className="flex gap-2">
+            {["Present", "Absent", "Half Day", "Late"].map((option) => (
+              <label key={option} className="flex items-center gap-1">
+                <input
+                  type="radio"
+                  name={`attendance-${params.data.factId}`}
+                  value={option}
+                  checked={selectedValue === option}
+                  onChange={() => {
+                    setSelectedValue(option);
+                    handleCellValueChange(params.data.factId, "attendance", option);
+                  }}
+                  className="form-radio h-4 w-4 text-blue-600"
+                />
+                <span className="text-sm">{option}</span>
+              </label>
+            ))}
+          </div>
+        );
+      },
     },
   ];
 
@@ -107,61 +111,52 @@ const EditAttendance: React.FC = () => {
     name: faculty.name,
     factId: faculty.factId,
     attendance: faculty.attendance,
-}));
+  }));
 
-// ...
+  const handleCellValueChange = (factId: string, field: string, value: any) => {
+    setEditedFactList((prevList) =>
+      prevList.map((faculty) =>
+        faculty.factId === factId ? { ...faculty, [field]: value } : faculty
+      )
+    );
+  };
 
-const handleCellValueChange = (factId: string, field: string, value: any) => {
-  setEditedFactList((prevList) =>
-    prevList.map((faculty) =>
-      faculty.factId === factId ? { ...faculty, [field]: value } : faculty
-    )
-  );
-};
-
-
- 
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
-    
-    <div className="box">
-    <div className="flex items-center space-x-4 mb-4">
-      <span>
-        <BackButton />
-      </span>
-      <h1 className="text-xl items-center font-bold text-[#27727A]">
-        Faculty Attendance Update
-      </h1>
-    </div>
-    <div className="mb-6">
-      <h2 className="text-gray-600 text-lg">
-        Date: {formatToDDMMYYYY(attendanceData.date)}
-      </h2>
-    </div>
-
-    <div className="box">
-    <ReusableTable
-              rows={rowData}
-              columns={columns}
-              rowsPerPageOptions={[5, 10, 25]}
-              onCellValueChange={handleCellValueChange}
-            />
-    </div>
-
-    <div className="flex justify-end mt-4">
-      <button
-        onClick={handleSaveAttendance}
-        className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 
-                   transition duration-200 ease-in-out focus:outline-none focus:ring-2 
-                   focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50"
-        disabled={!editedFactList.length}
-      >
-        Save Changes
-      </button>
-    </div>
-  </div>
-  </>
+      <div className="box">
+        <div className="flex items-center space-x-4 mb-4">
+          <span>
+            <BackButton />
+          </span>
+          <h1 className="text-xl items-center font-bold text-[#27727A]">
+            Faculty Attendance Update
+          </h1>
+        </div>
+        <div className="mb-4">
+          <h2 className="text-gray-800 text-xl font-semibold ">
+            Date: {formatToDDMMYYYY(attendanceData.date)}
+          </h2>
+        </div>
+        <div className="">
+          <ReusableTable
+            rows={rowData}
+            columns={columns}
+            rowsPerPageOptions={[5, 10, 25]}
+            onCellValueChange={handleCellValueChange}
+          />
+        </div>
+        <div className="flex justify-center">
+          <button
+            onClick={handleSaveAttendance}
+            className="button btn head1 text-white"
+            disabled={!editedFactList.length}
+          >
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </>
   );
 };
 

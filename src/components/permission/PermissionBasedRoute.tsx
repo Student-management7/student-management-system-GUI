@@ -24,9 +24,16 @@ import axiosInstance from "../../services/Utils/apiUtils";
 import NotificationController from "../Notification/notificationController";
 import ClassSubjectShow from "../saveSubjectsToClasess/ClassSubjectsShow";
 import StudentReportForm from "../studentReport/studentReportForm";
+import StudentReport from '../studentReport/studentReportView';
 import StudentFeesController from "../fess/studentFees/studentFeesController";
 import Permission from "./Permission";
 import AccessDenied from "./AccessDenied";
+import StudentDetails from "../studentDetails/StudentDetails";
+import Facultydetails from "../facultyDetails/Facultydetails";
+import path from "path";
+import StudentFeesDetails from "../fess/studentFees/studentFeesDetails";
+
+import UserPassword from "../../Pages/setting/UserPassord";
 interface Permission {
   [module: string]: {
     [route: string]: boolean;
@@ -48,25 +55,25 @@ const PermissionBasedRoute: React.FC = () => {
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
-    
+
         const response = await axiosInstance.get("/self");
-        const data = response.data; 
+        const data = response.data;
         console.log("Fetched Permissions:", data);
-  
+
         if (!data.permission || !data.permission.permissions) {
           console.error("Permissions data is missing.");
           setPermissions(null);
           setLoading(false);
           return;
         }
-  
-        
-        const role = data.role; 
-       
-        
-        const permissions = data.permission.permissions; 
-       
-        
+
+
+        const role = data.role;
+
+
+        const permissions = data.permission.permissions;
+
+
         setPermissions(permissions);
         setRole(role); // Set the role from the API response
       } catch (error) {
@@ -75,13 +82,13 @@ const PermissionBasedRoute: React.FC = () => {
         setLoading(false);
       }
     };
-  
+
     fetchPermissions();
   }, []);
 
-if (loading) return <div>Loading...</div>;
-if (!permissions) return <div>Access Denied: Permissions missing.</div>;
-console.log(permissions);
+  if (loading) return <div>Loading...</div>;
+  if (!permissions) return <div>Access Denied: Permissions missing.</div>;
+  console.log(permissions);
 
  
 const allRoutes = [
@@ -103,8 +110,14 @@ const allRoutes = [
   { path: "/viewNotification", element: <NotificationList />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.notificationList) },
   { path: "/createNotification", element: <CreateNotification />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.createNotification) },
   { path: "/holiday", element: <HolidayFormController />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.holidayFormController) },
-    
+  {path : "/studentReport/:id", element: <StudentReport />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentReport) },
+  { path: "/studentDetails/:id", element: <StudentDetails />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentDetails) },
+  {path : "/facultyDetails/:id", element: <Facultydetails />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultyDetails) },
   
+  
+  {path : "/studentFeesDetails/:id", element: <StudentFeesDetails />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentFeesDetails) },
+  {path : "/FacultySalaryDetails/:id", element: <FacultySalaryDetails />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultySalaryDetails) },
+
   { 
     path: "/ClassSubjectShow", 
     element: <ClassSubjectShow />, 
@@ -129,6 +142,7 @@ const allRoutes = [
   { path: "/permission", element: <Permission />, visible: role === "user" }, // Only visible for admin
   { path: "/superAdminController", element: <SuperAdminController />, visible: role === "admin" }, // Only visible for admin
   { path: "/schoolsDetails/:id", element: <SchoolsDetails />, visible: role === "admin" }, // Only visible for admin
+  { path: "/setting", element: <UserPassword />, visible: true }, 
 ];
 // useEffect(() => {
 //   console.log("Current Role:", role);
