@@ -168,7 +168,7 @@ const HolidayComponent: React.FC = () => {
           />
       {!showForm ? (
         <>
-        
+        <ToastContainer position="top-right" autoClose={3000} />
          
         <div className="flex items-center space-x-4 mb-4 ">
           
@@ -183,6 +183,8 @@ const HolidayComponent: React.FC = () => {
         </>
       ) : (
         <div className="box">
+          <ToastContainer position="top-right" autoClose={3000} />
+
           <h2 className="head1 mb-10 text-center"><i onClick={() => setShowForm(false)} className="bi bi-arrow-left-circle m-2" />Holiday</h2>
           <div className="flex flex-row items-center justify-center space-x-10">
             <div className="mb-4 w-1/2">

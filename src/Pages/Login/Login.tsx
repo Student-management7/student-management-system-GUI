@@ -52,7 +52,7 @@ const Login: React.FC = () => {
     setIsLoading(true);
     try {
       await login(email, password);
-      // navigate('/main');
+      navigate('/main');
     } catch (error) {
       setErrorMessage('Login failed. Please check your credentials.');
       console.error('Login Error:', error);

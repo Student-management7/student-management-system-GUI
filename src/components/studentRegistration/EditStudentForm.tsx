@@ -82,7 +82,7 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
             };
         } = {};
     
-        // Check for required fields
+       
         if (!formData.name.trim()) {
             newErrors.name = "Name is required";
         }
@@ -102,7 +102,6 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
             newErrors.category = "Category is required";
         }
     
-        // Handle nested familyDetails errors
         const familyErrors: { stdo_FatherName?: string; stdo_primaryContact?: string } = {};
     
         if (!formData.familyDetails.stdo_FatherName.trim()) {
@@ -117,7 +116,7 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
         }
     
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0; // Return true if no errors
+        return Object.keys(newErrors).length === 0;
     };
     
 
