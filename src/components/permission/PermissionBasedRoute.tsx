@@ -32,6 +32,8 @@ import StudentDetails from "../studentDetails/StudentDetails";
 import Facultydetails from "../facultyDetails/Facultydetails";
 import path from "path";
 import StudentFeesDetails from "../fess/studentFees/studentFeesDetails";
+
+import UserPassword from "../../Pages/setting/UserPassord";
 interface Permission {
   [module: string]: {
     [route: string]: boolean;
@@ -140,6 +142,7 @@ const allRoutes = [
   { path: "/permission", element: <Permission />, visible: role === "user" }, // Only visible for admin
   { path: "/superAdminController", element: <SuperAdminController />, visible: role === "admin" }, // Only visible for admin
   { path: "/schoolsDetails/:id", element: <SchoolsDetails />, visible: role === "admin" }, // Only visible for admin
+  { path: "/setting", element: <UserPassword />, visible: true }, 
 ];
 // useEffect(() => {
 //   console.log("Current Role:", role);
