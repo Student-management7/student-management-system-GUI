@@ -11,7 +11,7 @@
 
   
   .button {
-    background-color: var(--greenLight-color);
+    background-color: var(--green-color);
     border: none;
     
     border-radius: 4px;
@@ -22,10 +22,16 @@
     color: #FFFFFF;
   
     &:hover {
-      background-color: var(--green-color);
+      background-color: var(--greenLight-color);
       color: #ffffff;
       transform: scale(1.05);
       color: #FFF;
+    }
+    &.loading {
+      background-color:var(--greenDark-color); 
+      color: #ffffff; 
+      transform: scale(1.05);
+      cursor: not-allowed; 
     }
   
   }

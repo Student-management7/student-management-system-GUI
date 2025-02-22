@@ -3,7 +3,7 @@ import { Menu, Transition } from '@headlessui/react';
 import { UserCircleIcon, LogOutIcon, SettingsIcon, UserIcon } from 'lucide-react';
 import { FaCaretDown } from 'react-icons/fa';
 import '../../global.scss';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 
 // Types
@@ -105,13 +105,13 @@ const HeaderController: React.FC = () => {
                     </Menu.Item>
                     <Menu.Item>
                       {({ active }) => (
-                        <a
-                          href="#settings"
+                        <Link
+                          to="/setting"
                           className={`${active ? '' : ''} flex items-center px-4 py-2 text-sm text-white`}
                         >
                           <SettingsIcon className="mr-3 h-4 w-4" />
                           Settings
-                        </a>
+                        </Link>
                       )}
                     </Menu.Item>
                     <Menu.Item>
