@@ -38,7 +38,7 @@ interface StudentData {
   studentInfo: any;
   id: string;
   name: string;
-  attendance: any;
+  // attendance: any;
 }
 
 interface AttendanceData {
@@ -51,6 +51,7 @@ interface AttendanceData {
 const StudentReport: React.FC = () => {
 
   const location = useLocation();
+
   const [examData, setExamData] = useState<ExamData[]>([]);
   const [selectedExamType, setSelectedExamType] = useState<string>("");
   const [filteredExam, setFilteredExam] = useState<ExamData | null>(null);
@@ -68,38 +69,44 @@ const StudentReport: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [examResponse, attendanceResponse] = await Promise.all([
-          axiosInstance.get(
-            `/report/getStudentReport?id=${id}`
-          ),
-          axios.get(
-            "https://716a9f60-27a0-449f-bb20-e8e3518d7858.mock.pstmn.io/get attendance"
-          )
+        const [examResponse, ] = await Promise.all([
+          axiosInstance.get(`/report/getStudentReport?id=${id}`),
+          // axios.get("https://716a9f60-27a0-449f-bb20-e8e3518d7858.mock.pstmn.io/get attendance")
         ]);
 
         const examData = examResponse.data;
-        const attendanceData = attendanceResponse.data;
+        // const attendanceData = attendanceResponse.data;
+
+        // Check if examData is empty
+        if (examData.length === 0) {
+          throw new Error("No data found for the given ID.");
+        }
 
         setExamData(examData);
         setStudentData({
           ...examData[0].studentInfo,
-          attendance: attendanceData
+          // attendance: attendanceData
         });
 
-
         console.log("Exam Data:", examData);
-        console.log("Attendance Data:", attendanceData);
-
-
+        // console.log("Attendance Data:", attendanceData);
 
         if (examData.length > 0) {
           setSelectedExamType(examData[0].examType);
         }
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Error fetching data:", error);
+          if (error.message === "No data found for the given ID.") {
+            toast.error("No data found for the provided ID. Please check the ID and try again.");
+          } else {
+            toast.error("Failed to fetch data. Please try again or check your network connection.");
+          }
+        } else {
+          console.error("An unknown error occurred:", error);
+        }
       } finally {
         setLoading(false);
-        toast.error("try again or check network connection")
       }
     };
 
@@ -127,37 +134,37 @@ const StudentReport: React.FC = () => {
     return <div className="p-5">No data available</div>;
   }
 
-  const AttendanceCard: React.FC<{ attendance: AttendanceData }> = ({ attendance }) => (
-    <div className="bg-white rounded-xl p-5 shadow-md mb-4">
-      <h3 className=" font-bold head1 mb-3">Attendance</h3>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <p className="text-sm text-gray-600">Total Days</p>
-          <p className="text-lg font-semibold">{attendance.totalDays}</p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-600">Present Days</p>
-          <p className="text-lg font-semibold">{attendance.presentDays}</p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-600">Absent Days</p>
-          <p className="text-lg font-semibold">{attendance.absentDays}</p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-600">Attendance Percentage</p>
-          <p className="text-lg font-semibold">{attendance.attendancePercentage}%</p>
-        </div>
-      </div>
-      <div className="mt-4">
-        <div className="w-full bg-gray-200 rounded-full h-2.5">
-          <div
-            className="bg-indigo-600 h-2.5 rounded-full"
-            style={{ width: `${attendance.attendancePercentage}%` }}
-          ></div>
-        </div>
-      </div>
-    </div>
-  );
+  // const AttendanceCard: React.FC<{ attendance: AttendanceData }> = ({ attendance }) => (
+  //   <div className="bg-white rounded-xl p-5 shadow-md mb-4">
+  //     <h3 className=" font-bold head1 mb-3">Attendance</h3>
+  //     <div className="grid grid-cols-2 gap-4">
+  //       <div>
+  //         <p className="text-sm text-gray-600">Total Days</p>
+  //         <p className="text-lg font-semibold">{attendance.totalDays}</p>
+  //       </div>
+  //       <div>
+  //         <p className="text-sm text-gray-600">Present Days</p>
+  //         <p className="text-lg font-semibold">{attendance.presentDays}</p>
+  //       </div>
+  //       <div>
+  //         <p className="text-sm text-gray-600">Absent Days</p>
+  //         <p className="text-lg font-semibold">{attendance.absentDays}</p>
+  //       </div>
+  //       <div>
+  //         <p className="text-sm text-gray-600">Attendance Percentage</p>
+  //         <p className="text-lg font-semibold">{attendance.attendancePercentage}%</p>
+  //       </div>
+  //     </div>
+  //     <div className="mt-4">
+  //       <div className="w-full bg-gray-200 rounded-full h-2.5">
+  //         <div
+  //           className="bg-indigo-600 h-2.5 rounded-full"
+  //           style={{ width: `${attendance.attendancePercentage}%` }}
+  //         ></div>
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 
 
 
@@ -317,7 +324,7 @@ const StudentReport: React.FC = () => {
                 <div className="bg-white rounded-xl p-5 shadow-md mt-5">
                   <h3 className="text-lg font-semibold mb-3">Subject Performance</h3>
                   <div className="overflow-x-auto">
-                    <table className="w-full border">
+                    <table className="w-full ">
                       <thead className="bg-gray-200">
                         <tr>
                           <th className="text-left p-3">Subject</th>
@@ -354,9 +361,9 @@ const StudentReport: React.FC = () => {
 
 
             <div className="lg:w-1/4 mt-10 lg:mt-0">
-              {studentData.attendance && (
-                <AttendanceCard attendance={studentData.attendance} />
-              )}
+              {/* {studentData && (
+                // <AttendanceCard attendance={studentData.attendance} />
+              )} */}
               {/* Exam Details Card */}
               <div className="bg-white rounded-xl p-4 shadow-md mb-4">
                 <h3 className="head1 mb-2">Exam Details</h3>

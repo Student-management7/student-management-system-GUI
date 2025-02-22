@@ -18,7 +18,6 @@ const AttendanceSave: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [bulkAttendance, setBulkAttendance] = useState<string>('');
 
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -45,16 +44,18 @@ const AttendanceSave: React.FC = () => {
     fetchData();
   }, []);
 
-
   const handleCellValueChange = (factId: string, field: string, value: any) => {
-    setFacultyList((prevList) =>
-      prevList.map((faculty) =>
+    console.log(`Updating factId: ${factId}, field: ${field}, value: ${value}`);
+
+    setFacultyList(prevFaculty =>
+      prevFaculty.map(faculty =>
         faculty.fact_id === factId ? { ...faculty, [field]: value } : faculty
       )
     );
   };
 
   const handleSaveAttendance = async () => {
+    console.log('Faculty List before submission:', facultyList);
     const hasUnmarkedAttendance = facultyList.some(faculty => !faculty.attendance);
     if (hasUnmarkedAttendance) {
       toast.warning('Please mark attendance for all faculty members.', {
@@ -100,23 +101,38 @@ const AttendanceSave: React.FC = () => {
       headerName: "Attendance",
       field: "attendance",
       editable: true,
-      cellRenderer: (params: any) => (
-        <div className="flex gap-2">
-          {["Present", "Absent", "Leave"].map((option) => (
-            <label key={option} className="flex items-center gap-1">
-              <input
-                type="radio"
-                name={`attendance-${params.data.factId}`}
-                value={option}
-                checked={params.data.attendance === option}
-                onChange={() => handleCellValueChange(params.data.factId, "attendance", option)}
-                className="form-radio h-4 w-4 text-blue-600"
-              />
-              <span className="text-sm">{option}</span>
-            </label>
-          ))}
-        </div>
-      ),
+      cellRenderer: (params: any) => {
+        const [selectedValue, setSelectedValue] = React.useState(params.value);
+
+        React.useEffect(() => {
+          setSelectedValue(params.value);
+        }, [params.value]);
+
+        // Log the factId to ensure it is correct
+        console.log(`Rendering attendance for factId: ${params.data.factId}`);
+
+        return (
+          <div className="flex gap-2">
+            {["Present", "Absent", "Half Day", "Late", "Leave"].map((option) => (
+              <label key={option} className="flex items-center gap-1">
+                <input
+                  type="radio"
+                  name={`attendance-${params.data.factId}`}
+                  value={option}
+                  checked={selectedValue === option}
+                  onChange={() => {
+                    setSelectedValue(option);
+                    console.log(`Radio button changed for factId: ${params.data.factId}, option: ${option}`);
+                    handleCellValueChange(params.data.factId, 'attendance', option);
+                  }}
+                  className="form-radio h-4 w-4 text-blue-600"
+                />
+                <span className="text-sm">{option}</span>
+              </label>
+            ))}
+          </div>
+        );
+      },
     },
   ];
 
@@ -128,9 +144,6 @@ const AttendanceSave: React.FC = () => {
 
   const rowData = facultyList.map(transformFacultyData);
 
-
-  // bulk attendance 
-
   const handleBulkAttendanceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setBulkAttendance(event.target.value);
   };
@@ -141,9 +154,8 @@ const AttendanceSave: React.FC = () => {
       return;
     }
 
-
-    setFacultyList((prevList:any) =>
-      prevList.map((faculty:any) => ({ ...faculty, attendance: bulkAttendance }))
+    setFacultyList((prevList) =>
+      prevList.map((faculty) => ({ ...faculty, attendance: bulkAttendance }))
     );
   };
 
@@ -161,12 +173,11 @@ const AttendanceSave: React.FC = () => {
             </h1>
           </div>
 
-
-          <span className=" float-right mb-4 flex items-center space-x-4 mb-4">
+          <span className="float-right mb-4 flex items-center space-x-4 mb-4">
             <select
               value={bulkAttendance}
               onChange={handleBulkAttendanceChange}
-              className="border rounded p-2 mr-2 mb-2" 
+              className="border rounded p-2 mr-2 mb-2"
             >
               <option value="">Select Attendance</option>
               <option value="Present">Present</option>
@@ -176,27 +187,26 @@ const AttendanceSave: React.FC = () => {
 
             <button
               onClick={applyBulkAttendance}
-              className="head1 btn button text-white pt-2 pb-2 pl-4 pr-4  "
+              className="head1 btn button text-white pt-2 pb-2 pl-4 pr-4"
             >
               Apply to All
             </button>
           </span>
 
           <span className="mb-6">
-            
             <ToastContainer />
             <ReusableTable
               rows={rowData}
               columns={columns}
               rowsPerPageOptions={[5, 10, 25]}
-              onCellValueChange={handleCellValueChange}
+              onCellValueChange={(factId: string, field: string, value: any) => handleCellValueChange(factId, field, value)}
             />
           </span>
 
           <div className="flex justify-center mt-4">
             <button
               onClick={handleSaveAttendance}
-              className="head1 btn button text-white pt-2 pb-2 pl-4 pr-4 "
+              className="head1 btn button text-white pt-2 pb-2 pl-4 pr-4"
               disabled={!facultyList.length}
             >
               Save Changes

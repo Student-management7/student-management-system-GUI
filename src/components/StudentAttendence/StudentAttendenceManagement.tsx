@@ -9,6 +9,7 @@ import BackButton from "../Navigation/backButton";
 import '../../global.scss'
 import ReusableTable from "../StudenAttendanceShow/Table/Table";
 import { toast, ToastContainer } from "react-toastify";
+import React from "react";
 
 
 const StudentManagementSystem: React.FC = () => {
@@ -123,15 +124,22 @@ const StudentManagementSystem: React.FC = () => {
 
     const handleCellValueChange = (rowIndex: number, field: string, value: any) => {
         setStudents(prevStudents => {
-            const newStudents = [...prevStudents];
-            newStudents[rowIndex] = {
-                ...newStudents[rowIndex],
-                [field]: value
-            };
-            return newStudents;
+            // Ensure rowIndex is within bounds
+            if (rowIndex >= 0 && rowIndex < prevStudents.length) {
+                const newStudents = [...prevStudents];
+                newStudents[rowIndex] = {
+                    ...newStudents[rowIndex],
+                    [field]: value
+                };
+                console.log('Updated students:', newStudents);
+                return newStudents;
+            } else {
+                console.error('Invalid rowIndex:', rowIndex);
+                return prevStudents;
+            }
         });
     };
-
+      
     // Handle bulk attendance
     const handleBulkAttendanceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setBulkAttendance(event.target.value);
@@ -159,23 +167,40 @@ const StudentManagementSystem: React.FC = () => {
             headerName: "Attendance",
             field: "attendance",
             editable: true,
-            cellRenderer: (params: any) => (
-                <div className="flex gap-2">
-                    {["Present", "Absent", "Half Day", "Late", "Leave"].map((option) => (
-                        <label key={option} className="flex items-center gap-1">
-                            <input
-                                type="radio"
-                                name={`attendance-${params.data.stdId}`}
-                                value={option}
-                                checked={params.value === option}
-                                onChange={() => params.setValue(option)}
-                                className="form-radio h-4 w-4 text-blue-600"
-                            />
-                            <span className="text-sm">{option}</span>
-                        </label>
-                    ))}
-                </div>
-            ),
+            cellRenderer: (params: any) => {
+                // Use a local state to manage the radio button's checked state
+                const [selectedValue, setSelectedValue] = React.useState(params.value);
+        
+                React.useEffect(() => {
+                    // Sync the local state with the params.value
+                    setSelectedValue(params.value);
+                }, [params.value]);
+        
+                return (
+                    <div className="flex gap-2">
+                        {["Present", "Absent", "Half Day", "Late", "Leave"].map((option) => (
+                            <label key={option} className="flex items-center gap-1">
+                                <input
+                                    type="radio"
+                                    name={`attendance-${params.data.stdId}`}
+                                    value={option}
+                                    checked={selectedValue === option}
+                                    onChange={() => {
+                                        // Update the local state immediately
+                                        setSelectedValue(option);
+                                        // Call the setValue function to update the parent state
+                                        params.setValue(option);
+                                        // Call the handleCellValueChange function
+                                        handleCellValueChange(params.rowIndex, 'attendance', option);
+                                    }}
+                                    className="form-radio h-4 w-4 text-blue-600"
+                                />
+                                <span className="text-sm">{option}</span>
+                            </label>
+                        ))}
+                    </div>
+                );
+            },
         },
         {
             headerName: "Remarks",
@@ -297,7 +322,7 @@ const StudentManagementSystem: React.FC = () => {
                                 columns={Column}
                                 rowsPerPageOptions={[5, 10, 25]}
                                 onCellValueChange={handleCellValueChange}
-                            />
+                                />
                         </div>
 
                         <div className="flex justify-center">

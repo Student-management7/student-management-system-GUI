@@ -13,7 +13,7 @@ const BackButton = () => {
     };
 
     return (
-        <button onClick={handleBack} className="p-2 rounded-full arrow  transition">
+        <button onClick={handleBack} className="p-2 rounded-full arrow transition">
             <ArrowLeft className="h-7 w-7" />
         </button>
     );

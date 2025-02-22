@@ -24,9 +24,13 @@ import axiosInstance from "../../services/Utils/apiUtils";
 import NotificationController from "../Notification/notificationController";
 import ClassSubjectShow from "../saveSubjectsToClasess/ClassSubjectsShow";
 import StudentReportForm from "../studentReport/studentReportForm";
+import StudentReport from '../studentReport/studentReportView';
 import StudentFeesController from "../fess/studentFees/studentFeesController";
 import Permission from "./Permission";
 import AccessDenied from "./AccessDenied";
+import StudentDetails from "../studentDetails/StudentDetails";
+import Facultydetails from "../facultyDetails/Facultydetails";
+import path from "path";
 interface Permission {
   [module: string]: {
     [route: string]: boolean;
@@ -103,7 +107,9 @@ const allRoutes = [
   { path: "/viewNotification", element: <NotificationList />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.notificationList) },
   { path: "/createNotification", element: <CreateNotification />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.createNotification) },
   { path: "/holiday", element: <HolidayFormController />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.holidayFormController) },
-    
+  {path : "/studentReport/:id", element: <StudentReport />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentReport) },
+  { path: "/studentDetails/:id", element: <StudentDetails />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentDetails) },
+  {path : "/facultyDetails/:id", element: <Facultydetails />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultyDetails) },
   
   { 
     path: "/ClassSubjectShow", 
