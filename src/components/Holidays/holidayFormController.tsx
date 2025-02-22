@@ -94,7 +94,7 @@ const HolidayComponent: React.FC = () => {
 
     try {
       await saveHoliday(payload);
-      toast.success('Holiday Created Successfully!');
+      toast.success('Holiday Created Successfully .');
       setShowForm(false);
     } catch (error) {
       console.error('Error creating holiday:', error);
