@@ -27,4 +27,5 @@ p{
 }
 .rhsBox{
   width: 100%;
+  overflow: scroll;
 }
