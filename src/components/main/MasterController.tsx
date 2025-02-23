@@ -89,7 +89,7 @@ const MasterController = () => {
         <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-6">
           <h2 className="head1 mb-4">Upcoming Events</h2>
           <ul className="space-y-3">
-            <li className="text-gray-600">Annual Sports Day - 25th Oct</li>
+            <li className="text-gray-600">Annual Sports Day - 26th Oct</li>
             <li className="text-gray-600">Parent-Teacher Meeting - 30th Oct</li>
             <li className="text-gray-600">School Annual Function - 15th Nov</li>
           </ul>
