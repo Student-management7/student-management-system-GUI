@@ -92,7 +92,7 @@ const PermissionBasedRoute: React.FC = () => {
 
  
 const allRoutes = [
-  { path: "/main", element: <MasterController />, visible: true }, 
+  { path: "/main", element: <MasterController />, visible:role === "user" || (role === "sub-user") }, 
   { path: "/studentAttendenceManagement", element: <StudentAttendenceManagement />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentAttendenceManagement) },
   { path: "/studentAttendanceShow", element: <StudentAttendanceShow />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentAttendanceShow) },
   { path: "/studentAttendanceEdit", element: <StudentAttendanceEdit />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentAttendanceEdit) },
