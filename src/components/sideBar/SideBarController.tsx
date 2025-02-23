@@ -33,6 +33,7 @@ const SideBarController = () => {
         }));
     };
 
+
     const toggleSidebar = () => {
         const sidNav: any = document.querySelector('.sideNav');
         sidNav.classList.toggle('active');
@@ -56,7 +57,7 @@ const SideBarController = () => {
             <div id="item" className='sideNav'>
                 <div className="logo flex">
                     <p className='fs-4'>EasyWaySolution</p>
-                    <span onClick={toggleSidebar}>
+                    <span className='sideIcone' onClick={toggleSidebar}>
                         {isSidebarOpen ? <FaChevronLeft /> : <FaChevronRight />}
                     </span>
                 </div>
