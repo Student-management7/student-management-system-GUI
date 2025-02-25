@@ -127,6 +127,7 @@ const FacultyRegistrationController: React.FC = () => {
           <ToastContainer position='top-right' autoClose={3000} />
           {!isFormVisible ? (
             <div className="box">
+              <h1 className='head1 mb-4'>Faculty Registration</h1>
               <div className='float-right'>
                 <button onClick={() => setIsFormVisible(true)} className="btn button head1 text-white">
                   Add Faculty

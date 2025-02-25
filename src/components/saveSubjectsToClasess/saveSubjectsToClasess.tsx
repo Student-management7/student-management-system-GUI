@@ -6,9 +6,12 @@ import axiosInstance from "../../services/Utils/apiUtils";
 
 interface SaveSubjectsToClassesProps {
   onClose: () => void;
-  onSave: (updatedData: ClassData) => void;
+  onSave: () => void;
   editableRow?: ClassData;
+
 }
+
+
 
 const allSubjects = [
   "Maths", "Science", "English", "History", "Geography",
@@ -30,30 +33,30 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
   ]);
   const [availableSubjects, setAvailableSubjects] = useState<string[]>(allSubjects);
 
+  // Initialize form with editableRow data
   useEffect(() => {
     if (editableRow) {
-      setSelectedClass(editableRow.className || "");
-
-      // Ensure subjects are correctly set from editableRow
-      const normalizedSubjects = Array.isArray(editableRow.subject)
-        ? editableRow.subject.map(sub => (typeof sub === 'string' ? sub.trim() : '')).filter(Boolean)
-        : [];
-
-      setSelectedSubjects(normalizedSubjects);
-
-      // Add subjects to availableSubjects if missing
-      setAvailableSubjects(prevSubjects => {
-        const newSubjects = normalizedSubjects.filter(sub => !prevSubjects.includes(sub));
-        return [...prevSubjects, ...newSubjects];
-      });
+      console.log("Editable Row Data:", editableRow); // Debugging: Log editableRow
+      setSelectedClass(editableRow.data?.className || ""); // Access className from editableRow.data
+      setSelectedSubjects(
+        typeof editableRow.data?.subject === "string"
+          ? editableRow.data.subject.split(", ") // Convert string to array
+          : Array.isArray(editableRow.data?.subject)
+          ? editableRow.data.subject
+          : []
+      );
+    } else {
+      setSelectedClass(""); // Reset selected class if not in edit mode
+      setSelectedSubjects([]); // Reset selected subjects
     }
   }, [editableRow]);
 
-
+  // Handle class selection
   const handleClassSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedClass(event.target.value);
   };
 
+  // Handle adding a new class
   const handleAddNewClass = () => {
     const trimmedClass = newClass.trim();
     if (!trimmedClass) {
@@ -66,19 +69,21 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
       return;
     }
 
-    setClassOptions(prev => [...prev, trimmedClass]);
+    setClassOptions((prev) => [...prev, trimmedClass]);
     setNewClass("");
     toast.success("New class added successfully!");
   };
 
+  // Handle toggling subjects
   const handleSubjectToggle = (subject: string) => {
-    setSelectedSubjects(prev =>
+    setSelectedSubjects((prev) =>
       prev.includes(subject)
-        ? prev.filter(s => s !== subject)
+        ? prev.filter((s) => s !== subject)
         : [...prev, subject]
     );
   };
 
+  // Handle adding a custom subject
   const handleAddCustomSubject = () => {
     const trimmedSubject = customSubject.trim();
     if (!trimmedSubject) {
@@ -91,12 +96,13 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
       return;
     }
 
-    setAvailableSubjects(prev => [...prev, trimmedSubject]);
-    setSelectedSubjects(prev => [...prev, trimmedSubject]);
+    setAvailableSubjects((prev) => [...prev, trimmedSubject]);
+    setSelectedSubjects((prev) => [...prev, trimmedSubject]);
     setCustomSubject("");
     toast.success("New subject added successfully!");
   };
 
+  // Validate inputs
   const validateInputs = () => {
     if (!selectedClass) {
       toast.error("Please select a class!");
@@ -111,17 +117,19 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
     return true;
   };
 
+  // Prepare payload for API
   const preparePayload = () => {
     return {
       classData: [
         {
           className: selectedClass.trim(),
-          subject: [...new Set(selectedSubjects.map(subject => subject.trim()))]
-        }
-      ]
+          subject: [...new Set(selectedSubjects.map((subject) => subject.trim()))],
+        },
+      ],
     };
   };
 
+  // Handle saving new class
   const handleSaveNewClass = async () => {
     if (!validateInputs()) return;
     setLoading(true);
@@ -132,7 +140,7 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
 
       const response = await axiosInstance.post("class/save", payload);
       toast.success("Class and subjects saved successfully!");
-      onSave(response.data);
+      onSave();
     } catch (error: any) {
       console.error("Error saving class data:", error);
       toast.error(
@@ -143,6 +151,7 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
     }
   };
 
+  // Handle updating class
   const handleUpdateClass = async () => {
     if (!validateInputs()) return;
     setLoading(true);
@@ -151,17 +160,12 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
       const payload = preparePayload();
       console.log("Update Payload:", payload);
 
-      if (!editableRow?.className?.trim()) {
-        throw new Error("Invalid class name for update.");
-      }
-
       const response = await axiosInstance.post(
-        `class/edit?className=${encodeURIComponent(editableRow.className.trim())}`,
+        `class/edit?className=${encodeURIComponent(editableRow?.className || "")}`,
         payload
       );
-
       toast.success("Class and subjects updated successfully!");
-      onSave(response.data);
+      onSave();
     } catch (error: any) {
       console.error("Error updating class data:", error);
       toast.error(
@@ -174,103 +178,98 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
 
   return (
     <div>
-      <ToastContainer position="top-right" autoClose={3000}/>
+      <ToastContainer position="top-right" autoClose={3000} />
       <div>
-        <div>
-          <h2 className="head1 mb-4 text-center text-gray-700">
-            <i  onClick={onClose} className="bi bi-arrow-left-circle m-3"/>{editableRow ? "Update Subjects" : "Save Subjects"}
-          </h2>
+        <h2 className="head1 mb-4 text-center text-gray-700">
+          <i onClick={onClose} className="bi bi-arrow-left-circle m-3" />
+          {editableRow ? "Update Subjects" : "Save Subjects"}
+        </h2>
 
+        <div className="mb-6">
+          <label className="block mb-4">
+            <span className="text-gray-600">Select Class:</span>
+            <select
+              value={selectedClass} // Bind value to selectedClass
+              onChange={handleClassSelect}
+              className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select a Class</option>
+              {classOptions.map((classOption) => (
+                <option key={classOption} value={classOption}>
+                  Class {classOption}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <div className="flex gap-2 mb-4">
+            <input
+              type="text"
+              value={newClass}
+              onChange={(e) => setNewClass(e.target.value)}
+              placeholder="Add New Class"
+              className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={handleAddNewClass}
+              className="btn button text-white md:block"
+            >
+              Add Class
+            </button>
+          </div>
+        </div>
+
+        {selectedClass && (
           <div className="mb-6">
-            <label className="block mb-4">
-              <span className="text-gray-600">Select Class:</span>
-              <select
-                value={selectedClass}
-                onChange={handleClassSelect}
-                className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select a Class</option>
-                {classOptions.map((classOption) => (
-                  <option key={classOption} value={classOption}>
-                    Class {classOption}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <h3 className="text-lg font-semibold text-gray-700 mb-3">
+              Select Subjects for Class {selectedClass}:
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {availableSubjects.map((subject) => (
+                <label key={subject} className="flex items-center space-x-2 text-gray-600">
+                  <input
+                    type="checkbox"
+                    checked={selectedSubjects.includes(subject)}
+                    onChange={() => handleSubjectToggle(subject)}
+                    className="rounded focus:ring-blue-500"
+                  />
+                  <span>{subject}</span>
+                </label>
+              ))}
+            </div>
 
-            <div className="flex gap-2 mb-4" hidden = {!!editableRow}>
+            <div className="flex gap-2 mt-4">
               <input
                 type="text"
-                value={newClass}
-                onChange={(e) => setNewClass(e.target.value)}
-                placeholder={!!editableRow ? "hidden" : "Add New Class"} 
+                value={customSubject}
+                onChange={(e) => setCustomSubject(e.target.value)}
+                placeholder="Enter new subject name"
                 className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
-                onClick={handleAddNewClass}
-                className="btn button text-white md:block"
+                onClick={handleAddCustomSubject}
+                className="btn button"
               >
-                Add Class
+                Add Subject
               </button>
             </div>
           </div>
+        )}
 
-          {selectedClass && (
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-700 mb-3">
-                Select Subjects for Class {selectedClass}:
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {availableSubjects.map((subject) => (
-                  <label key={subject} className="flex items-center space-x-2 text-gray-600">
-                    <input
-                      type="checkbox"
-                      checked={selectedSubjects.includes(subject)}
-                      onChange={() => handleSubjectToggle(subject)}
-                      className="rounded focus:ring-blue-500"
-                    />
-                    <span>{subject}</span>
-                  </label>
-                ))}
-              </div>
-
-              <div className="flex gap-2 mt-4">
-                <input
-                  type="text"
-                  value={customSubject}
-                  onChange={(e) => setCustomSubject(e.target.value)}
-                  placeholder="Enter new subject name"
-                  className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <button
-                  onClick={handleAddCustomSubject}
-                  className="btn button"
-                >
-                  Add Subject
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div className="flex justify-between space-x-4">
-            <button
-              onClick={onClose}
-              className="btn buttonred"
-            >
-              Cancel
-            </button>
-
-            <button
-              onClick={editableRow ? handleUpdateClass : handleSaveNewClass}
-              disabled={loading || !selectedClass}
-              className={`py-2 px-4 rounded-md ${loading || !selectedClass || selectedSubjects.length === 0
-                  ? "btn button "
-                  : "btn button "
-                } text-white`}
-            >
-              {loading ? "Saving..." : editableRow ? "Update" : "Save"}
-            </button>
-          </div>
+        <div className="flex justify-between space-x-4">
+          <button onClick={onClose} className="btn buttonred">
+            Cancel
+          </button>
+          <button
+            onClick={editableRow ? handleUpdateClass : handleSaveNewClass}
+            disabled={loading || !selectedClass}
+            className={`py-2 px-4 rounded-md ${loading || !selectedClass || selectedSubjects.length === 0
+                ? "btn button"
+                : "btn button"
+              } text-white`}
+          >
+            {loading ? "Saving..." : editableRow ? "Update" : "Save"}
+          </button>
         </div>
       </div>
     </div>

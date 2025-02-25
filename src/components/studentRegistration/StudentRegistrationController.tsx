@@ -12,7 +12,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { Eye, IdCard, Pencil, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../loader/loader"; // Add a Spinner component for loading
-import ReusableTable from "../StudenAttendanceShow/Table/Table";
+import ReusableTable from "../MUI Table/ReusableTable";
+// import ReusableTable from "../StudenAttendanceShow/Table/Table";
 import * as XLSX from "xlsx";
 import './StudentRegistration.scss'
 import axiosInstance from "../../services/Utils/apiUtils";
@@ -29,7 +30,7 @@ const StudentRegistrationController = () => {
   const [loading, setLoading] = useState(false); // State for managing loader visibility
   const [file, setFile] = useState<File | null>(null);
   const [jsonData, setJsonData] = useState<any[]>([]); // Store JSON data
-  
+
   const [columns] = useState<any[]>([
     { field: "name", headerName: "Name" },
     { field: "cls", headerName: "Class" },
@@ -156,9 +157,9 @@ const StudentRegistrationController = () => {
     console.log(id);
   };
 
-  
-   // Convert Excel to JSON
-   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+  // Convert Excel to JSON
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const uploadedFile = event.target.files[0];
       setFile(uploadedFile);
@@ -187,27 +188,27 @@ const StudentRegistrationController = () => {
       toast.warning("Please select a file before uploading!");
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("file", file);
-  
+
     console.log("Uploading file:", file);  // Debugging
     console.log("FormData:", formData.get("file")); // Check if file is added
-  
+
     try {
       const response = await axiosInstance.post("/student/bulkupload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-  
+
       toast.success(response.data.message);
     } catch (error) {
       // console.error("Error uploading file:", error.response?.data || error);
       toast.error("Upload failed!");
     }
   };
-  
-  
-  
+
+
+
 
   return (
     <>
@@ -238,7 +239,7 @@ const StudentRegistrationController = () => {
             ) : (
               <div>
 
-               {/* bulk Upload */}
+                {/* bulk Upload */}
                 <div className="p-4">
                   <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
                   <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 ml-2">Upload</button>
@@ -254,14 +255,15 @@ const StudentRegistrationController = () => {
                     Add Student
                   </button>
                 </div>
-                <ToastContainer position="top-right" autoClose={3000} />
-                <AlertDialog
-                  title="Confirm Deletion"
-                  message={`Are you sure you want to delete the student record for ${dialogData?.name}?`}
-                  isOpen={isDialogOpen}
-                  onConfirm={handleConfirmDelete}
-                  onCancel={handleCancel}
-                />
+                {isDialogOpen && dialogData && (
+                  <AlertDialog
+                    title="Confirm Deletion"
+                    message={`Are you sure you want to delete the student record for ${dialogData.name}?`}
+                    isOpen={isDialogOpen}
+                    onConfirm={handleConfirmDelete}
+                    onCancel={handleCancel}
+                  />
+                )}
                 <ReusableTable rows={data} columns={columns} />
               </div>
             )
@@ -270,12 +272,12 @@ const StudentRegistrationController = () => {
               <div className="head1">
                 <h1>
                   <div>
-                    <i  onClick={() => setStudentData(false)} className="bi bi-arrow-left-circle" /> <span>User Details</span>
+                    <i onClick={() => setStudentData(false)} className="bi bi-arrow-left-circle" /> <span>User Details</span>
                   </div>
                 </h1>
 
               </div>
-              <FormView   setStudentData={() => setStudentData(false)} />
+              <FormView setStudentData={() => setStudentData(false)} />
             </div>
           )}
         </div>

@@ -139,13 +139,10 @@ const StudentManagementSystem: React.FC = () => {
             }
         });
     };
-      
-    // Handle bulk attendance
-    const handleBulkAttendanceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setBulkAttendance(event.target.value);
-    };
 
-    const applyBulkAttendance = () => {
+
+
+    const applyBulkAttendance = (value: string) => {
         if (!bulkAttendance) {
             toast.warning("Please select an attendance status before applying.");
             return;
@@ -170,12 +167,12 @@ const StudentManagementSystem: React.FC = () => {
             cellRenderer: (params: any) => {
                 // Use a local state to manage the radio button's checked state
                 const [selectedValue, setSelectedValue] = React.useState(params.value);
-        
+
                 React.useEffect(() => {
                     // Sync the local state with the params.value
                     setSelectedValue(params.value);
                 }, [params.value]);
-        
+
                 return (
                     <div className="flex gap-2">
                         {["Present", "Absent", "Half Day", "Late", "Leave"].map((option) => (
@@ -296,11 +293,15 @@ const StudentManagementSystem: React.FC = () => {
 
                         <div className="overflow-x-auto">
 
-                            <div className="bulk-attendance flex items-center space-x-4 float-right">
+
+                            <div className="bulk-attendanceflex items-center space-x-4 float-right ">
                                 <select
                                     value={bulkAttendance}
-                                    onChange={handleBulkAttendanceChange}
-                                    className="border rounded p-2"
+                                    onChange={(e) => {
+                                        setBulkAttendance(e.target.value);
+                                        applyBulkAttendance(e.target.value); // Directly apply attendance
+                                    }}
+                                    className="border rounded-md px-4 py-2 "
                                 >
                                     <option value="">Select Attendance</option>
                                     <option value="Present">Present</option>
@@ -309,12 +310,6 @@ const StudentManagementSystem: React.FC = () => {
                                     <option value="Half Day">Half Day</option>
                                     <option value="Leave">Leave</option>
                                 </select>
-                                <button
-                                    onClick={applyBulkAttendance}
-                                    className="head1 btn button text-white py-2 px-4"
-                                >
-                                    Apply to All
-                                </button>
                             </div>
 
                             <ReusableTable
@@ -322,7 +317,7 @@ const StudentManagementSystem: React.FC = () => {
                                 columns={Column}
                                 rowsPerPageOptions={[5, 10, 25]}
                                 onCellValueChange={handleCellValueChange}
-                                />
+                            />
                         </div>
 
                         <div className="flex justify-center">

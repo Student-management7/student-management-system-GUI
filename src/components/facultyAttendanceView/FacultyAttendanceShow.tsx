@@ -6,6 +6,8 @@ import { getDateRange } from '../Utils/dateUtils';
 import Loader from '../loader/loader';
 import ReusableTable from '../StudenAttendanceShow/Table/Table';
 import { Pencil } from 'lucide-react';
+import { ToastContainer, toast } from 'react-toastify';
+
 
 interface Faculty {
   factId: string;
@@ -63,6 +65,7 @@ const FacultyAttendance: React.FC = () => {
 
       const url = `https://s-m-s-keyw.onrender.com/faculty/getAttendance?fromDate=${formattedFromDate}&toDate=${formattedToDate}`;
       const response = await axiosInstance.get<AttendanceEntry[]>(url);
+      toast.success('Attendance fetched successfully');
 
       if (!response.data || !Array.isArray(response.data)) {
         throw new Error('Invalid response format');
@@ -90,6 +93,7 @@ const FacultyAttendance: React.FC = () => {
       setData(rows);
     } catch (err) {
       console.error('Error fetching attendance:', err);
+      toast.error('Error fetching attendance');
       setError(err instanceof Error ? err.message : 'Failed to fetch attendance data');
       setData([]);
       setColumns([]);
@@ -126,71 +130,79 @@ const FacultyAttendance: React.FC = () => {
 
 
     <>
-    {loading && <Loader />} {/* Show loader when loading */}
-    {!loading && (
-    <div className="box">
-      <div className="flex items-center space-x-4 mb-4">
-           
+      {loading && <Loader />} {/* Show loader when loading */}
+      {!loading && (
+        <div className="box">
+          <ToastContainer position='top-right' autoClose={3000} />
+          <div className="flex items-center space-x-4 mb-4">
             <h1 className="text-xl items-center font-bold text-[#27727A]" >Faculty Attendance </h1>
           </div>
 
-          <div className=" flex items-center space-x-4 mb-4  ">
-            <div className="space-y-2">
-              <label className="text-sm font-medium mr-3">From Date:</label>
-              <input
-                type="date"
-                value={fromDate}
-                onChange={e => setFromDate(e.target.value)}
-                className="border rounded p-2"
-              />
+
+          <div className="container mx-auto p-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              {/* From Date */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text text-sm font-medium">From Date:</span>
+                </label>
+                <input
+                  type="date"
+                  value={fromDate}
+                  onChange={e => setFromDate(e.target.value)}
+                  className="input input-bordered w-full border-0 focus:outline-none focus:ring-0"
+                />
+              </div>
+
+              {/* To Date */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text text-sm font-medium">To Date:</span>
+                </label>
+                <input
+                  type="date"
+                  value={toDate}
+                  onChange={e => setToDate(e.target.value)}
+                  className="input input-bordered w-full border-0 focus:outline-none focus:ring-0"
+                />
+              </div>
+
+              {/* Edit Button */}
+              <div className=" flex items-center justify-left md:justify-left">
+                <button
+                  onClick={handleEditRedirect}
+                  className="btn button  "
+                >
+                  <Pencil size={20} color="white" />
+                </button>
+              </div>
+
+              {/* Fetch Attendance Button */}
+              <div className=" flex items-center justify-left md:justify-left ">
+                <button
+                  onClick={fetchAttendance}
+                  disabled={loading}
+                  className="button btn  "
+                >
+                  {loading ? 'Fetching...' : 'Fetch Attendance'}
+                </button>
+              </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium mr-3">To Date:</label>
-              <input
-                type="date"
-                value={toDate}
-                onChange={e => setToDate(e.target.value)}
-                className="border rounded p-2"
-              />
+
             </div>
-            
 
-            <span className=' mt-1  '>
-            <button 
-              onClick={handleEditRedirect}
-              className="pt-1 button btn "
-            >
-              <Pencil size={20} color='white ' />
-            </button>
 
-            </span>
 
+
+            <ReusableTable rows={data} columns={columns} />
 
           </div>
-
-          {error && (
-            <div className="bg-red-100 text-red-600 p-3 rounded">{error}</div>
-          )}
-
-          <span className='float-right pb-2'>
-            <button
-              onClick={fetchAttendance}
-              disabled={loading}
-              className="button btn  text-white  "
-            >
-              {loading ? 'Fetching...' : 'Fetch Attendance'}
-            </button>
-
-
-            
-          </span>
-
-          <ReusableTable rows={data} columns={columns} />
-
-        </div>
+        
       )}
-    </>
-  );
-};
+        </>
 
-export default FacultyAttendance;
+      )
+
+      };
+
+      export default FacultyAttendance;

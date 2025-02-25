@@ -69,7 +69,7 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
     };
 
     const validateForm = () => {
-        const newErrors: { 
+        const newErrors: {
             name?: string;
             contact?: string;
             gender?: string;
@@ -81,8 +81,8 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                 stdo_primaryContact?: string;
             };
         } = {};
-    
-       
+
+
         if (!formData.name.trim()) {
             newErrors.name = "Name is required";
         }
@@ -101,24 +101,24 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
         if (!formData.category.trim()) {
             newErrors.category = "Category is required";
         }
-    
+
         const familyErrors: { stdo_FatherName?: string; stdo_primaryContact?: string } = {};
-    
+
         if (!formData.familyDetails.stdo_FatherName.trim()) {
             familyErrors.stdo_FatherName = "Father's Name is required";
         }
         if (!formData.familyDetails.stdo_primaryContact.trim()) {
             familyErrors.stdo_primaryContact = "Primary Contact is required";
         }
-    
+
         if (Object.keys(familyErrors).length > 0) {
             newErrors.familyDetails = familyErrors;
         }
-    
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-    
+
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
@@ -126,7 +126,9 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
             updateStudentDeteails(formData)
                 .then(() => {
                     toast.success("Student data Updated Successfully");
-                    onClose();
+                    setTimeout(() => {
+                        onClose();
+                    }, 2000);
                 })
                 .catch(() => {
                     toast.error("Failed to update student details.");
@@ -139,16 +141,20 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
     if (!singleRowData) return <div>Loading...</div>;
 
 
-    return(
+    return (
         <>
-             <div>   
-                <ToastContainer/>         
+            <div>
+                <ToastContainer position="top-right" autoClose={3000} />
                 <form >
+
+
+
+
                     <div className='row'>
                         <div className='col-md-4'>
                             <div className='form-group'>
                                 <label htmlFor="name" className="form-label">Full Name <span className="red">*</span></label>
-                                <input required  type="text" name="name" className={`form-control ${errors.name ? 'is-invalid' : ''}`} value={formData.name} onChange={(e: any) => setFormData({...formData, name: e.target.value})  } />
+                                <input required type="text" name="name" className={`form-control ${errors.name ? 'is-invalid' : ''}`} value={formData.name} onChange={(e: any) => setFormData({ ...formData, name: e.target.value })} />
                                 {errors.name && <div className="invalid-feedback">{errors.name}</div>}
                             </div>
                         </div>
@@ -160,13 +166,13 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                                     id="address"
                                     name="address"
                                     value={formData.address}
-                                    onChange={(e: any) => setFormData({...formData, address: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, address: e.target.value })}
                                     //value={singleRowData.address}
                                     //onChange={handleChange}
                                     className="form-control"
                                     placeholder='Enter Address'
                                 />
-                                
+
                             </div>
                         </div>
                         <div className='col-md-4'>
@@ -177,13 +183,13 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                                     id="city"
                                     name="city"
                                     value={formData.city}
-                                    onChange={(e: any) => setFormData({...formData, city: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, city: e.target.value })}
                                     //value={singleRowData.city}
                                     className="form-control"
                                     placeholder='Enter city'
-                                    //onChange={handleChange}
+                                //onChange={handleChange}
                                 />
-                                
+
                             </div>
                         </div>
                     </div>
@@ -197,13 +203,13 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                                     id="state"
                                     name="state"
                                     value={formData.state}
-                                    onChange={(e: any) => setFormData({...formData, state: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, state: e.target.value })}
                                     //value={singleRowData.state}
                                     className="form-control"
                                     placeholder='Enter state'
-                                    //onChange={handleChange}
+                                //onChange={handleChange}
                                 />
-                                 
+
                             </div>
                         </div>
                         <div className='col-md-4'>
@@ -214,28 +220,28 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                                     id="contact"
                                     name="contact"
                                     value={formData.contact}
-                                    onChange={(e: any) => setFormData({...formData, contact: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, contact: e.target.value })}
                                     //value={singleRowData.contact}
                                     className={`form-control ${errors.contact ? 'is-invalid' : ''}`}
                                     placeholder='Enter contact'
-                                    //onChange={handleChange}
+                                //onChange={handleChange}
                                 />
-                                  {errors.contact && <div className="invalid-feedback">{errors.contact}</div>}
+                                {errors.contact && <div className="invalid-feedback">{errors.contact}</div>}
                             </div>
                         </div>
                         <div className='col-md-4'>
                             <div className='form-group'>
                                 <label htmlFor="gender" className="form-label">Gender<span className="red">*</span></label>
                                 <select
-                                    
+
                                     id="gender"
                                     name="gender"
                                     className={`form-control ${errors.gender ? 'is-invalid' : ''}`}
                                     value={formData.gender}
-                                    onChange={(e: any) => setFormData({...formData, gender: e.target.value})  }
-                                    // value={singleRowData.gender}
-                                    // onChange={handleChange}
-                                    
+                                    onChange={(e: any) => setFormData({ ...formData, gender: e.target.value })}
+                                // value={singleRowData.gender}
+                                // onChange={handleChange}
+
                                 >
                                     <option value="">Select</option>
                                     <option value="Male">Male</option>
@@ -243,7 +249,7 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                                     <option value="Other">Other</option>
                                 </select>
                                 {errors.gender && <div className="invalid-feedback">{errors.gender}</div>}
-                               
+
                             </div>
                         </div>
                     </div>
@@ -256,11 +262,11 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                                     id="dob"
                                     //onChange={handleChange}
                                     value={formData.dob}
-                                    onChange={(e: any) => setFormData({...formData, dob: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, dob: e.target.value })}
                                     name="dob"
                                     //value={singleRowData.dob}
                                     className="form-control"
-                                />                       
+                                />
                             </div>
                         </div>
                         <div className='col-md-4'>
@@ -271,7 +277,7 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                                     id="email"
                                     name="email"
                                     value={formData.email}
-                                    onChange={(e: any) => setFormData({...formData, email: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, email: e.target.value })}
                                     //value={singleRowData.email}
                                     className="form-control"
                                     //onChange={handleChange}
@@ -288,12 +294,12 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                                     name="cls"
                                     className={`form-control ${errors.cls ? 'is-invalid' : ''}`}
                                     value={formData.cls}
-                                    onChange={(e: any) => setFormData({...formData, cls: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, cls: e.target.value })}
                                     //value={singleRowData.cls}
                                     //onChange={handleChange}
                                     placeholder='Enter Class'
                                 />
-                                  {errors.cls && <div className="invalid-feedback">{errors.cls}</div>}
+                                {errors.cls && <div className="invalid-feedback">{errors.cls}</div>}
                             </div>
                         </div>
                     </div>
@@ -307,7 +313,7 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                                     name="department"
                                     //value={singleRowData.department}
                                     value={formData.department}
-                                    onChange={(e: any) => setFormData({...formData, department: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, department: e.target.value })}
                                     className="form-control"
                                     //onChange={handleChange}
                                     placeholder='Enter Department'
@@ -322,13 +328,13 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                                     id="category"
                                     name="category"
                                     value={formData.category}
-                                    onChange={(e: any) => setFormData({...formData, category: e.target.value})  }
+                                    onChange={(e: any) => setFormData({ ...formData, category: e.target.value })}
                                     //value={singleRowData.category}
                                     className={`form-control ${errors.category ? 'is-invalid' : ''}`}
                                     //onChange={handleChange}
                                     placeholder='Enter category'
                                 />
-                                  {errors.name && <div className="invalid-feedback">{errors.category}</div>}
+                                {errors.name && <div className="invalid-feedback">{errors.category}</div>}
                             </div>
                         </div>
                     </div>
@@ -356,7 +362,7 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                                     //onChange={handleChange}
                                     placeholder="Enter father's name"
                                 />
-                                  {errors.familyDetails?.stdo_FatherName && <div className="invalid-feedback">{errors.familyDetails?.stdo_FatherName}</div>}
+                                {errors.familyDetails?.stdo_FatherName && <div className="invalid-feedback">{errors.familyDetails?.stdo_FatherName}</div>}
                             </div>
                         </div>
                         <div className='col-md-4'>
@@ -405,7 +411,7 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                                     //onChange={handleChange}
                                     placeholder="Enter primary contact"
                                 />
-                                  {errors.familyDetails?.stdo_primaryContact && <div className="invalid-feedback">{errors.familyDetails?.stdo_primaryContact}</div>}
+                                {errors.familyDetails?.stdo_primaryContact && <div className="invalid-feedback">{errors.familyDetails?.stdo_primaryContact}</div>}
                             </div>
                         </div>
                     </div>
@@ -507,19 +513,35 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                             </div>
                         </div>
                     </div>
+
                     <div className="row">
-                    <div className='text-center mt-4 col' >
-                        <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Update</button>
-                    </div>
-                    <div className='text-center mt-4 col ' >
-                        <button onClick={onClose} className="btn btn-danger" >Canel</button>
-                    </div>
+                        <div className='text-center mt-4 col' >
+                            <button type="submit" className="btn button " onClick={handleSubmit}>Update</button>
+                        </div>
+                        <div className='text-center mt-4 col ' >
+                            <button onClick={onClose} className="btn btn-danger" >Canel</button>
+                        </div>
                     </div>
                 </form>
-                      
+
             </div>
         </>
     );
 }
 
 export default EditStudentForm;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
