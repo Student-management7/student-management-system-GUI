@@ -108,8 +108,8 @@ const FacultyAttendance: React.FC = () => {
 
 
           <div className="row form-group d-flex align-items-end">
-            <span className="col-md-6 ">
-              <label className="form-label">Select Date:</label>
+            <span className="col-md-3 ">
+              <label className="form-label ">Select Date:</label>
               <input
                 type="date"
                 value={selectedDate}
@@ -133,9 +133,9 @@ const FacultyAttendance: React.FC = () => {
           {error && (
             <div className="bg-red-100 text-red-600 p-3 rounded">{error}</div>
           )}
-          <div className="">
+          
             <ReusableTable rows={rowData} columns={columnDefs} rowsPerPageOptions={[5, 10, 20]} />
-          </div>
+         
         </div>
       )}
     </>

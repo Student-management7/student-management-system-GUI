@@ -8,9 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { Pencil, Trash2 } from "lucide-react";
 import Loader from "../loader/loader";
-import BackButton from "../Navigation/backButton";
 import "./saveSubject.scss";
-
 
 const ClassSubjectShow: React.FC = () => {
   const [data, setData] = useState<ClassData[]>([]);
@@ -19,6 +17,7 @@ const ClassSubjectShow: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editableRow, setEditableRow] = useState<ClassData | null>(null);
 
+  // Fetch data from the API
   const fetchData = async () => {
     setLoading(true);
     setError(null);
@@ -27,7 +26,7 @@ const ClassSubjectShow: React.FC = () => {
       if (result && result.classData) {
         setData(result.classData);
       } else {
-        toast.error("Invalid response structure")
+        toast.error("Invalid response structure");
         throw new Error("Invalid response structure");
       }
     } catch (err: any) {
@@ -43,36 +42,38 @@ const ClassSubjectShow: React.FC = () => {
     fetchData();
   }, []);
 
+  // Handle edit button click
   const handleEdit = (row: ClassData) => {
     setShowForm(true);
     setEditableRow(row);
   };
 
+  // Handle delete button click
   const handleDelete = async (className: string) => {
     try {
-      
       await axiosInstance.post(`class/delete?className=${className}`);
       await fetchData(); // Refresh data after deletion
       toast.success(`${className} class has been deleted successfully!`);
-      
     } catch (error: any) {
       console.error("Error deleting row:", error.message || error);
       toast.error("Failed to delete the row.");
     }
-  
   };
 
+  // Handle save/update success
   const handleSave = async () => {
     await fetchData(); // Refresh data after save/update
     setShowForm(false);
     setEditableRow(null);
   };
 
+  // Prepare table rows
   const rows = data.map((item) => ({
     className: item.className,
     subject: Array.isArray(item.subject) ? item.subject.join(", ") : item.subject,
   }));
 
+  // Define table columns
   const columns = [
     { field: "className", headerName: "Class Name" },
     { field: "subject", headerName: "Subjects" },
@@ -88,8 +89,8 @@ const ClassSubjectShow: React.FC = () => {
     {
       field: "deleteAction",
       headerName: "Delete",
-      cellRenderer: (prams: any ) => (
-        <button onClick={() => handleDelete(prams.data.className)}>
+      cellRenderer: (params: any) => (
+        <button onClick={() => handleDelete(params.data.className)}>
           <Trash2 size={20} color="red" />
         </button>
       ),
@@ -106,13 +107,12 @@ const ClassSubjectShow: React.FC = () => {
           {!showForm ? (
             <>
               <div className="flex items-center space-x-4 mb-4">
-              
                 <h1 className="text-xl font-bold text-[#27727A]">Class Page</h1>
               </div>
               <div className="float-right mt-1">
                 <button
                   onClick={() => setShowForm(true)}
-                  className="button btn text-white "
+                  className="button btn text-white"
                 >
                   Add Subject
                 </button>
@@ -132,7 +132,7 @@ const ClassSubjectShow: React.FC = () => {
                 setEditableRow(null);
               }}
               onSave={handleSave}
-              editableRow={editableRow as ClassData }
+              editableRow={editableRow||null} 
             />
           )}
         </div>
