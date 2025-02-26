@@ -1,3 +1,5 @@
+import { Student } from "../../StudentAttendence/Type/studentAttendenceType";
+
 export interface StudentAttendance {
     stdId: string;
     name: string;
@@ -14,3 +16,11 @@ export interface StudentAttendance {
   className: string;
   subject: string[];
 }
+
+export interface Students {
+  id: string;
+  students: Student[];
+  date: string;
+ 
+}
+
