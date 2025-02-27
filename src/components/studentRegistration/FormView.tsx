@@ -14,14 +14,28 @@ interface FormViewProps {
   setStudentData: (arg: boolean) => void;
 }
 
-const FormView: React.FC<FormViewProps> = ({ setStudentData  }) => {
+const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
 
   const [classes, setClasses] = React.useState<ClassData[]>([]);
   const [selectedFee, setSelectedFee] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  // const [formikValues, setFormikValues] = useState<any>(null); // Store form values temporarily
+  const [formValues, setFormValues] = useState<StudentFormData | null>(null);
   const [formikHelpers, setFormikHelpers] = useState<any>(null);
-  
+
+
+  const handleOpenDialog = (values: StudentFormData, helpers: any) => {
+    setFormValues(values);
+    setFormikHelpers(helpers);
+    setIsDialogOpen(true);
+  }
+
+  const handleConfirmSubmit = async () => {
+    if (formValues && formikHelpers) {
+      setIsDialogOpen(false);
+      await handleSubmit(formValues, formikHelpers);
+    }
+  };
+
   interface ClassData {
     id: string;
     className: string;
@@ -157,13 +171,13 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData  }) => {
     }
   };
 
- 
 
-  const handleConfirmSubmit = (values: StudentFormData, formikHelpers: any) => {
-    setIsDialogOpen(false); // Close the dialog on confirm
-    handleSubmit(values, formikHelpers);
-    // setIsDialogOpen(false); // Call the submit function
-  };
+
+  // const handleConfirmSubmit = (values: StudentFormData, formikHelpers: any) => {
+  //   setIsDialogOpen(false); // Close the dialog on confirm
+  //   handleSubmit(values, formikHelpers);
+  //   // setIsDialogOpen(false); // Call the submit function
+  // };
 
 
   return (
@@ -173,12 +187,12 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData  }) => {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-          
+          onSubmit={(values, helpers) => handleOpenDialog(values, helpers)}
         >
-          
+
           {({ errors, touched, setFieldValue }) => (
             <Form>
+
               <div className="row">
                 <div className="col-md-4">
                   <div className="form-group">
@@ -317,7 +331,7 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData  }) => {
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="email" className="form-label">
-                      Email 
+                      Email
                     </label>
                     <Field
                       type="email"
@@ -564,43 +578,54 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData  }) => {
                 />
               </div>
 
+
               <div className="row-1 mt-4 flex justify-around justify-center items-center md-4">
-                <button
-                  onClick={() => setIsDialogOpen(true)}
-                  type="button"
-                  className="btn button head1 text-white"
-                >
+                <button type="submit" className="btn button head1 text-white">
                   Submit
                 </button>
                 <button
-                 
                   type="button"
                   className="btn buttonred head1 text-white"
-                  onClick={() => { 
-                    setStudentData(false);
-                  }}
+                  onClick={() => setStudentData(false)}
                 >
                   Cancel
                 </button>
 
-                
 
-                
-                <AlertDialog
-                  
-                  title="Confirm Submit"
-                  message="Are you sure you want to submit this item?"
-                  isOpen={isDialogOpen}
-                  onConfirm={async () => handleConfirmSubmit(values, formikHelpers)} // Pass values and helpers here
-                  onCancel={() => setIsDialogOpen(false)}
-                />
+
+
               </div>
             </Form>
           )}
         </Formik>
+        {isDialogOpen && (
+          <AlertDialog
+            title="Confirm Submit"
+            message="Are you sure you want to submit this item?"
+            isOpen={isDialogOpen}
+            onConfirm={handleConfirmSubmit}
+            onCancel={() => setIsDialogOpen(false)}
+          />
+        )}
       </div>
     </>
   );
 };
 
 export default FormView;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

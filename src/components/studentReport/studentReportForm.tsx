@@ -229,14 +229,14 @@ const StudentReportForm: React.FC = () => {
                                     placeholder="Select Student"
                                     isSearchable
                                     noOptionsMessage={() => "No students found"}
-                                    menuPlacement="auto" // Opens upwards if there's no space below
+                                    menuPlacement="auto"
                                     menuShouldScrollIntoView={true} // Ensures the menu is scrollable
                                     styles={{
                                         menu: (provided) => ({
                                             ...provided,
-                                            maxHeight: "200px", // Set max height for scrollability
-                                            overflowY: "auto", // Enable vertical scrolling
-                                            zIndex: 9999, // Ensure dropdown appears above other elements
+                                            maxHeight: "200px",
+                                            overflowY: "auto",
+                                            zIndex: 9999,
                                         }),
                                         control: (provided) => ({
                                             ...provided,
@@ -296,9 +296,9 @@ const StudentReportForm: React.FC = () => {
                                                     className="form-control"
                                                     min="0"
                                                     max={row.maxMarks}
-                                                    value={row.marksObtained}
+                                                    value={row.marksObtained === null ? "" : row.marksObtained} // 🛠 Fix: Allow empty input
                                                     onChange={(e) => {
-                                                        const value = parseFloat(e.target.value) || 0;
+                                                        const value = e.target.value === "" ? null : Math.max(0, parseFloat(e.target.value));
                                                         setRows(prevRows =>
                                                             prevRows.map((r, i) =>
                                                                 i === index ? { ...r, marksObtained: value } : r
@@ -313,9 +313,9 @@ const StudentReportForm: React.FC = () => {
                                                     type="number"
                                                     className="form-control"
                                                     min="1"
-                                                    value={row.maxMarks}
+                                                    value={row.maxMarks === null ? "" : row.maxMarks} // 🛠 Fix: Allow empty input
                                                     onChange={(e) => {
-                                                        const value = parseFloat(e.target.value) || 0;
+                                                        const value = e.target.value === "" ? null : Math.max(1, parseFloat(e.target.value));
                                                         setRows(prevRows =>
                                                             prevRows.map((r, i) =>
                                                                 i === index ? { ...r, maxMarks: value } : r
@@ -343,6 +343,7 @@ const StudentReportForm: React.FC = () => {
                                         </tr>
                                     ))}
                                 </tbody>
+
                             </table>
                         </div>
 

@@ -4,7 +4,7 @@ import FacultySalaryForm from "./FacultySalaryForm";
 import { fetchFacultySalaries, updateFacultySalary, saveFacultySalary } from "../../../services/salary/facultysalary/Api";
 import { Eye, Pencil } from "lucide-react";
 import Loader from "../../loader/loader";
-import ReusableTable from "../../StudenAttendanceShow/Table/Table";
+import ReusableTable from "../../MUI Table/ReusableTable";
 import { toast, ToastContainer } from "react-toastify";
 // Define types with improved clarity
 type DeductionItem = {

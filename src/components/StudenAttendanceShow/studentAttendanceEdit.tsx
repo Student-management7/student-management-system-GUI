@@ -7,7 +7,7 @@ import { fetchAttendanceData, fetchClassData, updateAttendance } from "../../ser
 import { validateAttendanceForm } from "../../services/StudentAttendanceShow/validation/attendanceValidation"
 import { getDateRange } from "../../services/StudentAttendanceShow/dateFormates/dateUtils"
 import type { ClassData } from "../../services/SaveSubjects/Type"
-import type { AttendanceResponse } from "../../services/StudentAttendanceShow/type/attendanceTypes"
+import type { AttendanceResponse,Students } from "../../services/StudentAttendanceShow/type/attendanceTypes"
 import { sortArrayByKey } from "../Utils/sortArrayByKey"
 import { Switch } from '@headlessui/react'
 // import ReusableTable from "../MUI Table/ReusableTable"
@@ -108,12 +108,19 @@ const StudentAttendanceEdit: React.FC = () => {
   // const toggleAttendanceMode = () => setAttendanceMode((prev) => !prev)
 
 
+  console.log("attendance data :",attendanceData);
 
-  const handleEditButtonClick = (fromDate: string, students: any[]) => {
-
+  const handleEditButtonClick = ( fromDate: string) => {
+    // Collect all student data for the selected date range
+    const students = attendanceData
+    const studentsList = students.map((student) => ({ ...student, date: fromDate }));  
+  
+    console.log("Edit Button Clicked with:", {  fromDate, studentsList });
+  
     navigate("/studentAttendanceEditSave", {
       state: {
-        studentData: students,
+       
+        studentData: studentsList,
         date: fromDate,
         className: classSelected,
         subject: subjectSelected || "",
@@ -121,6 +128,8 @@ const StudentAttendanceEdit: React.FC = () => {
       },
     });
   };
+  
+  
 
 
 
@@ -265,7 +274,7 @@ const StudentAttendanceEdit: React.FC = () => {
                         renderCell: (row: any) => (
                           <span
                             className="cursor-pointer hover:underline"
-                            onClick={() => handleEditAttendance(row.stdId, date, row[date], '')}
+
                           >
                             {row[date] || '-'}
                           </span>
@@ -273,26 +282,27 @@ const StudentAttendanceEdit: React.FC = () => {
                       })),
 
                       {
+                        field: 'remark',
+                        headerName: 'Remark',
+                      },
+
+                      {
                         field: 'edit',
                         headerName: 'Actions',
                         cellRenderer: (params: any) => {
-                          // Ensure that params.data contains the correct structure
-                          const students = attendanceData.flatMap((data) =>
-                            data.students.filter((student) => student.stdId === params.data.stdId)
-                          );
-
                           return (
                             <button
                               className=""
-                              onClick={() =>
-                                handleEditButtonClick(fromDate, students)
-                              }
+                              onClick={() => handleEditButtonClick( fromDate)}
                             >
                               <Pencil size={20} color='orange' />
                             </button>
                           );
                         },
-                      },
+                      }
+                      
+                      
+
 
                     ]}
 
@@ -302,6 +312,7 @@ const StudentAttendanceEdit: React.FC = () => {
                         const row: Record<string, any> = {
                           stdId: student.stdId,
                           name: student.name,
+                          remark: student.remark
                         };
                         getDateRange(fromDate, toDate).forEach((date) => {
                           row[date] =

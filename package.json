@@ -69,6 +69,7 @@
     "react-table": "^7.8.0",
     "react-toastify": "^10.0.6",
     "react-window": "^1.8.11",
+    "recharts": "^2.15.1",
     "sass": "^1.83.4",
     "simple-datatables": "^9.2.1",
     "tailwind-merge": "^2.6.0",

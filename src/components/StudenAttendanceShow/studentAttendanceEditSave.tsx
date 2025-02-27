@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation,  } from 'react-router-dom';
 import { formatToDDMMYYYY } from '../Utils/dateUtils';
 import axiosInstance from '../../services/Utils/apiUtils';
 import { toast, ToastContainer } from 'react-toastify';
@@ -8,7 +8,6 @@ import BackButton from '../Navigation/backButton';
 
 const StudentAttendanceEditSave: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate();
 
   const { studentData, date, className, subject, AttendanceMode } = location.state || {};
 
@@ -19,9 +18,20 @@ const StudentAttendanceEditSave: React.FC = () => {
       </div>
     );
   }
+  
+  console.log("studentData:", studentData);
+  const studenttsList = studentData?.[0]?.students || [];
 
-  const [editedStudentList, setEditedStudentList] = useState(studentData);
+  console.log("studenttsList:", studenttsList);
 
+
+  const [editedStudentList, setEditedStudentList] = useState(
+    studentData?.[0]?.students || []
+  );
+
+  console.log("Extracted students list:", studenttsList);
+
+  
   const saveEditedAttendance = async () => {
     try {
       const payload = {

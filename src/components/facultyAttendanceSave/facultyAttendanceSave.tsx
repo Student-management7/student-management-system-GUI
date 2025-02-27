@@ -144,11 +144,9 @@ const AttendanceSave: React.FC = () => {
 
   const rowData = facultyList.map(transformFacultyData);
 
-  const handleBulkAttendanceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setBulkAttendance(event.target.value);
-  };
 
-  const applyBulkAttendance = () => {
+
+  const applyBulkAttendance = (value: string) => {
     if (!bulkAttendance) {
       toast.warning("Please select an attendance status before applying.");
       return;
@@ -161,6 +159,7 @@ const AttendanceSave: React.FC = () => {
 
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} />
       {loading && <Loader />}
       {!loading && (
         <div className="box p-4">
@@ -173,35 +172,38 @@ const AttendanceSave: React.FC = () => {
             </h1>
           </div>
 
-          <span className="float-right mb-4 flex items-center space-x-4 mb-4">
-            <select
-              value={bulkAttendance}
-              onChange={handleBulkAttendanceChange}
-              className="border rounded p-2 mr-2 mb-2"
-            >
-              <option value="">Select Attendance</option>
-              <option value="Present">Present</option>
-              <option value="Absent">Absent</option>
-              <option value="Leave">Leave</option>
-            </select>
+          <div className="">
 
-            <button
-              onClick={applyBulkAttendance}
-              className="head1 btn button text-white pt-2 pb-2 pl-4 pr-4"
-            >
-              Apply to All
-            </button>
-          </span>
+            <span className="flex ">
+              <select
+                value={bulkAttendance}
+                onChange={(e) => {
+                  setBulkAttendance(e.target.value);
+                  applyBulkAttendance(e.target.value);
+                }}
+                className="border rounded p-2 mr-2 mb-2"
+              >
+                <option value="">Bulk Attendance</option>
+                <option value="Present">Present</option>
+                <option value="Absent">Absent</option>
+                <option value="Leave">Leave</option>
+              </select>
+            </span>
 
-          <span className="mb-6">
-            <ToastContainer />
+            <span >
+
             <ReusableTable
               rows={rowData}
               columns={columns}
               rowsPerPageOptions={[5, 10, 25]}
               onCellValueChange={(factId: string, field: string, value: any) => handleCellValueChange(factId, field, value)}
             />
-          </span>
+            </span>
+
+
+          </div>
+
+
 
           <div className="flex justify-center mt-4">
             <button

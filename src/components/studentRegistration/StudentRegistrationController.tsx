@@ -12,11 +12,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { Eye, IdCard, Pencil, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../loader/loader"; // Add a Spinner component for loading
-import ReusableTable from "../StudenAttendanceShow/Table/Table";
+import ReusableTable from "../MUI Table/ReusableTable";
 import * as XLSX from "xlsx";
-import './StudentRegistration.scss'
+import './StudentRegistration.scss';
 import axiosInstance from "../../services/Utils/apiUtils";
-
 
 const StudentRegistrationController = () => {
   const navigate = useNavigate();
@@ -29,7 +28,7 @@ const StudentRegistrationController = () => {
   const [loading, setLoading] = useState(false); // State for managing loader visibility
   const [file, setFile] = useState<File | null>(null);
   const [jsonData, setJsonData] = useState<any[]>([]); // Store JSON data
-  
+
   const [columns] = useState<any[]>([
     { field: "name", headerName: "Name" },
     { field: "cls", headerName: "Class" },
@@ -38,7 +37,6 @@ const StudentRegistrationController = () => {
     {
       field: "Edit data",
       headerName: "Edit",
-
       cellRenderer: (params: any) => (
         <div className="smInline">
           <button
@@ -47,20 +45,15 @@ const StudentRegistrationController = () => {
           >
             <Pencil size={20} />
           </button>
-
         </div>
       ),
     },
-
     {
       field: "Delete data",
       headerName: "Delete",
-
       cellRenderer: (params: any) => (
-
         <button
           onClick={() => getDeleteData(params.data)}
-
         >
           <Trash2 size={20} color="red" />
         </button>
@@ -69,9 +62,7 @@ const StudentRegistrationController = () => {
     {
       field: "View Details",
       headerName: "Details",
-
       cellRenderer: (params: any) => (
-
         <button className="btn btn-lg btn-view"
           onClick={() => handleViewDetails(params.data.id)}
         >
@@ -79,22 +70,16 @@ const StudentRegistrationController = () => {
         </button>
       )
     },
-
     {
       field: "Report Card",
       headerName: "Report Card",
-
       cellRenderer: (params: any) => (
         <button className="btn" onClick={() => handeleReport(params.data.id)}>
           <IdCard size={20} color="green" />
         </button>
       ),
     },
-
   ]);
-
-
-
 
   const fetchStudentDetails = async () => {
     setLoading(true); // Show loader before the API call
@@ -150,15 +135,13 @@ const StudentRegistrationController = () => {
     navigate(`/StudentReport/${id}`);
   };
 
-
   const handleViewDetails = (id: string) => {
     navigate(`/StudentDetails/${id}`);
     console.log(id);
   };
 
-  
-   // Convert Excel to JSON
-   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Convert Excel to JSON
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const uploadedFile = event.target.files[0];
       setFile(uploadedFile);
@@ -187,27 +170,24 @@ const StudentRegistrationController = () => {
       toast.warning("Please select a file before uploading!");
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("file", file);
-  
+
     console.log("Uploading file:", file);  // Debugging
     console.log("FormData:", formData.get("file")); // Check if file is added
-  
+
     try {
       const response = await axiosInstance.post("/student/bulkupload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-  
+
       toast.success(response.data.message);
     } catch (error) {
       // console.error("Error uploading file:", error.response?.data || error);
       toast.error("Upload failed!");
     }
   };
-  
-  
-  
 
   return (
     <>
@@ -218,7 +198,6 @@ const StudentRegistrationController = () => {
         <div className="box ">
           <div className="headding1">
             <h1>
-
               &nbsp;Student Registration
             </h1>
           </div>
@@ -237,31 +216,30 @@ const StudentRegistrationController = () => {
               </div>
             ) : (
               <div>
-
-               {/* bulk Upload */}
-                <div className="p-4">
+                {/* bulk Upload */}
+                <div className=" p-4 flex">
                   <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
-                  <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 ml-2">Upload</button>
+                  <button onClick={handleUpload} className="btn btn-primary ">Upload</button>
                 </div>
 
-
-                <div className="rightButton">
-
+                <span className="rightButton float-right ml-3 mt-1">
                   <button
                     onClick={() => setStudentData(true)}
-                    className="btn button head1 text-white"
+                    className="btn py-2 button head1 text-white"
                   >
                     Add Student
                   </button>
-                </div>
-                <ToastContainer position="top-right" autoClose={3000} />
-                <AlertDialog
-                  title="Confirm Deletion"
-                  message={`Are you sure you want to delete the student record for ${dialogData?.name}?`}
-                  isOpen={isDialogOpen}
-                  onConfirm={handleConfirmDelete}
-                  onCancel={handleCancel}
-                />
+                </span>
+
+                {isDialogOpen && dialogData && (
+                  <AlertDialog
+                    title="Confirm Deletion"
+                    message={`Are you sure you want to delete the student record for ${dialogData.name}?`}
+                    isOpen={isDialogOpen}
+                    onConfirm={handleConfirmDelete}
+                    onCancel={handleCancel}
+                  />
+                )}
                 <ReusableTable rows={data} columns={columns} />
               </div>
             )
@@ -270,12 +248,11 @@ const StudentRegistrationController = () => {
               <div className="head1">
                 <h1>
                   <div>
-                    <i  onClick={() => setStudentData(false)} className="bi bi-arrow-left-circle" /> <span>User Details</span>
+                    <i onClick={() => setStudentData(false)} className="bi bi-arrow-left-circle" /> <span>User Details</span>
                   </div>
                 </h1>
-
               </div>
-              <FormView   setStudentData={() => setStudentData(false)} />
+              <FormView setStudentData={() => setStudentData(false)} />
             </div>
           )}
         </div>

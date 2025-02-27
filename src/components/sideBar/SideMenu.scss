@@ -84,7 +84,7 @@
         margin-right: 15px;
     }
     .menuOpen {
-        position: absolute;
+        position: relative;
         right: 0;
     }
 }
@@ -108,10 +108,10 @@
 }
 
 .active{
-    margin-left: -250px;
+    margin-left: -300px;
     transition: 1s;
     @media (max-width: 480px) {
-        margin-left: -220px;
+        margin-left: -300px;
         .menu{
             display: inline-block;
             text-align: right;
@@ -121,6 +121,15 @@
             svg{
                 margin-right: 0 !important;
             }
+        }
+        
+    }
+    .logo{
+        span.sideIcone{
+            position: absolute !important;
+            right: -44px;
+            z-index: 99;
+            top: 5px;
         }
     }
 }

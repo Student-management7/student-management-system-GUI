@@ -32,6 +32,7 @@ import StudentDetails from "../studentDetails/StudentDetails";
 import Facultydetails from "../facultyDetails/Facultydetails";
 import path from "path";
 import StudentFeesDetails from "../fess/studentFees/studentFeesDetails";
+import Admindeshboard from '../../components/SuperAdmin/AdminDeshboard'
 
 import UserPassword from "../../Pages/setting/UserPassord";
 interface Permission {
@@ -92,7 +93,7 @@ const PermissionBasedRoute: React.FC = () => {
 
  
 const allRoutes = [
-  { path: "/main", element: <MasterController />, visible: true }, 
+  { path: "/main", element: <MasterController />, visible:role === "user" || (role === "sub-user") }, 
   { path: "/studentAttendenceManagement", element: <StudentAttendenceManagement />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentAttendenceManagement) },
   { path: "/studentAttendanceShow", element: <StudentAttendanceShow />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentAttendanceShow) },
   { path: "/studentAttendanceEdit", element: <StudentAttendanceEdit />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentAttendanceEdit) },
@@ -143,6 +144,10 @@ const allRoutes = [
   { path: "/superAdminController", element: <SuperAdminController />, visible: role === "admin" }, // Only visible for admin
   { path: "/schoolsDetails/:id", element: <SchoolsDetails />, visible: role === "admin" }, // Only visible for admin
   { path: "/setting", element: <UserPassword />, visible: true }, 
+  { path: "/admindeshboard", element: <Admindeshboard showRevenueChart={false} showExpiringPlansChart={false} showUpcomingExpirations={false} updateDashboardLayout={function (layout: Partial<{ showRevenueChart: boolean; showExpiringPlansChart: boolean; showUpcomingExpirations: boolean; }>): void {
+    throw new Error("Function not implemented.");
+  } } />, visible: true }, 
+
 ];
 // useEffect(() => {
 //   console.log("Current Role:", role);
