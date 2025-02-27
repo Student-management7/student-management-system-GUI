@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Download,  } from 'lucide-react';
-import './Table.css'
-
+import { Download } from 'lucide-react';
+import './Table.css';
 
 interface Column {
   field: string;
@@ -36,9 +35,8 @@ const ReusableTable: React.FC<TableProps> = ({
   rows,
   rowsPerPageOptions = [5, 10, 25],
   onCellValueChange,
-  tableHeight = "5/00px",
+  tableHeight = "500px",
   tableWidth = "100%",
-  
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
@@ -114,73 +112,91 @@ const ReusableTable: React.FC<TableProps> = ({
       </div>
 
       {/* Fixed Size Table Container */}
-      <div className="table-container border border-gray-200 rounded-lg overflow-x-auto">
-        <div
-          className="max-w-full overflow-x-auto"
-          style={{ width: tableWidth, height: tableHeight, maxHeight: tableHeight }}
-        >
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 sticky top-0 z-10">
-              <tr>
-                <th
-                  className="sticky top-0 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                >
-                  S.No
-                </th>
-                {columns.map((column) => (
-                  <th
-                    key={column.field}
-                    style={{ width: column.width }}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                    onClick={() => column.sortable !== false && setSortConfig({
-                      field: column.field,
-                      direction: sortConfig.field === column.field && sortConfig.direction === 'asc' ? 'desc' : 'asc'
-                    })}
-                  >
-                    <div className="flex items-center gap-2">
-                      {column.headerName}
-                      {sortConfig.field === column.field && (
-                        <span className="text-gray-400">
-                          {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                        </span>
-                      )}
-                    </div>
-                  </th>
-                ))}
+      <div className="border">
+  <div>
+    {/* Desktop View - Table */}
+    <table className="w-full divide-y divide-gray-200 webView">
+      <thead className="bg-gray-50">
+        <tr>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+          {columns.map((column: any) => (
+            <th
+              key={column.field}
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              onClick={() => column.sortable !== false && setSortConfig({
+                field: column.field,
+                direction: sortConfig.field === column.field && sortConfig.direction === 'asc' ? 'desc' : 'asc'
+              })}
+            >
+              <div className="flex items-center gap-2">
+                {column.headerName}
+                {sortConfig.field === column.field && (
+                  <span className="text-gray-400">
+                    {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                  </span>
+                )}
+              </div>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {paginatedRows.map((row: any, rowIndex: any) => (
+          <tr key={rowIndex} className="hover:bg-gray-50">
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              {startIndex + rowIndex + 1}
+            </td>
+            {columns.map((column: any) => (
+              <td
+                key={`${rowIndex}-${column.field}`}
+                className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+              >
+                {column.cellRenderer ? (
+                  column.cellRenderer({
+                    data: row,
+                    value: column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field],
+                    setValue: (value: number) => onCellValueChange?.(rowIndex, column.field, value)
+                  })
+                ) : (
+                  <div className="text-gray-900 overflow-hidden text-ellipsis">
+                    {column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field]}
+                  </div>
+                )}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
 
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {paginatedRows.map((row, rowIndex) => (
-                <tr key={rowIndex} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis">
-                    {startIndex + rowIndex + 1}
-                  </td>
-                  {columns.map((column) => (
-                    <td
-                      key={`${rowIndex}-${column.field}`}
-                      className="px-6 py-4 whitespace-nowrap"
-                    >
-                      {column.cellRenderer ? (
-                        column.cellRenderer({
-                          data: row,
-                          value: column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field],
-                          setValue: (value) => onCellValueChange?.(rowIndex, column.field, value)
-                        })
-                      ) : (
-                        <div className="text-sm text-gray-900 overflow-hidden overflow-ellipsis">
-                          {column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field]}
-                        </div>
-                      )}
-                    </td>
-                  ))}
-
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    {/* Mobile View - Cards */}
+    <div className="mobileView">
+      {paginatedRows.map((row: any, rowIndex: any) => (
+        <div key={rowIndex} className="border-b border-gray-200 p-4">
+          <div className="flex flex-col space-y-2">
+            <p><strong>ID:</strong> {startIndex + rowIndex + 1}</p>
+            {columns.map((column: any) => (
+              <p key={`${rowIndex}-${column.field}`}>
+                <strong>{column.headerName}:</strong>
+                {column.cellRenderer ? (
+                  column.cellRenderer({
+                    data: row,
+                    value: column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field],
+                    setValue: (value: number) => onCellValueChange?.(rowIndex, column.field, value)
+                  })
+                ) : (
+                  <span className="text-sm text-gray-900 overflow-hidden overflow-ellipsis">
+                    {column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field]}
+                  </span>
+                )}
+              </p>
+            ))}
+          </div>
         </div>
-      </div>
+      ))}
+    </div>
+  </div>
+</div>
 
       {/* Table Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
