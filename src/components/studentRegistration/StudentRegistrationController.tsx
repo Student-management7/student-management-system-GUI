@@ -239,21 +239,22 @@ const StudentRegistrationController = () => {
               <div>
 
                {/* bulk Upload */}
-                <div className="p-4">
-                  <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
-                  <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 ml-2">Upload</button>
+                 <div className="row p-4 flex">
+                  <input className="
+                  " type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
+                  <button onClick={handleUpload} className="btn button ">Upload</button>
                 </div>
 
 
-                <div className="rightButton">
+                 <span className="rightButton float-right ml-3 mt-1">
 
                   <button
                     onClick={() => setStudentData(true)}
-                    className="btn button head1 text-white"
+                    className="btn py-2 button head1 text-white"
                   >
                     Add Student
                   </button>
-                </div>
+                </span>
                 <ToastContainer position="top-right" autoClose={3000} />
                 <AlertDialog
                   title="Confirm Deletion"
