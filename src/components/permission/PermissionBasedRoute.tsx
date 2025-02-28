@@ -35,6 +35,7 @@ import StudentFeesDetails from "../fess/studentFees/studentFeesDetails";
 import Admindeshboard from '../../components/SuperAdmin/AdminDeshboard'
 
 import UserPassword from "../../Pages/setting/UserPassord";
+import Profile from "../../Pages/profile/Profile";
 interface Permission {
   [module: string]: {
     [route: string]: boolean;
@@ -144,6 +145,7 @@ const allRoutes = [
   { path: "/superAdminController", element: <SuperAdminController />, visible: role === "admin" }, // Only visible for admin
   { path: "/schoolsDetails/:id", element: <SchoolsDetails />, visible: role === "admin" }, // Only visible for admin
   { path: "/setting", element: <UserPassword />, visible: true }, 
+  { path: "/profile", element: <Profile />, visible: true }, 
   { path: "/admindeshboard", element: <Admindeshboard showRevenueChart={false} showExpiringPlansChart={false} showUpcomingExpirations={false} updateDashboardLayout={function (layout: Partial<{ showRevenueChart: boolean; showExpiringPlansChart: boolean; showUpcomingExpirations: boolean; }>): void {
     throw new Error("Function not implemented.");
   } } />, visible: true }, 

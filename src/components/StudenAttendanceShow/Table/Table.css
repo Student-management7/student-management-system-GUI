@@ -29,7 +29,7 @@
     padding: 2px;
   }
 }
-.border{
-  overflow: scroll;
+.borderr{
+  overflow:scroll !important;
 }
 
