@@ -116,7 +116,7 @@ const ReusableTable: React.FC<TableProps> = ({
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-8 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full px-8 py-2 borderr border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           <span className="absolute left-2.5 top-2.5">
             <svg
@@ -138,7 +138,7 @@ const ReusableTable: React.FC<TableProps> = ({
       </div>
 
       {/* Fixed Size Table Container */}
-      <div className="border">
+      <div className="border borderr">
         <div>
           <table className="divide-y w-100">
             <thead className="webView">
@@ -275,7 +275,7 @@ const ReusableTable: React.FC<TableProps> = ({
                 setRowsPerPage(Number(e.target.value));
                 setCurrentPage(1);
               }}
-              className="border rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              className="border borderr rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
               {rowsPerPageOptions.map((option: any) => (
                 <option key={option} value={option}>{option}</option>
@@ -288,7 +288,7 @@ const ReusableTable: React.FC<TableProps> = ({
           <button
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="px-3 webView py-1 border rounded-md hover:bg-gray-100 disabled:opacity-50"
+            className="px-3 webView py-1  border rounded-md hover:bg-gray-100 disabled:opacity-50"
           >
             Previous
           </button>
@@ -297,7 +297,7 @@ const ReusableTable: React.FC<TableProps> = ({
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 border rounded-md transition-colors ${currentPage === page
+                className={`px-3 py-1 border  rounded-md transition-colors ${currentPage === page
                   ? 'bg-[#3a8686] text-white'
                   : 'hover:bg-gray-100'
                   }`}
