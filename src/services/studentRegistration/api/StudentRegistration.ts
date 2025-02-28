@@ -16,7 +16,7 @@ export const saveStdDetails = async (data: any) =>{
     }
 };
 
-export const updateStudentDeteails = async (data: any) =>{
+export const updateStdDetails = async (data: any) =>{
 
     try{
         const response = await axiosInstance.post(`${API_URL}/student/update`, data);

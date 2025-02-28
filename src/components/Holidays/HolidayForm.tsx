@@ -47,12 +47,13 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onSubmit, onCancel, classes }
   };
 
   return (
-    <div className="box">
+    <>
       <ToastContainer position="top-right" autoClose={3000} />
-      <h2 className="head1 mb-10 text-center">
+      <h2 className="head1 mb-10 text-left">
         <i onClick={onCancel} className="bi bi-arrow-left-circle m-2 cursor-pointer" />
         Holiday
       </h2>
+    <div className="box">
       <div className="flex flex-row items-center justify-center space-x-10">
         <div className="mb-4 w-1/2">
           <h3 className="font-semibold mb-2">Select Classes:</h3>
@@ -79,7 +80,7 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onSubmit, onCancel, classes }
           <input
             type="text"
             placeholder="Optional holiday description"
-            className="w-full border px-3 py-2 rounded-md"
+            className="w-full border px-3 py-2 rounded-md "
             value={formik.values.description}
             onChange={(e) => formik.setFieldValue('description', e.target.value)}
           />
@@ -130,6 +131,7 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onSubmit, onCancel, classes }
         </button>
       </div>
     </div>
+    </>
   );
 };
 
