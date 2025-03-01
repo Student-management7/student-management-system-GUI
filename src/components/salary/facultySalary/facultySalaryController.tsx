@@ -204,16 +204,17 @@ const FacultySalaryController: React.FC = () => {
                 <div className="flex items-center space-x-4 mb-4 ">
 
                   <h1 className="text-xl items-center font-bold text-[#27727A]" >Faculty Salary </h1>
-                </div>            <span
+                </div>         
+                 <button
                   onClick={() => {
                     setShowForm(true);
                     setEditData(null);
                   }}
-                  className={`btn float-right button ${loading ? "btn-disabled" : ""}`}
-                  disabled={loading}
+                  className='btn float-right button'
+                  
                 >
                   Add Salary
-                </span>
+                </button>
 
               </div>
               <ReusableTable

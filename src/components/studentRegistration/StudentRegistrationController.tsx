@@ -195,17 +195,15 @@ const StudentRegistrationController = () => {
 
       {loading && <Loader />} {/* Show loader when loading */}
       {!loading && (
-        <div className="box ">
-          <div className="headding1">
-            <h1>
-              &nbsp;Student Registration
-            </h1>
+        <div className="container-fluid p-3">
+          <div className="headding1 mb-4">
+            <h1 className="text-center">Student Registration</h1>
           </div>
 
           {!studentData ? (
             editFormView ? (
               <div>
-                <div className="headding1">
+                <div className="headding1 mb-4">
                   <h1 onClick={() => setEditFormView(false)}>
                     <div>
                       <i className="bi bi-arrow-left-circle m-1" /> <span>User Edit</span>
@@ -216,21 +214,36 @@ const StudentRegistrationController = () => {
               </div>
             ) : (
               <div>
-                {/* bulk Upload */}
-                <div className=" p-4 flex">
-                  <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
-                  <button onClick={handleUpload} className="btn btn-primary ">Upload</button>
+                {/* Bulk Upload Section */}
+                <div className="row mb-4">
+                  
+                    <div className="col-8  align-items-center">
+                      <input
+                        type="file"
+                        accept=".xlsx, .xls"
+                        onChange={handleFileChange}
+                        className="form-control"
+                      />
+                      
+                   
+                  </div>
+                  <div className="col-4 ">
+                     <button
+                        onClick={handleUpload}
+                        className="btn btn-primary ml-2"
+                      >
+                        Upload
+                      </button>
+                  </div>
                 </div>
-
-                <span className="rightButton float-right ml-3 mt-1">
-                  <button
-                    onClick={() => setStudentData(true)}
-                    className="btn py-2 button head1 text-white"
-                  >
-                    Add Student
-                  </button>
-                </span>
-
+                <div className="float-right">
+                    <button
+                      onClick={() => setStudentData(true)}
+                      className="btn button fzzzzz"
+                    >
+                      Add Student
+                    </button>
+                  </div>
                 {isDialogOpen && dialogData && (
                   <AlertDialog
                     title="Confirm Deletion"
@@ -240,7 +253,13 @@ const StudentRegistrationController = () => {
                     onCancel={handleCancel}
                   />
                 )}
-                <ReusableTable rows={data} columns={columns} />
+
+                {/* Reusable Table */}
+                <div>
+                 
+                    <ReusableTable rows={data} columns={columns} />
+                 
+                </div>
               </div>
             )
           ) : (

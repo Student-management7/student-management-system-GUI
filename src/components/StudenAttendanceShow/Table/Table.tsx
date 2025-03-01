@@ -110,7 +110,7 @@ const ReusableTable: React.FC<TableProps> = ({
 
       <div className="mb-3 flex flex-wrap items-center justify-between gap-4">
         {/* Search Bar */}
-        <div className="relative w-full max-w-md">
+        <div className="relative w-full  max-w-md">
           <input
             type="text"
             placeholder="Search..."
