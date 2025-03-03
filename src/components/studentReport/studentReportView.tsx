@@ -11,7 +11,8 @@ import { User } from 'lucide-react';
 import axios from "axios";
 import { useLocation } from 'react-router-dom';
 import Loader from "../loader/loader";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 
 
@@ -64,52 +65,64 @@ const StudentReport: React.FC = () => {
   if (!id) {
     return <div>Error: Missing Student id </div>;
   }
-
+  
+    const showToast = () => {
+      toast.error("This is a test toast!");
+    };
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [examResponse, ] = await Promise.all([
+  
+        // Fetch data from the API
+        const [examResponse] = await Promise.all([
           axiosInstance.get(`/report/getStudentReport?id=${id}`),
-          // axios.get("https://716a9f60-27a0-449f-bb20-e8e3518d7858.mock.pstmn.io/get attendance")
         ]);
-
+  
         const examData = examResponse.data;
-        // const attendanceData = attendanceResponse.data;
-
+  
         // Check if examData is empty
-        if (examData.length === 0) {
+        if (!examData || examData.length === 0) {
           throw new Error("No data found for the given ID.");
         }
-
+  
+        // Update state with fetched data
         setExamData(examData);
         setStudentData({
           ...examData[0].studentInfo,
-          // attendance: attendanceData
         });
-
+  
         console.log("Exam Data:", examData);
-        // console.log("Attendance Data:", attendanceData);
-
+  
         if (examData.length > 0) {
           setSelectedExamType(examData[0].examType);
         }
       } catch (error: unknown) {
-        if (error instanceof Error) {
-          console.error("Error fetching data:", error);
-          if (error.message === "No data found for the given ID.") {
-            toast.error("No data found for the provided ID. Please check the ID and try again.");
+        console.error("Error:", error); // Log the error for debugging
+  
+        // Handle Axios errors
+        if (axios.isAxiosError(error)) {
+          console.log("Axios Error:", error.response); // Log the Axios error response
+          if (error.response?.status === 400) {
+            // Extract the error message from the response
+            const errorMessage = error.response.data.detail || "No data found for this student.";
+            toast.error(errorMessage); // Display the error message in a toast
           } else {
-            toast.error("Failed to fetch data. Please try again or check your network connection.");
+            // Handle other Axios errors
+            toast.error("Failed to fetch data. Please try again.");
           }
+        } else if (error instanceof Error) {
+          // Handle generic errors
+          toast.error(error.message || "An error occurred while fetching data.");
         } else {
-          console.error("An unknown error occurred:", error);
+          // Handle unknown errors
+          toast.error("An unknown error occurred. Please try again.");
         }
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, [id]);
 
@@ -171,12 +184,18 @@ const StudentReport: React.FC = () => {
   return (
 
     <>
+    
+    <ToastContainer autoClose={3000} position="top-right"/>
+
       {loading && <Loader />} {/* Show loader when loading */}
       {!loading && (
         <div className="container-fluid p-5 bg-gray-100 font-sans">
+          
           {studentData && (
-
+            
             <div className="mb-8 bg-white rounded-xl p-6 shadow-md">
+                  <ToastContainer autoClose={3000} position="top-right"/>
+
               <div className="flex items-start space-x-4">
                 {/* Avatar Button */}
                 <div className="relative group">
@@ -402,5 +421,4 @@ const StudentReport: React.FC = () => {
 };
 
 export default StudentReport;
-
 

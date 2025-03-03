@@ -7,8 +7,7 @@ import AlertDialog from '../alert/AlertDialog';
 import ReusableTable from '../MUI Table/ReusableTable';
 import { Trash2 } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
-import HolidayForm from './HolidayForm'; // Import the new HolidayForm component
-
+import HolidayForm from './HolidayForm';
 const HolidayComponent: React.FC = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState<boolean>(false);
@@ -27,28 +26,28 @@ const HolidayComponent: React.FC = () => {
     })),
   ];
 
-  useEffect(() => {
-    const loadHolidays = async () => {
-      try {
-        setLoading(true);
-        const holidays = await fetchHolidayData();
-        const formattedData = holidays.flatMap((holiday) =>
-          holiday.date.map((dateEntry: any) => ({
-            id: dateEntry.id || 'N/A',
-            startDate: formatToDDMMYYYY(dateEntry.startDate),
-            endDate: formatToDDMMYYYY(dateEntry.endDate),
-            description: dateEntry.description || 'No description',
-            className: holiday.className.join(', '),
-          }))
-        );
-        setRowData(formattedData);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadHolidays = async () => {
+    try {
+      setLoading(true);
+      const holidays = await fetchHolidayData();
+      const formattedData = holidays.flatMap((holiday) =>
+        holiday.date.map((dateEntry: any) => ({
+          id: dateEntry.id || 'N/A',
+          startDate: formatToDDMMYYYY(dateEntry.startDate),
+          endDate: formatToDDMMYYYY(dateEntry.endDate),
+          description: dateEntry.description || 'No description',
+          className: holiday.className.join(', '),
+        }))
+      );
+      setRowData(formattedData);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadHolidays();
   }, []);
 
@@ -56,10 +55,10 @@ const HolidayComponent: React.FC = () => {
     if (deleteId) {
       try {
         await deleteHolidayApi(deleteId);
-        setRowData((prevData) => prevData.filter((row) => row.id !== deleteId));
-        toast.success('Holiday deleted successfully');
+        await loadHolidays();
+        toast.success('Holiday deleted successfully'); // Ensure this is called
       } catch (error) {
-        toast.error('Error deleting holiday');
+        toast.error('Error deleting holiday'); // Ensure this is called
       }
     }
     setIsDialogOpen(false);
@@ -94,11 +93,12 @@ const HolidayComponent: React.FC = () => {
 
     try {
       await saveHoliday(payload);
-      toast.success('Holiday Created Successfully .');
+      toast.success('Holiday Created Successfully.'); // Ensure this is called
+      await loadHolidays();
       setShowForm(false);
     } catch (error) {
       console.error('Error creating holiday:', error);
-      toast.error('Failed to create holiday. Please try again.');
+      toast.error('Failed to create holiday. Please try again.'); // Ensure this is called
     }
   };
 
@@ -123,11 +123,11 @@ const HolidayComponent: React.FC = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
       {loading ? (
         <Loader />
       ) : (
         <div className="box">
+          <ToastContainer position="top-right" autoClose={3000} />
           <AlertDialog
             title="Confirm Deletion"
             message={`Are you sure you want to delete the holiday: ${deleteName}?`}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StudentFormData } from "../../services/studentRegistration/type/StudentRegistrationType";
 import { updateStudentDeteails } from '../../services/studentRegistration/api/StudentRegistration';
 import { toast, ToastContainer } from "react-toastify";
+import { number } from "yup";
 
 interface EditStudentFormProps {
     singleRowData: StudentFormData;
@@ -10,6 +11,8 @@ interface EditStudentFormProps {
 
 const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClose }) => {
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+      const [selectedFee, setSelectedFee] = useState("");
+    
     const [formData, setFormData] = useState<StudentFormData>({
         name: '', // Ensure name is initialized
         address: '',
@@ -20,6 +23,7 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
         dob: '',
         email: '',
         cls: '',
+        totalFee:'',
         department: '',
         category: '',
         familyDetails: {
@@ -49,6 +53,7 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                 cls: singleRowData?.cls || '',
                 department: singleRowData?.department || '',
                 category: singleRowData?.category || '',
+                totalFee:singleRowData?.totalFee||'',
                 familyDetails: {
                     stdo_FatherName: singleRowData?.familyDetails?.stdo_FatherName || '',
                     stdo_MotherName: singleRowData?.familyDetails?.stdo_MotherName || '',
@@ -58,6 +63,7 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                     stdo_city: singleRowData?.familyDetails?.stdo_city || '',
                     stdo_state: singleRowData?.familyDetails?.stdo_state || '',
                     stdo_email: singleRowData?.familyDetails?.stdo_email || ''
+                   
                 }
             });
         }
@@ -67,6 +73,8 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
+
+ 
 
     const validateForm = () => {
         const newErrors: {
@@ -285,23 +293,28 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                                 />
                             </div>
                         </div>
-                        <div className='col-md-4'>
-                            <div className='form-group'>
-                                <label htmlFor="cls" className="form-label">Admission Class<span className="red">*</span></label>
-                                <input
-                                    type="text"
-                                    id="cls"
-                                    name="cls"
-                                    className={`form-control ${errors.cls ? 'is-invalid' : ''}`}
-                                    value={formData.cls}
-                                    onChange={(e: any) => setFormData({ ...formData, cls: e.target.value })}
-                                    //value={singleRowData.cls}
-                                    //onChange={handleChange}
-                                    placeholder='Enter Class'
-                                />
-                                {errors.cls && <div className="invalid-feedback">{errors.cls}</div>}
-                            </div>
-                        </div>
+                        <div className="col-md-4">
+    <div className="form-group">
+        <label htmlFor="cls" className="form-label">
+            Admission Class <span className="red">*</span>
+        </label>
+        <select
+            id="cls"
+            name="cls"
+            className={`form-control ${errors.cls && touched.cls ? 'is-invalid' : ''}`}
+            value={formData.cls}
+            onChange={(e: any) => setFormData({ ...formData, cls: e.target.value })}
+        >
+            <option value="" disabled>Select a class</option>
+            {classes.map((cls:any) => (
+                <option key={cls.id} value={cls.className}>
+                    {cls.className}
+                </option>
+            ))}
+        </select>
+    </div>
+</div>
+
                     </div>
                     <div className='row'>
                         <div className='col-md-4'>
@@ -513,6 +526,21 @@ const EditStudentForm: React.FC<EditStudentFormProps> = ({ singleRowData, onClos
                             </div>
                         </div>
                     </div>
+
+                    <div className="form-group">
+                        <label htmlFor="totalFee" className="form-label head1">
+                            Total Fee
+                        </label>
+                        <input
+                            type="text"
+                            id="totalFee"
+                            name="totalFee"
+                            className="form-control"
+                            value={formData.totalFee ||selectedFee} 
+                            readOnly
+                        />
+                    </div>
+
 
                     <div className="row">
                         <div className='text-center mt-4 col' >
