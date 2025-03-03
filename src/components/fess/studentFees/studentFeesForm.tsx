@@ -23,7 +23,17 @@ interface StudentFeesFormProps {
 
 const validationSchema = Yup.object({
   id: Yup.string().required("Student ID is required"),
-  fee: Yup.number().typeError("Fee must be a number").required("Fee is required").positive("Fee must be positive"),
+  fee: Yup.number()
+    .typeError("Fee must be a number")
+    .required("Fee is required")
+    .positive("Fee must be positive")
+    .test("fee-validation", "Fee cannot exceed remaining fees", function (value) {
+      const selectedStudent = this.parent.selectedStudent as Student | null;
+      if (selectedStudent && value > selectedStudent.remainingFees) {
+        return false;
+      }
+      return true;
+    }),
 });
 
 const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
@@ -78,27 +88,30 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
   };
 
   return (
-
     <>
-
       <div className="head1 flex items-center">
         <button onClick={onClose} className="p-2 rounded-full arrow transition">
           <ArrowLeft className="h-7 w-7" />
         </button>
         <span className="ml-4">Add Fees Page</span>
       </div>
-      <div className="container ">
-
+      <div className="container">
         <Formik
           initialValues={{
             id: selectedStudent ? selectedStudent.id : "",
             fee: 0,
             name: selectedStudent ? selectedStudent.name : "",
             email: selectedStudent ? selectedStudent.email : "",
+            selectedStudent: selectedStudent, // Add selectedStudent to initialValues
           }}
           validationSchema={validationSchema}
           onSubmit={async (values, { resetForm }) => {
             try {
+              if (selectedStudent && values.fee > selectedStudent.remainingFees) {
+                toast.error("Fee cannot exceed remaining fees.");
+                return;
+              }
+
               await saveStudentFee(values);
               toast.success("Fee added successfully!");
               resetForm(); // Form reset ho jayega
@@ -180,7 +193,7 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
 
               {/* Buttons */}
               <div className="d-flex justify-content-between mt-4">
-                <button type="submit" className="btn button ">Submit Fee</button>
+                <button type="submit" className="btn button">Submit Fee</button>
                 <button type="button" className="btn btn-danger" onClick={onClose}>Cancel</button>
               </div>
             </Form>

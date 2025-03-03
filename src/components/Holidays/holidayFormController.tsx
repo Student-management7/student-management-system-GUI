@@ -137,15 +137,17 @@ const HolidayComponent: React.FC = () => {
           />
           {!showForm ? (
             <>
-              <div className="flex  space-x-4 mb-4">
-                <h1 className="text-xl  font-bold text-[#27727A]">Holiday Page</h1>
+              <div className="flex items-center space-x-4 mb-4">
+                <h1 className="text-xl font-bold text-[#27727A]">Holiday Page</h1>
               </div>
-              <div className="text-right">
-                <span onClick={() => setShowForm(true)} className="btn button float-right">
+              <div className="float-right mt-1">
+                <button onClick={() => setShowForm(true)} className="btn button ml-2 ">
                   Add Holiday
-                </span>
+                </button>
               </div>
+              <div>
               <ReusableTable rows={rowData} columns={columnDefs} />
+              </div>
             </>
           ) : (
             <HolidayForm
