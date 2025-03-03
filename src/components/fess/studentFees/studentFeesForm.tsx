@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import { toast, ToastContainer } from "react-toastify";
 import { saveStudentFee } from "../../../services/studentFees/api"; // Import API service
 import axiosInstance from "../../../services/Utils/apiUtils";
+import { ArrowLeft } from "lucide-react";
 
 interface Student {
   id: string;
@@ -77,112 +78,118 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="container mt-3">
-      <div className="row mb-3">
-        <i onClick={onClose} className="bi bi-arrow-left-circle head1 col-1" />
-        <h3 className="col head1 mb-4">Add Student Fee</h3>
+
+    <>
+
+      <div className="head1 flex items-center">
+        <button onClick={onClose} className="p-2 rounded-full arrow transition">
+          <ArrowLeft className="h-7 w-7" />
+        </button>
+        <span className="ml-4">Add Fees Page</span>
       </div>
+      <div className="container ">
 
-      <Formik
-        initialValues={{
-          id: selectedStudent ? selectedStudent.id : "",
-          fee: 0,
-          name: selectedStudent ? selectedStudent.name : "",
-          email: selectedStudent ? selectedStudent.email : "",
-        }}
-        validationSchema={validationSchema}
-        onSubmit={async (values, { resetForm }) => {
-          try {
-            await saveStudentFee(values);
-            toast.success("Fee added successfully!");
-            resetForm(); // Form reset ho jayega
-            onClose(); // Form close hoga
-          } catch (error) {
-            toast.error("Failed to save fee. Please try again.");
-          }
-        }}
-        enableReinitialize
-      >
-        {({ setFieldValue }) => (
-          <Form>
-            {/* Search & Class Selection */}
-            <div className="row mb-3">
-              <div className="col-md-4 mb-3 col-sm-12">
-                <label className="form-label">Search by Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Search student name"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <div className="col-md-4 mb-3 col-sm-12">
-                <label className="form-label">Filter by Class</label>
-                <select className="form-select" onChange={(e) => setSelectedClass(e.target.value)}>
-                  <option value="">All Classes</option>
-                  {[...new Set(studentData.map((s) => s.cls))].map((cls) => (
-                    <option key={cls} value={cls}>{cls}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Student Selection */}
-            <div className="row mb-3">
-              <div className="col-md-4 mb-3">
-                <label className="form-label">Select Student Email</label>
-                <select
-                  className="form-select small-select"
-                  value={selectedEmail}
-                  onChange={(e) => handleStudentSelection(e, setFieldValue)}
-                >
-                  <option value="" disabled>-- Select Email --</option>
-                  {filteredStudents.map((student) => (
-                    <option key={student.id} value={student.email}>{student.email}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Student Details */}
-            {selectedStudent && (
-              <>
-                <div className="row mb-3">
-                  <div className="col-md-6 mb-4">
-                    <label className="form-label">Student Name:</label>
-                    <div className="info-box">{selectedStudent.name}</div>
-                  </div>
-                  <div className="col-md-6 mb-4">
-                    <label className="form-label">Father Name</label>
-                    <div className="info-box">{selectedStudent.familyDetails?.stdo_FatherName}</div>
-                  </div>
+        <Formik
+          initialValues={{
+            id: selectedStudent ? selectedStudent.id : "",
+            fee: 0,
+            name: selectedStudent ? selectedStudent.name : "",
+            email: selectedStudent ? selectedStudent.email : "",
+          }}
+          validationSchema={validationSchema}
+          onSubmit={async (values, { resetForm }) => {
+            try {
+              await saveStudentFee(values);
+              toast.success("Fee added successfully!");
+              resetForm(); // Form reset ho jayega
+              onClose(); // Form close hoga
+            } catch (error) {
+              toast.error("Failed to save fee. Please try again.");
+            }
+          }}
+          enableReinitialize
+        >
+          {({ setFieldValue }) => (
+            <Form>
+              {/* Search & Class Selection */}
+              <div className="row mb-3">
+                <div className="col-md-4 mb-3 col-sm-12">
+                  <label className="form-label">Search by Name</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search student name"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                 </div>
-                <div className="row mb-3">
-                  <div className="col-md-6">
-                    <label className="form-label">Remaining Fees</label>
-                    <span className="info-box">₹ {selectedStudent.remainingFees}</span>
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label">Fee Amount</label>
-                    <Field type="number" name="fee" className="form-control" placeholder="Enter Fee Amount" />
-                    <ErrorMessage name="fee" component="div" className="text-danger" />
-                  </div>
+                <div className="col-md-4 mb-3 col-sm-12">
+                  <label className="form-label">Filter by Class</label>
+                  <select className="form-select" onChange={(e) => setSelectedClass(e.target.value)}>
+                    <option value="">All Classes</option>
+                    {[...new Set(studentData.map((s) => s.cls))].map((cls) => (
+                      <option key={cls} value={cls}>{cls}</option>
+                    ))}
+                  </select>
                 </div>
-              </>
-            )}
+              </div>
 
-            {/* Buttons */}
-            <div className="d-flex justify-content-between mt-4">
-              <button type="submit" className="btn btn-success">Add Fee</button>
-              <button type="button" className="btn btn-danger" onClick={onClose}>Cancel</button>
-            </div>
-          </Form>
-        )}
-      </Formik>
+              {/* Student Selection */}
+              <div className="row mb-3">
+                <div className="col-md-4 mb-3">
+                  <label className="form-label">Select Student Email</label>
+                  <select
+                    className="form-select small-select"
+                    value={selectedEmail}
+                    onChange={(e) => handleStudentSelection(e, setFieldValue)}
+                  >
+                    <option value="" disabled>-- Select Email --</option>
+                    {filteredStudents.map((student) => (
+                      <option key={student.id} value={student.email}>{student.email}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
 
-      <ToastContainer position="top-right" autoClose={3000} />
-    </div>
+              {/* Student Details */}
+              {selectedStudent && (
+                <>
+                  <div className="row mb-3">
+                    <div className="col-md-6 mb-4">
+                      <label className="form-label">Student Name:</label>
+                      <div className="info-box">{selectedStudent.name}</div>
+                    </div>
+                    <div className="col-md-6 mb-4">
+                      <label className="form-label">Father Name</label>
+                      <div className="info-box">{selectedStudent.familyDetails?.stdo_FatherName}</div>
+                    </div>
+                  </div>
+                  <div className="row mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Remaining Fees</label>
+                      <span className="info-box">₹ {selectedStudent.remainingFees}</span>
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Fee Amount</label>
+                      <Field type="number" name="fee" className="form-control" placeholder="Enter Fee Amount" />
+                      <ErrorMessage name="fee" component="div" className="text-danger" />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Buttons */}
+              <div className="d-flex justify-content-between mt-4">
+                <button type="submit" className="btn button ">Submit Fee</button>
+                <button type="button" className="btn btn-danger" onClick={onClose}>Cancel</button>
+              </div>
+            </Form>
+          )}
+        </Formik>
+
+        <ToastContainer position="top-right" autoClose={3000} />
+      </div>
+    </>
   );
 };
 

@@ -122,6 +122,7 @@ const StudentRegistrationController = () => {
       await deleteStudentRecord(dialogData.id);
       setData((prev) => prev.filter((row) => row.id !== dialogData.id));
       toast.success("Student record deleted successfully.");
+      fetchStudentDetails();
     } catch (error) {
       console.error(error);
       toast.error("Failed to delete the student record. Please try again.");
@@ -180,14 +181,18 @@ const StudentRegistrationController = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      toast.success(response.data.message);
+      toast.success(`Upload successful! `); 
+
+      fetchStudentDetails();
+
     } catch (error) {
-      toast.error("Upload failed!");
+      toast.error("Upload failed. Please try again.");
     }
   };
 
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} />
       {loading && <Loader />}
       {!loading && (
         <div className="box">
@@ -195,7 +200,6 @@ const StudentRegistrationController = () => {
             <h1>&nbsp;Student Registration</h1>
           </div>
 
-          <ToastContainer position="top-right" autoClose={3000} />
           {!studentData ? (
             <div>
               <div className="p-4">
@@ -219,7 +223,7 @@ const StudentRegistrationController = () => {
                   onCancel={handleCancel}
                 />
               )}
-              <ToastContainer position="top-right" autoClose={3000} />
+              
               <ReusableTable rows={data} columns={columns} />
             </div>
           ) : (
@@ -245,7 +249,7 @@ const StudentRegistrationController = () => {
                 }}
                 initialValues={editFormView ? singleRowData : undefined}
                 isEdit={editFormView}
-                fetchStudentDetails={fetchStudentDetails} // Pass the function as a prop
+                fetchStudentDetails={fetchStudentDetails} 
               />
             </div>
           )}

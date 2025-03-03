@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
-import { FacultySalaryFormValues, FacultySalaryFormProps } from "../../../services/salary/facultysarayform/type";
 import { SalaryValidationSchema } from "../../../services/salary/facultysarayform/validation";
 import axiosInstance from "../../../services/Utils/apiUtils";
 import { toast, ToastContainer } from "react-toastify";
+import { ArrowLeft } from "lucide-react";
 
 interface FacultyData {
   fact_id: string;
   fact_email: string;
   fact_Name: string;
-  
+}
+
+interface FacultySalaryFormProps {
+  onCancel: () => void;
+  onSave: (data: any) => Promise<void>;
 }
 
 const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
-  initialData,
   onCancel,
   onSave,
 }) => {
@@ -21,8 +24,6 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
   const [selectedFaculty, setSelectedFaculty] = useState<FacultyData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const isEditMode = initialData && initialData.facultyID !== "";
 
   useEffect(() => {
     fetchFacultyData();
@@ -32,7 +33,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axiosInstance.get('/faculty/findAllFaculty'); 
+      const response = await axiosInstance.get('/faculty/findAllFaculty');
       setFacultyData(response.data);
     } catch (err) {
       setError("Failed to fetch faculty data. Please try again later.");
@@ -48,44 +49,40 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
     setSelectedFaculty(faculty || null);
   };
 
-  const initialValues: FacultySalaryFormValues = isEditMode
-    ? {
-        ...initialData,
-        facultyDeduction: initialData.facultyDeduction.length
-          ? initialData.facultyDeduction
-          : [{ name: "", amount: 0 }],
-      }
-    : {
-        facultyID: "",
-        facultySalary: 0,
-        facultyTax: 0,
-        facultyTransport: 0,
-        facultyDeduction: [{ name: "", amount: 0 }],
-      };
+  const initialValues = {
 
-      const handleSubmit = async (values: FacultySalaryFormValues) => {
-        const cleanedDeductions = values.facultyDeduction.filter(
-          (deduction) => deduction.name && deduction.amount > 0
-        );
-        
-        // Create different payloads for save and update
-        const payload = isEditMode ? {
-          facultyID: values.facultyID,
-          facultySalary: values.facultySalary,
-          facultyTax: values.facultyTax,
-          facultyTransport: values.facultyTransport,
-          facultyDeduction: cleanedDeductions,
-        } : {
-          ...values,
-          facultyDeduction: cleanedDeductions,
-        };
-      
-        try {
-          await onSave(payload);
-        } catch (error) {
-          toast.error("Salary save/update error");
-        }
-      };
+    facultyID: "",
+    facultySalary: 0,
+    facultyTax: 0,
+    facultyTransport: 0,
+    facultyDeduction: [{ name: "", amount: 0 }],
+  };
+
+  const handleSubmit = async (values: any) => {
+    const cleanedDeductions = values.facultyDeduction.filter(
+      (deduction: any) => deduction.name && deduction.amount > 0
+    );
+
+    // Save payload structure
+    const payload = {
+      facultyID: values.facultyID,
+      facultySalary: values.facultySalary,
+      facultyTax: values.facultyTax,
+      facultyTransport: values.facultyTransport,
+      facultyDeduction: cleanedDeductions.map((deduction: any) => ({
+        name: deduction.name,
+        amount: deduction.amount,
+      })),
+    };
+
+    try {
+      await onSave(payload);
+      toast.success("Salary information saved successfully");
+    } catch (error) {
+      toast.error("Failed to save salary information");
+      console.error("Salary save error:", error);
+    }
+  };
 
   if (isLoading) {
     return <div className="text-center mt-4">Loading faculty data...</div>;
@@ -100,12 +97,16 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
   }
 
   return (
-    <div className="box mt-4">
-       
-                     <ToastContainer position="top-right" autoClose={3000} />
-                    
-        <h1 className="text-center mt-4 text-3xl"> <i onClick={()=> onCancel()} className="bi bi-arrow-left-circle m-4" />{isEditMode ? "Edit Faculty Salary" : "Add Faculty Salary"}</h1>
-          
+    <>
+      <ToastContainer position="top-right" autoClose={3000} />
+      <div className="head1 flex items-center">
+        <button onClick={onCancel} className="p-2 rounded-full arrow transition">
+          <ArrowLeft className="h-7 w-7" />
+        </button>
+        <span className="ml-4">Add Faculty Salary</span>
+      </div>
+      <div className="box ">
+
         <div className="card-body">
           <Formik
             initialValues={initialValues}
@@ -117,7 +118,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                 {/* Email Selection */}
                 <div className="mb-4">
                   <label htmlFor="emailDropdown" className="form-label">
-                    Select  Email:
+                    Select Email:
                   </label>
                   <select
                     id="emailDropdown"
@@ -160,7 +161,6 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                         disabled
                       />
                     </div>
-                    
                   </>
                 )}
 
@@ -170,9 +170,8 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                   <Field
                     name="facultyID"
                     type="text"
-                    className={`form-control ${
-                      touched.facultyID && errors.facultyID ? "is-invalid" : ""
-                    }`}
+                    className={`form-control ${touched.facultyID && errors.facultyID ? "is-invalid" : ""
+                      }`}
                     disabled={!!selectedFaculty}
                   />
                   <ErrorMessage
@@ -182,18 +181,16 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                   />
                 </div>
 
-                {/* Rest of the form fields remain the same */}
                 {/* Salary */}
                 <div className="mb-3">
                   <label className="form-label">Salary Amount:</label>
                   <Field
                     name="facultySalary"
                     type="number"
-                    className={`form-control ${
-                      touched.facultySalary && errors.facultySalary
-                        ? "is-invalid"
-                        : ""
-                    }`}
+                    className={`form-control ${touched.facultySalary && errors.facultySalary
+                      ? "is-invalid"
+                      : ""
+                      }`}
                     placeholder="Enter Salary"
                   />
                   <ErrorMessage
@@ -209,9 +206,8 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                   <Field
                     name="facultyTax"
                     type="number"
-                    className={`form-control ${
-                      touched.facultyTax && errors.facultyTax ? "is-invalid" : ""
-                    }`}
+                    className={`form-control ${touched.facultyTax && errors.facultyTax ? "is-invalid" : ""
+                      }`}
                     placeholder="Enter Tax Percentage"
                   />
                   <ErrorMessage
@@ -227,11 +223,10 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                   <Field
                     name="facultyTransport"
                     type="number"
-                    className={`form-control ${
-                      touched.facultyTransport && errors.facultyTransport
-                        ? "is-invalid"
-                        : ""
-                    }`}
+                    className={`form-control ${touched.facultyTransport && errors.facultyTransport
+                      ? "is-invalid"
+                      : ""
+                      }`}
                     placeholder="Enter Transport Allowance"
                   />
                   <ErrorMessage
@@ -243,55 +238,54 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
 
                 {/* Deductions */}
                 <div className="mb-3">
-                  <label className="form-label">Deductions</label>
+                  <label className="form-label">Other</label>
                   <FieldArray name="facultyDeduction">
                     {({ remove, push }) => (
                       <>
                         {values.facultyDeduction.map((_, index) => (
-                          <div key={index} className="row mb-2">
+                          <div key={index} className="row mb-2 align-items-center">
+                            <div className="col-md-1 text-center">
+                              <button
+                                type="button"
+                                onClick={() => push({ name: "", amount: 0 })}
+                                className="bi bi-plus-circle-fill text-blue-500 text-lg"
+                              />
+                            </div>
                             <div className="col-md-5">
                               <Field
                                 name={`facultyDeduction[${index}].name`}
-                                placeholder="Deduction Name"
+                                placeholder=" Name"
                                 className="form-control"
                               />
                             </div>
-                            <div className="col-md-5">
+                            <div className="col-md-4">
                               <Field
                                 name={`facultyDeduction[${index}].amount`}
                                 type="number"
-                                placeholder="Deduction Amount"
+                                placeholder=" Amount"
                                 className="form-control"
                               />
                             </div>
-                            <div className="col-md-2">
+                            <div className="col-md-2 text-center">
                               <button
                                 type="button"
                                 onClick={() => remove(index)}
-                                className="btn buttonred"
+                                className="bi bi-dash-circle-fill text-red-600 text-lg"
                                 disabled={values.facultyDeduction.length <= 1}
-                              >
-                                Remove
-                              </button>
+                              />
                             </div>
                           </div>
                         ))}
-                        <button
-                          type="button"
-                          onClick={() => push({ name: "", amount: 0 })}
-                          className="btn btn-secondary button"
-                        >
-                          Add Deduction
-                        </button>
                       </>
                     )}
                   </FieldArray>
                 </div>
 
+
                 {/* Buttons */}
                 <div className="d-flex justify-content-between mt-4">
                   <button type="submit" className="btn btn-primary button">
-                    {isEditMode ? "Update" : "Save"}
+                    Save
                   </button>
                   <button
                     type="button"
@@ -306,7 +300,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
           </Formik>
         </div>
       </div>
-    
+    </>
   );
 };
 

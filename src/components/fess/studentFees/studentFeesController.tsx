@@ -70,31 +70,37 @@ const StudentFeesController: React.FC = () => {
   }, []);;
 
   return (
-    <>
-      <ToastContainer position="top-right" autoClose={3000} />
-      {loading && <Loader />}
-      {!loading && (
-        <div className="box">
-          <h1 className="head1">Student Fees</h1>
-          <button onClick={() => setShowForm(true)} className="btn button float-right mt-1">
-            Add Fees
-          </button>
-          {!showForm ? (
-            <ReusableTable rows={rowData} columns={columns} rowsPerPageOptions={[5, 10, 25]} />
-          ) : (
-            <StudentFeesForm
-              onClose={() => {
-                setShowForm(false);
-                setEditingFee(null);
-                fetchFees();
-              }}
-             
-            />
-          )}
-        </div>
-      )}
-    </>
-  );
+   
+  <>
+    <ToastContainer position="top-right" autoClose={3000} />
+    {loading && <Loader />}
+    {!loading && (
+      <div className="box">
+        {!showForm && (  // Only show when the form is not active
+          <>
+            <h1 className="head1">Student Fees</h1>
+            <button onClick={() => setShowForm(true)} className="btn button float-right mt-1">
+              Add Fees
+            </button>
+          </>
+        )}
+        {!showForm ? (
+          <ReusableTable rows={rowData} columns={columns} rowsPerPageOptions={[5, 10, 25]} />
+        ) : (
+          <StudentFeesForm
+            onClose={() => {
+              setShowForm(false);
+              setEditingFee(null);
+              fetchFees();
+            }}
+          />
+        )}
+      </div>
+    )}
+  </>
+);
+
+  
 };
 
 export default StudentFeesController;
