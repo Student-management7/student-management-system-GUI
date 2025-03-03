@@ -42,6 +42,7 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
     >
       {({ values }) => (
         <Form>
+          
           {/* Class Name Field */}
           <div className="mb-4">
             <label className="block mb-2 font-semibold">Class Name</label>
@@ -97,7 +98,7 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
                         onClick={() => push({ name: "", amount: 0 })}
                         className="bi bi-plus-circle-fill text-blue-500"
                       >
-                        +
+                       
                       </button>
                       <Field
                         name={`otherAmount[${index}].name`}
@@ -115,7 +116,7 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
                         onClick={() => remove(index)}
                         className="bi bi-dash-circle-fill text-red-600 cursor-pointer bold"
                       >
-                        -
+                       
                       </button>
                     </div>
                   ))}

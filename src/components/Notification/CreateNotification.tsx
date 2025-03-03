@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { formatToDDMMYYYY } from "../Utils/dateUtils";
 import { toast, ToastContainer } from "react-toastify";
+import { ArrowLeft } from "lucide-react";
 
 type NotificationPayload = {
   startDate: string;
@@ -120,15 +121,19 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
   return (
 
     <>
-    <div className="box">
-              <h2 className="head1 text-left"> <i onClick={onClose} className="bi bi-arrow-left-circle m-2" />Create Notification</h2>
-      
+   
       <ToastContainer position="top-right" autoClose={3000} />
+    <div className="head1 flex items-center">
+                <button onClick={onClose} className="p-2 rounded-full arrow transition">
+                  <ArrowLeft className="h-7 w-7" />
+                </button>
+                <span className="ml-4">Add Fees Page</span>
+              </div>      
       
-      <div className="container ">
+      <div className="box">
         <div className="row justify-content-center">
           <div className="">
-            <div className="card shadow-sm p-4">
+            <div className="">
            
 
               <form onSubmit={handleSubmit}>
@@ -249,7 +254,7 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
           </div>
         </div>
       </div>
-    </div>
+    
     
     </>
   );

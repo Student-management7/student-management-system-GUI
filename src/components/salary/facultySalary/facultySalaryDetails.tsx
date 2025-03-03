@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../../services/Utils/apiUtils";
 import Loader from "../../loader/loader";
-import ReusableTable from "../../MUI Table/ReusableTable";
+import ReusableTable from "../../StudenAttendanceShow/Table/Table";
 import { toast, ToastContainer } from "react-toastify";
 import EditFacultySalaryForm from "./EditFacultySalaryForm";
 import { Pencil } from "lucide-react";
+import { formatToDDMMYYYY } from "../../Utils/dateUtils";
+import BackButton from "../../Navigation/backButton";
 
 interface FacultyDeduction {
   name: string;
@@ -14,13 +16,13 @@ interface FacultyDeduction {
 
 interface FacultySalary {
   id: string;
+  fact_id: string;
   creationDateTime: string;
   schoolCode: string;
   facultySalary: number;
   facultyTax: number;
   facultyTransport: number;
-  facultyDeduction: string; // Stored as a JSON string in DB
-  parsedDeductions?: FacultyDeduction[]; // Added for internal use
+  facultyDeduction: string;
   total: number;
 }
 
@@ -36,44 +38,44 @@ const FacultySalaryDetails: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [showEditForm, setShowEditForm] = useState<boolean>(false);
-  const [editData, setEditData] = useState<FacultySalary | null>(null);
+  const [editData, setEditData] = useState<any>(null);
 
   useEffect(() => {
-    const fetchFacultyDetails = async () => {
-      setLoading(true);
-      setError(null);
+    fetchFacultyDetails();
+  }, [id]);
 
-      try {
-        // Verify that id is defined before making the request
-        if (!id) {
-          throw new Error("Faculty ID is required");
-        }
+  const fetchFacultyDetails = async () => {
+    setLoading(true);
+    setError(null);
 
-        const response = await axiosInstance.get(`/faculty/findAllFaculty`, {
-          params: { id },
-        });
-
-        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-          setFaculty(response.data[0]);
-        } else {
-          toast.error("No data found for the given ID.");
-        }
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "An error occurred while fetching data.";
-        toast.error(errorMessage);
-        setError(errorMessage);
-      } finally {
-        setLoading(false);
+    try {
+      // Verify that id is defined before making the request
+      if (!id) {
+        throw new Error("Faculty ID is required");
       }
-    };
 
-    if (id) {
-      fetchFacultyDetails();
-    } else {
-      setError("Faculty ID is missing");
+      const response = await axiosInstance.get(`/faculty/findAllFaculty`, {
+        params: { id },
+        
+
+
+      });
+
+      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+        setFaculty(response.data[0]);
+        console.log(response.data[0]);
+        
+      } else {
+        toast.error("No data found for the given ID.");
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "An error occurred while fetching data.";
+      toast.error(errorMessage);
+      setError(errorMessage);
+    } finally {
       setLoading(false);
     }
-  }, [id]);
+  };
 
   // Parse deductions from JSON string to array of objects
   const parseDeductions = (deductions: string): FacultyDeduction[] => {
@@ -95,59 +97,55 @@ const FacultySalaryDetails: React.FC = () => {
     }
   };
 
+  console.log("faculty details ",faculty)
+
+  // Switch to edit mode when edit button is clicked
   const handleEditButtonClick = (data: FacultySalary) => {
-    // Create a copy of the data with parsed deductions
-    const preparedData = {
-      ...data,
-      parsedDeductions: parseDeductions(data.facultyDeduction)
-    };
+    // Prepare data for edit form with the structure needed for the edit payload
+    setEditData({
+      id: data.id,
+      facultyID: faculty?.fact_id,  // Include faculty ID from parent component
+      facultySalary: data.facultySalary,
+      facultyTax: data.facultyTax,
+      facultyTransport: data.facultyTransport,
+      facultyDeduction: parseDeductions(data.facultyDeduction)
+    });
     
-    setEditData(preparedData);
     setShowEditForm(true);
   };
 
-  const handleSave = async (updatedData: FacultySalary) => {
-    try {
-      // Convert parsed deductions back to string for storage
-      const dataToSave = {
-        ...updatedData,
-        facultyDeduction: JSON.stringify(updatedData.parsedDeductions),
-        // Recalculate total
-        total: calculateTotal(updatedData)
-      };
-
-      // Remove temporary field before saving to backend
-      delete dataToSave.parsedDeductions;
-
-      // Update the faculty salary in the table
-      if (faculty) {
-        const updatedSalary = faculty.fact_salary.map((salary) =>
-          salary.id === dataToSave.id ? dataToSave : salary
-        );
-        setFaculty({ ...faculty, fact_salary: updatedSalary });
-      }
-      
-      setShowEditForm(false);
+  // Handle save from edit form
+ // Updated handleSave function
+ const handleSave = async (updatedData: any) => {
+  try {
+    // Make API call with edit payload
+    const response = await axiosInstance.post(`/faculty/salary/edit?id=${updatedData.id}`, {
+      id: updatedData.id,
+      facultyID: updatedData.facultyID,  // Include faculty ID in payload
+      facultySalary: updatedData.facultySalary,
+      facultyTax: updatedData.facultyTax,
+      facultyTransport: updatedData.facultyTransport,
+      facultyDeduction: updatedData.facultyDeduction,  // Send as array, not stringify
+    });
+    
+    if (response.status === 200) {
       toast.success("Salary information updated successfully");
-    } catch (err) {
-      toast.error("Failed to update salary information");
-      console.error("Update error:", err);
+      // Refresh data after update
+      fetchFacultyDetails();
+      // Close edit form
+      setShowEditForm(false);
+      setEditData(null);
+    } else {
+      throw new Error("Failed to update salary information");
     }
-  };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "An error occurred during update operation.";
+    toast.error(errorMessage);
+    console.error("Update error:", err);
+  }
+};
 
   // Calculate total salary after deductions and tax
-  const calculateTotal = (data: FacultySalary): number => {
-    const baseSalary = data.facultySalary;
-    const taxAmount = (baseSalary * data.facultyTax) / 100;
-    
-    // Calculate total deductions
-    const deductionsTotal = data.parsedDeductions 
-      ? data.parsedDeductions.reduce((sum, deduction) => sum + deduction.amount, 0)
-      : 0;
-    
-    // Total = Base Salary + Transport - Tax - Deductions
-    return baseSalary + data.facultyTransport - taxAmount - deductionsTotal;
-  };
 
   const handleCancel = () => {
     setShowEditForm(false);
@@ -160,23 +158,30 @@ const FacultySalaryDetails: React.FC = () => {
     if (!faculty) return <div>No data available.</div>;
 
     return (
-      <div className="box p-4">
+    <>
+      <div className="box">
         <ToastContainer position="top-right" autoClose={3000} />
-        <div className="mb-4">
-          <h2 className="head1">Faculty Details</h2>
-          <p>
-            <strong>ID:</strong> {faculty.fact_id}
-          </p>
-          <p>
-            <strong>Name:</strong> {faculty.fact_Name}
-          </p>
-        </div>
+        <div className="flex items-center space-x-4 mb-2">
+            <span>
+              <BackButton />
+            </span>
+            <h1 className="text-xl items-center font-bold text-[#27727A]" >Faculty Salary Details</h1>
+          </div>
+       
 
-        <div className="p-4">
+        <div className="box">
+          <div className="space-y-1 mb-3">
+        <p className="mb-2">
+            <strong  className="mr-2">ID:</strong> {faculty.fact_id}
+          </p>
+          <p className="mb-2 ">
+            <strong className="mr-2">Name:</strong> {faculty.fact_Name}
+          </p> 
+          </div>
           <ReusableTable
             rows={faculty.fact_salary.map((salary) => ({
               id: salary.id,
-              creationDateTime: salary.creationDateTime,
+              creationDateTime: formatToDDMMYYYY(salary.creationDateTime),
               schoolCode: salary.schoolCode,
               facultySalary: salary.facultySalary,
               facultyTax: salary.facultyTax,
@@ -185,7 +190,7 @@ const FacultySalaryDetails: React.FC = () => {
               total: salary.total,
             }))}
             columns={[
-              { field: "id", headerName: "ID" },
+              // { field: "id", headerName: "ID" },
               { field: "creationDateTime", headerName: "Creation Date" },
               { field: "facultySalary", headerName: "Salary" },
               { field: "facultyTax", headerName: "Tax (%)" },
@@ -209,18 +214,20 @@ const FacultySalaryDetails: React.FC = () => {
           />
         </div>
       </div>
+    </>
     );
   };
 
   return (
     <>
-      {renderContent()}
-      {showEditForm && editData && (
+      {showEditForm && editData ? (
         <EditFacultySalaryForm
           initialData={editData}
           onSave={handleSave}
           onCancel={handleCancel}
         />
+      ) : (
+        renderContent()
       )}
     </>
   );
