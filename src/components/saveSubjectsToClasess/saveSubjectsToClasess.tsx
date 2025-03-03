@@ -3,6 +3,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClassData } from "../../services/SaveSubjects/Type";
 import axiosInstance from "../../services/Utils/apiUtils";
+import { ArrowLeft } from "lucide-react";
 
 interface SaveSubjectsToClassesProps {
   onClose: () => void;
@@ -42,8 +43,8 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
         typeof editableRow.data?.subject === "string"
           ? editableRow.data.subject.split(", ") // Convert string to array
           : Array.isArray(editableRow.data?.subject)
-          ? editableRow.data.subject
-          : []
+            ? editableRow.data.subject
+            : []
       );
     } else {
       setSelectedClass(""); // Reset selected class if not in edit mode
@@ -177,13 +178,17 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
   };
 
   return (
-    <div>
+    <>
       <ToastContainer position="top-right" autoClose={3000} />
-      <div>
-        <h2 className="head1 mb-4 text-center text-gray-700">
-          <i onClick={onClose} className="bi bi-arrow-left-circle m-3" />
-          {editableRow ? "Update Subjects" : "Save Subjects"}
-        </h2>
+        <div className="head1 flex items-center">
+          <button onClick={onClose} className="p-2 rounded-full arrow transition">
+            <ArrowLeft className="h-7 w-7" />
+          </button>
+          {editableRow ? "Update Subjects" : "Save Subjects to Classes"}
+        </div>
+      <div className="box">
+
+        
 
         <div className="mb-6">
           <label className="block mb-4">
@@ -264,15 +269,15 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
             onClick={editableRow ? handleUpdateClass : handleSaveNewClass}
             disabled={loading || !selectedClass}
             className={`py-2 px-4 rounded-md ${loading || !selectedClass || selectedSubjects.length === 0
-                ? "btn button"
-                : "btn button"
+              ? "btn button"
+              : "btn button"
               } text-white`}
           >
             {loading ? "Saving..." : editableRow ? "Update" : "Save"}
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

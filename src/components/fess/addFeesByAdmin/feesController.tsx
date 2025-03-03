@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import FeesForm from "./feesForm";
 import { FeeDetails } from "../../../services/feesServices/AdminFeescreationForm/type";
 import { fetchFees, deleteFeeRecord } from "../../../services/feesServices/AdminFeescreationForm/api";
-import { Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import Loader from "../../loader/loader";
 import ReusableTable from "../../MUI Table/ReusableTable";
 import AlertDialog from "../../alert/AlertDialog";
@@ -117,10 +117,14 @@ const FeesController: React.FC = () => {
             </>
           ) : (
             <>
-              <div className="head1">
-                <i onClick={() => setShowForm(false)} className="bi bi-arrow-left-circle head1" />&nbsp;
-                <span>Add Fees Page</span>
+              <div className="head1 flex items-center">
+                <button onClick={() => setShowForm(false)} className="p-2 rounded-full arrow transition">
+                  <ArrowLeft className="h-7 w-7" />
+                </button>
+                <span className="ml-4">Add Fees Page</span>
               </div>
+
+
               <FeesForm
                 initialData={editData || undefined}
                 onCancel={() => {
@@ -128,7 +132,7 @@ const FeesController: React.FC = () => {
                   setEditData(null);
                 }}
                 onSave={() => fetchFeeDetails()} // Refresh table after save/update
-                
+
               />
             </>
           )}

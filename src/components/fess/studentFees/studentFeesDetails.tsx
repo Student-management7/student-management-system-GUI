@@ -138,7 +138,7 @@ const StudentFeesDetails = () => {
           {/* Display Student ID and Name */}
           {studentData ? (
             <>
-              <p className="mb-4">
+              <p className="mb-3">
                 <span className="text-xl font-semibold">Name:</span>
                 <span className="ml-2 text-xl"> {studentData.name}</span>
               </p>

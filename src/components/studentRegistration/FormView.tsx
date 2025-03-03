@@ -144,9 +144,13 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: prop
       if (isEdit) {
         await updateStdDetails(values); // Call update API for edit
         toast.success("Student updated successfully!");
+         
+        
       } else {
         await saveStdDetails(values); // Call save API for add
+        
         toast.success("Student submitted successfully!");
+
       }
   
       // 3-second delay before closing the form
@@ -157,6 +161,7 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: prop
   
     } catch (err) {
       toast.error("Failed to save student details. Please try again.");
+
       console.error(err);
     }
   };
@@ -167,6 +172,7 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: prop
     <>
       <div>
         <ToastContainer position="top-right" autoClose={3000} />
+         
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
