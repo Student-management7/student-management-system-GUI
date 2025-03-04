@@ -35,8 +35,7 @@ const ReusableTable: React.FC<TableProps> = ({
   rows,
   rowsPerPageOptions = [5, 10, 25],
   onCellValueChange,
-  tableHeight = "500px",
-  tableWidth = "100%",
+ 
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
@@ -101,7 +100,7 @@ const ReusableTable: React.FC<TableProps> = ({
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-8 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="pl-8 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <span className="absolute left-2.5 top-2.5">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

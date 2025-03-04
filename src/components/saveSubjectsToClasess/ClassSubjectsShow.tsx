@@ -112,7 +112,7 @@ const ClassSubjectShow: React.FC = () => {
               <div className="float-right mt-1">
                 <button
                   onClick={() => setShowForm(true)}
-                  className="button btn text-white"
+                  className="button btn  ml-2"
                 >
                   Add Subject
                 </button>

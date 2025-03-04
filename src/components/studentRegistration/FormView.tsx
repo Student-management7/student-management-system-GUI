@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { saveStdDetails } from "../../services/studentRegistration/api/StudentRegistration";
+import { saveStdDetails, updateStdDetails } from "../../services/studentRegistration/api/StudentRegistration";
 import { StudentFormData } from "../../services/studentRegistration/type/StudentRegistrationType";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { ToastContainer, toast } from "react-toastify";
@@ -12,22 +11,23 @@ import { sortArrayByKey } from "../Utils/sortArrayByKey";
 
 interface FormViewProps {
   setStudentData: (arg: boolean) => void;
+  initialValues?: StudentFormData;
+  isEdit?: boolean;
+  fetchStudentDetails: () => void; // Add this prop
 }
 
-const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
-
+const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: propInitialValues, isEdit = false }) => {
   const [classes, setClasses] = React.useState<ClassData[]>([]);
   const [selectedFee, setSelectedFee] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formValues, setFormValues] = useState<StudentFormData | null>(null);
   const [formikHelpers, setFormikHelpers] = useState<any>(null);
 
-
   const handleOpenDialog = (values: StudentFormData, helpers: any) => {
     setFormValues(values);
     setFormikHelpers(helpers);
     setIsDialogOpen(true);
-  }
+  };
 
   const handleConfirmSubmit = async () => {
     if (formValues && formikHelpers) {
@@ -52,27 +52,31 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
       try {
         const response = await axiosInstance.get<ClassData[]>("/admin/getAll");
         const data = response.data;
-
-        // Sort the data
         const sortedData = sortArrayByKey(data, "className");
         setClasses(sortedData);
+        
+        // After classes are loaded, set the fee for edit mode
+        if (isEdit && propInitialValues?.cls) {
+          const classData = sortedData.find((cls) => cls.className === propInitialValues.cls);
+          if (classData) {
+            setSelectedFee(classData.totalFee.toString());
+          }
+        }
       } catch (error) {
         toast.warning("Please create class first");
       }
     };
-
+  
     fetchClasses();
-  }, []);
-
-  // Handle dropdown change
+  }, [isEdit, propInitialValues]);
+  
   const handleClassChange = (
     event: React.ChangeEvent<HTMLSelectElement>,
     setFieldValue: (field: string, value: any) => void
   ) => {
     const selectedClass = event.target.value;
     setFieldValue("cls", selectedClass);
-
-    // Find the selected class details and update the fee
+  
     const classData = classes.find((cls) => cls.className === selectedClass);
     if (classData) {
       setSelectedFee(classData.totalFee.toString());
@@ -83,7 +87,7 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
     }
   };
 
-  const initialValues = {
+  const defaultInitialValues = {
     name: "",
     address: "",
     city: "",
@@ -107,9 +111,7 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
     },
   };
 
-  const [error, setError] = useState<string | null>(null);
-  const [rowData, setRowData] = useState<any[]>([]);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const initialValues = propInitialValues || defaultInitialValues;
 
   const validationSchema = Yup.object().shape({
     name: Yup.string()
@@ -134,77 +136,63 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
       stdo_primaryContact: Yup.string()
         .required("Primary contact is required")
         .matches(/^[0-9]{10}$/, "Contact number must be 10 digits"),
+        stdo_email: Yup.string().required("Family Email is Required")
     }),
   });
 
   const handleSubmit = async (values: StudentFormData, { resetForm }: any) => {
     try {
-      await saveStdDetails(values);
+      if (isEdit) {
+        await updateStdDetails(values); // Call update API for edit
+        toast.success("Student updated successfully!");
+         
+        
+      } else {
+        await saveStdDetails(values); // Call save API for add
+        
+        toast.success("Student submitted successfully!");
 
-      // Show success notification
-      toast.success("Student submitted successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-      });
-
-      setShowSuccess(true);
+      }
+  
+      // 3-second delay before closing the form
       setTimeout(() => {
-        setShowSuccess(false);
-        resetForm();
-        setSelectedFee("");
-      }, 3000);
+        setStudentData(false); // Close the form after submission
+        resetForm(); // Reset form fields
+      }, 2000);
+  
     } catch (err) {
-      // Show error notification
-      toast.error("Failed to save student details. Please try again.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-      });
+      toast.error("Failed to save student details. Please try again.");
 
-      setError("Failed to save student details");
       console.error(err);
     }
   };
-
-
-
-  // const handleConfirmSubmit = (values: StudentFormData, formikHelpers: any) => {
-  //   setIsDialogOpen(false); // Close the dialog on confirm
-  //   handleSubmit(values, formikHelpers);
-  //   // setIsDialogOpen(false); // Call the submit function
-  // };
-
+  
+  
 
   return (
     <>
       <div>
         <ToastContainer position="top-right" autoClose={3000} />
+         
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={(values, helpers) => handleOpenDialog(values, helpers)}
+          enableReinitialize // Ensure form reinitializes when initialValues change
         >
-
           {({ errors, touched, setFieldValue }) => (
             <Form>
-
               <div className="row">
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="name" className="form-label">
-                      Full Name  <span className="red">*</span>
+                      Full Name <span className="red">*</span>
                     </label>
                     <Field
                       type="text"
                       id="name"
                       name="name"
-                      className={`form-control ${errors.name && touched.name ? "is-invalid" : ""
-                        }`}
+                      className={`form-control ${errors.name && touched.name ? "is-invalid" : ""}`}
                       placeholder="Enter full name"
                     />
                     {errors.name && touched.name && (
@@ -215,15 +203,14 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="address" className="form-label">
-                      Address
+                      Address <span className="red">*</span>
                     </label>
                     <Field
                       type="text"
                       id="address"
                       name="address"
-                      className={`form-control ${errors.address && touched.address ? "is-invalid" : ""
-                        }`}
-                      placeholder="Enter Address"
+                      className={`form-control ${errors.address && touched.address ? "is-invalid" : ""}`}
+                      placeholder="Enter address"
                     />
                     {errors.address && touched.address && (
                       <div className="invalid-feedback">{errors.address}</div>
@@ -233,14 +220,13 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="city" className="form-label">
-                      City
+                      City <span className="red">*</span>
                     </label>
                     <Field
                       type="text"
                       id="city"
                       name="city"
-                      className={`form-control ${errors.city && touched.city ? "is-invalid" : ""
-                        }`}
+                      className={`form-control ${errors.city && touched.city ? "is-invalid" : ""}`}
                       placeholder="Enter city"
                     />
                     {errors.city && touched.city && (
@@ -249,19 +235,18 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
                   </div>
                 </div>
               </div>
-              {/* Continue with all other fields following the same pattern */}
+
               <div className="row">
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="state" className="form-label">
-                      State
+                      State <span className="red">*</span>
                     </label>
                     <Field
                       type="text"
                       id="state"
                       name="state"
-                      className={`form-control ${errors.state && touched.state ? "is-invalid" : ""
-                        }`}
+                      className={`form-control ${errors.state && touched.state ? "is-invalid" : ""}`}
                       placeholder="Enter state"
                     />
                     {errors.state && touched.state && (
@@ -272,14 +257,13 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="contact" className="form-label">
-                      Contact  <span className="red">*</span>
+                      Contact <span className="red">*</span>
                     </label>
                     <Field
                       type="text"
                       id="contact"
                       name="contact"
-                      className={`form-control ${errors.contact && touched.contact ? "is-invalid" : ""
-                        }`}
+                      className={`form-control ${errors.contact && touched.contact ? "is-invalid" : ""}`}
                       placeholder="Enter contact"
                     />
                     {errors.contact && touched.contact && (
@@ -290,14 +274,13 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="gender" className="form-label">
-                      Gender  <span className="red">*</span>
+                      Gender <span className="red">*</span>
                     </label>
                     <Field
                       as="select"
                       id="gender"
                       name="gender"
-                      className={`form-control ${errors.gender && touched.gender ? "is-invalid" : ""
-                        }`}
+                      className={`form-control ${errors.gender && touched.gender ? "is-invalid" : ""}`}
                     >
                       <option value="">Select</option>
                       <option value="Male">Male</option>
@@ -310,18 +293,18 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
                   </div>
                 </div>
               </div>
+
               <div className="row">
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="dob" className="form-label">
-                      Date Of Birth  <span className="red">*</span>
+                      Date of Birth <span className="red">*</span>
                     </label>
                     <Field
                       type="date"
                       id="dob"
                       name="dob"
-                      className={`form-control ${errors.dob && touched.dob ? "is-invalid" : ""
-                        }`}
+                      className={`form-control ${errors.dob && touched.dob ? "is-invalid" : ""}`}
                     />
                     {errors.dob && touched.dob && (
                       <div className="invalid-feedback">{errors.dob}</div>
@@ -342,33 +325,32 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
                     />
                   </div>
                 </div>
-
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="cls" className="form-label">
-                      Admission Class  <span className="red">*</span>
+                      Class <span className="red">*</span>
                     </label>
                     <Field
                       as="select"
                       id="cls"
                       name="cls"
-                      className="form-control"
+                      className={`form-control ${errors.cls && touched.cls ? "is-invalid" : ""}`}
                       onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleClassChange(e, setFieldValue)}
                     >
-                      <option value="" disabled>
-                        Select a class
-                      </option>
+                      <option value="">Select a class</option>
                       {classes.map((cls) => (
                         <option key={cls.id} value={cls.className}>
                           {cls.className}
                         </option>
                       ))}
                     </Field>
-
-
+                    {errors.cls && touched.cls && (
+                      <div className="invalid-feedback">{errors.cls}</div>
+                    )}
                   </div>
                 </div>
               </div>
+
               <div className="row">
                 <div className="col-md-4">
                   <div className="form-group">
@@ -380,14 +362,14 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
                       id="department"
                       name="department"
                       className="form-control"
-                      placeholder="Enter Department"
+                      placeholder="Enter department"
                     />
                   </div>
                 </div>
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="category" className="form-label">
-                      Category   <span className="red">*</span>
+                      Category <span className="red">*</span>
                     </label>
                     <Field
                       as="select"
@@ -395,58 +377,60 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
                       name="category"
                       className={`form-control ${errors.category && touched.category ? "is-invalid" : ""}`}
                     >
-                      <option value="">Select Category</option>
-                      <option value="category1">General</option>
-                      <option value="category2">OBC</option>
-                      <option value="category3">SC</option>
-                      <option value="category4">ST</option>
-                      {/* Add more options as needed */}
+                      <option value="">Select category</option>
+                      <option value="General">General</option>
+                      <option value="OBC">OBC</option>
+                      <option value="SC">SC</option>
+                      <option value="ST">ST</option>
                     </Field>
                     {errors.category && touched.category && (
                       <div className="invalid-feedback">{errors.category}</div>
                     )}
                   </div>
-
+                </div>
+                <div className="col-md-4">
+                  <div className="form-group">
+                    <label htmlFor="totalFee" className="form-label">
+                      Total Fee
+                    </label>
+                    <Field
+                      type="text"
+                      id="totalFee"
+                      name="totalFee"
+                      className="form-control"
+                      value={selectedFee}
+                      readOnly
+                    />
+                  </div>
                 </div>
               </div>
+
               <hr className="hr" />
               <div className="titel">
                 <h2 className="head1">Family Details</h2>
               </div>
+
               <div className="row">
                 <div className="col-md-4">
                   <div className="form-group">
-                    <label
-                      htmlFor="familyDetails.stdo_FatherName"
-                      className="form-label"
-                    >
-                      Father's Name  <span className="red">*</span>
+                    <label htmlFor="familyDetails.stdo_FatherName" className="form-label">
+                      Father's Name <span className="red">*</span>
                     </label>
                     <Field
                       type="text"
                       id="familyDetails.stdo_FatherName"
                       name="familyDetails.stdo_FatherName"
-                      className={`form-control ${errors.familyDetails?.stdo_FatherName &&
-                        touched.familyDetails?.stdo_FatherName
-                        ? "is-invalid"
-                        : ""
-                        }`}
+                      className={`form-control ${errors.familyDetails?.stdo_FatherName && touched.familyDetails?.stdo_FatherName ? "is-invalid" : ""}`}
                       placeholder="Enter father's name"
                     />
-                    {errors.familyDetails?.stdo_FatherName &&
-                      touched.familyDetails?.stdo_FatherName && (
-                        <div className="invalid-feedback">
-                          {errors.familyDetails.stdo_FatherName}
-                        </div>
-                      )}
+                    {errors.familyDetails?.stdo_FatherName && touched.familyDetails?.stdo_FatherName && (
+                      <div className="invalid-feedback">{errors.familyDetails.stdo_FatherName}</div>
+                    )}
                   </div>
                 </div>
                 <div className="col-md-4">
                   <div className="form-group">
-                    <label
-                      htmlFor="familyDetails.stdo_MotherName"
-                      className="form-label"
-                    >
+                    <label htmlFor="familyDetails.stdo_MotherName" className="form-label">
                       Mother's Name
                     </label>
                     <Field
@@ -460,40 +444,27 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
                 </div>
                 <div className="col-md-4">
                   <div className="form-group">
-                    <label
-                      htmlFor="familyDetails.stdo_primaryContact"
-                      className="form-label"
-                    >
-                      Primary Contact
-                      <span className="red">*</span>
+                    <label htmlFor="familyDetails.stdo_primaryContact" className="form-label">
+                      Primary Contact <span className="red">*</span>
                     </label>
                     <Field
                       type="text"
                       id="familyDetails.stdo_primaryContact"
                       name="familyDetails.stdo_primaryContact"
-                      className={`form-control ${errors.familyDetails?.stdo_primaryContact &&
-                        touched.familyDetails?.stdo_primaryContact
-                        ? "is-invalid"
-                        : ""
-                        }`}
+                      className={`form-control ${errors.familyDetails?.stdo_primaryContact && touched.familyDetails?.stdo_primaryContact ? "is-invalid" : ""}`}
                       placeholder="Enter primary contact"
                     />
-                    {errors.familyDetails?.stdo_primaryContact &&
-                      touched.familyDetails?.stdo_primaryContact && (
-                        <div className="invalid-feedback">
-                          {errors.familyDetails.stdo_primaryContact}
-                        </div>
-                      )}
+                    {errors.familyDetails?.stdo_primaryContact && touched.familyDetails?.stdo_primaryContact && (
+                      <div className="invalid-feedback">{errors.familyDetails.stdo_primaryContact}</div>
+                    )}
                   </div>
                 </div>
               </div>
+
               <div className="row">
                 <div className="col-md-4">
                   <div className="form-group">
-                    <label
-                      htmlFor="familyDetails.stdo_secondaryContact"
-                      className="form-label"
-                    >
+                    <label htmlFor="familyDetails.stdo_secondaryContact" className="form-label">
                       Secondary Contact
                     </label>
                     <Field
@@ -501,33 +472,27 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
                       id="familyDetails.stdo_secondaryContact"
                       name="familyDetails.stdo_secondaryContact"
                       className="form-control"
-                      placeholder="Enter secondary Contact"
+                      placeholder="Enter secondary contact"
                     />
                   </div>
                 </div>
                 <div className="col-md-4">
                   <div className="form-group">
-                    <label
-                      htmlFor="familyDetails.stdo_city"
-                      className="form-label"
-                    >
-                      Family Address
+                    <label htmlFor="familyDetails.stdo_city" className="form-label">
+                      Family City
                     </label>
                     <Field
                       type="text"
                       id="familyDetails.stdo_city"
                       name="familyDetails.stdo_city"
                       className="form-control"
-                      placeholder="Enter family address"
+                      placeholder="Enter family city"
                     />
                   </div>
                 </div>
                 <div className="col-md-4">
                   <div className="form-group">
-                    <label
-                      htmlFor="familyDetails.stdo_state"
-                      className="form-label"
-                    >
+                    <label htmlFor="familyDetails.stdo_state" className="form-label">
                       Family State
                     </label>
                     <Field
@@ -540,48 +505,30 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
                   </div>
                 </div>
               </div>
+
               <div className="row">
                 <div className="col-md-4">
                   <div className="form-group">
-                    <label
-                      htmlFor="familyDetails.stdo_email"
-                      className="form-label"
-                    >
-                      Family Email Id
+                    <label htmlFor="familyDetails.stdo_email" className="form-label">
+                      Family Email
                     </label>
                     <Field
                       type="email"
                       id="familyDetails.stdo_email"
                       name="familyDetails.stdo_email"
-                      className="form-control"
-                      placeholder="Enter family Email"
+                      className={`form-control ${errors.familyDetails?.stdo_email && touched.familyDetails?.stdo_email ? "is-invalid" : ""}`}
+                      placeholder="Enter family email"
                     />
+                    {errors.familyDetails?.stdo_email && touched.familyDetails?.stdo_email && (
+                      <div className="invalid-feedback">{errors.familyDetails.stdo_email}</div>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* Fee Field */}
-              <div className="form-group">
-                <label
-                  htmlFor="totalFee"
-                  className="form-label head1 "
-                >
-                  Total Fee
-                </label>
-                <Field
-                  type="text"
-                  id="totalFee"
-                  name="totalFee"
-                  className="form-control"
-                  value={selectedFee}
-                  readOnly
-                />
-              </div>
-
-
               <div className="row-1 mt-4 flex justify-around justify-center items-center md-4">
                 <button type="submit" className="btn button head1 text-white">
-                  Submit
+                  {isEdit ? "Update" : "Submit"}
                 </button>
                 <button
                   type="button"
@@ -590,10 +537,6 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
                 >
                   Cancel
                 </button>
-
-
-
-
               </div>
             </Form>
           )}
@@ -613,19 +556,3 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData }) => {
 };
 
 export default FormView;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

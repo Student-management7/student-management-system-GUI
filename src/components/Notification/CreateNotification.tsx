@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { formatToDDMMYYYY } from "../Utils/dateUtils";
 import { toast, ToastContainer } from "react-toastify";
+import { ArrowLeft } from "lucide-react";
 
 type NotificationPayload = {
   startDate: string;
@@ -118,16 +119,22 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="box">
-      
+
+    <>
+   
       <ToastContainer position="top-right" autoClose={3000} />
+    <div className="head1 flex items-center">
+                <button onClick={onClose} className="p-2 rounded-full arrow transition">
+                  <ArrowLeft className="h-7 w-7" />
+                </button>
+                <span className="ml-4">Add Fees Page</span>
+              </div>      
       
-      <div className="container mt-4">
+      <div className="box">
         <div className="row justify-content-center">
-          <div className="col-md-10">
-            <div className="card shadow-sm p-4">
+          <div className="">
+            <div className="">
            
-              <h2 className="head1 text-center"> <i onClick={onClose} className="bi bi-arrow-left-circle m-2" />Create Notification</h2>
 
               <form onSubmit={handleSubmit}>
                 <div className="row row-cols-1 row-cols-md-2 g-3">
@@ -163,27 +170,7 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
                     />
                   </div>
 
-                  <div className="col">
-                    <label htmlFor="cato" className="form-label fw-bold">
-                      Category
-                    </label>
-                    <select
-                      id="cato"
-                      name="cato"
-                      className="form-select"
-                      value={formData.cato}
-                      onChange={handleInputChange}
-                      required
-                    >
-                      <option value="All">All</option>
-                      <option value="Student">Student</option>
-                      <option value="Teacher">Teacher</option>
-                      <option value="Staff">Staff</option>
-                      <option value="Event">Event</option>
-                      <option value="Holiday">Holiday</option>
-                      <option value="Exam">Exam</option>
-                    </select>
-                  </div>
+                 
 
                   {formData.cato === "Student" && (
                     <div className="col">
@@ -217,7 +204,7 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
                       id="description"
                       name="description"
                       className="form-control"
-                      rows={3}
+                      rows={4}
                       value={formData.description}
                       onChange={handleInputChange}
                       maxLength={500}
@@ -225,7 +212,30 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
                     />
                   </div>
 
-                  <div className="col-12 text-center mt-3">
+
+                  <div className="col">
+                    <label htmlFor="cato" className="form-label fw-bold">
+                      Category
+                    </label>
+                    <select
+                      id="cato"
+                      name="cato"
+                      className="form-select"
+                      value={formData.cato}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="All">All</option>
+                      <option value="Student">Student</option>
+                      <option value="Teacher">Teacher</option>
+                      <option value="Staff">Staff</option>
+                      <option value="Event">Event</option>
+                      <option value="Holiday">Holiday</option>
+                      <option value="Exam">Exam</option>
+                    </select>
+                  </div>
+
+                  <div className="col-12 text-center mt-11">
                     <button
                       
                       type="submit"
@@ -244,7 +254,9 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
           </div>
         </div>
       </div>
-    </div>
+    
+    
+    </>
   );
 };
 

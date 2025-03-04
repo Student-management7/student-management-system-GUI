@@ -3,6 +3,7 @@ import Select from 'react-select';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { toast, ToastContainer } from 'react-toastify';
+import { ArrowLeft } from 'lucide-react';
 
 interface HolidayFormProps {
   onSubmit: (values: {
@@ -47,12 +48,15 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onSubmit, onCancel, classes }
   };
 
   return (
-    <div className="box">
+    <>
       <ToastContainer position="top-right" autoClose={3000} />
-      <h2 className="head1 mb-10 text-center">
-        <i onClick={onCancel} className="bi bi-arrow-left-circle m-2 cursor-pointer" />
-        Holiday
-      </h2>
+      <div className="head1 flex items-center">
+                <button onClick={onCancel} className="p-2 rounded-full arrow transition">
+                  <ArrowLeft className="h-7 w-7" />
+                </button>
+                <span className="ml-4">Add Holiday</span>
+              </div>
+    <div className="box">
       <div className="flex flex-row items-center justify-center space-x-10">
         <div className="mb-4 w-1/2">
           <h3 className="font-semibold mb-2">Select Classes:</h3>
@@ -79,7 +83,7 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onSubmit, onCancel, classes }
           <input
             type="text"
             placeholder="Optional holiday description"
-            className="w-full border px-3 py-2 rounded-md"
+            className="w-full border px-3 py-2 rounded-md "
             value={formik.values.description}
             onChange={(e) => formik.setFieldValue('description', e.target.value)}
           />
@@ -130,6 +134,7 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ onSubmit, onCancel, classes }
         </button>
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import FeesForm from "./feesForm";
-import { FeeDetails, FeeFormValues } from "../../../services/feesServices/AdminFeescreationForm/type";
-import { fetchFees, updateFee, saveFees, deleteFeeRecord } from "../../../services/feesServices/AdminFeescreationForm/api";
-import { Pencil, Trash2 } from "lucide-react";
+import { FeeDetails } from "../../../services/feesServices/AdminFeescreationForm/type";
+import { fetchFees, deleteFeeRecord } from "../../../services/feesServices/AdminFeescreationForm/api";
+import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import Loader from "../../loader/loader";
 import ReusableTable from "../../MUI Table/ReusableTable";
 import AlertDialog from "../../alert/AlertDialog";
@@ -56,9 +56,8 @@ const FeesController: React.FC = () => {
       setLoading(true);
       const data = await fetchFees();
       setRowData(data);
-     
     } catch (error) {
-      // toast.error("Error fetching fee details")
+      toast.error("Error fetching fee details");
       console.error("Error fetching fee details:", error);
     } finally {
       setLoading(false);
@@ -74,23 +73,6 @@ const FeesController: React.FC = () => {
     setShowForm(true);
   };
 
-  const handleSave = async (data: FeeFormValues) => {
-    try {
-      if (editData) {
-        await updateFee(editData.id, data);
-        toast.success("fee Update successfully")
-      } else {
-        await saveFees(data);
-      }
-      fetchFeeDetails();
-      setShowForm(false);
-      setEditData(null);
-    } catch (error) {
-      toast.error("Error Update Fee")
-      console.error("Error Update fee details:", error);
-    }
-  };
-
   const handleDeleteButtonClick = (id: string) => {
     setSelectedFeeId(id);
     setShowDeleteAlert(true);
@@ -102,12 +84,12 @@ const FeesController: React.FC = () => {
       const result = await deleteFeeRecord(selectedFeeId);
       if (result.success) {
         setRowData((prevData) => prevData.filter((item) => item.id !== selectedFeeId));
-        toast.success("Fee deleted Successfully")
+        toast.success("Fee deleted successfully!");
       } else {
-        toast.error("Unexpexted error try again")
-        console.error(`Error: ${result.message}`);
+        toast.error("Unexpected error. Please try again.");
       }
     } catch (error) {
+      toast.error("An error occurred. Please try again.");
       console.error("Unexpected error during deletion:", error);
     } finally {
       setShowDeleteAlert(false);
@@ -117,8 +99,7 @@ const FeesController: React.FC = () => {
 
   return (
     <>
-          <ToastContainer position="top-right" autoClose={3000} />
-
+      <ToastContainer position="top-right" autoClose={3000} />
       {loading && <Loader />}
       {!loading && (
         <div className="box">
@@ -126,7 +107,6 @@ const FeesController: React.FC = () => {
             <>
               <div className="text-right">
                 <div className="flex items-center space-x-4">
-                
                   <h1 className="text-xl mb-4 font-bold text-[#27727A]">Class Fee Page</h1>
                 </div>
                 <span onClick={() => setShowForm(true)} className="btn button float-right">
@@ -137,22 +117,24 @@ const FeesController: React.FC = () => {
             </>
           ) : (
             <>
-            <div className="head1">
-      
-             <i onClick={() => setShowForm(false)} className="bi bi-arrow-left-circle head1" />&nbsp; 
-            <span>Add Fees Page</span>
-            </div>
-            <FeesForm
-              initialData={editData || undefined}
-              onCancel={() => {
-                setShowForm(false);
-                setEditData(null);
-              }}
-              onSave={handleSave}
-            />
+              <div className="head1 flex items-center">
+                <button onClick={() => setShowForm(false)} className="p-2 rounded-full arrow transition">
+                  <ArrowLeft className="h-7 w-7" />
+                </button>
+                <span className="ml-4">Add Fees Page</span>
+              </div>
+
+
+              <FeesForm
+                initialData={editData || undefined}
+                onCancel={() => {
+                  setShowForm(false);
+                  setEditData(null);
+                }}
+                onSave={() => fetchFeeDetails()} // Refresh table after save/update
+
+              />
             </>
-
-
           )}
         </div>
       )}
@@ -162,9 +144,7 @@ const FeesController: React.FC = () => {
         isOpen={showDeleteAlert}
         onConfirm={confirmDelete}
         onCancel={() => setShowDeleteAlert(false)}
-        
       />
-      <ToastContainer position="top-right" autoClose={3000} />
     </>
   );
 };

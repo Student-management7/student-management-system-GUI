@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/authContext';
 import { AuthProvider } from './context/authContext';
 import './App.css';
@@ -9,30 +9,34 @@ import SideBarController from './components/sideBar/SideBarController';
 import HeaderController from './components/main/HeaderController';
 import FooterController from './components/main/FooterController';
 import PermissionBasedRoute from './components/permission/PermissionBasedRoute'; 
-import AccessDenied from './components/permission/AccessDenied';
+
 
 const App = () => {
   const { isAuthenticated } = useAuth();
 
   return (
     <>
-      {isAuthenticated ? (
-        <div className="mainBody">
-          <SideBarController />
-          <div className="rhsBox">
-            <HeaderController />
-            <PermissionBasedRoute />
-            <FooterController />
-          </div>
-        </div>
-      ) : (
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Login />} />
-          <Route path="*" element={<Login />} />
-          
-        </Routes>
-      )}
+      <Routes>
+
+        <Route path="/" element={<Login />} />
+
+        {/* Protected routes for authenticated users */}
+        {isAuthenticated ? (
+          <Route path="*" element={
+            <div className="mainBody">
+              <SideBarController />
+              <div className="rhsBox">
+                <HeaderController />
+                <PermissionBasedRoute />
+                <FooterController />
+              </div>
+            </div>
+          } />
+        ) : (
+          // Redirect unauthenticated users to the login page
+          <Route path="*" element={<Navigate to="/login" />} />
+        )}
+      </Routes>
     </>
   );
 };

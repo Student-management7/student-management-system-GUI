@@ -1,10 +1,9 @@
-
-
 import React from "react";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import { validationSchema } from "../../../services/feesServices/AdminFeescreationForm/validation";
 import { FeeFormValues, FeesFormProps } from "../../../services/feesServices/AdminFeescreationForm/type";
-import { saveFees } from "../../../services/feesServices/AdminFeescreationForm/api";
+import { saveFees, updateFee } from "../../../services/feesServices/AdminFeescreationForm/api"; // Import updateFee
+import { toast } from "react-toastify";
 
 const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) => {
   const initialValues: FeeFormValues = initialData || {
@@ -16,16 +15,34 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
     otherAmount: [{ name: "", amount: 0 }],
   };
 
+  const handleSubmit = async (values: FeeFormValues) => {
+    try {
+      if (initialData) {
+        // Update existing fee
+        await updateFee(initialData.id, values);
+        toast.success("Fee updated successfully!");
+      } else {
+        // Save new fee
+        await saveFees(values);
+        toast.success("Fee saved successfully!");
+      }
+      onSave(values); // Notify parent component to refresh the table
+      onCancel(); // Redirect to the table page
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+      console.error("Error saving/updating fee:", error);
+    }
+  };
+
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={(values) => {
-        onSave(values);
-      }}
+      onSubmit={handleSubmit}
     >
       {({ values }) => (
         <Form>
+          
           {/* Class Name Field */}
           <div className="mb-4">
             <label className="block mb-2 font-semibold">Class Name</label>
@@ -81,7 +98,7 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
                         onClick={() => push({ name: "", amount: 0 })}
                         className="bi bi-plus-circle-fill text-blue-500"
                       >
-
+                       
                       </button>
                       <Field
                         name={`otherAmount[${index}].name`}
@@ -99,7 +116,7 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
                         onClick={() => remove(index)}
                         className="bi bi-dash-circle-fill text-red-600 cursor-pointer bold"
                       >
-
+                       
                       </button>
                     </div>
                   ))}
@@ -108,43 +125,21 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
             </FieldArray>
           </div>
 
-          {/* Submit and Cancel Buttons */}
           <div className="mt-6 flex justify-between">
-            {initialData ? (
-              <>
-                <button
-                  type="submit"
-                  className="btn button  text-white"
-                >
-                  Update
-                </button>
-                <button
-                  type="button"
-                  onClick={onCancel}
-                  className="btn buttonred  text-white  "
-                >
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  type="submit"
-                  className="btn button  text-white"
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  onClick={onCancel}
-                  className="btn buttonred  text-white "
-                >
-                  Cancel
-                </button>
-              </>
-            )}
+            <button
+              type="submit"
+              className="btn button text-white"
+            >
+              {initialData ? "Update" : "Save"}
+            </button>
+            <button
+              type="button"
+              onClick={onCancel}
+              className="btn buttonred text-white"
+            >
+              Cancel
+            </button>
           </div>
-
         </Form>
       )}
     </Formik>
