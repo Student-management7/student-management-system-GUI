@@ -192,12 +192,12 @@ const StudentRegistrationController = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
+    
       {loading && <Loader />}
       {!loading && (
-        <div className="box">
-          <div className="headding1">
-            <h1>&nbsp;Student Registration</h1>
+        <div className="container-fluid p-3">
+          <div className="headding1 mb-4">
+            <h1 className="text-center">Student Registration</h1>
           </div>
 
           {!studentData ? (

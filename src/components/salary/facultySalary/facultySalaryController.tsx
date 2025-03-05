@@ -179,8 +179,8 @@ const FacultySalaryController: React.FC = () => {
                   onClick={() => {
                     setShowForm(true);
                   }}
-                  className={`btn float-right button ${loading ? "btn-disabled" : ""}`}
-                  disabled={loading}
+                  className='btn float-right button'
+                  
                 >
                   Add Salary
                 </span>
