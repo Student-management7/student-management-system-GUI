@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { fetchAttendance } from '../../services/Faculty/facultyAttendanceEdit/Api/api';
 import { Faculty, AttendanceEntry } from '../../services/Faculty/facultyAttendanceEdit/Type/type';
 import { Pencil } from 'lucide-react';
-import ReusableTable from '../MUI Table/ReusableTable';
+import ReusableTable from '../StudenAttendanceShow/Table/Table';
 import Loader from '../loader/loader';
 import BackButton from '../Navigation/backButton';
+import { toast, ToastContainer } from 'react-toastify';
 const FacultyAttendance: React.FC = () => {
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<string>('');
@@ -55,7 +56,7 @@ const FacultyAttendance: React.FC = () => {
       setRowData(rows);
     } catch (err) {
       console.error('Error fetching attendance:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch attendance data');
+      toast.error('Error  Please select correct Date '); 
       setRowData([]);
       setColumnDefs([]);
     } finally {
@@ -99,6 +100,7 @@ const FacultyAttendance: React.FC = () => {
       {loading && <Loader />} {/* Show loader when loading */}
       {!loading && (
         <div className="box">
+          <ToastContainer position="top-right" autoClose={3000} />
           <div className="flex items-center space-x-4 mb-4">
             <span>
               <BackButton />

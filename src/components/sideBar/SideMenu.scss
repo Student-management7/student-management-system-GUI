@@ -1,135 +1,135 @@
 .sideNav {
-    position: relative;
-    background-color: var(--green-color);
-    height: auto;
-    padding: 1rem;
-    border-right: 1px solid #ddd;
-    width: 300px;
-    color: #FFF;
-    padding: 10px;
-    font-family: Arial, Helvetica, sans-serif;
-    transition: margin-left 1s ease-in-out; 
-   
+  position: relative;
+  background-color: var(--green-color);
+  height: auto;
+  padding: 1rem;
+  border-right: 1px solid #ddd;
+  width: 300px;
+  color: #FFF;
+  padding: 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  transition: margin-left 1s ease-in-out; 
+ 
 
-    @media (max-width: 480px) {
-        text-align: right;
-    }
-    
-    :hover{
-        background-color: var(--greenLight-color);
-        border-radius: 4px;
-    }
+  @media (max-width: 480px) {
+      text-align: right;
+  }
+  
+  :hover{
+      background-color: var(--greenLight-color);
+      border-radius: 4px;
+  }
 
-    .logo {
-        position: relative;
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.5rem 1rem;
-        background-color: var(--greenLight-color);
-        border-radius: 8px;
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  .logo {
+      position: relative;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+      background-color: var(--greenLight-color);
+      border-radius: 8px;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 
-        span {
-            font-size: 30px;
-            background-color: var(--green-color); 
-            border-radius: 10px;
-            margin: 5px;
-            padding: 5px 1.5px;
-            cursor: pointer;  
-            
-            &:hover {
-                background-color: var(--greenLight-color);
-            }
-        }
+      span {
+          font-size: 30px;
+          background-color: var(--green-color); 
+          border-radius: 10px;
+          margin: 5px;
+          padding: 5px 1.5px;
+          cursor: pointer;  
+          
+          &:hover {
+              background-color: var(--greenLight-color);
+          }
+      }
 
-        p {
-            margin: 5px;
-            padding: 5px;
-        }
-    }
+      p {
+          margin: 5px;
+          padding: 5px;
+      }
+  }
 }
 
 
-  .sideNav .logo {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem 1rem;
-    background-color: var(--greenLight-color);
-    border-radius: 8px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-  }
+.sideNav .logo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background-color: var(--greenLight-color);
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-  .sideNav .logo p {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--white-color);
-  }
+.sideNav .logo p {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--white-color);
+}
 
 
 
-  
+
 
 .menu{
-    display: flex;
-    padding: 10px;
-    position: relative;
-    cursor: pointer;
+  display: flex;
+  padding: 10px;
+  position: relative;
+  cursor: pointer;
 
 
-    svg{
-        font-size: 16px;  
-        margin-right: 15px;
-    }
-    .menuOpen {
-        position: relative;
-        right: 0;
-    }
+  svg{
+      font-size: 16px;  
+      margin-right: 15px;
+  }
+  .menuOpen {
+      position: relative;
+      right: 0;
+  }
 }
 
 .subMenu {
-    display: flex;
-    padding: 5px 20px;
-    cursor: pointer;
-    font-size: 16px;
+  display: flex;
+  padding: 5px 20px;
+  cursor: pointer;
+  font-size: 16px;
 
-    .submenudata {
-        font-size: 14px;
-    }
-    
-    svg {
-        font-size: 16px;
-        margin-top: 5px;
-        margin-right: 6px;
-        margin-left: 25px;
-    }  
+  .submenudata {
+      font-size: 14px;
+  }
+  
+  svg {
+      font-size: 16px;
+      margin-top: 5px;
+      margin-right: 6px;
+      margin-left: 25px;
+  }  
 }
 
 .active{
-    margin-left: -300px;
-    transition: 1s;
-    @media (max-width: 480px) {
-        margin-left: -300px;
-        .menu{
-            display: inline-block;
-            text-align: right;
-            span,.menuOpen{
-                display: none;
-            }
-            svg{
-                margin-right: 0 !important;
-            }
-        }
-        
-    }
-    .logo{
-        span.sideIcone{
-            position: absolute !important;
-            right: -44px;
-            z-index: 99;
-            top: 5px;
-        }
-    }
+  margin-left: -300px;
+  transition: 1s;
+  @media (max-width: 480px) {
+      margin-left: -300px;
+      .menu{
+          display: inline-block;
+          text-align: right;
+          span,.menuOpen{
+              display: none;
+          }
+          svg{
+              margin-right: 0 !important;
+          }
+      }
+      
+  }
+  .logo{
+      span.sideIcone{
+          position: absolute !important;
+          right: -44px;
+          z-index: 99;
+          top: 5px;
+      }
+  }
 }

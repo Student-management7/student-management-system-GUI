@@ -4,7 +4,7 @@ import { FeeDetails } from "../../../services/feesServices/AdminFeescreationForm
 import { fetchFees, deleteFeeRecord } from "../../../services/feesServices/AdminFeescreationForm/api";
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import Loader from "../../loader/loader";
-import ReusableTable from "../../MUI Table/ReusableTable";
+import ReusableTable from "../../StudenAttendanceShow/Table/Table";
 import AlertDialog from "../../alert/AlertDialog";
 import { toast, ToastContainer } from "react-toastify";
 
