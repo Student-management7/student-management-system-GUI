@@ -18,6 +18,7 @@ const FacultyRegistrationController: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [selectedFacultyToDelete, setSelectedFacultyToDelete] = useState<FacultyFormData | null>(null);
+  const [editmode, setEditmode] = useState<boolean>(false);
 
   useEffect(() => {
     fetchFacultyDetails();
@@ -44,11 +45,19 @@ const FacultyRegistrationController: React.FC = () => {
     const selectedFaculty = rowData.find((faculty) => faculty.fact_id === facultyData.fact_id);
     if (selectedFaculty) {
       setIsFormVisible(true);
+      setEditmode(true); // ✅ Enable edit mode when editing
       setEditingFaculty(selectedFaculty);
     } else {
       console.error('Faculty not found');
     }
   }, [rowData]);
+
+  const handleAddFaculty = () => {
+    setIsFormVisible(true);
+    setEditmode(false); // ✅ Disable edit mode when adding a new faculty
+    setEditingFaculty(null); // ✅ Ensure no pre-filled data
+  };
+
 
   const handleDelete = useCallback((facultyData: FacultyFormData) => {
     setSelectedFacultyToDelete(facultyData);
@@ -129,9 +138,10 @@ const FacultyRegistrationController: React.FC = () => {
             <div className="box">
               <h1 className='head1 mb-4'>Faculty Registration</h1>
               <div className='float-right'>
-                <button onClick={() => setIsFormVisible(true)} className="btn button head1 text-white">
+                <button onClick={handleAddFaculty} className="btn button head1 text-white">
                   Add Faculty
                 </button>
+
               </div>
 
               <ReusableTable rows={rowData} columns={columns} />
@@ -150,6 +160,7 @@ const FacultyRegistrationController: React.FC = () => {
             <FacultyForm
               editingFaculty={editingFaculty}
               setIsFormVisible={setIsFormVisible}
+              editmode={editmode}
               fetchFacultyDetails={fetchFacultyDetails}
               setEditingFaculty={setEditingFaculty}
             />

@@ -4,7 +4,7 @@ import { formatToDDMMYYYY } from '../../components/Utils/dateUtils';
 import { Holiday, HolidayPayload } from '../../services/holiday/Type/type';
 import Loader from '../loader/loader';
 import AlertDialog from '../alert/AlertDialog';
-import ReusableTable from '../MUI Table/ReusableTable';
+import ReusableTable from '../StudenAttendanceShow/Table/Table';
 import { Trash2 } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import HolidayForm from './HolidayForm';

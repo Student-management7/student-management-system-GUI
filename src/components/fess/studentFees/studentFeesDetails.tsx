@@ -3,9 +3,18 @@ import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../../../services/Utils/apiUtils";
 import Loader from "../../loader/loader";
 import BackButton from "../../Navigation/backButton";
-import ReusableTable from "../../MUI Table/ReusableTable";
-import { changeFormatToDDMMYYYY } from "../../Utils/dateUtils";
+import ReusableTable from "../../StudenAttendanceShow/Table/Table";
+// import { formatToDDMMYYYY1 } from "../../Utils/dateUtils";
 import { toast, ToastContainer } from "react-toastify";
+
+ const formatToDDMMYYYY = (dateString: string) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1)
+    .toString().padStart(2, '0')}-${date.getFullYear()}`;
+};
+
+
 
 // Define types for student data and fee info
 interface FeeInfo {
@@ -19,6 +28,7 @@ interface StudentData {
   name: string;
   email: string;
   feeInfo: FeeInfo[];
+  remainingFees?: number; // Add remainingFees field
   [key: string]: any; // Allow extra fields in the response
 }
 
@@ -31,13 +41,17 @@ const StudentFeesDetails = () => {
   const [loading, setLoading] = useState(false);
   const [editFeeId, setEditFeeId] = useState<string | null>(null);
   const [editFeeAmount, setEditFeeAmount] = useState<number | null>(null);
+  const [remainingFees, setRemainingFees] = useState<number>(0);
+
+ 
+  
 
   // Column definitions for the feeInfo grid
   const columnDefs = [
     {
       headerName: "Fees Submitted Date",
       field: "creationDateTime",
-      valueFormatter: (params: { value: string }) => changeFormatToDDMMYYYY(params.value),
+      valueFormatter: (params: { value: string }) => formatToDDMMYYYY1(params.value),
     },
     { headerName: "Fee", field: "fee" },
     {
@@ -53,6 +67,7 @@ const StudentFeesDetails = () => {
       ),
     },
   ];
+  
 
   // Fetch student data
   useEffect(() => {
@@ -62,14 +77,25 @@ const StudentFeesDetails = () => {
         const response = await axiosInstance.get(
           `https://s-m-s-keyw.onrender.com/student/findAllStudent?id=${id}`
         );
+  
         console.log("API Response Data:", response.data);
-
+  
         if (Array.isArray(response.data) && response.data.length > 0) {
-          const data = response.data[0]; // Extract the first object from the array
+          const data = response.data[0]; // Extract first object from array
           console.log("Student Data:", data);
-
-          setStudentData(data); // Store student data
-          setFeeInfo(data.feeInfo || []); // Extract feeInfo array
+  
+          // Format the date inside feeInfo array
+          const formattedFeeInfo = data.feeInfo?.map((fee: FeeInfo) => ({
+            ...fee,
+            creationDateTime: formatToDDMMYYYY(fee.creationDateTime),
+          })) || [];
+  
+          setStudentData(data);
+          setFeeInfo(formattedFeeInfo);
+  
+          if (data.remainingFees !== undefined) {
+            setRemainingFees(data.remainingFees);
+          }
         } else {
           toast.error("Unexpected API response format or empty data.");
         }
@@ -80,19 +106,50 @@ const StudentFeesDetails = () => {
         setLoading(false);
       }
     };
-
+  
     fetchStudentData();
   }, [id]);
-
+  
   // Handle edit fee
   const handleEditFee = (feeId: string, feeAmount: number) => {
     setEditFeeId(feeId);
     setEditFeeAmount(feeAmount);
   };
 
+  // Validate fee amount
+  const validateFeeAmount = (amount: number): boolean => {
+    if (amount <= 0) {
+      toast.error("Fee amount must be greater than zero");
+      return false;
+    }
+    
+    if (amount > remainingFees) {
+      toast.error(`Fee amount cannot exceed remaining fees (${remainingFees})`);
+      return false;
+    }
+    
+    return true;
+  };
+
+  // Handle fee input change
+  const handleFeeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    // Only update state if value is positive (empty input is allowed in the field)
+    if (e.target.value === "" || value > 0) {
+      setEditFeeAmount(value || null);
+    }
+  };
+
   // Handle save updated fee
   const handleSaveFee = async () => {
-    if (!editFeeId || !editFeeAmount) return;
+    if (!editFeeId || !editFeeAmount) {
+      toast.error("Please enter a valid fee amount");
+      return;
+    }
+    
+    if (!validateFeeAmount(editFeeAmount)) {
+      return;
+    }
   
     try {
       const response = await axiosInstance.post(`/student/editFees`, {
@@ -135,7 +192,7 @@ const StudentFeesDetails = () => {
             </h1>
           </div>
 
-          {/* Display Student ID and Name */}
+          {/* Display Student Name */}
           {studentData ? (
             <>
               <p className="mb-3">
@@ -146,38 +203,54 @@ const StudentFeesDetails = () => {
                 <span className="text-xl font-semibold">Email:</span>
                 <span className="ml-2 text-xl"> {studentData.email}</span>
               </p>
+              {remainingFees !== undefined && (
+                <p className="mb-4">
+                  <span className="text-xl font-semibold">Remaining Fees:</span>
+                  <span className="ml-2 text-xl"> {remainingFees}</span>
+                </p>
+              )}
             </>
           ) : (
             <p>No student data found.</p>
+           
           )}
 
-          {/* Edit Fee Form */}
-          {editFeeId && (
-            <div className="mb-4">
-              <label className="block mb-2 font-semibold text-red-500">Edit Fee Amount</label>
-              <input
-                type="number"
-                value={editFeeAmount || ""}
-                onChange={(e) => setEditFeeAmount(Number(e.target.value))}
-                className="w-full p-2 border rounded-md mt-2 mb-3 "
-              />
-              <button
-                onClick={handleSaveFee}
-                className="btn button mt-0 ml-10 mb-1"
-              >
-                Update Fees
-              </button>
-              <button
-                onClick={() => {
-                  setEditFeeId(null);
-                  setEditFeeAmount(null);
-                }}
-                className="btn buttonred  ml-5 mb-1"
-              >
-                Cancel
-              </button>
-            </div>
-          )}
+{/* Edit Fee Form */}
+{editFeeId && (
+  <div className="mb-4">
+    <label className="block mb-2 font-semibold text-red-500">Edit Fee Amount</label>
+    
+    <div className="flex flex-wrap items-center gap-3">
+      <input
+        type="number"
+        value={editFeeAmount || ""}
+        onChange={handleFeeInputChange}
+        min="1"
+        max={remainingFees}
+        className="w-full p-2 border rounded-md"
+        placeholder="Enter amount"
+      />
+      
+      <button
+        onClick={handleSaveFee}
+        className="btn button px-4 py-2"
+      >
+        Update Fees
+      </button>
+      
+      <button
+        onClick={() => {
+          setEditFeeId(null);
+          setEditFeeAmount(null);
+        }}
+        className="btn buttonred px-4 py-2"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
+
 
           {/* Grid for Fee Info */}
           {feeInfo.length > 0 ? (
