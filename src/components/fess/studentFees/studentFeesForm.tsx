@@ -21,10 +21,22 @@ interface StudentFeesFormProps {
   onClose: () => void;
 }
 
-const validationSchema = Yup.object({
-  id: Yup.string().required("Student ID is required"),
-  fee: Yup.number().typeError("Fee must be a number").required("Fee is required").positive("Fee must be positive"),
-});
+// const validationSchema = Yup.object({
+//   id: Yup.string().required("Student ID is required"),
+//   fee: Yup.number().typeError("Fee must be a number").required("Fee is required").positive("Fee must be positive"),
+// });
+
+const getValidationSchema = (remainingFees: number) => {
+  return Yup.object({
+    id: Yup.string().required("Student ID is required"),
+    fee: Yup.number()
+      .typeError("Fee must be a number")
+      .required("Fee is required")
+      .positive("Fee must be positive")
+      .max(remainingFees, `Fee cannot exceed remaining amount (₹${remainingFees})`)
+      .test('is-not-zero', 'Fee amount cannot be zero', value => value !== 0),
+  });
+};
 
 const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
   const [studentData, setStudentData] = useState<Student[]>([]);
@@ -74,8 +86,12 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
       setFieldValue("id", student.id);
       setFieldValue("name", student.name);
       setFieldValue("email", student.email);
+      setFieldValue("fee", ""); 
+
     }
   };
+
+  
 
   return (
 
@@ -96,8 +112,7 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
             name: selectedStudent ? selectedStudent.name : "",
             email: selectedStudent ? selectedStudent.email : "",
           }}
-          validationSchema={validationSchema}
-          onSubmit={async (values, { resetForm }) => {
+          validationSchema={selectedStudent ? getValidationSchema(selectedStudent.remainingFees) : null}          onSubmit={async (values, { resetForm }) => {
             try {
               await saveStudentFee(values);
               toast.success("Fee added successfully!");

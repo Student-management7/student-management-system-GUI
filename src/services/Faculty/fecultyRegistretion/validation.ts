@@ -25,4 +25,7 @@ export const facultyValidationSchema = Yup.object().shape({
   //     cls_sub: Yup.array().of(Yup.string().required('Subject is required')),
   //   })
   // ),
+
+  email: Yup.string().required('Username is required'),
+  password: Yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
 });

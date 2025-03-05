@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Eye, IdCard, Pencil, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../loader/loader";
-import ReusableTable from "../MUI Table/ReusableTable";
+import ReusableTable from "../StudenAttendanceShow/Table/Table";
 import * as XLSX from "xlsx";
 import './StudentRegistration.scss';
 import axiosInstance from "../../services/Utils/apiUtils";

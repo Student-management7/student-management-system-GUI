@@ -11,6 +11,7 @@ interface FacultyFormProps {
   setIsFormVisible: (visible: boolean) => void;
   fetchFacultyDetails: () => void;
   setEditingFaculty: (faculty: FacultyFormData | null) => void;
+  editmode: boolean
 }
 
 const FacultyForm: React.FC<FacultyFormProps> = ({
@@ -18,6 +19,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
   setIsFormVisible,
   fetchFacultyDetails,
   setEditingFaculty,
+  editmode,
 }) => {
   const initialValues: FacultyFormData = {
     fact_id: editingFaculty?.fact_id || '',
@@ -64,18 +66,18 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
         setEditingFaculty(null);
         resetForm();
       } else {
-        
+
       }
     } catch (error) {
       toast.error('Failed to save faculty details. Please try again.');
       console.error('Error saving faculty details:', error);
-      
+
     }
   };
 
   return (
     <div className="box">
-    <ToastContainer position='top-right' autoClose={3000}  />
+      <ToastContainer position='top-right' autoClose={3000} />
       <Formik
         initialValues={initialValues}
         validationSchema={facultyValidationSchema}
@@ -184,7 +186,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                                 placeholder="Type"
                                 className="w-full p-2 border rounded-md"
                               />
-                             
+
                             </div>
 
                             <div>
@@ -275,7 +277,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                                 placeholder="Class Name"
                                 className="w-full p-2 border rounded-md mt-2.5"
                               />
-                             
+
                             </div>
 
                             <div className="md:col-span-2">
@@ -346,21 +348,42 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
               </div>
 
               {/* Faculty Credentials */}
-              <div className="row mt-3">
-                <div className='mt-3 mb-3'>
-                  <span className='head1'>Faculty Credentials</span>
+
+              {!editmode && (
+                <div className="row mt-3">
+                  <div className='mt-3 mb-3'>
+                    <span className='head1'>Faculty Credentials</span>
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label htmlFor="email" className="form-label">
+                      Username <span className="red">*</span>
+                    </label>
+                    <Field
+                      type="text"
+                      id="email"
+                      name="email"
+                      className={`form-control ${errors.email && touched.email ? 'is-invalid' : ''}`}
+                      placeholder="Enter Username"
+                    />
+                    <ErrorMessage name="email" component="div" className="invalid-feedback" />
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label htmlFor="password" className="form-label">
+                      Password <span className="red">*</span>
+                    </label>
+                    <Field
+                      type="password"
+                      id="password"
+                      name="password"
+                      className={`form-control ${errors.password && touched.password ? 'is-invalid' : ''}`}
+                      placeholder="Enter Password"
+                    />
+                    <ErrorMessage name="password" component="div" className="invalid-feedback" />
+                  </div>
                 </div>
-                <div className="col-md-4 mb-3">
-                  <label htmlFor="email" className="form-label">Username  <span className="red">*</span> </label>
-                  <Field type="text" id="email" name="email" className={`form-control ${errors.email && touched.email ? 'is-invalid' : ''}`} placeholder="Enter Username" />
-                  <ErrorMessage name="email" component="div" className="invalid-feedback" />
-                </div>
-                <div className="col-md-4 mb-3">
-                  <label htmlFor="password" className="form-label">Password  <span className="red">*</span> </label>
-                  <Field type="password" id="password" name="password" className={`form-control ${errors.password && touched.password ? 'is-invalid' : ''}`} placeholder="Enter Password" />
-                  <ErrorMessage name="password" component="div" className="invalid-feedback" />
-                </div>
-              </div>
+              )}
+
+
 
               {/* Submit Button */}
               <div className="row-1 mt-4 flex justify-around justify-center items-center">
@@ -369,21 +392,21 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                     {editingFaculty ? 'Update' : 'Submit'}
                   </button>
                 </span>
-                
-                  <span >
-                    <button
-                      type="button"
-                      className="btn buttonred  "
-                      onClick={() => {
-                        setEditingFaculty(null);
-                        resetForm();
-                        setIsFormVisible(false);
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  </span>
-                
+
+                <span >
+                  <button
+                    type="button"
+                    className="btn buttonred  "
+                    onClick={() => {
+                      setEditingFaculty(null);
+                      resetForm();
+                      setIsFormVisible(false);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </span>
+
               </div>
             </Form>
           );
