@@ -293,7 +293,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                                         onClick={() => pushSubject('')}
                                         className="flex items-center gap-1 px-2 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
                                       >
-                                        <FaPlus className="w-3 h-3" /> Add Subject
+                                        <FaPlus className="w-3 h-3 " /> Add Subject
                                       </button>
                                       </div>
                                     </div>
