@@ -121,7 +121,8 @@ const StudentRegistrationController = () => {
     try {
       await deleteStudentRecord(dialogData.id);
       setData((prev) => prev.filter((row) => row.id !== dialogData.id));
-      toast.success("Student record deleted successfully.");
+      fetchStudentDetails();
+      toast.success("Student record deleted successfully");
       fetchStudentDetails();
     } catch (error) {
       console.error(error);
@@ -192,7 +193,7 @@ const StudentRegistrationController = () => {
 
   return (
     <>
-    
+      <ToastContainer position="top-right" autoClose={3000}/>
       {loading && <Loader />}
       {!loading && (
         <div className="container-fluid p-3">
