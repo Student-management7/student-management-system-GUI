@@ -526,7 +526,7 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: prop
                 </div>
               </div>
 
-              <div className="row-1 mt-4 flex justify-around justify-center items-center md-4">
+              <div className="row-1 mt-4 flex justify-around  items-center md-4">
                 <button type="submit" className="btn button head1 text-white">
                   {isEdit ? "Update" : "Submit"}
                 </button>
