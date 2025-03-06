@@ -33,7 +33,6 @@ const App = () => {
             </div>
           } />
         ) : (
-          // Redirect unauthenticated users to the login page
           <Route path="*" element={<Navigate to="/login" />} />
         )}
       </Routes>
@@ -41,7 +40,6 @@ const App = () => {
   );
 };
 
-// Rendering App
 createRoot(document.getElementById('root')).render(
   <Router>
     <AuthProvider>
