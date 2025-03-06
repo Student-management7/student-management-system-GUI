@@ -171,22 +171,21 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                         })}
                         className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
                       >
-                        <FaPlus className="w-4 h-4" /> Add Qualification
+                        <FaPlus className="w-4 h-4" /> Add 
                       </button>
                     </div>
 
                     <div className="space-y-4">
                       {values.fact_qualifications.map((_, index) => (
                         <div key={index} className="relative bg-gray-50 p-4 rounded-md">
-                          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-                            <div>
-                              <label className="text-sm font-medium mb-1 block">Type</label>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div className="">
+                              <label className="text-sm font-medium mb-1 block ">Type</label>
                               <Field
                                 name={`fact_qualifications[${index}].type`}
                                 placeholder="Type"
                                 className="w-full p-2 border rounded-md"
                               />
-
                             </div>
 
                             <div>
@@ -235,6 +234,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                             </div>
                           </div>
 
+
                           {index > 0 && (
                             <button
                               type="button"
@@ -262,7 +262,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                         onClick={() => push({ cls_name: '', cls_sub: [''] })}
                         className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
                       >
-                        <FaPlus className="w-4 h-4" /> Add Class
+                        <FaPlus className="w-4 h-4" /> Add 
                       </button>
                     </div>
 
