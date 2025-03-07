@@ -45,8 +45,9 @@ const FacultyRegistrationController: React.FC = () => {
     const selectedFaculty = rowData.find((faculty) => faculty.fact_id === facultyData.fact_id);
     if (selectedFaculty) {
       setIsFormVisible(true);
-      setEditmode(true); // ✅ Enable edit mode when editing
+      setEditmode(true); 
       setEditingFaculty(selectedFaculty);
+      console.log('Editing faculty:----', selectedFaculty);
     } else {
       console.error('Faculty not found');
     }

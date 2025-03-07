@@ -100,39 +100,102 @@ const FacultySalaryDetails: React.FC = () => {
   console.log("faculty details ",faculty)
 
   // Switch to edit mode when edit button is clicked
-  const handleEditButtonClick = (data: FacultySalary) => {
-    // Prepare data for edit form with the structure needed for the edit payload
-    setEditData({
-      id: data.id,
-      facultyID: faculty?.fact_id,  // Include faculty ID from parent component
-      facultySalary: data.facultySalary,
-      facultyTax: data.facultyTax,
-      facultyTransport: data.facultyTransport,
-      facultyDeduction: parseDeductions(data.facultyDeduction)
-    });
-    
-    setShowEditForm(true);
-  };
 
-  // Handle save from edit form
- // Updated handleSave function
- const handleSave = async (updatedData: any) => {
+// Switch to edit mode when edit button is clicked
+const handleEditButtonClick = (data: FacultySalary) => {
+  console.log("Original facultyDeduction string:", data.facultyDeduction);
+  
+  let parsedDeductions = [];
+  
   try {
-    // Make API call with edit payload
+    // The data is coming as a JSON string of an array, so directly parse it
+    parsedDeductions = JSON.parse(data.facultyDeduction);
+    console.log("Successfully parsed deductions:", parsedDeductions);
+  } catch (error) {
+    console.error("Error parsing facultyDeduction:", error);
+    
+    // If JSON parsing fails, try to extract individual items
+    try {
+      // If the string contains a comma-separated list
+      if (data.facultyDeduction.includes(',')) {
+        const items = data.facultyDeduction.split(',');
+        parsedDeductions = items.map(item => {
+          const [name, amountStr] = item.split(':').map(s => s.trim());
+          return { name, amount: parseFloat(amountStr) };
+        }).filter(item => !isNaN(item.amount));
+      } else if (data.facultyDeduction.includes(':')) {
+        // Single item case
+        const [name, amountStr] = data.facultyDeduction.split(':').map(s => s.trim());
+        const amount = parseFloat(amountStr);
+        if (!isNaN(amount)) {
+          parsedDeductions = [{ name, amount }];
+        }
+      }
+      
+      console.log("Parsed from string format:", parsedDeductions);
+      
+      // If parsing failed and we have an empty array, use default
+      if (parsedDeductions.length === 0) {
+        parsedDeductions = [{ name: "Default", amount: 0 }];
+      }
+    } catch (innerError) {
+      console.error("Fallback parsing failed:", innerError);
+      parsedDeductions = [{ name: "Default", amount: 0 }];
+    }
+  }
+  
+  const updatedEditData = {
+    id: data.id,
+    facultyID: faculty?.fact_id,
+    facultySalary: data.facultySalary,
+    facultyTax: data.facultyTax,
+    facultyTransport: data.facultyTransport,
+    facultyDeduction: parsedDeductions,
+  };
+  
+  console.log("Final edit data:", updatedEditData);
+  
+  setEditData(updatedEditData);
+  setShowEditForm(true);
+};
+
+
+const handleSave = async (updatedData: any) => {
+  try {
+    // Parse facultyDeduction if it's a string, or use it directly if it's already an array
+    let facultyDeductionArray;
+    
+    if (typeof updatedData.facultyDeduction === 'string') {
+      try {
+        // If it's already a string, parse it to get the array
+        facultyDeductionArray = JSON.parse(updatedData.facultyDeduction);
+      } catch (error) {
+        console.error("Error parsing facultyDeduction string:", error);
+        facultyDeductionArray = [{ name: "Default", amount: 0 }];
+      }
+    } else if (Array.isArray(updatedData.facultyDeduction)) {
+      // If it's already an array, use it directly
+      facultyDeductionArray = updatedData.facultyDeduction;
+    } else {
+      // Fallback
+      facultyDeductionArray = [{ name: "Default", amount: 0 }];
+    }
+    
+    console.log("Sending facultyDeduction as array:", facultyDeductionArray);
+    
+    // Make API call with facultyDeduction as an array, not a string
     const response = await axiosInstance.post(`/faculty/salary/edit?id=${updatedData.id}`, {
       id: updatedData.id,
-      facultyID: updatedData.facultyID,  // Include faculty ID in payload
+      facultyID: updatedData.facultyID,
       facultySalary: updatedData.facultySalary,
       facultyTax: updatedData.facultyTax,
       facultyTransport: updatedData.facultyTransport,
-      facultyDeduction: updatedData.facultyDeduction,  // Send as array, not stringify
+      facultyDeduction: facultyDeductionArray, // Send as array, not as a string
     });
     
     if (response.status === 200) {
       toast.success("Salary information updated successfully");
-      // Refresh data after update
       fetchFacultyDetails();
-      // Close edit form
       setShowEditForm(false);
       setEditData(null);
     } else {
@@ -159,8 +222,8 @@ const FacultySalaryDetails: React.FC = () => {
 
     return (
     <>
-      <div className="box">
         <ToastContainer position="top-right" autoClose={3000} />
+      <div className="box">
         <div className="flex items-center space-x-4 mb-2">
             <span>
               <BackButton />
@@ -220,6 +283,7 @@ const FacultySalaryDetails: React.FC = () => {
 
   return (
     <>
+            <ToastContainer position="top-right" autoClose={3000} />
       {showEditForm && editData ? (
         <EditFacultySalaryForm
           initialData={editData}
