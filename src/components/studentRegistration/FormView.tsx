@@ -170,7 +170,7 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: prop
   
 
   return (
-    <>
+    <div className="mt-[26px]">
       <div>
         <ToastContainer position="top-right" autoClose={3000} />
          
@@ -182,6 +182,8 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: prop
         >
           {({ errors, touched, setFieldValue }) => (
             <Form>
+           
+
               <div className="row">
                 <div className="col-md-4">
                   <div className="form-group">
@@ -407,10 +409,10 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: prop
 
               <hr className="hr" />
               <div className="titel">
-                <h2 className="head1">Family Details</h2>
+                <h2 className="head1 mt-4">Family Details</h2>
               </div>
 
-              <div className="row">
+              <div className="row mt-4">
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="familyDetails.stdo_FatherName" className="form-label">
@@ -510,7 +512,7 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: prop
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="familyDetails.stdo_email" className="form-label">
-                      Family Email
+                      Family Email<span className="red">*</span>
                     </label>
                     <Field
                       type="email"
@@ -551,7 +553,8 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: prop
           />
         )}
       </div>
-    </>
+    
+    </div>
   );
 };
 

@@ -203,9 +203,9 @@ const StudentRegistrationController = () => {
 
           {!studentData ? (
             <div>
-              <div className="p-4">
-                <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
-                <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 ml-2">Upload</button>
+              <div className="flex flex-row my-3 ">
+                <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} className=" p-0    mr-[-25px]"/>
+                <button onClick={handleUpload} className="bg-blue-500 text-white px-2 py-2 md:ml-2 ">Upload</button>
               </div>
               <div className="rightButton">
                 <button
@@ -239,7 +239,7 @@ const StudentRegistrationController = () => {
                       }}
                       className="bi bi-arrow-left-circle"
                     />
-                    <span>{editFormView ? "Edit Student" : "Add Student"}</span>
+                    <span className="pl-4">{editFormView ? "Edit Student" : "Add Student"}</span>
                   </div>
                 </h1>
               </div>
