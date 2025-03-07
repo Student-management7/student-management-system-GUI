@@ -137,7 +137,7 @@ const FacultyRegistrationController: React.FC = () => {
           {!isFormVisible ? (
             <div className="box">
               <h1 className='head1 mb-4'>Faculty Registration</h1>
-              <div className='float-right'>
+              <div className='float-right ml-2'>
                 <button onClick={handleAddFaculty} className="btn button head1 text-white">
                   Add Faculty
                 </button>
