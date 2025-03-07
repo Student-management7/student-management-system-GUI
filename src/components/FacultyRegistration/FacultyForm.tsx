@@ -156,7 +156,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
               {/* Qualifications Section */}
               <FieldArray name="fact_qualification">
                 {({ push, remove }) => (
-                  <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <div >
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="head1">Qualifications </h3>
                       <button
@@ -254,7 +254,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
               {/* Classes and Subjects Section */}
               <FieldArray name="Fact_Cls">
                 {({ push, remove }) => (
-                  <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="head1">Classes</h3>
                       <button
@@ -284,15 +284,18 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                               <FieldArray name={`Fact_Cls[${classIndex}].cls_sub`}>
                                 {({ push: pushSubject, remove: removeSubject }) => (
                                   <div>
-                                    <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center  mb-2">
                                       <label className="text-sm font-medium">Subjects</label>
+                                      <div className='ml-16'>
+    
                                       <button
                                         type="button"
                                         onClick={() => pushSubject('')}
                                         className="flex items-center gap-1 px-2 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
                                       >
-                                        <FaPlus className="w-3 h-3" /> Add Subject
+                                        <FaPlus className="w-3 h-3 " /> Add Subject
                                       </button>
+                                      </div>
                                     </div>
 
                                     <div className="space-y-2">
@@ -301,7 +304,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                                           <Field
                                             name={`Fact_Cls[${classIndex}].cls_sub[${subIndex}]`}
                                             placeholder="Subject"
-                                            className="flex-1 p-2 border rounded-md"
+                                            className=" p-2 border rounded-md"
                                           />
                                           <button
                                             type="button"

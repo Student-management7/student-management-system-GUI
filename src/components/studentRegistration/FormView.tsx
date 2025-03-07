@@ -136,6 +136,7 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: prop
       stdo_primaryContact: Yup.string()
         .required("Primary contact is required")
         .matches(/^[0-9]{10}$/, "Contact number must be 10 digits"),
+        stdo_email: Yup.string().required("Family Email is Required")
     }),
   });
 
@@ -515,14 +516,17 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: prop
                       type="email"
                       id="familyDetails.stdo_email"
                       name="familyDetails.stdo_email"
-                      className="form-control"
+                      className={`form-control ${errors.familyDetails?.stdo_email && touched.familyDetails?.stdo_email ? "is-invalid" : ""}`}
                       placeholder="Enter family email"
                     />
+                    {errors.familyDetails?.stdo_email && touched.familyDetails?.stdo_email && (
+                      <div className="invalid-feedback">{errors.familyDetails.stdo_email}</div>
+                    )}
                   </div>
                 </div>
               </div>
 
-              <div className="row-1 mt-4 flex justify-around justify-center items-center md-4">
+              <div className="row-1 mt-4 flex justify-around  items-center md-4">
                 <button type="submit" className="btn button head1 text-white">
                   {isEdit ? "Update" : "Submit"}
                 </button>

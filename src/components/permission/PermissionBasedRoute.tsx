@@ -36,18 +36,13 @@ import Admindeshboard from '../../components/SuperAdmin/AdminDeshboard'
 
 import UserPassword from "../../Pages/setting/UserPassord";
 import Profile from "../../Pages/profile/Profile";
+// import Landing from "../../Pages/lan/Landing";
 interface Permission {
   [module: string]: {
     [route: string]: boolean;
   };
 }
 
-// interface PermissionPayload {
-//   facultyId: string;
-//   email: string;
-//   permissions: Permission;
-//   role: string; // Add role to the API response
-// }
 
 const PermissionBasedRoute: React.FC = () => {
   const [permissions, setPermissions] = useState<Permission | null>(null);
@@ -77,7 +72,7 @@ const PermissionBasedRoute: React.FC = () => {
 
 
         setPermissions(permissions);
-        setRole(role); // Set the role from the API response
+        setRole(role); 
       } catch (error) {
         console.error("Error fetching permissions", error);
       } finally {
@@ -140,6 +135,7 @@ const allRoutes = [
     element: <StudentFeesController />, 
     visible: role === "user" || (role === "sub-user" && permissions?.student?.studentFeesController) 
   },
+ 
   // Only visible for admin
   { path: "/permission", element: <Permission />, visible: role === "user" }, // Only visible for admin
   { path: "/superAdminController", element: <SuperAdminController />, visible: role === "admin" }, // Only visible for admin
@@ -151,11 +147,7 @@ const allRoutes = [
   } } />, visible: true }, 
 
 ];
-// useEffect(() => {
-//   console.log("Current Role:", role);
-//   console.log("Current Permissions:", permissions);
-// }, [role, permissions]);
-  // Filter routes based on role and permissions
+
   const finalRoutes = allRoutes.filter(({ visible }) => visible);
 
   return (
