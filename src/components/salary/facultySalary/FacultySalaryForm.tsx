@@ -62,6 +62,13 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
     const cleanedDeductions = values.facultyDeduction.filter(
       (deduction: any) => deduction.name && deduction.amount > 0
     );
+    
+
+    const formattedDeductions = cleanedDeductions.map((deduction: any) => ({
+      name: deduction.name,
+      amount: deduction.amount,
+    }));
+
 
     // Save payload structure
     const payload = {
@@ -69,10 +76,8 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
       facultySalary: values.facultySalary,
       facultyTax: values.facultyTax,
       facultyTransport: values.facultyTransport,
-      facultyDeduction: cleanedDeductions.map((deduction: any) => ({
-        name: deduction.name,
-        amount: deduction.amount,
-      })),
+      facultyDeduction: formattedDeductions, // Pass as array, handleSave will stringify if needed
+
     };
 
     try {
