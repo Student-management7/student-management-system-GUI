@@ -34,11 +34,11 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
     fact_state: editingFaculty?.fact_state || '',
     fact_joiningDate: editingFaculty?.fact_joiningDate || '',
     fact_leavingDate: editingFaculty?.fact_leavingDate || '',
-    fact_qualifications: editingFaculty?.fact_qualifications || [
-      { type: 'Graduation', grd_sub: '', grd_branch: '', grd_grade: '', grd_university: '', grd_yearOfPassing: '' },
+    fact_qualification: editingFaculty?.fact_qualification || [
+      { type: 'Graduation', grd_name: '', grd_branch: '', grd_grade: '', grd_university: '', grd_yearOfPassing: '' },
     ],
-    Fact_cls: editingFaculty?.Fact_cls || [{ cls_name: '', cls_sub: [''] }],
-    Fact_status: editingFaculty?.Fact_status || '',
+    Fact_Cls: editingFaculty?.Fact_Cls || [{ cls_name: '', cls_sub: [''] }],
+    Fact_Status: editingFaculty?.Fact_Status || '',
   };
 
   const handleSubmit = async (values: FacultyFormData, { resetForm }: any) => {
@@ -154,7 +154,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
               </div>
 
               {/* Qualifications Section */}
-              <FieldArray name="fact_qualifications">
+              <FieldArray name="fact_qualification">
                 {({ push, remove }) => (
                   <div className="bg-white p-6 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between mb-4">
@@ -163,7 +163,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                         type="button"
                         onClick={() => push({
                           type: '',
-                          grd_sub: '',
+                          grd_name: '',
                           grd_branch: '',
                           grd_grade: '',
                           grd_university: '',
@@ -176,13 +176,13 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                     </div>
 
                     <div className="space-y-4">
-                      {values.fact_qualifications.map((_, index) => (
+                      {values.fact_qualification.map((_, index) => (
                         <div key={index} className="relative bg-gray-50 p-4 rounded-md">
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div className="">
                               <label className="text-sm font-medium mb-1 block ">Type</label>
                               <Field
-                                name={`fact_qualifications[${index}].type`}
+                                name={`fact_qualification[${index}].type`}
                                 placeholder="Type"
                                 className="w-full p-2 border rounded-md"
                               />
@@ -191,7 +191,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                             <div>
                               <label className="text-sm font-medium mb-1 block">Subject</label>
                               <Field
-                                name={`fact_qualifications[${index}].grd_sub`}
+                                name={`fact_qualification[${index}].grd_name`}
                                 placeholder="Subject"
                                 className="w-full p-2 border rounded-md"
                               />
@@ -200,7 +200,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                             <div>
                               <label className="text-sm font-medium mb-1 block">Branch</label>
                               <Field
-                                name={`fact_qualifications[${index}].grd_branch`}
+                                name={`fact_qualification[${index}].grd_branch`}
                                 placeholder="Branch"
                                 className="w-full p-2 border rounded-md"
                               />
@@ -209,7 +209,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                             <div>
                               <label className="text-sm font-medium mb-1 block">Grade</label>
                               <Field
-                                name={`fact_qualifications[${index}].grd_grade`}
+                                name={`fact_qualification[${index}].grd_grade`}
                                 placeholder="Grade"
                                 className="w-full p-2 border rounded-md"
                               />
@@ -218,7 +218,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                             <div>
                               <label className="text-sm font-medium mb-1 block">University</label>
                               <Field
-                                name={`fact_qualifications[${index}].grd_university`}
+                                name={`fact_qualification[${index}].grd_university`}
                                 placeholder="University"
                                 className="w-full p-2 border rounded-md"
                               />
@@ -227,7 +227,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                             <div>
                               <label className="text-sm font-medium mb-1 block">Year</label>
                               <Field
-                                name={`fact_qualifications[${index}].grd_yearOfPassing`}
+                                name={`fact_qualification[${index}].grd_yearOfPassing`}
                                 type="date"
                                 className="w-full p-2 border rounded-md"
                               />
@@ -252,7 +252,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
               </FieldArray>
 
               {/* Classes and Subjects Section */}
-              <FieldArray name="Fact_cls">
+              <FieldArray name="Fact_Cls">
                 {({ push, remove }) => (
                   <div className="bg-white p-6 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between mb-4">
@@ -267,13 +267,13 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                     </div>
 
                     <div className="space-y-6">
-                      {values.Fact_cls.map((_, classIndex) => (
+                      {values.Fact_Cls.map((_, classIndex) => (
                         <div key={classIndex} className="relative bg-gray-50 p-4 rounded-md">
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                               <label className="text-sm font-medium mb-1 block">Class Name</label>
                               <Field
-                                name={`Fact_cls[${classIndex}].cls_name`}
+                                name={`Fact_Cls[${classIndex}].cls_name`}
                                 placeholder="Class Name"
                                 className="w-full p-2 border rounded-md mt-2.5"
                               />
@@ -281,7 +281,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                             </div>
 
                             <div className="md:col-span-2">
-                              <FieldArray name={`Fact_cls[${classIndex}].cls_sub`}>
+                              <FieldArray name={`Fact_Cls[${classIndex}].cls_sub`}>
                                 {({ push: pushSubject, remove: removeSubject }) => (
                                   <div>
                                     <div className="flex items-center justify-between mb-2">
@@ -296,10 +296,10 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                                     </div>
 
                                     <div className="space-y-2">
-                                      {values.Fact_cls[classIndex].cls_sub.map((_, subIndex) => (
+                                      {values.Fact_Cls[classIndex].cls_sub.map((_, subIndex) => (
                                         <div key={`${classIndex}-${subIndex}`} className="flex items-center gap-2">
                                           <Field
-                                            name={`Fact_cls[${classIndex}].cls_sub[${subIndex}]`}
+                                            name={`Fact_Cls[${classIndex}].cls_sub[${subIndex}]`}
                                             placeholder="Subject"
                                             className="flex-1 p-2 border rounded-md"
                                           />
@@ -338,8 +338,8 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
               {/* Status */}
               <div className="row mt-3 md-1">
                 <div className="col-md-4 ml-6">
-                  <label htmlFor="fact_status" className="form-label head1">Status</label>
-                  <Field as="select" id="fact_status" name="fact_status" className={`form-control `}>
+                  <label htmlFor="Fact_Status" className="form-label head1">Status</label>
+                  <Field as="select" id="Fact_Status" name="Fact_Status" className={`form-control `}>
                     <option value="">Select Status</option>
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>

@@ -11,19 +11,19 @@ export interface FacultyFormData {
   fact_state: string;
   fact_joiningDate: string;
   fact_leavingDate: string;
-  fact_qualifications: {
+  fact_qualification: {
     type: string;
-    grd_sub: string;
+    grd_name: string;
     grd_branch: string;
     grd_grade: string;
     grd_university: string;
     grd_yearOfPassing: string;
   }[];
-  Fact_cls: {
+  Fact_Cls: {
     cls_name: string;
     cls_sub: string[];
   }[];
-  Fact_status: string;
+  Fact_Status: string;
 }
 
 
