@@ -56,35 +56,31 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
     facultyTax: 0,
     facultyTransport: 0,
     facultyDeduction: [{ name: "", amount: 0 }],
+    paymentMode: "",
   };
 
   const handleSubmit = async (values: any) => {
     const cleanedDeductions = values.facultyDeduction.filter(
       (deduction: any) => deduction.name && deduction.amount > 0
     );
-    
-
+  
     const formattedDeductions = cleanedDeductions.map((deduction: any) => ({
       name: deduction.name,
       amount: deduction.amount,
     }));
-
-
-    // Save payload structure
+  
     const payload = {
       facultyID: values.facultyID,
       facultySalary: values.facultySalary,
       facultyTax: values.facultyTax,
       facultyTransport: values.facultyTransport,
-      facultyDeduction: formattedDeductions, // Pass as array, handleSave will stringify if needed
-
+      facultyDeduction: formattedDeductions,
+      paymentMode: values.paymentMode
     };
-
+  
     try {
       await onSave(payload);
-      toast.success("Salary information saved successfully");
     } catch (error) {
-      toast.error("Failed to save salary information");
       console.error("Salary save error:", error);
     }
   };
@@ -239,6 +235,25 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                     component="div"
                     className="text-danger mt-1"
                   />
+                </div>
+                <div className="mb-3">
+                <label className="form-label">Payment Mode</label>
+                <Field
+                  name="paymentMode"
+                  as="select"
+                  className={`form-control ${touched.paymentMode && errors.paymentMode ? "is-invalid" : ""
+                    }`}
+                >
+                  <option value="">Select Payment Mode</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Cheque">Cheque</option>
+                </Field>
+                <ErrorMessage
+                  name="paymentMode"
+                  component="div"
+                  className="text-danger mt-1"
+                />
+
                 </div>
 
                 {/* Deductions */}

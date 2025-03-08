@@ -189,6 +189,10 @@ const StudentRegistrationController = () => {
     }
   };
 
+  const handeledBulkUplade = () => {
+    navigate(`/bulkupload`);
+  };
+
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000}/>
@@ -208,7 +212,13 @@ const StudentRegistrationController = () => {
                 <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} className=" p-0    mr-[-25px]"/>
                 <button onClick={handleUpload} className="bg-blue-500 text-white px-2 py-2 md:ml-2 ">Upload</button>
               </div>
-              <div className="rightButton">
+              <div className="rightButton ">
+                <button
+                  onClick={() => handeledBulkUplade()}
+                  className="btn button head1 text-white mr-3"
+                >
+                  Bulk Upload
+                </button>
                 <button
                   onClick={() => setStudentData(true)}
                   className="btn button head1 text-white"

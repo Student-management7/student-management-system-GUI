@@ -6,6 +6,7 @@ import BackButton from "../../Navigation/backButton";
 import ReusableTable from "../../StudenAttendanceShow/Table/Table";
 // import { formatToDDMMYYYY1 } from "../../Utils/dateUtils";
 import { toast, ToastContainer } from "react-toastify";
+import { formatToDDMMYYYY1 } from "../../Utils/dateUtils";
 
  const formatToDDMMYYYY = (dateString: string) => {
   if (!dateString) return "";
@@ -54,6 +55,7 @@ const StudentFeesDetails = () => {
       valueFormatter: (params: { value: string }) => formatToDDMMYYYY1(params.value),
     },
     { headerName: "Fee", field: "fee" },
+    {headerName:"Payment Mode",field:"paymentMode"},
     {
       headerName: "Actions",
       field: "actions",
