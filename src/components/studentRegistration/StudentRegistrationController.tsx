@@ -12,9 +12,7 @@ import { Eye, IdCard, Pencil, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../loader/loader";
 import ReusableTable from "../StudenAttendanceShow/Table/Table";
-import * as XLSX from "xlsx";
 import './StudentRegistration.scss';
-import axiosInstance from "../../services/Utils/apiUtils";
 
 const StudentRegistrationController = () => {
   const navigate = useNavigate();
@@ -25,7 +23,6 @@ const StudentRegistrationController = () => {
   const [dialogData, setDialogData] = useState<StudentFormData | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
 
   const [columns] = useState<any[]>([
     { field: "name", headerName: "Name" },
@@ -145,49 +142,7 @@ const StudentRegistrationController = () => {
     navigate(`/StudentDetails/${id}`);
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const uploadedFile = event.target.files[0];
-      setFile(uploadedFile);
 
-      const reader = new FileReader();
-      reader.readAsBinaryString(uploadedFile);
-
-      reader.onload = (e) => {
-        const binaryData = e.target?.result;
-        const workbook = XLSX.read(binaryData, { type: "binary" });
-
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-
-        const parsedData = XLSX.utils.sheet_to_json(sheet);
-        console.log("Excel Converted JSON:", parsedData);
-      };
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!file) {
-      toast.warning("Please select a file before uploading!");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await axiosInstance.post("/student/bulkupload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      toast.success(`Upload successful! `); 
-
-      fetchStudentDetails();
-
-    } catch (error) {
-      toast.error("Upload failed. Please try again.");
-    }
-  };
 
   const handeledBulkUplade = () => {
     navigate(`/bulkupload`);
@@ -208,10 +163,7 @@ const StudentRegistrationController = () => {
           {!studentData ? (
             <div>
                <h1 className="head1 py-3">Student Registration</h1>
-              <div className="flex flex-row my-3 ">
-                <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} className=" p-0    mr-[-25px]"/>
-                <button onClick={handleUpload} className="bg-blue-500 text-white px-2 py-2 md:ml-2 ">Upload</button>
-              </div>
+              
               <div className="rightButton ">
                 <button
                   onClick={() => handeledBulkUplade()}
