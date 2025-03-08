@@ -142,7 +142,7 @@ const StudentAttendanceEditSave: React.FC = () => {
           <span>
             <BackButton />
           </span>
-          <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Attendance Update</h1>
+          <h1 className="head1" >Student Attendance Update</h1>
         </div>
         <div className="row mb-4 p-3 border rounded-lg bg-light shadow-sm d-flex flex-wrap align-items-center gap-3 ml-1 mr-1">
 

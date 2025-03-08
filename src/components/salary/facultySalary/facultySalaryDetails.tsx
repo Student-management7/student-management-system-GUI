@@ -228,7 +228,7 @@ const handleSave = async (updatedData: any) => {
             <span>
               <BackButton />
             </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Faculty Salary Details</h1>
+            <h1 className="head1" >Faculty Salary Details</h1>
           </div>
        
 

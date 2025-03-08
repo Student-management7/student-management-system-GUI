@@ -5,7 +5,7 @@ import './SideMenu.scss';
 import { FaRightToBracket, FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import '../../global.scss';
 import axiosInstance from '../../services/Utils/apiUtils'; // Import axiosInstance to fetch role
-
+import logo from "../../assets/ews-full-white.png"
 const SideBarController = () => {
     const [submenu, setSubmenu] = useState<{ [key: number]: boolean }>({});
     const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Track sidebar state
@@ -56,7 +56,8 @@ const SideBarController = () => {
             <div></div>
             <div id="item" className='sideNav'>
                 <div className="logo flex">
-                    <p className='fs-4'>EasyWaySolution</p>
+                    {/* <p className='fs-4'>EasyWaySolution</p> */}
+                    <img src={logo} alt="" className='fs-4 md:w-[170px] w-[110px]' />
                     <span className='sideIcone' onClick={toggleSidebar}>
                         {isSidebarOpen ? <FaChevronLeft /> : <FaChevronRight />}
                     </span>
