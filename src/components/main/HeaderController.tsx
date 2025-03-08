@@ -75,7 +75,7 @@ const HeaderController: React.FC = () => {
             {({ open }) => (
               <>
                 <Menu.Button className="flex items-center space-x-3 p-2 rounded-full transition-colors duration-200">
-                  <UserCircleIcon className="h-8  w-8 text-white" />
+                  <UserCircleIcon className="h-8 w-8 text-white" />
                   <span className="hidden sm:inline text-sm font-medium text-white">
                     {userName}
                   </span>

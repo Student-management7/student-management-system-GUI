@@ -226,8 +226,8 @@ const StudentManagementSystem: React.FC = () => {
                 <div className="box">
                     <div className="box grid grid-cols-1 gap-6 p-6">
                         
-                            <h1 className="head1Class Fee Page">Student Attendance</h1>
-                       
+                            {/* <h1 className="head1Class Fee Page">Student Attendance</h1> */}
+                       <h1 className="head1">Student Attendance</h1>
 
                         {error && <p className="text-red-500">{error}</p>}
 
