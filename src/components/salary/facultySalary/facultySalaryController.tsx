@@ -173,7 +173,7 @@ const FacultySalaryController: React.FC = () => {
             <>
               <div className="text-right mb-4">
                 <div className="flex items-center space-x-4 mb-4 ">
-                  <h1 className="text-xl items-center font-bold text-[#27727A]">Faculty Salary</h1>
+                  <h1 className="head1">Faculty Salary</h1>
                 </div>
                 <span
                   onClick={() => {

@@ -66,7 +66,7 @@ const HeaderController: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Left Side: Username */}
           <div className="flex items-center space-x-4">
-            <img src="/images/logo.png" alt="Logo" className="h-8 w-auto" />
+            <img src="/icon.jpg" alt="Logo" className="h-8 w-auto rounded-full" />
             <span className="text-xl text-white">{userName}</span>
           </div>
 
@@ -75,7 +75,7 @@ const HeaderController: React.FC = () => {
             {({ open }) => (
               <>
                 <Menu.Button className="flex items-center space-x-3 p-2 rounded-full transition-colors duration-200">
-                  <UserCircleIcon className="h-8 w-8 text-white" />
+                  <UserCircleIcon className="h-8  w-8 text-white" />
                   <span className="hidden sm:inline text-sm font-medium text-white">
                     {userName}
                   </span>

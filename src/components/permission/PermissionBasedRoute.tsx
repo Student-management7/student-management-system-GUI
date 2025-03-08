@@ -36,6 +36,7 @@ import Admindeshboard from '../../components/SuperAdmin/AdminDeshboard'
 
 import UserPassword from "../../Pages/setting/UserPassord";
 import Profile from "../../Pages/profile/Profile";
+import Login from "../../Pages/Login/Login";
 // import Landing from "../../Pages/lan/Landing";
 interface Permission {
   [module: string]: {
@@ -155,8 +156,10 @@ const allRoutes = [
       {finalRoutes.map(({ path, element }) => (
         <Route key={path} path={path} element={element} />
       ))}
+      
       <Route path="*" element={<Navigate to="/AccessDenied" />} />
       <Route path="/AccessDenied" element={<AccessDenied />} />
+      
 
     </Routes>
   );

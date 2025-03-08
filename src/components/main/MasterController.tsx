@@ -41,30 +41,30 @@ const MasterController = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 p-6 font-sans">
-      {/* Header */}
+    <div className="min-h-screen box p-6 ">
+      
       <header className="text-center mb-12">
         <h1 className="head1 mb-2">School Management Dashboard</h1>
         <p className="text-gray-600">Welcome in Easyway solution for managing your school operations.</p>
       </header>
 
-      {/* Data Cards */}
+     
       <div className="flex flex-col md:flex-row justify-around gap-6">
-        {/* Total Students Card */}
+        
         <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-6 text-center w-full md:w-1/3">
           <h2 className="text-2xl font-semibold text-blue-600 mb-4">Total Students</h2>
           <p className="text-4xl font-bold text-gray-900">{totalStudents}</p>
           <p className="text-sm text-gray-500 mt-2">Registered students in the school</p>
         </div>
 
-        {/* Total Faculty Card */}
+       
         <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-6 text-center w-full md:w-1/3">
           <h2 className="text-2xl font-semibold text-purple-600 mb-4">Total Faculty</h2>
           <p className="text-4xl font-bold text-gray-900">{totalFaculty}</p>
           <p className="text-sm text-gray-500 mt-2">Teaching and non-teaching staff</p>
         </div>
 
-        {/* Total Notifications Card */}
+       
         <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-6 text-center w-full md:w-1/3">
           <h2 className="text-2xl font-semibold text-green-600 mb-4">Total Notifications</h2>
           <p className="text-4xl font-bold text-gray-900">{totalNotifications}</p>

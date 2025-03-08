@@ -105,7 +105,7 @@ const FacultyAttendance: React.FC = () => {
             <span>
               <BackButton />
             </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Faculty Attendance Edit </h1>
+            <h1 className="head1 items-center " >Faculty Attendance Edit </h1>
           </div>
 
 

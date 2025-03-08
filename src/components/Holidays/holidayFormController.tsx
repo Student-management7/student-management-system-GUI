@@ -138,7 +138,7 @@ const HolidayComponent: React.FC = () => {
           {!showForm ? (
             <>
               <div className="flex items-center space-x-4 mb-4">
-                <h1 className="text-xl font-bold text-[#27727A]">Holiday Page</h1>
+                <h1 className="head1">Holiday Page</h1>
               </div>
               <div className="float-right mt-1">
                 <button onClick={() => setShowForm(true)} className="btn button ml-2 ">

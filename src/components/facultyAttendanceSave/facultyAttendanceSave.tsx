@@ -164,10 +164,8 @@ const AttendanceSave: React.FC = () => {
       {!loading && (
         <div className="box p-4">
           <div className="flex items-center space-x-4 mb-4">
-            <span>
-              <BackButton />
-            </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]">
+            
+            <h1 className="head1 items-center ">
               Faculty Attendance Update
             </h1>
           </div>
