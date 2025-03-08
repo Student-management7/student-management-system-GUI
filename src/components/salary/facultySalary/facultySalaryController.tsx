@@ -5,8 +5,8 @@ import { fetchFacultySalaries, saveFacultySalary } from "../../../services/salar
 import { Eye } from "lucide-react";
 import Loader from "../../loader/loader";
 import ReusableTable from "../../StudenAttendanceShow/Table/Table";
-import { toast, ToastContainer } from "react-toastify";
-// Define types with improved clarity
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 type DeductionItem = {
   name: string;
   amount: number;
@@ -127,10 +127,12 @@ const FacultySalaryController: React.FC = () => {
     setError(null);
     try {
       await saveFacultySalary(payload);
+      toast.success("Salary information saved successfully"); // Add success toaster message
       setShowForm(false);
       await fetchSalaryDetails();
     } catch (error) {
       console.error("Error saving faculty salary details:", error);
+      toast.error("Failed to save salary information"); // Add error toaster message
       setError("Failed to save salary details. Please try again.");
     } finally {
       setLoading(false);
@@ -147,12 +149,12 @@ const FacultySalaryController: React.FC = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
 
       {loading ? (
         <Loader /> // Show loader while data is being fetched
       ) : (
         <div className="box">
+          <ToastContainer position="top-right" autoClose={3000} />
           {error && (
             <div className="alert alert-error mb-4">
               {error}
@@ -198,6 +200,9 @@ const FacultySalaryController: React.FC = () => {
                 facultyTax: 0,
                 facultyTransport: 0,
                 facultyDeduction: [],
+                paymentMode: "Cash"
+
+                
               }}
               onSave={handleSave}
               onCancel={handleCancel}

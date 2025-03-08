@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { toast, ToastContainer } from "react-toastify";
 import { saveStudentFee } from "../../../services/studentFees/api"; // Import API service
 import axiosInstance from "../../../services/Utils/apiUtils";
 import { ArrowLeft } from "lucide-react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import the CSS
 
 interface Student {
   id: string;
@@ -102,23 +103,26 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
         toast.error("Fee cannot exceed remaining fees.");
         return;
       }
-
+  
       const payload = {
         id: values.id,
         fee: values.fee,
         paymentMode: values.paymentMode,
       };
-
+  
       await saveStudentFee(payload);
       toast.success("Fee added successfully!");
-      onClose();
+      setTimeout(() => {
+        onClose(); // Delay closing the form
+      }, 1000); // 1 second delay
     } catch (error) {
+      console.error("Failed to save fee:", error);
       toast.error("Failed to save fee. Please try again.");
     }
   };
-
   return (
     <>
+            <ToastContainer position="top-right" autoClose={3000} />
       <div className="head1 flex items-center">
         <button onClick={onClose} className="p-2 rounded-full arrow transition">
           <ArrowLeft className="h-7 w-7" />
@@ -271,7 +275,6 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
           )}
         </Formik>
 
-        <ToastContainer position="top-right" autoClose={3000} />
       </div>
     </>
   );

@@ -63,30 +63,24 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
     const cleanedDeductions = values.facultyDeduction.filter(
       (deduction: any) => deduction.name && deduction.amount > 0
     );
-    
-
+  
     const formattedDeductions = cleanedDeductions.map((deduction: any) => ({
       name: deduction.name,
       amount: deduction.amount,
     }));
-
-
-    // Save payload structure
+  
     const payload = {
       facultyID: values.facultyID,
       facultySalary: values.facultySalary,
       facultyTax: values.facultyTax,
       facultyTransport: values.facultyTransport,
-      facultyDeduction: formattedDeductions, // Pass as array, handleSave will stringify if needed
+      facultyDeduction: formattedDeductions,
       paymentMode: values.paymentMode
-
     };
-
+  
     try {
       await onSave(payload);
-      toast.success("Salary information saved successfully");
     } catch (error) {
-      toast.error("Failed to save salary information");
       console.error("Salary save error:", error);
     }
   };
