@@ -62,7 +62,7 @@ const Login: React.FC = () => {
       setUserDetails(data); // Update context with user details
       localStorage.setItem('userDetails', JSON.stringify(data));
       
-      navigate('/main');
+      navigate('/main'); 
     } catch (error) {
       setErrorMessage('Login failed. Please check your credentials.');
       console.error('Login Error:', error);

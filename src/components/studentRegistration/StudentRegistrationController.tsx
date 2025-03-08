@@ -79,7 +79,7 @@ const StudentRegistrationController = () => {
     },
   ]);
 
-  // Fetch student details
+  
   const fetchStudentDetails = useCallback(async () => {
     setLoading(true);
     try {
@@ -87,7 +87,7 @@ const StudentRegistrationController = () => {
       setData(data);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to fetch student details. Please try again.");
+      toast.warn("No student avialable. Please registerd student.");
     } finally {
       setLoading(false);
     }
@@ -97,13 +97,11 @@ const StudentRegistrationController = () => {
     fetchStudentDetails();
   }, [fetchStudentDetails]);
 
-  // Handle single row data for editing
   const getSingleData = (data: StudentFormData) => {
     setSingleRowData(data);
     setEditFormView(true);
     setStudentData(true);
   };
-  // Handle cancel button in edit mode
   const handleCancelEdit = () => {
     setEditFormView(false); // Close edit form
     setStudentData(false); // Hide the form
@@ -200,13 +198,16 @@ const StudentRegistrationController = () => {
       <ToastContainer position="top-right" autoClose={3000}/>
       {loading && <Loader />}
       {!loading && (
-        <div className="container-fluid p-3">
-          <div className="headding1 mb-4">
-            <h1 className="text-center">Student Registration</h1>
-          </div>
+        <>
+     
 
+        <div className="box p-3">
+          
+          
+         
           {!studentData ? (
             <div>
+               <h1 className="head1 py-3">Student Registration</h1>
               <div className="flex flex-row my-3 ">
                 <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} className=" p-0    mr-[-25px]"/>
                 <button onClick={handleUpload} className="bg-blue-500 text-white px-2 py-2 md:ml-2 ">Upload</button>
@@ -265,6 +266,7 @@ const StudentRegistrationController = () => {
             </div>
           )}
         </div>
+        </>
       )}
     </>
   );
