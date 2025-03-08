@@ -56,6 +56,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
     facultyTax: 0,
     facultyTransport: 0,
     facultyDeduction: [{ name: "", amount: 0 }],
+    paymentMode: "",
   };
 
   const handleSubmit = async (values: any) => {
@@ -77,6 +78,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
       facultyTax: values.facultyTax,
       facultyTransport: values.facultyTransport,
       facultyDeduction: formattedDeductions, // Pass as array, handleSave will stringify if needed
+      paymentMode: values.paymentMode
 
     };
 
@@ -239,6 +241,25 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                     component="div"
                     className="text-danger mt-1"
                   />
+                </div>
+                <div className="mb-3">
+                <label className="form-label">Payment Mode</label>
+                <Field
+                  name="paymentMode"
+                  as="select"
+                  className={`form-control ${touched.paymentMode && errors.paymentMode ? "is-invalid" : ""
+                    }`}
+                >
+                  <option value="">Select Payment Mode</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Cheque">Cheque</option>
+                </Field>
+                <ErrorMessage
+                  name="paymentMode"
+                  component="div"
+                  className="text-danger mt-1"
+                />
+
                 </div>
 
                 {/* Deductions */}

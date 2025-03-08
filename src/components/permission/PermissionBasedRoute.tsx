@@ -33,6 +33,7 @@ import Facultydetails from "../facultyDetails/Facultydetails";
 import path from "path";
 import StudentFeesDetails from "../fess/studentFees/studentFeesDetails";
 import Admindeshboard from '../../components/SuperAdmin/AdminDeshboard'
+import BulkUpload from '../studentRegistration/BulkUplod'
 
 import UserPassword from "../../Pages/setting/UserPassord";
 import Profile from "../../Pages/profile/Profile";
@@ -114,6 +115,7 @@ const allRoutes = [
   
   {path : "/studentFeesDetails/:id", element: <StudentFeesDetails />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentFeesDetails) },
   {path : "/FacultySalaryDetails/:id", element: <FacultySalaryDetails />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultySalaryDetails) },
+  {path : "/bulkUpload", element: <BulkUpload />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentBulkUpload) },
 
   { 
     path: "/ClassSubjectShow", 

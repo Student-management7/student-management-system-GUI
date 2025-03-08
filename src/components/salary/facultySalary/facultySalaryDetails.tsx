@@ -24,6 +24,7 @@ interface FacultySalary {
   facultyTransport: number;
   facultyDeduction: string;
   total: number;
+  paymentMode: string;
 }
 
 interface Faculty {
@@ -251,6 +252,7 @@ const handleSave = async (updatedData: any) => {
               facultyTransport: salary.facultyTransport,
               facultyDeduction: formatDeductionsForDisplay(salary.facultyDeduction),
               total: salary.total,
+              paymentMode: salary.paymentMode
             }))}
             columns={[
               // { field: "id", headerName: "ID" },
@@ -260,6 +262,7 @@ const handleSave = async (updatedData: any) => {
               { field: "facultyTransport", headerName: "Transport" },
               { field: "facultyDeduction", headerName: "Deductions" },
               { field: "total", headerName: "Total" },
+              { field: "paymentMode", headerName: "Payment Mode" },
               {
                 field: "edit",
                 headerName: "Edit",
