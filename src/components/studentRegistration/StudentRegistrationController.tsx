@@ -214,6 +214,7 @@ const StudentRegistrationController = () => {
                 initialValues={editFormView ? singleRowData : undefined}
                 isEdit={editFormView}
                 fetchStudentDetails={fetchStudentDetails} 
+                
               />
             </div>
           )}
