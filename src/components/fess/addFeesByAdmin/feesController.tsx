@@ -121,7 +121,7 @@ const FeesController: React.FC = () => {
                 <button onClick={() => setShowForm(false)} className="p-2 rounded-full arrow transition">
                   <ArrowLeft className="h-7 w-7" />
                 </button>
-                <span className="ml-4">Add Fees Page</span>
+                <span className="ml-4">Add Fees</span>
               </div>
 
 
