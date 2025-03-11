@@ -13,9 +13,15 @@ export const SalaryValidationSchema = Yup.object().shape({
   facultyTransport: Yup.number()
     .min(0, "Transport allowance cannot be negative")
     .required("Transport allowance is required"),
-    paymentMode: Yup.string().required("Payment mode is required"),
-
-
-  
- 
+  facultyDeduction: Yup.array().of(
+    Yup.object().shape({
+      name: Yup.string().matches(
+        /^[A-Za-z\s]+$/,
+        "Amount Name must contain only letters and spaces (no numbers or special characters)"
+      ),
+      amount: Yup.number()
+        .positive("Deduction amount must be positive")
+        
+    })
+  ),
 });

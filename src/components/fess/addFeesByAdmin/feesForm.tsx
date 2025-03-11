@@ -42,7 +42,6 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
     >
       {({ values }) => (
         <Form>
-          
           {/* Class Name Field */}
           <div className="mb-4">
             <label className="block mb-2 font-semibold">Class Name</label>
@@ -83,47 +82,60 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
           </div>
 
           {/* Other Amounts */}
-          <div className="mt-4">
-            <label className="block mb-2 font-semibold">Other Amounts</label>
-            <FieldArray name="otherAmount">
-              {({ push, remove }) => (
-                <>
-                  {values.otherAmount.map((_, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-4 mb-2"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => push({ name: "", amount: 0 })}
-                        className="bi bi-plus-circle-fill text-blue-500"
-                      >
-                       
-                      </button>
-                      <Field
-                        name={`otherAmount[${index}].name`}
-                        placeholder="Name"
-                        className="p-2 border rounded-md flex-1"
-                      />
-                      <Field
-                        name={`otherAmount[${index}].amount`}
-                        placeholder="Amount"
-                        type="number"
-                        className="p-2 border rounded-md flex-1"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => remove(index)}
-                        className="bi bi-dash-circle-fill text-red-600 cursor-pointer bold"
-                      >
-                       
-                      </button>
-                    </div>
-                  ))}
-                </>
-              )}
-            </FieldArray>
+         {/* Other Amounts */}
+<div className="mt-4">
+  <label className="block mb-2 font-semibold">Other Amounts</label>
+  <FieldArray name="otherAmount">
+    {({ push, remove }) => (
+      <>
+        {values.otherAmount.map((_, index) => (
+          <div key={index} className="flex items-center gap-4 mb-2">
+            <button
+              type="button"
+              onClick={() => push({ name: "", amount: 0 })}
+              className="bi bi-plus-circle-fill text-blue-500"
+            >
+              +
+            </button>
+            <div className="flex-1">
+              <Field
+                name={`otherAmount[${index}].name`}
+                placeholder="Name"
+                className="p-2 border rounded-md w-full"
+              />
+              <ErrorMessage
+                name={`otherAmount[${index}].name`}
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
+            </div>
+            <div className="flex-1">
+              <Field
+                name={`otherAmount[${index}].amount`}
+                placeholder="Amount"
+                type="number"
+                className="p-2 border rounded-md w-full"
+              />
+              <ErrorMessage
+                name={`otherAmount[${index}].amount`}
+                component="div"
+                className="text-red-500 text-sm mt-1" // Make sure you add error classes
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => remove(index)}
+              className="bi bi-dash-circle-fill text-red-600 cursor-pointer bold"
+            >
+              -
+            </button>
           </div>
+        ))}
+      </>
+    )}
+  </FieldArray>
+</div>
+
 
           <div className="mt-6 flex justify-between">
             <button
