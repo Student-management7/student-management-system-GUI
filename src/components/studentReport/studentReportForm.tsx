@@ -230,7 +230,7 @@ const StudentReportForm: React.FC = () => {
                                     isSearchable
                                     noOptionsMessage={() => "No students found"}
                                     menuPlacement="auto"
-                                    menuShouldScrollIntoView={true} // Ensures the menu is scrollable
+                                    menuShouldScrollIntoView={true} 
                                     styles={{
                                         menu: (provided) => ({
                                             ...provided,
@@ -240,7 +240,7 @@ const StudentReportForm: React.FC = () => {
                                         }),
                                         control: (provided) => ({
                                             ...provided,
-                                            zIndex: 1, // Ensure input field is below the dropdown menu
+                                            zIndex: 1, 
                                         }),
                                     }}
                                 />

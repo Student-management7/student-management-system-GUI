@@ -8,43 +8,44 @@
     animation: fadeIn 0.5s ease-in-out;
   
     &.student {
-        border-color: #28a745; /* Green */
-        background-color: #d4edda; /* Light Green */
+        border-color: #28a745; 
+        background-color: #d4edda; 
       }
       
       &.teacher {
-        border-color: #007bff; /* Blue */
-        background-color: #cce5ff; /* Light Blue */
+        border-color: #007bff;
+        background-color: #cce5ff;
       }
       
       &.staff {
-        border-color: #17a2b8; /* Cyan */
-        background-color: #d1ecf1; /* Light Cyan */
+        border-color: #17a2b8;
+        background-color: #d1ecf1;
       }
       
       &.holiday {
-        border-color: #ffc107; /* Yellow */
-        background-color: #fff3cd; /* Light Yellow */
+        border-color: #ffc107; 
+        background-color: #fff3cd;
       }
       
       &.exam {
-        border-color: #dc3545; /* Red */
-        background-color: #f8d7da; /* Light Red */
+        border-color: #dc3545; 
+        background-color: #f8d7da; 
       }
       
       &.event {
-        border-color: #6610f2; /* Purple */
-        background-color: #e2d9f3; /* Light Purple */
+        border-color: #6610f2; 
+        background-color: #e2d9f3;
       }
       
       &.announcement {
-        border-color: #fd7e14; /* Orange */
-        background-color: #ffe5d4; /* Light Orange */
+        border-color: #fd7e14; 
+        background-color: #ffe5d4; 
+
       }
       
       &.reminder {
-        border-color: #20c997; /* Teal */
-        background-color: #d1f5e6; /* Light Teal */
+        border-color: #20c997; 
+        background-color: #d1f5e6; 
       }
       
       &.task {

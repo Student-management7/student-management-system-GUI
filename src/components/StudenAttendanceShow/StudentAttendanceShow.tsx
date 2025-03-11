@@ -68,11 +68,28 @@ const StudentAttendanceShow: React.FC = () => {
     fetchCurrentStudents();
   }, []);
 
-  // In your handleFetchAttendance function
-const handleFetchAttendance = useCallback(async () => {
-  const attendanceModeLabel = AttendanceMode ? "Master Attendance" : "Subject-wise Attendance";
+  const handleFetchAttendance = useCallback(async () => {
+    const attendanceModeLabel = AttendanceMode ? "Master Attendance" : "Subject-wise Attendance";
 
-  // Validation remains the same...
+    // Adjust validation based on attendance mode
+    const isFormValid = AttendanceMode
+      ? validateAttendanceForm(fromDate, toDate, classSelected, "", attendanceModeLabel) // Subject not required for Master Mode
+      : validateAttendanceForm(fromDate, toDate, classSelected, subjectSelected, attendanceModeLabel); // Subject required for Subject-wise Mode
+
+    if (!isFormValid) {
+      toast.warning("Please Check All Fields Or Date Range.");
+      return;
+    }
+
+
+    const fromDateObj = new Date(fromDate);
+    const toDateObj = new Date(toDate);
+
+    // Validate date range
+    if (fromDateObj > toDateObj) {
+      toast.warning("From date cannot be later than To date.");
+      return;
+    }
   
   setLoading(true);
   try {

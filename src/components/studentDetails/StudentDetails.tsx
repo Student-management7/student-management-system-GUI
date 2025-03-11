@@ -5,6 +5,7 @@ import "./StudentDetails.css"
 import axiosInstance from "../../services/Utils/apiUtils"
 import { useParams } from "react-router-dom"
 import BackButton from "../Navigation/backButton"
+import Loader from "../loader/loader"
 
 // import Image from "../studentDeytails/"
 
@@ -62,7 +63,7 @@ const StudentProfile: React.FC = () => {
   }, [id])
 
   if (loading) {
-    return <div className="loading-state">Loading...</div>
+    return <div className="loading-state"><Loader/></div>
   }
 
   if (error || !student) {
@@ -185,21 +186,21 @@ const StudentProfile: React.FC = () => {
           <div className="details-section p-4 bg-white shadow-md rounded-lg">
             <div className="flex space-x-4 border-b pb-2">
               <button
-                className={`py-2 px-4 rounded-md transition ${activeTab === "personal" ? "bg-blue-500 text-white" : "bg-gray-200"
+                className={`py-2 px-4 rounded-md transition ${activeTab === "personal" ? "bg-[#126666] text-white" : "bg-gray-200"
                   }`}
                 onClick={() => setActiveTab("personal")}
               >
                 Personal Information
               </button>
               <button
-                className={`py-2 px-4 rounded-md transition ${activeTab === "academic" ? "bg-blue-500 text-white" : "bg-gray-200"
+                className={`py-2 px-4 rounded-md transition ${activeTab === "academic" ? "bg-[#126666] text-white" : "bg-gray-200"
                   }`}
                 onClick={() => setActiveTab("academic")}
               >
                 Academic Details
               </button>
               <button
-                className={`py-2 px-4 rounded-md transition ${activeTab === "family" ? "bg-blue-500 text-white" : "bg-gray-200"
+                className={`py-2 px-4 rounded-md transition ${activeTab === "family" ? "bg-[#126666] text-white" : "bg-gray-200"
                   }`}
                 onClick={() => setActiveTab("family")}
               >

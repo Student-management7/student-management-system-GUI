@@ -71,6 +71,7 @@ const Login: React.FC = () => {
     }
   };
 
+
   const handleForgotPassword = async () => {
     if (!validateEmail(forgotPasswordEmail)) {
       setErrorMessage('Please enter a valid email address.');

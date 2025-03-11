@@ -139,8 +139,10 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
               <div className="row">
                 <div className="col-md-4 mb-3">
                   <label htmlFor="fact_state" className="form-label">State </label>
-                  <Field type="text" id="fact_state" name="fact_state" className={`form-control `} placeholder="Enter state" />
+                  <Field type="text" id="fact_state" name="fact_state" className={`form-control ${errors.fact_state && touched.fact_state ? 'is-invalid' : ''}`} placeholder="Enter state" />
                   {/* <ErrorMessage name="fact_state" component="div" className="invalid-feedback" /> */}
+                  <ErrorMessage name="fact_state" component="div" className="invalid-feedback" />
+
                 </div>
                 <div className="col-md-4 mb-3">
                   <label htmlFor="fact_joiningDate" className="form-label">Joining Date  <span className="red">*</span> </label>
@@ -149,7 +151,8 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                 </div>
                 <div className="col-md-4 mb-3">
                   <label htmlFor="fact_leavingDate" className="form-label">Leaving Date</label>
-                  <Field type="date" id="fact_leavingDate" name="fact_leavingDate" className="form-control" />
+                  <Field type="date" id="fact_leavingDate" name="fact_leavingDate" className={`form-control ${errors.fact_leavingDate && touched.fact_leavingDate ? 'is-invalid' : ''}`} />
+                  <ErrorMessage name="fact_leavingDate" component="div" className="invalid-feedback" />
                 </div>
               </div>
 
@@ -186,6 +189,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                                 placeholder="Type"
                                 className="w-full p-2 border rounded-md"
                               />
+
                             </div>
 
                             <div>

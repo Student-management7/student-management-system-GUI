@@ -4,6 +4,7 @@ import { SalaryValidationSchema } from "../../../services/salary/facultysarayfor
 import axiosInstance from "../../../services/Utils/apiUtils";
 import { toast, ToastContainer } from "react-toastify";
 import { ArrowLeft } from "lucide-react";
+import Loader from "../../loader/loader";
 
 interface FacultyData {
   fact_id: string;
@@ -86,7 +87,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
   };
 
   if (isLoading) {
-    return <div className="text-center mt-4">Loading faculty data...</div>;
+    return <div className="text-center mt-4"><Loader/></div>;
   }
 
   if (error) {
@@ -284,25 +285,38 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                                 />
                               </div>
                             </div>
-                            <div className="col-md-6">
-                              <div className="input-group">
-                                <Field
-                                  name={`facultyDeduction[${index}].amount`}
-                                  type="number"
-                                  placeholder="Amount"
-                                  className="form-control"
-                                />
-                                <span className="input-group-text">
-                                  <button
-                                    type="button"
-                                    onClick={() => remove(index)}
-                                    className="btn btn-sm btn-link p-0 text-danger"
-                                    disabled={values.facultyDeduction.length <= 1}
-                                  >
-                                    <i className="bi bi-dash-circle-fill"></i>
-                                  </button>
-                                </span>
-                              </div>
+                            <div className="col-md-5">
+                              <Field
+                                name={`facultyDeduction[${index}].name`}
+                                placeholder=" Name"
+                                className="form-control"
+                              />
+                                        <ErrorMessage
+                    name={`facultyDeduction[${index}].name`}
+                    component="div"
+                    className="text-danger mt-1"
+                  />
+                            </div>
+                            <div className="col-md-4">
+                              <Field
+                                name={`facultyDeduction[${index}].amount`}
+                                type="number"
+                                placeholder=" Amount"
+                                className="form-control"
+                              />
+                              <ErrorMessage
+                    name={`facultyDeduction[${index}].amount`}
+                    component="div"
+                    className="text-danger mt-1"
+                  />
+                            </div>
+                            <div className="col-md-2 text-center">
+                              <button
+                                type="button"
+                                onClick={() => remove(index)}
+                                className="bi bi-dash-circle-fill text-red-600 text-lg"
+                                disabled={values.facultyDeduction.length <= 1}
+                              />
                             </div>
                           </div>
                         ))}

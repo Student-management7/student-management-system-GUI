@@ -37,7 +37,7 @@ import BulkUpload from '../studentRegistration/BulkUplod'
 
 import UserPassword from "../../Pages/setting/UserPassord";
 import Profile from "../../Pages/profile/Profile";
-import Login from "../../Pages/Login/Login";
+import Loader from "../loader/loader";
 // import Landing from "../../Pages/lan/Landing";
 interface Permission {
   [module: string]: {
@@ -85,7 +85,7 @@ const PermissionBasedRoute: React.FC = () => {
     fetchPermissions();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div><Loader/></div>;
   if (!permissions) return <div>Access Denied: Permissions missing.</div>;
   console.log(permissions);
 
