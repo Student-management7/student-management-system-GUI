@@ -10,7 +10,7 @@ export const validationSchema = Yup.object({
     Yup.object({
       name: Yup.string() .matches(
         /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
-        " must contain at least one letter and can include numbers, spaces, and .,-"
+        " must contain at least one letter and can include numbers, spaces, and "
       ),
       amount: Yup.number().min(0, 'Amount must be 0 ot greater then 0'),
     })
