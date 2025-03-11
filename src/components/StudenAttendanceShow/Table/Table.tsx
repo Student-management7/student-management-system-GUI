@@ -49,22 +49,52 @@ const ReusableTable: React.FC<TableProps> = ({
     direction: null
   });
 
-  // Existing helper functions (getNestedValue, filteredAndSortedRows calculation)
+  // Enhanced nested value getter to handle deep objects
   const getNestedValue = (obj: any, path: string) => {
-    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    if (!path) return obj;
+    
+    // Handle null or undefined
+    if (obj === null || obj === undefined) return '';
+    
+    return path.split('.').reduce((acc, part) => {
+      if (acc === null || acc === undefined) return '';
+      return acc[part];
+    }, obj);
   };
 
+  // Enhanced search functionality to handle objects and arrays
   const filteredAndSortedRows = useMemo(() => {
-    let result = rows.filter((row: any) =>
-      Object.entries(row).some(([key, value]) => {
-        if (columns.find((col: any) => col.field === key)) {
-          const searchValue = value?.toString().toLowerCase() || '';
-          return searchValue.includes(searchTerm.toLowerCase());
+    // Filter rows based on search term
+    let result = rows.filter((row: any) => {
+      if (!searchTerm.trim()) return true;
+      
+      return columns.some(column => {
+        let value;
+        
+        if (column.nestedField) {
+          value = getNestedValue(row, column.nestedField);
+        } else {
+          value = row[column.field];
         }
-        return false;
-      })
-    );
+        
+        // Skip undefined or null values
+        if (value === null || value === undefined) return false;
+        
+        // Handle objects by converting to string
+        if (typeof value === 'object') {
+          try {
+            return JSON.stringify(value).toLowerCase().includes(searchTerm.toLowerCase());
+          } catch {
+            return false;
+          }
+        }
+        
+        // Handle primitive values
+        return String(value).toLowerCase().includes(searchTerm.toLowerCase());
+      });
+    });
 
+    // Sort filtered rows
     if (sortConfig.field && sortConfig.direction) {
       result = [...result].sort((a, b) => {
         let aVal = a[sortConfig.field];
@@ -91,23 +121,73 @@ const ReusableTable: React.FC<TableProps> = ({
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedRows = filteredAndSortedRows.slice(startIndex, startIndex + rowsPerPage);
 
-  console.log('rows--->', rows);
-  console.log('columns--->', columns);
+  // Enhanced CSV export with headers
+  const exportCsv = () => {
+    // Create header row from column names
+    const headerRow = columns.map(column => column.headerName);
+  
+    // Create data rows
+    const dataRows = filteredAndSortedRows.map((row: any) => {
+      return columns.map((column: any) => {
+        let value;
+        if (column.nestedField) {
+          value = getNestedValue(row, column.nestedField);
+        } else {
+          value = row[column.field];
+        }
+  
+        // Format value for CSV
+        if (value === null || value === undefined) {
+          return '';
+        } else if (Array.isArray(value)) {
+          // Handle arrays by joining elements with a separator
+          return value.map((item: any) => {
+            if (typeof item === 'object') {
+              return `${item.name}: ${item.amount}`; // Format as "name: amount"
+            } else {
+              return String(item);
+            }
+          }).join('; ');
+        } else if (typeof value === 'object') {
+          // Handle objects like otherAmount
+          if (value.name && value.amount !== undefined) {
+            return `${value.name}: ${value.amount}`; // Format as "name: amount"
+          }
+          return JSON.stringify(value);
+        } else {
+          return String(value);
+        }
+      });
+    });
+  
+    // Combine headers and data rows
+    const csvData = [headerRow, ...dataRows];
+    const csvContent = csvData.map(row => row.join(',')).join('\n');
+  
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'data.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
-  const actionbuttons = (id: any) => {
-    console.log(id);
+  const actionbuttons = (row: any) => {
     return (
       <div>
-        <button onClick={() => onEdit}>Edit</button>
-        <button>Delete</button>
+        {onEdit && <button onClick={() => onEdit(row)}>Edit</button>}
+        {onDelete && <button onClick={() => onDelete(row)}>Delete</button>}
+        {onViewReport && <button onClick={() => onViewReport(row)}>View</button>}
       </div>
-    )
+    );
+  };
 
-  }
   return (
-
     <>
-
       <div className="mb-3 flex flex-wrap items-center justify-between gap-4">
         {/* Search Bar */}
         <div className="relative w-full  max-w-md">
@@ -144,7 +224,7 @@ const ReusableTable: React.FC<TableProps> = ({
             <thead className="webView">
               <tr>
                 <th>
-                  ID
+                  S.No.
                 </th>
                 {columns.map((column: any) => (
                   <th
@@ -173,7 +253,6 @@ const ReusableTable: React.FC<TableProps> = ({
                     <p className='pull-left'>{startIndex + rowIndex + 1}</p>
                     <div className='ml-4 mobileView'>
                       {columns.map((column: any) => (
-
                         <p className='m-0'
                           key={`${rowIndex}-${column.field}`}
                         >
@@ -182,17 +261,16 @@ const ReusableTable: React.FC<TableProps> = ({
                             column.cellRenderer({
                               data: row,
                               value: column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field],
-                              setValue: (value: number) => onCellValueChange?.(rowIndex, column.field, value)
+                              setValue: (value: any) => onCellValueChange?.(rowIndex, column.field, value)
                             })
                           ) : (
                             <span className="text-sm text-gray-900 overflow-hidden overflow-ellipsis">
-                              {column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field]}
+                              {formatDisplayValue(column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field])}
                             </span>
                           )}
                         </p>
                       ))}
                     </div>
-
                   </td>
                   {columns.map((column: any) => (
                     <td className='webView'
@@ -202,39 +280,17 @@ const ReusableTable: React.FC<TableProps> = ({
                         column.cellRenderer({
                           data: row,
                           value: column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field],
-                          setValue: (value: number) => onCellValueChange?.(rowIndex, column.field, value)
+                          setValue: (value: any) => onCellValueChange?.(rowIndex, column.field, value)
                         })
                       ) : (
                         <div className="text-gray-900 overflow-hidden text-ellipsis">
-                          {column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field]}
+                          {formatDisplayValue(column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field])}
                         </div>
                       )}
                     </td>
                   ))}
                 </tr>
               ))}
-
-              {/* {rows.map((item: any, index: number) =>{
-
-                return(
-                  <tr>
-                  {
-                    <>
-                      <td>{index}</td>
-                      <td>{item.name}</td>
-                      <td>{item.city}</td>
-                      <td>{item.cls}</td>
-                      <td>{item.gender}</td>
-                      <td>{item.gender}</td>
-                      <td>{item.gender}</td>
-                      <td>{actionbuttons(item.id)}</td>
-                      <td>{item.gender}</td>
-                    </>
-
-                  }
-                </tr>
-                );
-              })} */}
             </tbody>
           </table>
         </div>
@@ -244,24 +300,8 @@ const ReusableTable: React.FC<TableProps> = ({
       <div className="flex mt-3 sm:flex-row justify-between">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => {
-              const csvData = filteredAndSortedRows.map((row: any) => {
-                return columns.map((column: any) => column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field]);
-              });
-
-              const csvContent = csvData.map((row: any) => row.join(',')).join('\n');
-              const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-              const url = URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.setAttribute('href', url);
-              link.setAttribute('download', 'data.csv');
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              URL.revokeObjectURL(url);
-
-            }}
-            className="flex webView items-center gap-2 px-4  head1 btn button text-white"
+            onClick={exportCsv}
+            className="flex webView items-center gap-2 px-4 head1 btn button text-white"
           >
             <Download size={16} />
             Export CSV
@@ -288,7 +328,7 @@ const ReusableTable: React.FC<TableProps> = ({
           <button
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="px-3 webView py-1  border rounded-md hover:bg-gray-100 disabled:opacity-50"
+            className="px-3 webView py-1 border rounded-md hover:bg-gray-100 disabled:opacity-50"
           >
             Previous
           </button>
@@ -297,7 +337,7 @@ const ReusableTable: React.FC<TableProps> = ({
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 border  rounded-md transition-colors ${currentPage === page
+                className={`px-3 py-1 border rounded-md transition-colors ${currentPage === page
                   ? 'bg-[#3a8686] text-white'
                   : 'hover:bg-gray-100'
                   }`}
@@ -316,8 +356,22 @@ const ReusableTable: React.FC<TableProps> = ({
         </div>
       </div>
     </>
-
   );
 };
+
+// Helper function to format display values
+function formatDisplayValue(value: any): string {
+  if (value === null || value === undefined) {
+    return '';
+  } else if (typeof value === 'object') {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return '[Object]';
+    }
+  } else {
+    return String(value);
+  }
+}
 
 export default ReusableTable;
