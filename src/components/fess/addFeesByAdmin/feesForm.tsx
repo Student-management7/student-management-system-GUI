@@ -1,11 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import { validationSchema } from "../../../services/feesServices/AdminFeescreationForm/validation"
 import { FeeFormValues, FeesFormProps } from "../../../services/feesServices/AdminFeescreationForm/type";
 import { saveFees, updateFee } from "../../../services/feesServices/AdminFeescreationForm/api"; 
+
 import { toast } from "react-toastify";
+import { sortArrayByKey } from "../../Utils/sortArrayByKey";
+import axiosInstance from "../../../services/Utils/apiUtils";
+
+interface ClassData {
+  className: string;
+}
 
 const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) => {
+  const [classes, setClasses] = useState<ClassData[]>([]);
+
+  const fetchClasses = async () => {
+    try {
+      const response = await axiosInstance.get("/class/data");
+      const sortedClasses = sortArrayByKey(response.data.classData, "className");
+      setClasses(sortedClasses); // Set the sorted class data
+    } catch (error) {
+      toast.warning("Failed to fetch class data");
+    }
+  };
+
+  useEffect(() => {
+    fetchClasses();
+  }, []);
+
   const initialValues: FeeFormValues = initialData || {
     className: "",
     schoolFee: 0,
@@ -41,20 +64,22 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ values }) => (
+      {({ values, setFieldValue }) => (
         <Form>
           {/* Class Name Field */}
           <div className="mb-4">
             <label className="block mb-2 font-semibold">Class Name</label>
-            <Field as="select" name="className" className="w-full p-2 border rounded-md">
+            <Field
+              as="select"
+              name="className"
+              className="w-full p-2 border rounded-md"
+            >
               <option value="">Select Class</option>
-              {["Nursery", "UKG", "LKG", ...Array.from({ length: 12 }, (_, i) => i + 1)].map(
-                (className) => (
-                  <option key={className} value={className}>
-                    {className}
-                  </option>
-                )
-              )}
+              {classes.map((cls) => (
+                <option key={cls.className} value={cls.className}>
+                  Class {cls.className}
+                </option>
+              ))}
             </Field>
             <ErrorMessage name="className" component="div" className="text-red-500 text-sm mt-1" />
           </div>
@@ -139,10 +164,7 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
 
 
           <div className="mt-6 flex justify-between">
-            <button
-              type="submit"
-              className="btn button text-white"
-            >
+            <button type="submit" className="btn button text-white">
               {initialData ? "Update" : "Save"}
             </button>
             <button

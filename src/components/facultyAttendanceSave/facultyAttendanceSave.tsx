@@ -147,16 +147,14 @@ const AttendanceSave: React.FC = () => {
 
 
   const applyBulkAttendance = (value: string) => {
-    if (!bulkAttendance) {
-      toast.warning("Please select an attendance status before applying.");
-      return;
+    if (!value) { // Check the value passed in, not the state.
+        return; // Don't show the toast if they are just clearing the selection.
     }
 
     setFacultyList((prevList) =>
-      prevList.map((faculty) => ({ ...faculty, attendance: bulkAttendance }))
+        prevList.map((faculty) => ({ ...faculty, attendance: value })) // Use the passed in value
     );
-  };
-
+};
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
@@ -172,21 +170,24 @@ const AttendanceSave: React.FC = () => {
 
           <div className="">
 
-            <span className="flex ">
-              <select
+          <span className="flex ">
+            <select
                 value={bulkAttendance}
                 onChange={(e) => {
-                  setBulkAttendance(e.target.value);
-                  applyBulkAttendance(e.target.value);
+                    const selectedValue = e.target.value;
+                    setBulkAttendance(selectedValue);
+                    applyBulkAttendance(selectedValue);
                 }}
                 className="border rounded p-2 mr-2 mb-2"
-              >
+            >
                 <option value="">Bulk Attendance</option>
                 <option value="Present">Present</option>
                 <option value="Absent">Absent</option>
+                <option value="Half Day">Half Day</option>
+                <option value="Late">Late</option>
                 <option value="Leave">Leave</option>
-              </select>
-            </span>
+            </select>
+        </span>
 
             <span >
 
