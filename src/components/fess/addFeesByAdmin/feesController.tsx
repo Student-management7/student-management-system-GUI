@@ -107,7 +107,7 @@ const FeesController: React.FC = () => {
             <>
               <div className="text-right">
                 <div className="flex items-center space-x-4 mb-4">
-                  <h1 className="head1">Class Fee Page</h1>
+                  <h1 className="head1">Class Fee </h1>
                 </div>
                 <span onClick={() => setShowForm(true)} className="btn button float-right">
                   Add Fee
