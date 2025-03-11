@@ -93,6 +93,7 @@ const StudentRegistrationController = () => {
     }
   }, []);
 
+
   useEffect(() => {
     fetchStudentDetails();
   }, [fetchStudentDetails]);
@@ -231,7 +232,7 @@ const StudentRegistrationController = () => {
           ) : (
             <div className="box">
               <div className="head1">
-                <h1>
+                <h1 onClick={handleCancelEdit}>
                   <div>
                     <i
                       onClick={() => {

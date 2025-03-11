@@ -4,6 +4,7 @@ import { SalaryValidationSchema } from "../../../services/salary/facultysarayfor
 import axiosInstance from "../../../services/Utils/apiUtils";
 import { toast, ToastContainer } from "react-toastify";
 import { ArrowLeft } from "lucide-react";
+import Loader from "../../loader/loader";
 
 interface FacultyData {
   fact_id: string;
@@ -90,7 +91,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
   };
 
   if (isLoading) {
-    return <div className="text-center mt-4">Loading faculty data...</div>;
+    return <div className="text-center mt-4"><Loader/></div>;
   }
 
   if (error) {
@@ -262,6 +263,11 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                                 placeholder=" Name"
                                 className="form-control"
                               />
+                                        <ErrorMessage
+                    name={`facultyDeduction[${index}].name`}
+                    component="div"
+                    className="text-danger mt-1"
+                  />
                             </div>
                             <div className="col-md-4">
                               <Field
@@ -270,6 +276,11 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                                 placeholder=" Amount"
                                 className="form-control"
                               />
+                              <ErrorMessage
+                    name={`facultyDeduction[${index}].amount`}
+                    component="div"
+                    className="text-danger mt-1"
+                  />
                             </div>
                             <div className="col-md-2 text-center">
                               <button

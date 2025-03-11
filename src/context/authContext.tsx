@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     checkInitialToken();
   }, []);
-
+ 
   const login = async (email: string, password: string): Promise<void> => {
     try {
       setIsLoading(true);

@@ -66,9 +66,7 @@ const StudentReport: React.FC = () => {
     return <div>Error: Missing Student id </div>;
   }
   
-    const showToast = () => {
-      toast.error("This is a test toast!");
-    };
+   
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -83,7 +81,7 @@ const StudentReport: React.FC = () => {
   
         // Check if examData is empty
         if (!examData || examData.length === 0) {
-          throw new Error("No data found for the given ID.");
+          <div>No data found for the given ID</div>
         }
   
         // Update state with fetched data
@@ -98,24 +96,24 @@ const StudentReport: React.FC = () => {
           setSelectedExamType(examData[0].examType);
         }
       } catch (error: unknown) {
-        console.error("Error:", error); // Log the error for debugging
+        console.error("Error:", error); 
   
-        // Handle Axios errors
+       
         if (axios.isAxiosError(error)) {
-          console.log("Axios Error:", error.response); // Log the Axios error response
+          console.log("Axios Error:", error.response); 
           if (error.response?.status === 400) {
-            // Extract the error message from the response
+           
             const errorMessage = error.response.data.detail || "No data found for this student.";
-            toast.error(errorMessage); // Display the error message in a toast
+            toast.error(errorMessage); 
           } else {
-            // Handle other Axios errors
+            
             toast.error("Failed to fetch data. Please try again.");
           }
         } else if (error instanceof Error) {
-          // Handle generic errors
+         
           toast.error(error.message || "An error occurred while fetching data.");
         } else {
-          // Handle unknown errors
+          
           toast.error("An unknown error occurred. Please try again.");
         }
       } finally {
@@ -147,39 +145,6 @@ const StudentReport: React.FC = () => {
     return <div className="p-5">No data available</div>;
   }
 
-  // const AttendanceCard: React.FC<{ attendance: AttendanceData }> = ({ attendance }) => (
-  //   <div className="bg-white rounded-xl p-5 shadow-md mb-4">
-  //     <h3 className=" font-bold head1 mb-3">Attendance</h3>
-  //     <div className="grid grid-cols-2 gap-4">
-  //       <div>
-  //         <p className="text-sm text-gray-600">Total Days</p>
-  //         <p className="text-lg font-semibold">{attendance.totalDays}</p>
-  //       </div>
-  //       <div>
-  //         <p className="text-sm text-gray-600">Present Days</p>
-  //         <p className="text-lg font-semibold">{attendance.presentDays}</p>
-  //       </div>
-  //       <div>
-  //         <p className="text-sm text-gray-600">Absent Days</p>
-  //         <p className="text-lg font-semibold">{attendance.absentDays}</p>
-  //       </div>
-  //       <div>
-  //         <p className="text-sm text-gray-600">Attendance Percentage</p>
-  //         <p className="text-lg font-semibold">{attendance.attendancePercentage}%</p>
-  //       </div>
-  //     </div>
-  //     <div className="mt-4">
-  //       <div className="w-full bg-gray-200 rounded-full h-2.5">
-  //         <div
-  //           className="bg-indigo-600 h-2.5 rounded-full"
-  //           style={{ width: `${attendance.attendancePercentage}%` }}
-  //         ></div>
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
-
-
 
   return (
 
@@ -197,7 +162,6 @@ const StudentReport: React.FC = () => {
                   <ToastContainer autoClose={3000} position="top-right"/>
 
               <div className="flex items-start space-x-4">
-                {/* Avatar Button */}
                 <div className="relative group">
                   <button
                     onClick={() => setIsModalOpen(true)}
@@ -210,7 +174,6 @@ const StudentReport: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Student Info Preview */}
                 <div className="flex-1">
 
                   <div className="flex items-center space-x-4 mt-2">

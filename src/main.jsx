@@ -39,7 +39,7 @@ const App = () => {
       </Routes>
     </>
   );
-};
+}; 
 
 createRoot(document.getElementById('root')).render(
   <Router>
