@@ -127,7 +127,8 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
                 <button onClick={onClose} className="p-2 rounded-full arrow transition">
                   <ArrowLeft className="h-7 w-7" />
                 </button>
-                <span className="ml-4">Add Fees Page</span>
+                {/* <span className="ml-4">Add Fees Page</span> */}
+                <span>create Notification</span>
               </div>      
       
       <div className="box">
