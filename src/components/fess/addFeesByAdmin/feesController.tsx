@@ -107,7 +107,7 @@ const FeesController: React.FC = () => {
             <>
               <div className="text-right">
                 <div className="flex items-center space-x-4 mb-4">
-                  <h1 className="head1">Class Fee Page</h1>
+                  <h1 className="head1">Class Fee </h1>
                 </div>
                 <span onClick={() => setShowForm(true)} className="btn button float-right">
                   Add Fee
@@ -121,7 +121,7 @@ const FeesController: React.FC = () => {
                 <button onClick={() => setShowForm(false)} className="p-2 rounded-full arrow transition">
                   <ArrowLeft className="h-7 w-7" />
                 </button>
-                <span className="ml-4">Add Fees Page</span>
+                <span className="ml-4">Add Fees </span>
               </div>
 
 
