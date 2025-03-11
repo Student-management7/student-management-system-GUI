@@ -119,7 +119,7 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
               onClick={() => push({ name: "", amount: 0 })}
               className="bi bi-plus-circle-fill text-blue-500"
             >
-              +
+            
             </button>
             <div className="flex-1">
               <Field
@@ -151,7 +151,7 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
               onClick={() => remove(index)}
               className="bi bi-dash-circle-fill text-red-600 cursor-pointer bold"
             >
-              -
+             
             </button>
           </div>
         ))}
