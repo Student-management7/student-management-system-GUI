@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
 interface DecodedToken extends JwtPayload {
-   userId?: string;
+  userId?: string;
   [key: string]: any;
 }
 
@@ -55,7 +55,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setIsAuthenticated(true);
             setUser(decoded);
 
-            // Retrieve userDetails from localStorage
             const storedUserDetails = localStorage.getItem('userDetails');
             if (storedUserDetails) {
               setUserDetails(JSON.parse(storedUserDetails));
@@ -92,8 +91,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const { token } = data;
-
-      // Decode the token
       const decoded = jwtDecode<DecodedToken>(token);
 
       localStorage.setItem('token', token);
@@ -123,7 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }).catch(err => console.warn('Logout API call failed:', err));
     } finally {
       localStorage.removeItem('token');
-      localStorage.removeItem('userDetails'); // Clear user details from localStorage
+      localStorage.removeItem('userDetails');
       setIsAuthenticated(false);
       setUser(null);
       setUserDetails(null);

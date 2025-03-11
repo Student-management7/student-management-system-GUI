@@ -61,3 +61,12 @@ export const deleteFeeRecord = async (id: string): Promise<{ success: boolean; m
 
 
 
+export const fetchClassData = async () => {
+  try {
+    const response = await axiosInstance.get('/class/data');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching class data:', error);
+    throw error;
+  }
+};

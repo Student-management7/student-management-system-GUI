@@ -677,6 +677,7 @@ const FormView: React.FC<FormViewProps> = ({
                   type="button"
                   className="btn buttonred head1 text-white"
                   onClick={() => setStudentData(false)}
+                  
                 >
                   Cancel
                 </button>

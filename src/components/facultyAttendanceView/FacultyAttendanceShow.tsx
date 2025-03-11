@@ -8,15 +8,22 @@ import ReusableTable from '../StudenAttendanceShow/Table/Table';
 import { Pencil } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 
-
 interface Faculty {
+  fact_id: string;
+  fact_Name: string;
+  fact_email: string;
+  fact_contact: string;
+}
+
+interface AttendanceFaculty {
   factId: string;
   attendance: 'Present' | 'Absent';
   name: string;
 }
+
 interface AttendanceEntry {
   date: string;
-  factList: Faculty[];
+  factList: AttendanceFaculty[];
 }
 
 const FacultyAttendance: React.FC = () => {
@@ -24,20 +31,27 @@ const FacultyAttendance: React.FC = () => {
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
   const [data, setData] = useState<any[]>([]);
-
   const [columns, setColumns] = useState<any[]>([
-    // { field: 'factId', headerName: 'Faculty ID' },
     { field: 'name', headerName: 'Faculty Name' },
     { field: 'date', headerName: 'Attendance' },
   ]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
+  const [currentFaculties, setCurrentFaculties] = useState<Faculty[]>([]);
 
   useEffect(() => {
-    if (fromDate && toDate) {
+    fetchCurrentFaculties();
+  }, []);
 
+  const fetchCurrentFaculties = async (): Promise<void> => {
+    try {
+      const response = await axiosInstance.get<Faculty[]>('https://s-m-s-keyw.onrender.com/faculty/findAllFaculty');
+      setCurrentFaculties(response.data);
+    } catch (err) {
+      console.error('Error fetching current faculties:', err);
+      toast.error('Error fetching current faculties');
     }
-  }, [fromDate, toDate]);
+  };
 
   const validateDates = (): boolean => {
     if (!fromDate || !toDate) {
@@ -83,11 +97,10 @@ const FacultyAttendance: React.FC = () => {
         }),
       }));
 
-      const rows = mapAttendanceToRows(response.data, dateRange);
+      const rows = mapAttendanceToRows(response.data, dateRange, currentFaculties);
 
       setColumns([
         { field: 'name', headerName: 'Faculty Name' },
-        // { field: 'factId', headerName: 'Faculty ID' },
         ...dynamicColumns,
       ]);
       setData(rows);
@@ -102,20 +115,24 @@ const FacultyAttendance: React.FC = () => {
     }
   };
 
-  const mapAttendanceToRows = (data: AttendanceEntry[], dates: string[]): any[] => {
+  const mapAttendanceToRows = (data: AttendanceEntry[], dates: string[], currentFaculties: Faculty[]): any[] => {
     const facultyMap: { [id: string]: any } = {};
+
+    const currentFacultyIds = currentFaculties.map(faculty => faculty.fact_id);
 
     data.forEach((entry) => {
       const date = entry.date.split("T")[0]; // Extract YYYY-MM-DD
       entry.factList.forEach((faculty) => {
-        if (!facultyMap[faculty.factId]) {
-          facultyMap[faculty.factId] = {
-            name: faculty.name,
-            factId: faculty.factId,
-            ...dates.reduce((acc, d) => ({ ...acc, [d]: '' }), {})
-          };
+        if (currentFacultyIds.includes(faculty.factId)) {
+          if (!facultyMap[faculty.factId]) {
+            facultyMap[faculty.factId] = {
+              name: faculty.name,
+              factId: faculty.factId,
+              ...dates.reduce((acc, d) => ({ ...acc, [d]: '' }), {})
+            };
+          }
+          facultyMap[faculty.factId][formatDate(date)] = faculty.attendance;
         }
-        facultyMap[faculty.factId][formatDate(date)] = faculty.attendance;
       });
     });
 
@@ -127,8 +144,6 @@ const FacultyAttendance: React.FC = () => {
   };
 
   return (
-
-
     <>
       {loading && <Loader />} {/* Show loader when loading */}
       {!loading && (
@@ -188,18 +203,13 @@ const FacultyAttendance: React.FC = () => {
 
             </div>
 
-
-
-
             <ReusableTable rows={data} columns={columns} />
 
           </div>
         
       )}
         </>
+  );
+};
 
-      )
-
-      };
-
-      export default FacultyAttendance;
+export default FacultyAttendance;

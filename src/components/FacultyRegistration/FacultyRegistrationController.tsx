@@ -55,8 +55,8 @@ const FacultyRegistrationController: React.FC = () => {
 
   const handleAddFaculty = () => {
     setIsFormVisible(true);
-    setEditmode(false); // ✅ Disable edit mode when adding a new faculty
-    setEditingFaculty(null); // ✅ Ensure no pre-filled data
+    setEditmode(false); //  Disable edit mode when adding a new faculty
+    setEditingFaculty(null); //  Ensure no pre-filled data
   };
 
 

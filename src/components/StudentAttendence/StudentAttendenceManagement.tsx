@@ -5,7 +5,6 @@ import { API_ENDPOINTS } from "../../services/StudentAttendence/API/studentAtten
 import axiosInstance from "../../services/Utils/apiUtils";
 import { sortArrayByKey } from "../Utils/sortArrayByKey";
 import Loader from "../loader/loader";
-import BackButton from "../Navigation/backButton";
 import '../../global.scss'
 import ReusableTable from "../StudenAttendanceShow/Table/Table";
 import { toast, ToastContainer } from "react-toastify";
@@ -143,17 +142,14 @@ const StudentManagementSystem: React.FC = () => {
 
 
     const applyBulkAttendance = (value: string) => {
-        if (!bulkAttendance) {
-            toast.warning("Please select an attendance status before applying.");
-            return;
+        if (!value) { //check the value passed in, not the state.
+            return; //Do not show the toast if they are just clearing the selection.
         }
 
-
         setStudents((prevList: any) =>
-            prevList.map((faculty: any) => ({ ...faculty, attendance: bulkAttendance }))
+            prevList.map((student: any) => ({ ...student, attendance: value }))
         );
     };
-
 
     const Column = [
         {
@@ -225,9 +221,9 @@ const StudentManagementSystem: React.FC = () => {
 
                 <div className="box">
                     <div className="box grid grid-cols-1 gap-6 p-6">
-                        
-                            {/* <h1 className="head1Class Fee Page">Student Attendance</h1> */}
-                       <h1 className="head1">Student Attendance</h1>
+
+                        {/* <h1 className="head1Class Fee Page">Student Attendance</h1> */}
+                        <h1 className="head1">Student Attendance</h1>
 
                         {error && <p className="text-red-500">{error}</p>}
 
@@ -291,20 +287,21 @@ const StudentManagementSystem: React.FC = () => {
                         <div className="overflow-x-auto">
 
 
-                            <div className="bulk-attendanceflex items-center space-x-4 float-right ">
+                            <div className="bulk-attendance flex items-center space-x-4 float-right ">
                                 <select
                                     value={bulkAttendance}
                                     onChange={(e) => {
-                                        setBulkAttendance(e.target.value);
-                                        applyBulkAttendance(e.target.value); // Directly apply attendance
+                                        const selectedValue = e.target.value;
+                                        setBulkAttendance(selectedValue);
+                                        applyBulkAttendance(selectedValue); // Apply directly on change
                                     }}
                                     className="border rounded-md px-4 py-2 "
                                 >
                                     <option value="">Select Attendance</option>
                                     <option value="Present">Present</option>
                                     <option value="Absent">Absent</option>
-                                    <option value="Late">Late</option>
                                     <option value="Half Day">Half Day</option>
+                                    <option value="Late">Late</option>
                                     <option value="Leave">Leave</option>
                                 </select>
                             </div>
