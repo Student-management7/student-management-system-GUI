@@ -41,18 +41,18 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
   const handleSubmit = async (values: FeeFormValues) => {
     try {
       if (initialData) {
-        // Update existing fee
+       
         await updateFee(initialData.id, values);
         toast.success("Fee updated successfully!");
       } else {
-        // Save new fee
+        
         await saveFees(values);
         toast.success("Fee saved successfully!");
       }
-      onSave(values); // Notify parent component to refresh the table
-      onCancel(); // Redirect to the table page
+      onSave(values); 
+      onCancel();
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      toast.warn("class fee already present");
       console.error("Error saving/updating fee:", error);
     }
   };
