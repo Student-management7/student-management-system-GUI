@@ -11,10 +11,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { Eye, IdCard, Pencil, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../loader/loader";
-import ReusableTable from "../MUI Table/ReusableTable";
-import * as XLSX from "xlsx";
+import ReusableTable from "../StudenAttendanceShow/Table/Table";
 import './StudentRegistration.scss';
-import axiosInstance from "../../services/Utils/apiUtils";
 
 const StudentRegistrationController = () => {
   const navigate = useNavigate();
@@ -25,7 +23,6 @@ const StudentRegistrationController = () => {
   const [dialogData, setDialogData] = useState<StudentFormData | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
 
   const [columns] = useState<any[]>([
     { field: "name", headerName: "Name" },
@@ -79,7 +76,7 @@ const StudentRegistrationController = () => {
     },
   ]);
 
-  // Fetch student details
+  
   const fetchStudentDetails = useCallback(async () => {
     setLoading(true);
     try {
@@ -87,23 +84,22 @@ const StudentRegistrationController = () => {
       setData(data);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to fetch student details. Please try again.");
+      toast.warn("No student avialable. Please registerd student.");
     } finally {
       setLoading(false);
     }
   }, []);
 
+
   useEffect(() => {
     fetchStudentDetails();
   }, [fetchStudentDetails]);
 
-  // Handle single row data for editing
   const getSingleData = (data: StudentFormData) => {
     setSingleRowData(data);
     setEditFormView(true);
     setStudentData(true);
   };
-  // Handle cancel button in edit mode
   const handleCancelEdit = () => {
     setEditFormView(false); // Close edit form
     setStudentData(false); // Hide the form
@@ -121,7 +117,8 @@ const StudentRegistrationController = () => {
     try {
       await deleteStudentRecord(dialogData.id);
       setData((prev) => prev.filter((row) => row.id !== dialogData.id));
-      toast.success("Student record deleted successfully.");
+      fetchStudentDetails();
+      toast.success("Student record deleted successfully");
       fetchStudentDetails();
     } catch (error) {
       console.error(error);
@@ -146,67 +143,35 @@ const StudentRegistrationController = () => {
     navigate(`/StudentDetails/${id}`);
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const uploadedFile = event.target.files[0];
-      setFile(uploadedFile);
 
-      const reader = new FileReader();
-      reader.readAsBinaryString(uploadedFile);
 
-      reader.onload = (e) => {
-        const binaryData = e.target?.result;
-        const workbook = XLSX.read(binaryData, { type: "binary" });
-
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-
-        const parsedData = XLSX.utils.sheet_to_json(sheet);
-        console.log("Excel Converted JSON:", parsedData);
-      };
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!file) {
-      toast.warning("Please select a file before uploading!");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await axiosInstance.post("/student/bulkupload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      toast.success(`Upload successful! `); 
-
-      fetchStudentDetails();
-
-    } catch (error) {
-      toast.error("Upload failed. Please try again.");
-    }
+  const handeledBulkUplade = () => {
+    navigate(`/bulkupload`);
   };
 
   return (
     <>
-    
+      <ToastContainer position="top-right" autoClose={3000}/>
       {loading && <Loader />}
       {!loading && (
-        <div className="container-fluid p-3">
-          <div className="headding1 mb-4">
-            <h1 className="text-center">Student Registration</h1>
-          </div>
+        <>
+     
 
+        <div className="box p-3">
+          
+          
+         
           {!studentData ? (
             <div>
-              <div className="p-4">
-                <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
-                <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 ml-2">Upload</button>
-              </div>
-              <div className="rightButton">
+               <h1 className="head1 py-3">Student Registration</h1>
+              
+              <div className="rightButton ">
+                <button
+                  onClick={() => handeledBulkUplade()}
+                  className="btn button head1 text-white mr-3"
+                >
+                  Bulk Upload
+                </button>
                 <button
                   onClick={() => setStudentData(true)}
                   className="btn button head1 text-white"
@@ -229,7 +194,7 @@ const StudentRegistrationController = () => {
           ) : (
             <div className="box">
               <div className="head1">
-                <h1>
+                <h1 onClick={handleCancelEdit}>
                   <div>
                     <i
                       onClick={() => {
@@ -238,7 +203,7 @@ const StudentRegistrationController = () => {
                       }}
                       className="bi bi-arrow-left-circle"
                     />
-                    <span>{editFormView ? "Edit Student" : "Add Student"}</span>
+                    <span className="pl-4">{editFormView ? "Edit Student" : "Add Student"}</span>
                   </div>
                 </h1>
               </div>
@@ -250,10 +215,12 @@ const StudentRegistrationController = () => {
                 initialValues={editFormView ? singleRowData : undefined}
                 isEdit={editFormView}
                 fetchStudentDetails={fetchStudentDetails} 
+                
               />
             </div>
           )}
         </div>
+        </>
       )}
     </>
   );

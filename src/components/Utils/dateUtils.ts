@@ -11,6 +11,25 @@ export const formatToDDMMYYYY = (date: string): string => {
 
 
 
+export const formatToDDMMYYYY1 = (dateString: string): string => {
+  if (!dateString) return "Invalid Date";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "Invalid Date";
+  return date.toLocaleDateString("en-GB"); // Format: DD/MM/YYYY
+};
+
+
+
+
+const formatToDDMMYYYY2 = (dateString: string) => {
+  if (!dateString) return ""; // Handle empty values
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return ""; // Handle invalid dates
+  return date.toLocaleDateString("en-GB"); // Converts to DD/MM/YYYY format
+};
+
+
+
 
 export const changeFormatToDDMMYYYY = (dateString: string): string => {
   if (!dateString) return "";  // Handle null or undefined values

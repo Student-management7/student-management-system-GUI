@@ -225,12 +225,9 @@ const StudentManagementSystem: React.FC = () => {
 
                 <div className="box">
                     <div className="box grid grid-cols-1 gap-6 p-6">
-                        <div className="flex items-center space-x-4">
-                            <span>
-                                <BackButton />
-                            </span>
-                            <h1 className="text-xl font-bold text-[#27727A]">Student Attendance</h1>
-                        </div>
+                        
+                            {/* <h1 className="head1Class Fee Page">Student Attendance</h1> */}
+                       <h1 className="head1">Student Attendance</h1>
 
                         {error && <p className="text-red-500">{error}</p>}
 

@@ -116,18 +116,18 @@ const FacultyProfile:  React.FC = () => {
         <span className="detail-label">Leaving Date</span>
         <span className="detail-value">{faculty.fact_leavingDate || "N/A"}</span>
       </div>
-      <div className="detail-row">
+      {/* <div className="detail-row">
         <span className="detail-label">Qualification</span>
         <span className="detail-value">{faculty.fact_qualification || "N/A"}</span>
-      </div>
-      <div className="detail-row">
+      </div> */}
+      {/* <div className="detail-row">
         <span className="detail-label">Status</span>
         <span className="detail-value">{faculty.Fact_Status || "N/A"}</span>
-      </div>
-      <div className="detail-row">
+      </div> */}
+      {/* <div className="detail-row">
         <span className="detail-label">Class</span>
         <span className="detail-value">{faculty.Fact_Cls || "N/A"}</span>
-      </div>
+      </div> */}
     </div>
   )
 

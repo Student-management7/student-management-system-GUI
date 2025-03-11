@@ -78,7 +78,7 @@ const StudentFeesController: React.FC = () => {
       <div className="box">
         {!showForm && (  // Only show when the form is not active
           <>
-            <h1 className="head1">Student Fees</h1>
+            <h1 className="head1 mb-4">Student Fees</h1>
             <button onClick={() => setShowForm(true)} className="btn button float-right mt-1">
               Add Fees
             </button>

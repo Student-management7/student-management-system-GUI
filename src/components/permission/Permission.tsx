@@ -176,7 +176,7 @@ export default function Permission() {
     <div className="container mt-5">
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="flex items-center space-x-4 mb-4">
-        <h1 className="text-xl items-center font-bold text-[#27727A]">Manage Faculty Permission</h1>
+        <h1 className="head1">Manage Faculty Permission</h1>
       </div>
 
       <div

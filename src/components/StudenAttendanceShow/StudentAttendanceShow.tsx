@@ -7,7 +7,7 @@ import type { ClassData } from "../../services/SaveSubjects/Type"
 import type { AttendanceResponse } from "../../services/StudentAttendanceShow/type/attendanceTypes"
 import { sortArrayByKey } from "../Utils/sortArrayByKey"
 import { Switch } from '@headlessui/react'
-import ReusableTable from "../MUI Table/ReusableTable"
+import ReusableTable from "./Table/Table"
 // import ReusableTable from "./Table/Table"
 import Loader from "../loader/loader"
 import BackButton from "../Navigation/backButton"
@@ -121,14 +121,8 @@ const StudentAttendanceShow: React.FC = () => {
         <>
           <ToastContainer position="top-right" autoClose={3000} />
 
-          <div className="box">
-            <div className="flex items-center space-x-4 mb-4">
-              <span>
-                <BackButton />
-              </span>
-              <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Attendance View</h1>
-            </div>
-
+          <div className="box">            
+              <h1 className="head1 m-4" >Student Attendance View</h1>
             <div className="box">
               <div className="flex items-center space-x-7 mb-10">
                 <span className="text-gray-900 font-semibold ">

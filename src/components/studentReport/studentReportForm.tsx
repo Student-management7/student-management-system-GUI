@@ -194,7 +194,7 @@ const StudentReportForm: React.FC = () => {
                 <div className="box p-4 mb-4">
                     <ToastContainer position="top-right" autoClose={3000} />
 
-                    <h2 className="head1 ">Student Report Form</h2>
+                    <h2 className="mb-4 head1 ">Student Report Form</h2>
                     <div className="card p-4">
                         <div className="row">
                             <div className="col-md-3">
@@ -230,7 +230,7 @@ const StudentReportForm: React.FC = () => {
                                     isSearchable
                                     noOptionsMessage={() => "No students found"}
                                     menuPlacement="auto"
-                                    menuShouldScrollIntoView={true} // Ensures the menu is scrollable
+                                    menuShouldScrollIntoView={true} 
                                     styles={{
                                         menu: (provided) => ({
                                             ...provided,
@@ -240,7 +240,7 @@ const StudentReportForm: React.FC = () => {
                                         }),
                                         control: (provided) => ({
                                             ...provided,
-                                            zIndex: 1, // Ensure input field is below the dropdown menu
+                                            zIndex: 1, 
                                         }),
                                     }}
                                 />

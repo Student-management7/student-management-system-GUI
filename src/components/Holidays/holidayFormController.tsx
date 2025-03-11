@@ -4,7 +4,7 @@ import { formatToDDMMYYYY } from '../../components/Utils/dateUtils';
 import { Holiday, HolidayPayload } from '../../services/holiday/Type/type';
 import Loader from '../loader/loader';
 import AlertDialog from '../alert/AlertDialog';
-import ReusableTable from '../MUI Table/ReusableTable';
+import ReusableTable from '../StudenAttendanceShow/Table/Table';
 import { Trash2 } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import HolidayForm from './HolidayForm';
@@ -138,7 +138,7 @@ const HolidayComponent: React.FC = () => {
           {!showForm ? (
             <>
               <div className="flex items-center space-x-4 mb-4">
-                <h1 className="text-xl font-bold text-[#27727A]">Holiday Page</h1>
+                <h1 className="head1">Holiday Page</h1>
               </div>
               <div className="float-right mt-1">
                 <button onClick={() => setShowForm(true)} className="btn button ml-2 ">

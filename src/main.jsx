@@ -19,6 +19,7 @@ const App = () => {
       <Routes>
 
         <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
 
         {/* Protected routes for authenticated users */}
         {isAuthenticated ? (
@@ -33,15 +34,13 @@ const App = () => {
             </div>
           } />
         ) : (
-          // Redirect unauthenticated users to the login page
           <Route path="*" element={<Navigate to="/login" />} />
         )}
       </Routes>
     </>
   );
-};
+}; 
 
-// Rendering App
 createRoot(document.getElementById('root')).render(
   <Router>
     <AuthProvider>

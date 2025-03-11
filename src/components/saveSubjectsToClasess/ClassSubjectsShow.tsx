@@ -107,7 +107,7 @@ const ClassSubjectShow: React.FC = () => {
           {!showForm ? (
             <>
               <div className="flex items-center space-x-4 mb-4">
-                <h1 className="text-xl font-bold text-[#27727A]">Class Page</h1>
+                <h1 className="head1">Class Page</h1>
               </div>
               <div className="float-right mt-1">
                 <button

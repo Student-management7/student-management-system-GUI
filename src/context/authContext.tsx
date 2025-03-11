@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
 interface DecodedToken extends JwtPayload {
-  userId?: string;
+   userId?: string;
   [key: string]: any;
 }
 
@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     checkInitialToken();
   }, []);
-
+ 
   const login = async (email: string, password: string): Promise<void> => {
     try {
       setIsLoading(true);

@@ -134,12 +134,9 @@ const FacultyAttendance: React.FC = () => {
       {!loading && (
         <div className="box">
           <ToastContainer position='top-right' autoClose={3000} />
-          <div className="flex items-center space-x-4 mb-4">
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Faculty Attendance </h1>
-          </div>
-
-
-          <div className="container mx-auto p-1">
+          
+            <h1 className="head1 mb-4" >Faculty Attendance </h1>
+         <div className="container mx-auto p-1">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               {/* From Date */}
               <div className="form-control">

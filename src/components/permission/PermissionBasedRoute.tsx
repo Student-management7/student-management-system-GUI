@@ -33,9 +33,11 @@ import Facultydetails from "../facultyDetails/Facultydetails";
 import path from "path";
 import StudentFeesDetails from "../fess/studentFees/studentFeesDetails";
 import Admindeshboard from '../../components/SuperAdmin/AdminDeshboard'
+import BulkUpload from '../studentRegistration/BulkUplod'
 
 import UserPassword from "../../Pages/setting/UserPassord";
 import Profile from "../../Pages/profile/Profile";
+import Loader from "../loader/loader";
 // import Landing from "../../Pages/lan/Landing";
 interface Permission {
   [module: string]: {
@@ -83,7 +85,7 @@ const PermissionBasedRoute: React.FC = () => {
     fetchPermissions();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div><Loader/></div>;
   if (!permissions) return <div>Access Denied: Permissions missing.</div>;
   console.log(permissions);
 
@@ -114,6 +116,7 @@ const allRoutes = [
   
   {path : "/studentFeesDetails/:id", element: <StudentFeesDetails />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentFeesDetails) },
   {path : "/FacultySalaryDetails/:id", element: <FacultySalaryDetails />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultySalaryDetails) },
+  {path : "/bulkUpload", element: <BulkUpload />, visible: role === "user" || (role === "sub-user" && permissions?.student?.studentBulkUpload) },
 
   { 
     path: "/ClassSubjectShow", 
@@ -155,8 +158,10 @@ const allRoutes = [
       {finalRoutes.map(({ path, element }) => (
         <Route key={path} path={path} element={element} />
       ))}
+      
       <Route path="*" element={<Navigate to="/AccessDenied" />} />
       <Route path="/AccessDenied" element={<AccessDenied />} />
+      
 
     </Routes>
   );

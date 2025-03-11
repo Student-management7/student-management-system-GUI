@@ -151,7 +151,7 @@ const StudentAttendanceEdit: React.FC = () => {
               <span>
                 <BackButton />
               </span>
-              <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Attendance Update</h1>
+              <h1 className="head1" >Student Attendance Update</h1>
             </div>
 
             <div className="box">
