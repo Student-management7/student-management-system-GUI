@@ -150,7 +150,7 @@ const FacultyAttendance: React.FC = () => {
         <div className="box">
           <ToastContainer position='top-right' autoClose={3000} />
           
-            <h1 className="head1 mb-4" >Faculty Attendance </h1>
+            <h1 className="head1 mb-4" >Faculty Attendance View </h1>
          <div className="container mx-auto p-1">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               {/* From Date */}
