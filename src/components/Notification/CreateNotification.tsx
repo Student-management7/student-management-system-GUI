@@ -104,6 +104,7 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
       );
 
       toast.success("Notification created successfully!");
+      onClose();
       resetForm();
       
 
