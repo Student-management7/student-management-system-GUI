@@ -13,7 +13,7 @@ interface FormViewProps {
   setStudentData: (arg: boolean) => void;
   initialValues?: StudentFormData;
   isEdit?: boolean;
-  fetchStudentDetails: () => void; // Add this prop
+  fetchStudentDetails: () => void; 
 }
 
 const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: propInitialValues, isEdit = false }) => {
@@ -145,8 +145,7 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: prop
       if (isEdit) {
         await updateStdDetails(values); // Call update API for edit
         toast.success("Student updated successfully!");
-         
-        
+
       } else {
         await saveStdDetails(values); // Call save API for add
         
@@ -536,6 +535,7 @@ const FormView: React.FC<FormViewProps> = ({ setStudentData, initialValues: prop
                   type="button"
                   className="btn buttonred head1 text-white"
                   onClick={() => setStudentData(false)}
+                  
                 >
                   Cancel
                 </button>
