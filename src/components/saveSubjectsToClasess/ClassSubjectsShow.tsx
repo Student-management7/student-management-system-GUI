@@ -103,7 +103,7 @@ const ClassSubjectShow: React.FC = () => {
         <Loader />
       ) : (
         <div className="box">
-          <ToastContainer />
+          <ToastContainer position="top-right"  autoClose={3000}/>
           {!showForm ? (
             <>
               <div className="flex items-center space-x-4 mb-4">
