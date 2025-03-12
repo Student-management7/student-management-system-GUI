@@ -1,28 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
-interface DecodedToken extends JwtPayload {
-  userId?: string;
-  [key: string]: any;
-}
-
-interface JwtPayload {
+interface DecodedToken {
   exp?: number;
+  userId?: string;
   [key: string]: any;
 }
 
 interface UserDetails {
   email: string;
   role: string;
-  facultyInfo?: {
-    fact_Name: string;
-  };
-  schoolCreationEntity?: {
-    ownerName: string;
-  };
-  adminCreationEntity?: {
-    name: string;
-  };
+  [key: string]: any;
 }
 
 interface AuthContextType {
@@ -41,7 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<DecodedToken | null>(null);
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); // Start loading when checking token
 
   useEffect(() => {
     const checkInitialToken = async () => {
@@ -63,29 +51,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             await logout();
           }
         } catch (error) {
+          console.error('Token decode error:', error);
           await logout();
         }
+      } else {
+        await logout();
       }
-      setIsLoading(false);
+      setIsLoading(false); // Finished checking token, stop loading
     };
+
     checkInitialToken();
   }, []);
- 
+
   const login = async (email: string, password: string): Promise<void> => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const response = await fetch('https://s-m-s-keyw.onrender.com/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': getCsrfToken(),
         },
         body: JSON.stringify({ email, password }),
-        credentials: 'include',
       });
 
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.message || 'Login failed');
       }
@@ -94,14 +83,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const decoded = jwtDecode<DecodedToken>(token);
 
       localStorage.setItem('token', token);
-      document.cookie = `Authorization=Bearer ${token}; path=/; secure; samesite=strict`;
+      localStorage.setItem('userDetails', JSON.stringify(decoded));
 
       setIsAuthenticated(true);
       setUser(decoded);
+      setUserDetails(decoded);
     } catch (err: any) {
       console.error('Login Error:', err);
       setIsAuthenticated(false);
       setUser(null);
+      setUserDetails(null);
       throw err;
     } finally {
       setIsLoading(false);
@@ -112,12 +103,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await fetch('https://s-m-s-keyw.onrender.com/auth/logout', {
         method: 'POST',
-        credentials: 'include',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'X-CSRF-Token': getCsrfToken(),
         },
-      }).catch(err => console.warn('Logout API call failed:', err));
+      }).catch((err) => console.warn('Logout API call failed:', err));
     } finally {
       localStorage.removeItem('token');
       localStorage.removeItem('userDetails');
@@ -128,16 +117,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const getCsrfToken = () => {
-    const metaToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    const cookieToken = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('XSRF-TOKEN='))
-      ?.split('=')[1];
-
-    return metaToken || cookieToken || '';
-  };
-
   return (
     <AuthContext.Provider
       value={{
@@ -146,14 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         userDetails,
         login,
         logout,
-        setUserDetails: (details) => {
-          setUserDetails(details);
-          if (details) {
-            localStorage.setItem('userDetails', JSON.stringify(details));
-          } else {
-            localStorage.removeItem('userDetails');
-          }
-        },
+        setUserDetails,
         isLoading,
       }}
     >

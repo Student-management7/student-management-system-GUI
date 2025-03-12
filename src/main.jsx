@@ -9,10 +9,14 @@ import SideBarController from './components/sideBar/SideBarController';
 import HeaderController from './components/main/HeaderController';
 import FooterController from './components/main/FooterController';
 import PermissionBasedRoute from './components/permission/PermissionBasedRoute'; 
+import Loader from './components/loader/loader';
 
 
 const App = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated , isLoading} = useAuth();
+  if (isLoading) {
+    return <div><Loader/></div>; 
+  }
 
   return (
     <>
@@ -44,7 +48,7 @@ const App = () => {
 createRoot(document.getElementById('root')).render(
   <Router>
     <AuthProvider>
-      <App />
+      <App/>
     </AuthProvider>
   </Router>
 );
