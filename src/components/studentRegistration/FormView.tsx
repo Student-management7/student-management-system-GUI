@@ -187,7 +187,7 @@ const FormView: React.FC<FormViewProps> = ({
         .min(3, "City must be at least 3 characters")
         .matches(
           /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
-          "City must contain at least one letter and can include numbers, spaces,.,-"
+          "City must contain at least one letter and can include numbers, spaces .,-"
         ),
       stdo_state: Yup.string()
         
