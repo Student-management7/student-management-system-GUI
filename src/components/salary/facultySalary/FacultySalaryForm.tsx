@@ -87,7 +87,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
   };
 
   if (isLoading) {
-    return <div className="text-center mt-4"><Loader/></div>;
+    return <div className="text-center mt-4"><Loader /></div>;
   }
 
   if (error) {
@@ -186,7 +186,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                   </div>
                 )}
 
-                
+
 
                 <div className="row">
                   {/* Salary */}
@@ -285,18 +285,7 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                                 />
                               </div>
                             </div>
-                            <div className="col-md-5">
-                              <Field
-                                name={`facultyDeduction[${index}].name`}
-                                placeholder=" Name"
-                                className="form-control"
-                              />
-                                        <ErrorMessage
-                    name={`facultyDeduction[${index}].name`}
-                    component="div"
-                    className="text-danger mt-1"
-                  />
-                            </div>
+
                             <div className="col-md-4">
                               <Field
                                 name={`facultyDeduction[${index}].amount`}
@@ -305,10 +294,10 @@ const FacultySalaryForm: React.FC<FacultySalaryFormProps> = ({
                                 className="form-control"
                               />
                               <ErrorMessage
-                    name={`facultyDeduction[${index}].amount`}
-                    component="div"
-                    className="text-danger mt-1"
-                  />
+                                name={`facultyDeduction[${index}].amount`}
+                                component="div"
+                                className="text-danger mt-1"
+                              />
                             </div>
                             <div className="col-md-2 text-center">
                               <button

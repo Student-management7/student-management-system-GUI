@@ -64,7 +64,7 @@ const StudentReportForm: React.FC = () => {
 
     useEffect(() => {
         const loadClassData = async () => {
-            setLoading(true);
+            
             try {
                 const data = await fetchClassData();
                 if (Array.isArray(data) && data.length > 0) {
@@ -75,9 +75,7 @@ const StudentReportForm: React.FC = () => {
                 }
             } catch (err) {
                 handleApiError(err);
-            } finally {
-                setLoading(false);
-            }
+            } 
         };
         loadClassData();
     }, []);
@@ -238,9 +236,7 @@ const StudentReportForm: React.FC = () => {
 
             <ToastContainer position="top-right" autoClose={3000} />
 
-            {loading ? (
-                <Loader /> // Show loader while data is being fetched
-            ) : (
+            
                 <div className="box p-4 mb-4">
                     <ToastContainer position="top-right" autoClose={3000} />
 
@@ -413,7 +409,7 @@ const StudentReportForm: React.FC = () => {
                         </div>
                     </div>
                 </div>
-            )}
+           
         </>
     );
 };

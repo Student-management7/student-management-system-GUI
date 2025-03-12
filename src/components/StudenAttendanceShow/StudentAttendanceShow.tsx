@@ -10,8 +10,8 @@ import Loader from "../loader/loader";
 import { toast, ToastContainer } from "react-toastify";
 import { Pencil } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-import GridView from "./GridView";
 import axiosInstance from "../../services/Utils/apiUtils";
+import ReusableTable from "./Table/Table";
 
 interface Student {
   id: string;
@@ -293,11 +293,12 @@ const StudentAttendanceShow: React.FC = () => {
               </div>
 
               {attendanceData.length > 0 && (
-                <div className="overflow-x-auto">
-                  <GridView
-                    columnDefs={[
-                      { field: 'stdId', headerName: 'Student ID' },
+                
+                  <ReusableTable
+                    columns={[
+                    
                       { field: 'name', headerName: 'Student Name' },
+                      
                       ...getDateRange(fromDate, toDate).map((date) => ({
                         field: date,
                         headerName: date,
@@ -306,9 +307,9 @@ const StudentAttendanceShow: React.FC = () => {
                         ),
                       })),
                     ]}
-                    rowData={transformAttendanceData()}
+                    rows={transformAttendanceData()}
                   />
-                </div>
+                
               )}
             </div>
           </div>

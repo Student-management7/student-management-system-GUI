@@ -11,8 +11,11 @@ const EditSalaryValidationSchema = Yup.object().shape({
   facultyTransport: Yup.number().required('Transport allowance is required').min(0, 'Transport allowance must be a positive number'),
   facultyDeduction: Yup.array().of(
     Yup.object().shape({
-      name: Yup.string(),
-      amount: Yup.number().min(0, 'Deduction amount must be a positive number')
+      name: Yup.string().matches(
+        /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
+        "Address must contain at least one letter and can include numbers, spaces, and .,-"
+      ),
+      amount: Yup.number().min(0, 'Deduction  must  be greater than or equal to 0 ')
     })
   )
 });
@@ -82,7 +85,10 @@ const EditFacultySalaryForm: React.FC<EditFacultySalaryFormProps> = ({
 
     try {
       await onSave(payload);
-      toast.success("Salary updated successfully");
+      setTimeout(() => {
+        toast.success("Salary updated successfully");
+
+      }, 1000)
     } catch (error) {
       toast.error("Failed to update salary");
       console.error("Salary update error:", error);
@@ -197,6 +203,13 @@ const EditFacultySalaryForm: React.FC<EditFacultySalaryFormProps> = ({
                                 placeholder=" Name"
                                 className="form-control"
                               />
+
+                              <ErrorMessage
+                                name={`facultyDeduction[${index}].name`}
+                                component="div"
+                                className="text-danger mt-1"
+                              />
+
                             </div>
                             <div className="col-md-4">
                               <Field
@@ -205,6 +218,12 @@ const EditFacultySalaryForm: React.FC<EditFacultySalaryFormProps> = ({
                                 placeholder=" Amount"
                                 className="form-control"
                               />
+                              <ErrorMessage
+                                name={`facultyDeduction[${index}].amount`}
+                                component="div"
+                                className="text-danger mt-1"
+                              />
+
                             </div>
                             <div className="col-md-2 text-center">
                               <button
