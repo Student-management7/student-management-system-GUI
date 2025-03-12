@@ -7,15 +7,13 @@ import {
   SelectValue,
 } from "@radix-ui/react-select";
 import axiosInstance from "../../services/Utils/apiUtils";
-import { User } from 'lucide-react';
+import { User, AlertCircle } from 'lucide-react';
 import axios from "axios";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Loader from "../loader/loader";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
-
-
 
 interface Subject {
   subject: string;
@@ -50,8 +48,8 @@ interface AttendanceData {
 }
 
 const StudentReport: React.FC = () => {
-
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [examData, setExamData] = useState<ExamData[]>([]);
   const [selectedExamType, setSelectedExamType] = useState<string>("");
@@ -59,18 +57,44 @@ const StudentReport: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [studentData, setStudentData] = useState<StudentData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState<{
+    status: boolean;
+    message: string;
+    type: "error" | "warning" | "info";
+  }>({
+    status: false,
+    message: "",
+    type: "error",
+  });
 
   const { id } = useParams<{ id: string }>();
   
+  // Early validation for missing ID
   if (!id) {
-    return <div>Error: Missing Student id </div>;
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+        <div className="bg-white p-8 rounded-xl shadow-md max-w-md w-full text-center">
+          <div className="flex justify-center mb-4">
+            <AlertCircle className="h-12 w-12 text-red-500" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Missing Student ID</h2>
+          <p className="text-gray-600 mb-6">No student ID was provided. Please select a valid student.</p>
+          <button
+            onClick={() => navigate(-1)}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
   }
   
-   
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setError({ status: false, message: "", type: "error" });
   
         // Fetch data from the API
         const [examResponse] = await Promise.all([
@@ -81,7 +105,12 @@ const StudentReport: React.FC = () => {
   
         // Check if examData is empty
         if (!examData || examData.length === 0) {
-          <div>No data found for the given ID</div>
+          setError({
+            status: true,
+            message: "No exam data found for this student.",
+            type: "info",
+          });
+          return;
         }
   
         // Update state with fetched data
@@ -98,22 +127,51 @@ const StudentReport: React.FC = () => {
       } catch (error: unknown) {
         console.error("Error:", error); 
   
-       
+        // Handle different types of errors
         if (axios.isAxiosError(error)) {
           console.log("Axios Error:", error.response); 
-          if (error.response?.status === 400) {
-           
-            const errorMessage = error.response.data.detail || "No data found for this student.";
-            toast.error(errorMessage); 
-          } else {
-            
-            toast.error("Failed to fetch data. Please try again.");
-          }
-        } else if (error instanceof Error) {
-         
-          toast.error(error.message || "An error occurred while fetching data.");
-        } else {
           
+          if (error.response?.status === 400) {
+            const errorMessage = error.response.data.detail || "Invalid student ID. Please check and try again.";
+            setError({
+              status: true,
+              message: errorMessage,
+              type: "error",
+            });
+          } else if (error.response?.status === 404) {
+            setError({
+              status: true,
+              message: "The student record was not found.",
+              type: "error",
+            });
+          } else if (!error.response) {
+            setError({
+              status: true,
+              message: "Network error. Please check your connection and try again.",
+              type: "warning",
+            });
+          } else {
+            setError({
+              status: true,
+              message: "Failed to fetch student data. Please try again later.",
+              type: "error",
+            });
+          }
+          
+          // toast.error(error.response?.data?.detail || "Failed to fetch data");
+        } else if (error instanceof Error) {
+          setError({
+            status: true,
+            message: error.message || "An unexpected error occurred.",
+            type: "error",
+          });
+          // toast.error(error.message || "An error occurred while fetching data.");
+        } else {
+          setError({
+            status: true,
+            message: "An unknown error occurred. Please try again.",
+            type: "error",
+          });
           toast.error("An unknown error occurred. Please try again.");
         }
       } finally {
@@ -133,18 +191,77 @@ const StudentReport: React.FC = () => {
 
   const examTypes = [...new Set(examData.map((exam) => exam.examType))];
 
-  if (loading || !studentData) {
+  // Show error state
+  if (error.status) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="spinner"></div>
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+        <div className="bg-white p-8 rounded-xl shadow-md max-w-md w-full text-center">
+          <div className="flex justify-center mb-4">
+            <AlertCircle className="h-12 w-12 text-red-500" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Error Loading Student Report</h2>
+          <p className="text-gray-600 mb-6">{error.message} or Please First Create Student Report</p>
+          <button
+            onClick={() => navigate(-1)}
+            className="button btn"
+          >
+            Go Back
+          </button>
+        </div>
       </div>
     );
   }
 
-  if (!filteredExam) {
-    return <div className="p-5">No data available</div>;
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader />
+      </div>
+    );
   }
 
+  // Show "no data" state
+  if (!studentData) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+        <div className="bg-white p-8 rounded-xl shadow-md max-w-md w-full text-center">
+          <div className="flex justify-center mb-4">
+            <AlertCircle className="h-12 w-12 text-yellow-500" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">No Student Data</h2>
+          <p className="text-gray-600 mb-6">We couldn't find any data for this student ID.</p>
+          <button
+            onClick={() => navigate(-1)}
+            className="button btn"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show "no exam data" state
+  if (!filteredExam) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+        <div className="bg-white p-8 rounded-xl shadow-md max-w-md w-full text-center">
+          <div className="flex justify-center mb-4">
+            <AlertCircle className="h-12 w-12 text-yellow-500" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">No Exam Data</h2>
+          <p className="text-gray-600 mb-6">No exam data is available for this student.</p>
+          <button
+            onClick={() => navigate(-1)}
+            className="button btn "
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
 

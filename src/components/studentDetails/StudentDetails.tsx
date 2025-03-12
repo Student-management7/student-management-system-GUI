@@ -1,73 +1,121 @@
-
-import type React from "react"
-import { useState, useEffect } from "react"
-import "./StudentDetails.css"
-import axiosInstance from "../../services/Utils/apiUtils"
-import { useParams } from "react-router-dom"
-import BackButton from "../Navigation/backButton"
-import Loader from "../loader/loader"
-
-// import Image from "../studentDeytails/"
+import React, { useState, useEffect } from "react";
+import "./StudentDetails.css";
+import axiosInstance from "../../services/Utils/apiUtils";
+import { useParams, useNavigate } from "react-router-dom";
+import BackButton from "../Navigation/backButton";
+import Loader from "../loader/loader";
 
 interface FamilyDetails {
-  stdo_FatherName: string
-  stdo_MotherName: string
-  stdo_primaryContact: string
-  stdo_secondaryContact: string
-  stdo_address: string | null
-  stdo_city: string
-  stdo_state: string
-  stdo_email: string
+  stdo_FatherName: string;
+  stdo_MotherName: string;
+  stdo_primaryContact: string;
+  stdo_secondaryContact: string;
+  stdo_address: string | null;
+  stdo_city: string;
+  stdo_state: string;
+  stdo_email: string;
 }
 
 interface Student {
-  id: string
-  creationDateTime: string
-  name: string
-  address: string
-  city: string
-  state: string
-  familyDetails: FamilyDetails
-  contact: string
-  gender: string
-  dob: string
-  email: string
-  cls: string
-  department: string
-  category: string
+  id: string;
+  creationDateTime: string;
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  familyDetails: FamilyDetails;
+  contact: string;
+  gender: string;
+  dob: string;
+  email: string;
+  cls: string;
+  department: string;
+  category: string;
 }
-
 
 const StudentProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"personal" | "academic" | "family">("personal");
   const [student, setStudent] = useState<Student | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-
-  console.log("studentdetails id ", id)
-
   useEffect(() => {
     const fetchStudentDetails = async () => {
       try {
-        const response = await axiosInstance.get(`/student/findAllStudent?id=${id}`); setStudent(response.data[0])
-        setLoading(false)
-      } catch (err) {
-        setError("Failed to fetch student details")
-        setLoading(false)
-      }
-    }
+        if (!id) {
+          setError("No student ID provided");
+          setLoading(false);
+          return;
+        }
 
-    fetchStudentDetails()
-  }, [id])
+        const response = await axiosInstance.get(`/student/findAllStudent?id=${id}`);
+        if (response.data.length > 0) {
+          setStudent(response.data[0]);
+        } else {
+          setError("No student data found for the given ID");
+        }
+      } catch (err: any) {
+        // Check if it's an axios error with response
+        if (err.response) {
+          // Handle specific error response from server
+          const status = err.response.status;
+          const errorDetail = err.response.data?.detail || err.response.data?.message;
+          
+          if (status === 400) {
+            setError(`Invalid student ID: ${errorDetail || "Please check the ID and try again"}`);
+          } else if (status === 404) {
+            setError("Student not found");
+          } else {
+            setError(`Error (${status}): ${errorDetail || "Failed to fetch student details"}`);
+          }
+        } else if (err.request) {
+          // Request was made but no response received
+          setError("Server did not respond. Please check your connection and try again.");
+        } else {
+          // Other errors
+          setError(`An unexpected error occurred: ${err.message || "Please try again later"}`);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudentDetails();
+  }, [id]);
+
+  // Function to handle navigation back
+  const handleGoBack = () => {
+    navigate(-1);
+  };
 
   if (loading) {
-    return <div className="loading-state"><Loader/></div>
+    return (
+      <div className="loading-state">
+        <Loader />
+      </div>
+    );
   }
 
   if (error || !student) {
-    return <div className="error-state">{error || "No student data found"}</div>
+    return (
+      <div className="error-container p-6 max-w-md mx-auto my-10 bg-white rounded-lg shadow-md text-center">
+        <div className="error-icon mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-gray-800 mb-2">Student Data Not Available</h2>
+        <p className="text-gray-600 mb-6">{error || "No student found with the provided ID"}</p>
+        <button 
+          onClick={handleGoBack}
+          className="bg-[#126666] text-white py-2 px-6 rounded-md hover:bg-[#0d5252] transition duration-300"
+        >
+          Go Back
+        </button>
+      </div>
+    );
   }
 
   const renderPersonalInfo = () => (
@@ -104,9 +152,8 @@ const StudentProfile: React.FC = () => {
         <span className="detail-label">State</span>
         <span className="detail-value">{student.state}</span>
       </div>
-
     </div>
-  )
+  );
 
   const renderAcademicInfo = () => (
     <div className="details-grid">
@@ -118,13 +165,12 @@ const StudentProfile: React.FC = () => {
         <span className="detail-label">Department</span>
         <span className="detail-value">{student.department}</span>
       </div>
-
       <div className="detail-row">
         <span className="detail-label">Category</span>
         <span className="detail-value">{student.category}</span>
       </div>
     </div>
-  )
+  );
 
   const renderFamilyInfo = () => (
     <div className="details-grid">
@@ -149,21 +195,21 @@ const StudentProfile: React.FC = () => {
         <span className="detail-value">{student.familyDetails.stdo_email}</span>
       </div>
     </div>
-  )
+  );
 
   return (
     <div className="box">
       <div className="profile-container">
-       <nav className="items flex items-center ">
-            <span> <BackButton /></span>
-            <span className="head1 mt-2 ml-2 ">Student Profile</span>
+        <nav className="items flex items-center">
+          <span><BackButton /></span>
+          <span className="head1 mt-2 ml-2">Student Profile</span>
         </nav>
 
         <div className="profile-content">
-        <div className="profile-header">
-          <div className="profile-icon-container">
-           <img src="/images/student-icon.png" alt="img" />
-          </div>
+          <div className="profile-header">
+            <div className="profile-icon-container">
+              <img src="/images/student-icon.png" alt="img" />
+            </div>
             <div className="profile-basic-info">
               <h1>{student.name}</h1>
               <div className="info-grid">
@@ -176,7 +222,7 @@ const StudentProfile: React.FC = () => {
                   <span className="value">{student.cls}</span>
                 </div>
                 <div className="info-item">
-                  <span className="label"> Roll Number  :</span>
+                  <span className="label">Roll Number:</span>
                   <span className="value">{student.id}</span>
                 </div>
               </div>
@@ -213,12 +259,10 @@ const StudentProfile: React.FC = () => {
               {activeTab === "family" && renderFamilyInfo()}
             </div>
           </div>
-
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default StudentProfile
-
+export default StudentProfile;
