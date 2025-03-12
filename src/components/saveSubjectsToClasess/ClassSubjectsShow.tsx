@@ -53,16 +53,16 @@ const ClassSubjectShow: React.FC = () => {
     try {
       await axiosInstance.post(`class/delete?className=${className}`);
       await fetchData(); // Refresh data after deletion
-      toast.success(`${className} class has been deleted successfully!`);
+      toast.success(`class  ${className}  has been deleted successfully!`);
     } catch (error: any) {
       console.error("Error deleting row:", error.message || error);
-      toast.error("Failed to delete the row.");
+      toast.warn("Failed to delete the row. This class have duplicate value");
     }
   };
 
-  // Handle save/update success
+  
   const handleSave = async () => {
-    await fetchData(); // Refresh data after save/update
+    await fetchData(); 
     setShowForm(false);
     setEditableRow(null);
   };
