@@ -7,7 +7,7 @@ export const facultyValidationSchema = (editmode: boolean) =>
     .matches(
       /^[A-Za-z\s]+$/,
       "Name must contain only letters and spaces (no numbers or special characters)"
-    ),
+    ).max(40, "Name must be at most 20 characters"),
     fact_email: Yup.string().email('Invalid email').required('Email is required'),
     fact_contact: Yup.string().required('Contact is required').matches(/^[0-9]{10}$/, "Contact number must be 10 digits"),
 
@@ -17,15 +17,15 @@ export const facultyValidationSchema = (editmode: boolean) =>
     .matches(
       /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
       "Address must contain at least one letter and can include numbers, spaces, and .,-"
-    ),
+    ).max(60, "Name must be at most 20 characters"),
     fact_city: Yup.string().required('City is required').matches(
       /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
       "City must contain at least one letter and can include numbers, spaces, and .,-"
-    ),
+    ).max(40, "Name must be at most 20 characters"),
     fact_state: Yup.string().matches(
       /^[A-Za-z\s.-]+$/,
       "State must contain only letters, spaces, dots, or hyphens (no numbers or other special characters)"
-    ),
+    ).max(40, "Name must be at most 20 characters"),
    
     fact_joiningDate: Yup.date()
     .required('Joining Date is required')
