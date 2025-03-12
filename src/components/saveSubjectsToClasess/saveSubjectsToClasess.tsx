@@ -275,6 +275,7 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
           >
             {loading ? "Saving..." : editableRow ? "Update" : "Save"}
           </button>
+          <ToastContainer position="top-right" autoClose={3000} />
         </div>
       </div>
     </>
