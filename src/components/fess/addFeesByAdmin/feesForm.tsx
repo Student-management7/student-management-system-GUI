@@ -107,9 +107,9 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
             ))}
           </div>
 
-          {/* Other Amounts */}
+      
          {/* Other Amounts */}
-<div className="mt-4">
+  <div className="mt-4">
   <label className="block mb-2 font-semibold">Other Amounts</label>
   <FieldArray name="otherAmount">
     {({ push, remove }) => (
@@ -140,7 +140,8 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
                 name={`otherAmount[${index}].amount`}
                 placeholder="Amount"
                 type="number"
-                className="p-2 border rounded-md w-full"
+                className={`p-2 border rounded-md w-full ${!values.otherAmount[index].name.trim() ? 'bg-gray-200 border-gray-400 cursor-not-allowed' : ''}`}
+                disabled={!values.otherAmount[index].name || !values.otherAmount[index].name.trim()}
               />
               <ErrorMessage
                 name={`otherAmount[${index}].amount`}
