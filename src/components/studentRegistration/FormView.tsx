@@ -133,11 +133,8 @@ const FormView: React.FC<FormViewProps> = ({
       ),
     address: Yup.string()
       .required("Address is required")
-      .min(3, "Address must be at least 3 characters")
-      .matches(
-        /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
-        "Address must contain at least one letter and can include numbers, spaces, and .,-"
-      ),
+      .min(3, "Address must be at least 3 characters"),
+      
 
     email: Yup.string().email("Invalid email format"),
     department: Yup.string().matches(
@@ -154,7 +151,7 @@ const FormView: React.FC<FormViewProps> = ({
     state: Yup.string()
       .required("State is required")
       .matches(
-        /^[A-Za-z\s.-]+$/, // Allow letters, spaces, dots, and hyphens
+        /^[A-Za-z\s.-]+$/,
         "State must contain only letters, spaces, dots, or hyphens (no numbers or other special characters)"
       ),
     contact: Yup.string()
@@ -193,9 +190,9 @@ const FormView: React.FC<FormViewProps> = ({
           "City must contain at least one letter and can include numbers, spaces,.,-"
         ),
       stdo_state: Yup.string()
-        .required("State is required")
+        
         .matches(
-          /^[A-Za-z\s.-]+$/, // Allow letters, spaces, dots, and hyphens
+          /^[A-Za-z\s.-]+$/,
           "State must contain only letters, spaces, dots, or hyphens (no numbers or other special characters)"
         ),
       stdo_email: Yup.string()
@@ -214,7 +211,7 @@ const FormView: React.FC<FormViewProps> = ({
         toast.success("Student submitted successfully!");
       }
   
-      // 3-second delay before closing the form
+     
       setTimeout(() => {
         setStudentData(false); // Close the form after submission
         resetForm(); // Reset form fields
@@ -597,9 +594,20 @@ const FormView: React.FC<FormViewProps> = ({
                       type="text"
                       id="familyDetails.stdo_secondaryContact"
                       name="familyDetails.stdo_secondaryContact"
-                      className="form-control"
+                      className={`form-control ${
+                        errors.familyDetails?.stdo_secondaryContact &&
+                        touched.familyDetails?.stdo_secondaryContact
+                          ? "is-invalid"
+                          : ""
+                      }`}
                       placeholder="Enter secondary contact"
                     />
+                     {errors.familyDetails?.stdo_secondaryContact &&
+                      touched.familyDetails?.stdo_secondaryContact && (
+                        <div className="invalid-feedback">
+                          {errors.familyDetails.stdo_secondaryContact}
+                        </div>
+                      )}
                   </div>
                 </div>
                 <div className="col-md-4">
@@ -614,9 +622,20 @@ const FormView: React.FC<FormViewProps> = ({
                       type="text"
                       id="familyDetails.stdo_city"
                       name="familyDetails.stdo_city"
-                      className="form-control"
+                      className={`form-control ${
+                        errors.familyDetails?.stdo_city &&
+                        touched.familyDetails?.stdo_city
+                          ? "is-invalid"
+                          : ""
+                      }`}
                       placeholder="Enter family city"
                     />
+                     {errors.familyDetails?.stdo_city &&
+                      touched.familyDetails?.stdo_city && (
+                        <div className="invalid-feedback">
+                          {errors.familyDetails.stdo_city}
+                        </div>
+                      )}
                   </div>
                 </div>
                 <div className="col-md-4">
@@ -631,9 +650,21 @@ const FormView: React.FC<FormViewProps> = ({
                       type="text"
                       id="familyDetails.stdo_state"
                       name="familyDetails.stdo_state"
-                      className="form-control"
+                      className={`form-control ${
+                        errors.familyDetails?.stdo_state &&
+                        touched.familyDetails?.stdo_state
+                          ? "is-invalid"
+                          : ""
+                      }`}
                       placeholder="Enter family state"
                     />
+                     {errors.familyDetails?.stdo_state &&
+                      touched.familyDetails?.stdo_state && (
+                        <div className="invalid-feedback">
+                          {errors.familyDetails.stdo_state}
+                        </div>
+                      )}
+
                   </div>
                 </div>
               </div>
