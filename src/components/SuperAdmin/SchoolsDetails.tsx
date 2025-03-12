@@ -99,12 +99,12 @@ interface InfoItemProps {
 const InfoItem: React.FC<InfoItemProps> = ({ label, value, className = "" }) => (
   <p className="flex flex-col sm:flex-row sm:justify-between">
     <strong className="mr-2">{label}:</strong>
-    <span className={className}>{value || "N/A"}</span> {/* Fallback for null/undefined values */}
+    <span className={className}>{value || "N/A"}</span> 
   </p>
 )
 
 const formatDate = (dateString: string | null | undefined) => {
-  if (!dateString) return "N/A" // Fallback for invalid or missing dates
+  if (!dateString) return "N/A" 
   try {
     return new Date(dateString).toLocaleDateString()
   } catch (error) {
