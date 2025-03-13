@@ -194,10 +194,11 @@ const StudentRegistrationController = () => {
           ) : (
             <div className="box">
               <div className="head1">
-                <h1 onClick={handleCancelEdit}>
+                <h1 >
                   <div>
                     <i
                       onClick={() => {
+                        handleCancelEdit
                         setStudentData(false);
                         setEditFormView(false); // Reset edit mode when canceling
                       }}

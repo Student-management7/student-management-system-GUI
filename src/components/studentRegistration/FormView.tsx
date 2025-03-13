@@ -130,17 +130,16 @@ const FormView: React.FC<FormViewProps> = ({
       .matches(
         /^[A-Za-z\s]+$/,
         "Name must contain only letters and spaces (no numbers or special characters)"
-      ),
+      ).max(20, "Name must be at most 20 characters"),
     address: Yup.string()
       .required("Address is required")
-      .min(3, "Address must be at least 3 characters"),
-      
+      .min(3, "Address must be at least 3 characters").max(60, "Address must be at most 20 characters"),
 
     email: Yup.string().email("Invalid email format"),
     department: Yup.string().matches(
       /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
       "Department must contain at least one letter and can include numbers, spaces, and .,-"
-    ),
+    ).max(40, "Department must be at most 20 characters"),
     city: Yup.string()
       .required("City is required")
       .min(3, "Address must be at least 3 characters")
@@ -153,7 +152,7 @@ const FormView: React.FC<FormViewProps> = ({
       .matches(
         /^[A-Za-z\s.-]+$/,
         "State must contain only letters, spaces, dots, or hyphens (no numbers or other special characters)"
-      ),
+      ).max(30, "Name must be at most 20 characters"),
     contact: Yup.string()
       .required("Contact number is required")
       .matches(/^[0-9]{10}$/, "Contact number must be 10 digits"),
@@ -171,11 +170,11 @@ const FormView: React.FC<FormViewProps> = ({
         .matches(
           /^[A-Za-z\s]+$/,
           "Name must contain only letters and spaces (no numbers or special characters)"
-        ),
+        ).max(20, "Name must be at most 20 characters"),
       stdo_MotherName: Yup.string().matches(
         /^[A-Za-z\s]+$/,
         "Name must contain only letters and spaces (no numbers or special characters)"
-      ),
+      ).max(20, "Name must be at most 20 characters"),
       stdo_primaryContact: Yup.string()
         .required("Primary contact is required")
         .matches(/^[0-9]{10}$/, "Contact number must be 10 digits"),
@@ -188,13 +187,13 @@ const FormView: React.FC<FormViewProps> = ({
         .matches(
           /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
           " City must contain at least one letter and can include numbers, spaces .,-"
-        ),
+        ).max(40, "Name must be at most 20 characters"),
       stdo_state: Yup.string()
         
         .matches(
           /^[A-Za-z\s.-]+$/,
           "State must contain only letters, spaces, dots, or hyphens (no numbers or other special characters)"
-        ),
+        ).max(30, "Name must be at most 20 characters"),
       stdo_email: Yup.string()
         .required("Family Email is Required")
         .email("Invalid email format"),
