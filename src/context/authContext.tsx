@@ -29,10 +29,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<DecodedToken | null>(null);
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Start loading when checking token
+  const [isLoading, setIsLoading] = useState(true); 
 
   useEffect(() => {
-    const checkInitialToken = async () => {
+    const checkInitialToken =() => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
@@ -48,23 +48,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               setUserDetails(JSON.parse(storedUserDetails));
             }
           } else {
-            await logout();
+            logout();
           }
         } catch (error) {
           console.error('Token decode error:', error);
-          await logout();
+           logout();
         }
       } else {
-        await logout();
+         logout();
       }
-      setIsLoading(false); // Finished checking token, stop loading
+      setIsLoading(false); 
     };
 
     checkInitialToken();
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
-    setIsLoading(true);
+    
     try {
       const response = await fetch('https://s-m-s-keyw.onrender.com/auth/login', {
         method: 'POST',
@@ -83,7 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const decoded = jwtDecode<DecodedToken>(token);
 
       localStorage.setItem('token', token);
-      localStorage.setItem('userDetails', JSON.stringify(decoded));
+      localStorage.setItem('userDetails',JSON.stringify(decoded));
 
       setIsAuthenticated(true);
       setUser(decoded);
@@ -137,7 +137,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth must be used within an AuthProvider.');
   }
   return context;
 };
