@@ -27,18 +27,18 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
     email: editingFaculty?.email || '',
     fact_email: editingFaculty?.fact_email || '',
     password: editingFaculty?.password || '',
-    fact_contact: editingFaculty?.fact_contact || '',
-    fact_gender: editingFaculty?.fact_gender || '',
-    fact_address: editingFaculty?.fact_address || '',
-    fact_city: editingFaculty?.fact_city || '',
-    fact_state: editingFaculty?.fact_state || '',
-    fact_joiningDate: editingFaculty?.fact_joiningDate || '',
-    fact_leavingDate: editingFaculty?.fact_leavingDate || '',
+    fact_contact: editingFaculty?.fact_contact || 'N/A',
+    fact_gender: editingFaculty?.fact_gender || 'N/A',
+    fact_address: editingFaculty?.fact_address || 'N/A',
+    fact_city: editingFaculty?.fact_city || 'N/A',
+    fact_state: editingFaculty?.fact_state || 'N/A',
+    fact_joiningDate: editingFaculty?.fact_joiningDate || 'N/A',
+    fact_leavingDate: editingFaculty?.fact_leavingDate || 'N/A',
     fact_qualification: editingFaculty?.fact_qualification || [
       { type: 'Graduation', grd_name: '', grd_branch: '', grd_grade: '', grd_university: '', grd_yearOfPassing: '' },
     ],
     Fact_Cls: editingFaculty?.Fact_Cls || [{ cls_name: '', cls_sub: [''] }],
-    Fact_Status: editingFaculty?.Fact_Status || '',
+    Fact_Status: editingFaculty?.Fact_Status || 'N/A',
   };
 
   const handleSubmit = async (values: FacultyFormData, { resetForm }: any) => {

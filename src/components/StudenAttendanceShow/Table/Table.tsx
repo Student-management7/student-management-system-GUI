@@ -51,22 +51,28 @@ const ReusableTable: React.FC<TableProps> = ({
 
   // Enhanced nested value getter to handle deep objects
   const getNestedValue = (obj: any, path: string) => {
-    if (!path) return obj;
+    try {
+      if (!path) return obj;
     
-    // Handle null or undefined
-    if (obj === null || obj === undefined) return '';
-    
-    return path.split('.').reduce((acc, part) => {
-      if (acc === null || acc === undefined) return '';
-      return acc[part];
-    }, obj);
+      // Handle null or undefined
+      if (obj === null || obj === undefined) return '';
+      
+      return path.split('.').reduce((acc, part) => {
+        if (acc === null || acc === undefined) return '';
+        return acc[part];
+      }, obj);
+    } catch (error) {
+      console.log("this error ocuurd here 1")
+    }
+   
   };
 
   // Enhanced search functionality to handle objects and arrays
   const filteredAndSortedRows = useMemo(() => {
-    // Filter rows based on search term
+ 
     let result = rows.filter((row: any) => {
-      if (!searchTerm.trim()) return true;
+      try {
+        if (!searchTerm.trim()) return true;
       
       return columns.some(column => {
         let value;
@@ -92,26 +98,37 @@ const ReusableTable: React.FC<TableProps> = ({
         // Handle primitive values
         return String(value).toLowerCase().includes(searchTerm.toLowerCase());
       });
+      } catch (error) {
+        console.log("erorrrrrrrrrrrrrrrr");
+        
+      }
+      
     });
 
     // Sort filtered rows
     if (sortConfig.field && sortConfig.direction) {
-      result = [...result].sort((a, b) => {
-        let aVal = a[sortConfig.field];
-        let bVal = b[sortConfig.field];
-
-        const column = columns.find((col: any) => col.field === sortConfig.field);
-        if (column?.nestedField) {
-          aVal = getNestedValue(a, column.nestedField);
-          bVal = getNestedValue(b, column.nestedField);
-        }
-
-        if (sortConfig.direction === 'asc') {
-          return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
-        } else {
-          return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
-        }
-      });
+      try {
+        result = [...result].sort((a, b) => {
+          let aVal = a[sortConfig.field];
+          let bVal = b[sortConfig.field];
+  
+          const column = columns.find((col: any) => col.field === sortConfig.field);
+          if (column?.nestedField) {
+            aVal = getNestedValue(a, column.nestedField);
+            bVal = getNestedValue(b, column.nestedField);
+          }
+  
+          if (sortConfig.direction === 'asc') {
+            return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+          } else {
+            return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+          }
+        });
+      } catch (error) {
+        console.log("errrrrrrrrrrrrrrrr");
+        
+      }
+      
     }
 
     return result;
@@ -123,7 +140,8 @@ const ReusableTable: React.FC<TableProps> = ({
 
   // Enhanced CSV export with headers
   const exportCsv = () => {
-    // Create header row from column names
+    try {
+      // Create header row from column names
     const headerRow = columns.map(column => column.headerName);
   
     // Create data rows
@@ -174,6 +192,11 @@ const ReusableTable: React.FC<TableProps> = ({
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    } catch (error) {
+      console.log("eeeeeeeeeeeeeeeeeeeeee");
+      
+    }
+    
   };
 
   const actionbuttons = (row: any) => {

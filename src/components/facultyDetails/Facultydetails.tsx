@@ -6,6 +6,7 @@ import "./FacultyDetails.css"
 import axiosInstance from "../../services/Utils/apiUtils"
 import { useParams } from "react-router-dom"
 import BackButton from "../Navigation/backButton"
+import Loader from "../loader/loader"
 
 
 interface FacultySalary {
@@ -66,7 +67,7 @@ const FacultyProfile:  React.FC = () => {
   }, [id])
 
   if (loading) {
-    return <div className="loading-state">Loading...</div>
+    return <div className="loading-state"><Loader/></div>
   }
 
   if (error || !faculty) {
