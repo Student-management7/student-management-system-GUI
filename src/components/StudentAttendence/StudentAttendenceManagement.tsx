@@ -22,9 +22,6 @@ const StudentManagementSystem: React.FC = () => {
     const [error, setError] = useState<string>("");
     const [bulkAttendance, setBulkAttendance] = useState<string>('');
 
-
-
-
     // Fetch class data
     const fetchClasses = async () => {
         try {
@@ -94,32 +91,59 @@ const StudentManagementSystem: React.FC = () => {
 
 
     // Submit attendance
-    const submitAttendance = async () => {
-        const payload: AttendancePayload = {
-            className: selectedClass,
-            subject: AttendanceMode === "master" ? "" : selectedSubject,
-            studentList: students.map((student) => ({
-                stdId: student.stdId,
-                remark: student.remark || "",
-                name: student.name,
-                attendance: student.attendance || "Absent",
-            })),
-            masterAttendance: AttendanceMode === "master",
-        };
+   // Submit attendance with validations
+const submitAttendance = async () => {
+    // Check for class selection
+    if (!selectedClass) {
+        toast.error("Please select a class before submitting attendance.");
+        return;
+    }
 
-        try {
-            const endpoint = API_ENDPOINTS.SAVE_ATTENDANCE(AttendanceMode === "master");
-            const response = await axiosInstance.post(endpoint, payload);
+    // Check for subject selection if mode is "subject"
+    if (AttendanceMode === "subject" && !selectedSubject) {
+        toast.error("Please select a subject before submitting attendance.");
+        return;
+    }
 
-            if (response.status === 200) {
-                toast.success("Attendance submitted successfully!");
-            } else {
-                throw new Error("Failed to submit attendance");
-            }
-        } catch (error) {
-            toast.error("Error submitting attendance");
-        }
+    // Check if there are students in the list
+    if (students.length === 0) {
+        toast.error("No students found for the selected class.");
+        return;
+    }
+
+    // Check if all students have marked attendance
+    const unmarkedStudents = students.filter(student => !student.attendance);
+    if (unmarkedStudents.length > 0) {
+        toast.error("Please mark attendance for all students before submitting.");
+        return;
+    }
+
+    const payload: AttendancePayload = {
+        className: selectedClass,
+        subject: AttendanceMode === "master" ? "" : selectedSubject,
+        studentList: students.map((student) => ({
+            stdId: student.stdId,
+            remark: student.remark || "",
+            name: student.name,
+            attendance: student.attendance || "Absent",
+        })),
+        masterAttendance: AttendanceMode === "master",
     };
+
+    try {
+        const endpoint = API_ENDPOINTS.SAVE_ATTENDANCE(AttendanceMode === "master");
+        const response = await axiosInstance.post(endpoint, payload);
+
+        if (response.status === 200) {
+            toast.success("Attendance submitted successfully!");
+        } else {
+            throw new Error("Failed to submit attendance");
+        }
+    } catch (error) {
+        toast.error("Error submitting attendance");
+    }
+};
+
 
     const handleCellValueChange = (rowIndex: number, field: string, value: any) => {
         setStudents(prevStudents => {
@@ -179,11 +203,11 @@ const StudentManagementSystem: React.FC = () => {
                                     value={option}
                                     checked={selectedValue === option}
                                     onChange={() => {
-                                        // Update the local state immediately
+                                        
                                         setSelectedValue(option);
-                                        // Call the setValue function to update the parent state
+                                     
                                         params.setValue(option);
-                                        // Call the handleCellValueChange function
+                                      
                                         handleCellValueChange(params.rowIndex, 'attendance', option);
                                     }}
                                     className="form-radio h-4 w-4 text-blue-600"

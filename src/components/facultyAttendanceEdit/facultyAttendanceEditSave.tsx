@@ -25,6 +25,8 @@ const EditAttendance: React.FC = () => {
     factList: [] as Faculty[]
   });
 
+  const [editedFactList, setEditedFactList] = useState<Faculty[]>([]);
+
   // Initialize state from location on component mount
   useEffect(() => {
     const { id, date, factList } = location.state || {};
@@ -34,24 +36,10 @@ const EditAttendance: React.FC = () => {
     }
   }, [location.state]);
 
-  const [editedFactList, setEditedFactList] = useState<Faculty[]>([]);
-
-  // Early return with better error handling
-  if (!attendanceData.id || !attendanceData.date || !attendanceData.factList.length) {
-    return (
-      <div className="p-4 bg-red-100 text-red-600 rounded">
-        Error: Missing or invalid attendance data. Please go back and try again.
-      </div>
-    );
-  }
-
   const handleSaveAttendance = async () => {
-    const hasUnmarkedAttendance = facultyList.some(faculty => !faculty.attendance);
+    const hasUnmarkedAttendance = editedFactList.some(faculty => !faculty.attendance);
     if (hasUnmarkedAttendance) {
-      toast.warning('Please mark attendance for all faculty members.', {
-        position: 'top-right',
-        autoClose: 3000,
-      });
+      toast.warning('Please mark attendance for all faculty members.');
       return;
     }
 
@@ -62,7 +50,9 @@ const EditAttendance: React.FC = () => {
         factList: editedFactList,
       };
       await saveAttendanceEdit(payload);
-      toast.success('Attendance updated successfully!');
+      setTimeout(() => {
+        toast.success('Attendance updated successfully!');
+      }, 500);
       navigate('/facultyAttendanceShow');
     } catch (error) {
       console.error('Save error:', error);
@@ -107,12 +97,6 @@ const EditAttendance: React.FC = () => {
     },
   ];
 
-  const rowData = editedFactList.map((faculty) => ({
-    name: faculty.name,
-    factId: faculty.factId,
-    attendance: faculty.attendance,
-  }));
-
   const handleCellValueChange = (factId: string, field: string, value: any) => {
     setEditedFactList((prevList) =>
       prevList.map((faculty) =>
@@ -121,6 +105,23 @@ const EditAttendance: React.FC = () => {
     );
   };
 
+  // Show error if data is missing
+  if (!attendanceData.id || !attendanceData.date || !attendanceData.factList.length) {
+    return (
+      <div className="p-4 bg-red-100 text-red-600 rounded">
+        Error: Missing or invalid attendance data. Please go back and try again.
+      </div>
+    );
+  }
+
+  // Prepare row data for the table
+  const rowData = editedFactList.map((faculty) => ({
+    name: faculty.name,
+    factId: faculty.factId,
+    attendance: faculty.attendance,
+  }));
+
+  // Main render return
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
@@ -129,12 +130,12 @@ const EditAttendance: React.FC = () => {
           <span>
             <BackButton />
           </span>
-          <h1 className=" items-center head1">
+          <h1 className="items-center head1">
             Faculty Attendance Update
           </h1>
         </div>
         <div className="mb-4">
-          <h2 className="text-gray-800 text-xl font-semibold ">
+          <h2 className="text-gray-800 text-xl font-semibold">
             Date: {formatToDDMMYYYY(attendanceData.date)}
           </h2>
         </div>
