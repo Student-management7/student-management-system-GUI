@@ -8,6 +8,7 @@ export interface StudentAttendance {
   }
   
   export interface AttendanceResponse {
+    studentList: boolean;
     date: string;
     students: StudentAttendance[];
   }

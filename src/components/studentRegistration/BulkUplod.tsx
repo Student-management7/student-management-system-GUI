@@ -7,11 +7,14 @@ import "./StudentRegistration.scss";
 import axiosInstance from "../../services/Utils/apiUtils";
 import axios from "axios";
 import BackButton from "../Navigation/backButton";
+import { formatToDDMMYYYY } from "../Utils/dateUtils";
 
 const StudentRegistrationController = () => {
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
+
+    
 
     // Custom cell renderer for download buttons
     const renderDownloadButton = (value: any, row: any, type: string) => {
@@ -29,8 +32,11 @@ const StudentRegistrationController = () => {
     };
 
     const columns = [
-        { field: "id", headerName: "ID" },
-        { field: "creationDateTime", headerName: "Creation Date" },
+        
+       { field: "creationDateTime",
+        headerName: "Creation Date",
+        cellRenderer: (params: any) => formatToDDMMYYYY(params.value),
+       },
         { field: "fileName", headerName: "File Name" },
         {
             field: "total",

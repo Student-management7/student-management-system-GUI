@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../services/Utils/apiUtils';
-import { formatDate } from '../Utils/dateUtils';
+import { formatDate, formatToDDMMYYYY } from '../Utils/dateUtils';
 import { getDateRange } from '../Utils/dateUtils';
 import Loader from '../loader/loader';
 import ReusableTable from '../StudenAttendanceShow/Table/Table';
@@ -86,15 +86,13 @@ const FacultyAttendance: React.FC = () => {
       }
 
       const dateRange = getDateRange(fromDate, toDate);
+
       const dynamicColumns = dateRange.map(date => ({
         field: date,
-        headerName: date,
-        cellStyle: (params: { value: string }) => ({
-          backgroundColor: params.value === 'Present' ? '	#FFFFFF' :
-            params.value === 'Absent' ? '#	#FFFFFF' : '#FFFFFF',
-          color: params.value === 'Present' ? '#3C763D' :
-            params.value === 'Absent' ? '#A94442' : '#000000',
-        }),
+        headerName: date, // Date ko format karo
+        renderCell: (row: any) => (
+          <span>{row[date] ? row[date] : '-'}</span> // Blank data par '-' show karo
+        ),
       }));
 
       const rows = mapAttendanceToRows(response.data, dateRange, currentFaculties);
@@ -149,9 +147,9 @@ const FacultyAttendance: React.FC = () => {
       {!loading && (
         <div className="box">
           <ToastContainer position='top-right' autoClose={3000} />
-          
-            <h1 className="head1 mb-4" >Faculty Attendance View </h1>
-         <div className="container mx-auto p-1">
+
+          <h1 className="head1 mb-4" >Faculty Attendance View </h1>
+          <div className="container mx-auto p-1">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               {/* From Date */}
               <div className="form-control">
@@ -201,14 +199,14 @@ const FacultyAttendance: React.FC = () => {
               </div>
             </div>
 
-            </div>
-
-            <ReusableTable rows={data} columns={columns} />
-
           </div>
-        
+
+          <ReusableTable rows={data} columns={columns} />
+
+        </div>
+
       )}
-        </>
+    </>
   );
 };
 

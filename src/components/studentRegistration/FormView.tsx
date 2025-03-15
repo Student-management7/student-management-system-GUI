@@ -215,7 +215,7 @@ const FormView: React.FC<FormViewProps> = ({
         setStudentData(false); // Close the form after submission
         resetForm(); // Reset form fields
         fetchStudentDetails(); // Fetch updated student data
-      }, 2000);
+      }, 1000);
   
     } catch (err) {
       toast.error("Failed to save student details. Please try again.");

@@ -118,7 +118,7 @@ const StudentAttendanceEditSave: React.FC = () => {
   }));
 
   const handleCellValueChange = (rowIndex: number, field: string, value: any) => {
-    setEditedStudentList((prevStudents: string | any[]) => {
+    setEditedStudentList((prevStudents: any[]) => {
       if (rowIndex >= 0 && rowIndex < prevStudents.length) {
         const newStudents = [...prevStudents];
         newStudents[rowIndex] = {

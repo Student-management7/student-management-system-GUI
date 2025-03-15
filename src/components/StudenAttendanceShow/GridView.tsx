@@ -2,6 +2,7 @@ import React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
+import { CellValueChangedEvent } from 'ag-grid-community';
 
 interface GridViewProps {
     rowData: any[];
@@ -12,6 +13,10 @@ interface GridViewProps {
 }
 
 const GridView: React.FC<GridViewProps> = ({ rowData, columnDefs, showAddButton, onAddRow }) => {
+    function onCellValueChanged(event: CellValueChangedEvent<any, any>): void {
+        throw new Error('Function not implemented.');
+    }
+
     return (
        <>
             <div>
@@ -38,6 +43,7 @@ const GridView: React.FC<GridViewProps> = ({ rowData, columnDefs, showAddButton,
                 rowData={rowData}
                 columnDefs={columnDefs}
                 pagination={true}
+                onCellValueChanged={onCellValueChanged}
             />
         </div>
             </div>
