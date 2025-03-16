@@ -183,7 +183,7 @@ const EditFacultySalaryForm: React.FC<EditFacultySalaryFormProps> = ({
 
                 {/* Deductions */}
 
-                <div className="mb-3">
+                <div className="my-3">
                   <label className="form-label">Other</label>
                   <FieldArray name="facultyDeduction">
                     {({ remove, push }) => (
@@ -197,7 +197,7 @@ const EditFacultySalaryForm: React.FC<EditFacultySalaryFormProps> = ({
                                 className="bi bi-plus-circle-fill text-blue-500 text-lg"
                               />
                             </div>
-                            <div className="col-md-5">
+                            <div className="col-md-5 my-2">
                               <Field
                                 name={`facultyDeduction[${index}].name`}
                                 placeholder=" Name"

@@ -7,11 +7,14 @@ import "./StudentRegistration.scss";
 import axiosInstance from "../../services/Utils/apiUtils";
 import axios from "axios";
 import BackButton from "../Navigation/backButton";
+import { formatToDDMMYYYY } from "../Utils/dateUtils";
 
 const StudentRegistrationController = () => {
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
+
+    
 
     // Custom cell renderer for download buttons
     const renderDownloadButton = (value: any, row: any, type: string) => {
@@ -29,8 +32,11 @@ const StudentRegistrationController = () => {
     };
 
     const columns = [
-        { field: "id", headerName: "ID" },
-        { field: "creationDateTime", headerName: "Creation Date" },
+        
+       { field: "creationDateTime",
+        headerName: "Creation Date",
+        cellRenderer: (params: any) => formatToDDMMYYYY(params.value),
+       },
         { field: "fileName", headerName: "File Name" },
         {
             field: "total",
@@ -174,9 +180,9 @@ const StudentRegistrationController = () => {
                         </span>
                         <h1 className="head1 items-center mt-2 " >Bulk Upload</h1>
                     </div>
-                    <div className="p-4">
-                        <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
-                        <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 ml-2 rounded hover:bg-blue-600 sm:mt-3 md:mt-2">Upload</button>
+                    <div className="">
+                        <input className="mb-4" type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
+                        <button onClick={handleUpload} className="btn button float-right ml-2">Upload</button>
                     </div>
                     <ReusableTable rows={data} columns={columns} />
                 </div>

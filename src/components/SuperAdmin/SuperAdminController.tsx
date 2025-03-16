@@ -61,17 +61,17 @@ const SuperAdminController = () => {
         },
         {
             field: "View",
-            headerName:"view",
+            headerName: "view",
 
-            cellRenderer: (prams:any)=>(
+            cellRenderer: (prams: any) => (
 
-                <button 
-                 onClick={()=>handeleViewDetails(prams.data.id)}
-             
+                <button
+                    onClick={() => handeleViewDetails(prams.data.id)}
+
                 >
-                
 
-                 <Eye size={20} color="blue" />  
+
+                    <Eye size={20} color="blue" />
                 </button>
 
             )
@@ -160,71 +160,71 @@ const SuperAdminController = () => {
     };
 
 
-   const handeleViewDetails=(id:any)=>{
+    const handeleViewDetails = (id: any) => {
 
-    navigate(`/SchoolsDetails/${id}`);
-    console.log(id);
-   }
+        navigate(`/SchoolsDetails/${id}`);
+        console.log(id);
+    }
 
     return (
 
-      <>
-                  <ToastContainer position="top-right" autoClose={3000} />
+        <>
+            <ToastContainer position="top-right" autoClose={3000} />
 
-        {loading && <Loader />} {/* Show loader when loading */}
+            {loading && <Loader />} {/* Show loader when loading */}
             {!loading && (
 
-        <div className="box">
+                <div className="box">
 
-          
 
-                {
-                    superAdminData?(
-                <>
-                    <div className="head1">
-                        <h1 >
-                            <div>
-                                <i onClick={() => setSuperAdminData(false)} className="bi bi-arrow-left-circle" /> <span>Super Admin</span>
-                            </div>
-                        </h1>
-                    </div>
-                    <FormView editData={editData} onSubmitSuccess={handleFormSubmit} />
-                </>
-    ) : (
-        <>
-            <div className="headding1">
-                <h1>
-                    &nbsp;School Registration
-                </h1>
-            </div>
 
-            <div className="rightButton">
-                <button className="btn button"
-                    onClick={() => {
-                        setEditData(null);
-                        setSuperAdminData(true);
-                    }}
-                >
-                    Add School
-                </button>
-            </div>
-            <AlertDialog
-                title="Confirm Deletion"
-                message={`Are you sure you want to delete the school record for ${dialogData?.schoolName}?`}
-                isOpen={isDialogOpen}
-                onConfirm={handleConfirmDelete}
-                onCancel={handleCancel}
-            />
-            <ReusableTable rows={rows} columns={columns} />
-        </>
-    )
-}
+                    {
+                        superAdminData ? (
+                            <>
+                                <div className="head1">
+                                    <h1 >
+                                        <div>
+                                            <i onClick={() => setSuperAdminData(false)} className="bi bi-arrow-left-circle" /> <span>Super Admin</span>
+                                        </div>
+                                    </h1>
+                                </div>
+                                <FormView editData={editData} onSubmitSuccess={handleFormSubmit} />
+                            </>
+                        ) : (
+                            <>
+                                <div className="headding1">
+                                    <h1>
+                                        &nbsp;School Registration
+                                    </h1>
+                                </div>
 
-       
+                                <div className="rightButton">
+                                    <button className="btn button"
+                                        onClick={() => {
+                                            setEditData(null);
+                                            setSuperAdminData(true);
+                                        }}
+                                    >
+                                        Add School
+                                    </button>
+                                </div>
+                                <AlertDialog
+                                    title="Confirm Deletion"
+                                    message={`Are you sure you want to delete the school record for ${dialogData?.schoolName}?`}
+                                    isOpen={isDialogOpen}
+                                    onConfirm={handleConfirmDelete}
+                                    onCancel={handleCancel}
+                                />
+                                <ReusableTable rows={rows} columns={columns} />
+                            </>
+                        )
+                    }
 
-        </div >
+
+
+                </div >
             )}
-      </>
+        </>
 
     );
 

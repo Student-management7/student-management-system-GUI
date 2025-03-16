@@ -45,6 +45,7 @@ const FormView = ({ editData, onSubmitSuccess }: any) => {
             let response;
             if (values.id) {
                 console.log(" ID:", values.id);
+                
                 // Update 
                 response = await axiosInstance.post(`/school/update`, values);
                 console.log("Form updated successfully:", response.data);
@@ -230,6 +231,7 @@ const FormView = ({ editData, onSubmitSuccess }: any) => {
                                         name="serviceStartDate"
                                         className={"form-control"}
                                         placeholder="Enter Service Start Date"
+
                                     />
 
                                 </div>

@@ -219,7 +219,7 @@ const ReusableTable: React.FC<TableProps> = ({
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-8 py-2 borderr border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full px-8 py-2 borderr border rounded-md focus:outline-none focus:ring-2 focus:ring-[#126666] bg-white"
           />
           <span className="absolute left-2.5 top-2.5">
             <svg

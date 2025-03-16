@@ -118,7 +118,7 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
           <div key={index} className="flex items-center gap-4 mb-2">
             <button
               type="button"
-              onClick={() => push({ name: "", amount: 0 })}
+              onClick={() => push({ name: "", amount :0 })}
               className="bi bi-plus-circle-fill text-blue-500"
             >
             
@@ -142,6 +142,7 @@ const FeesForm: React.FC<FeesFormProps> = ({ initialData, onSave, onCancel }) =>
                 type="number"
                 className={`p-2 border rounded-md w-full ${!values.otherAmount[index].name.trim() ? 'bg-gray-200 border-gray-400 cursor-not-allowed' : ''}`}
                 disabled={!values.otherAmount[index].name || !values.otherAmount[index].name.trim()}
+                
               />
               <ErrorMessage
                 name={`otherAmount[${index}].amount`}

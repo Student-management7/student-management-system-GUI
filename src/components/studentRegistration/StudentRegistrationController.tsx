@@ -210,6 +210,7 @@ const StudentRegistrationController = () => {
               </div>
               <FormView
                 setStudentData={() => {
+                  
                   setStudentData(false);
                   setEditFormView(false);
                 }}

@@ -115,17 +115,15 @@ const StudentManagementSystem: React.FC = () => {
           ...newStudents[rowIndex],
           [field]: value,
         };
-        console.log("Updated students:", newStudents); // Debug updated students
-        return newStudents;
+        return newStudents; // This will trigger a re-render
       } else {
         console.error("Invalid rowIndex:", rowIndex);
         return prevStudents;
       }
     });
   };
-
   const applyBulkAttendance = (value: string) => {
-    if (!value) return; // Do not show the toast if they are just clearing the selection.
+    if (!value) return; 
     setStudents((prevList: any) =>
       prevList.map((student: any) => ({ ...student, attendance: value }))
     );
@@ -140,24 +138,24 @@ const StudentManagementSystem: React.FC = () => {
       headerName: "Attendance",
       field: "attendance",
       editable: true,
-      cellRenderer: (params: any) => {
-        // Derive the selected value directly from params.value
+      cellRenderer: (params: CellRendererParams) => {
         const selectedValue = params.value;
-  
+    
         return (
           <div className="flex gap-2">
             {["Present", "Absent", "Half Day", "Late", "Leave"].map((option) => (
               <label key={`${params.data.stdId}-${option}`} className="flex items-center gap-1">
                 <input
                   type="radio"
-                  name={`attendance-${params.data.stdId}`}
+                  name={`attendance-${params.data.stdId}`} // Unique name for each row
                   value={option}
-                  checked={selectedValue === option}
-                  onChange={() => {
-                    // Update the parent state
-                    params.setValue(option);
-                    handleCellValueChange(params.rowIndex, "attendance", option);
+                  checked={selectedValue === option} // Ensure this is correctly bound
+                  onChange={(e) => {
+                    e.stopPropagation(); // Stop event propagation
+                    params.setValue(option); // Update the state immediately
+                    handleCellValueChange(params.rowIndex, "attendance", option); // Manually update the parent state
                   }}
+                  onClick={(e) => e.stopPropagation()} // Prevent double-click issues
                   className="form-radio h-4 w-4 text-blue-600"
                 />
                 <span className="text-sm">{option}</span>
@@ -167,6 +165,8 @@ const StudentManagementSystem: React.FC = () => {
         );
       },
     },
+
+    
     {
       headerName: "Remarks",
       field: "remark",
@@ -271,11 +271,11 @@ const StudentManagementSystem: React.FC = () => {
               </div>
 
               <ReusableTable
-                rows={students}
-                columns={Column}
-                rowsPerPageOptions={[5, 10, 25]}
-                onCellValueChange={handleCellValueChange}
-              />
+  rows={students}
+  columns={Column}
+  rowsPerPageOptions={[5, 10, 25]}
+  onCellValueChange={handleCellValueChange} // Pass the function here
+/>
             </div>
 
             <div className="flex justify-center">

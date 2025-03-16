@@ -12,6 +12,7 @@ import { Pencil } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from "../../services/Utils/apiUtils";
 import ReusableTable from "./Table/Table";
+import { formatToDDMMYYYY } from "../Utils/dateUtils";
 
 interface Student {
   id: string;
@@ -282,7 +283,7 @@ const StudentAttendanceShow: React.FC = () => {
                 </div>
               </div>
 
-              <div className="text-center mt-4">
+              <div className="text-center my-4">
                 <button
                   className="button btn"
                   onClick={handleFetchAttendance}
@@ -301,7 +302,7 @@ const StudentAttendanceShow: React.FC = () => {
                       
                       ...getDateRange(fromDate, toDate).map((date) => ({
                         field: date,
-                        headerName: date,
+                        headerName: formatToDDMMYYYY(date),  // Format the date here
                         renderCell: (row: any) => (
                           <span>{row[date] || '-'}</span>
                         ),
