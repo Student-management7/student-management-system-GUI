@@ -22,16 +22,14 @@ export const facultyValidationSchema = (editmode: boolean) =>
       /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
       "City must contain at least one letter and can include numbers, spaces, and .,-"
     ).max(40, "Name must be at most 20 characters"),
-    fact_state: Yup.string().matches(
+    fact_state: Yup.string().required('State is required').matches(
       /^[A-Za-z\s.-]+$/,
       "State must contain only letters, spaces, dots, or hyphens (no numbers or other special characters)"
     ).max(40, "Name must be at most 20 characters"),
    
     fact_joiningDate: Yup.date()
-    .required('Joining Date is required')
-    .max(Yup.ref('fact_leavingDate'), 'Joining date must be before leaving date'),
-   fact_leavingDate: Yup.date()
-   .min(Yup.ref('fact_joiningDate'), 'Leaving date must be after joining date'),
+    .required('Joining Date is required'),
+    
 
     // Conditional Validation based on edit mode
     email: Yup.string()
@@ -42,7 +40,7 @@ export const facultyValidationSchema = (editmode: boolean) =>
         then: schema => schema.required('Email is required in edit mode'),
       }),
 
-    fact_password: Yup.string()
+    fact_password: Yup.string().required('Password is required')
       .min(6, 'Password must be at least 6 characters')
       .when([], {
         is: () => editmode,

@@ -21,6 +21,12 @@ const StudentManagementSystem: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
     const [bulkAttendance, setBulkAttendance] = useState<string>('');
+    const [refreshKey, setRefreshKey] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
+
+
+
+
 
     // Fetch class data
     const fetchClasses = async () => {
@@ -91,87 +97,82 @@ const StudentManagementSystem: React.FC = () => {
 
 
     // Submit attendance
-   // Submit attendance with validations
-const submitAttendance = async () => {
-    // Check for class selection
-    if (!selectedClass) {
-        toast.error("Please select a class before submitting attendance.");
-        return;
-    }
+    const submitAttendance = async () => {
+        const payload: AttendancePayload = {
+            className: selectedClass,
+            subject: AttendanceMode === "master" ? "" : selectedSubject,
+            studentList: students.map((student) => ({
+                stdId: student.stdId,
+                remark: student.remark || "",
+                name: student.name,
+                attendance: student.attendance || "Absent",
+            })),
+            masterAttendance: AttendanceMode === "master",
+        };
 
-    // Check for subject selection if mode is "subject"
-    if (AttendanceMode === "subject" && !selectedSubject) {
-        toast.error("Please select a subject before submitting attendance.");
-        return;
-    }
+        try {
+            const endpoint = API_ENDPOINTS.SAVE_ATTENDANCE(AttendanceMode === "master");
+            const response = await axiosInstance.post(endpoint, payload);
 
-    // Check if there are students in the list
-    if (students.length === 0) {
-        toast.error("No students found for the selected class.");
-        return;
-    }
-
-    // Check if all students have marked attendance
-    const unmarkedStudents = students.filter(student => !student.attendance);
-    if (unmarkedStudents.length > 0) {
-        toast.error("Please mark attendance for all students before submitting.");
-        return;
-    }
-
-    const payload: AttendancePayload = {
-        className: selectedClass,
-        subject: AttendanceMode === "master" ? "" : selectedSubject,
-        studentList: students.map((student) => ({
-            stdId: student.stdId,
-            remark: student.remark || "",
-            name: student.name,
-            attendance: student.attendance || "Absent",
-        })),
-        masterAttendance: AttendanceMode === "master",
-    };
-
-    try {
-        const endpoint = API_ENDPOINTS.SAVE_ATTENDANCE(AttendanceMode === "master");
-        const response = await axiosInstance.post(endpoint, payload);
-
-        if (response.status === 200) {
-            toast.success("Attendance submitted successfully!");
-        } else {
-            throw new Error("Failed to submit attendance");
-        }
-    } catch (error) {
-        toast.error("Error submitting attendance");
-    }
-};
-
-
-    const handleCellValueChange = (rowIndex: number, field: string, value: any) => {
-        setStudents(prevStudents => {
-            // Ensure rowIndex is within bounds
-            if (rowIndex >= 0 && rowIndex < prevStudents.length) {
-                const newStudents = [...prevStudents];
-                newStudents[rowIndex] = {
-                    ...newStudents[rowIndex],
-                    [field]: value
-                };
-                console.log('Updated students:', newStudents);
-                return newStudents;
+            if (response.status === 200) {
+                toast.success("Attendance submitted successfully!");
             } else {
-                console.error('Invalid rowIndex:', rowIndex);
-                return prevStudents;
+                throw new Error("Failed to submit attendance");
             }
-        });
+        } catch (error) {
+            toast.error("Error submitting attendance");
+        }
     };
+
+    // In your StudentManagementSystem component
+    // const handleCellValueChange = (factId: string, field: string, value: any) => {
+    //     console.log(`Updating factId: ${factId}, field: ${field}, value: ${value}`);
+    //     setFacultyList(prevList =>
+    //       prevList.map(faculty =>
+    //         faculty.fact_id === factId
+    //           ? { ...faculty, [field]: value }
+    //           : faculty
+    //       )
+    //     );
+    //   };
+
+    const handleCellValueChange = (stdId: string, field: string, value: any) => {
+        console.log(`Updating stdId: ${stdId}, field: ${field}, value: ${value}`);
+        setStudents(prevList =>
+            prevList.map(student =>
+                student.stdId === stdId
+                    ? { ...student, [field]: value }
+                    : student
+            )
+        );
+    };
+
+
+    const onCellValueChange = (rowIndexOrId: number | string, field: string, value: any) => {
+        // Check if rowIndexOrId is a string (factId) or number (rowIndex)
+        if (typeof rowIndexOrId === 'string') {
+            // Handle factId-based updates
+            handleCellValueChange(rowIndexOrId, field, value);
+        } else {
+            // Handle index-based updates
+            const student = students[rowIndexOrId as number];
+            if (student) {
+                handleCellValueChange(student.stdId, field, value);
+            }
+        }
+    };
+
 
 
 
     const applyBulkAttendance = (value: string) => {
-        if (!value) { //check the value passed in, not the state.
-            return; //Do not show the toast if they are just clearing the selection.
+        if (!value) {
+            toast.warning("Please select an attendance status before applying.");
+            return;
         }
 
         setStudents((prevList: any) =>
-            prevList.map((student: any) => ({ ...student, attendance: value }))
+            prevList.map((faculty: any) => ({ ...faculty, attendance: value }))
         );
     };
 
@@ -185,40 +186,44 @@ const submitAttendance = async () => {
             field: "attendance",
             editable: true,
             cellRenderer: (params: any) => {
-                // Use a local state to manage the radio button's checked state
-                const [selectedValue, setSelectedValue] = React.useState(params.value);
-
-                React.useEffect(() => {
-                    // Sync the local state with the params.value
-                    setSelectedValue(params.value);
-                }, [params.value]);
+                const stdId = params.data.stdId;
+                const student = students.find((student: any) => student.stdId === stdId);
+                const currentValue = student ? student.attendance : "";
 
                 return (
-                    <div className="flex gap-2">
+                    <div className="flex gap-2" key={`${stdId}-${refreshKey}`}>
                         {["Present", "Absent", "Half Day", "Late", "Leave"].map((option) => (
                             <label key={option} className="flex items-center gap-1">
                                 <input
                                     type="radio"
-                                    name={`attendance-${params.data.stdId}`}
+                                    name={`attendance-${stdId}`}
                                     value={option}
-                                    checked={selectedValue === option}
+                                    checked={currentValue === option}
                                     onChange={() => {
-                                        
-                                        setSelectedValue(option);
-                                     
-                                        params.setValue(option);
-                                      
-                                        handleCellValueChange(params.rowIndex, 'attendance', option);
+                                        // Update the state directly
+                                        setStudents((prevList: any) =>
+                                            prevList.map((student: any) =>
+                                                student.stdId === stdId
+                                                    ? { ...student, attendance: option }
+                                                    : student
+                                            )
+                                        );
+                                        // Force refresh the component
+                                        setRefreshKey((prev) => prev + 1);
+                                        // Attempt to update the table if possible
+                                        if (typeof params.setValue === "function") {
+                                            params.setValue(option);
+                                        }
                                     }}
-                                    className="form-radio h-4 w-4 text-blue-600"
                                 />
-                                <span className="text-sm">{option}</span>
+                                {option}
                             </label>
                         ))}
                     </div>
                 );
             },
         },
+
         {
             headerName: "Remarks",
             field: "remark",
@@ -308,18 +313,18 @@ const submitAttendance = async () => {
                         </div>
 
 
-                        <div className="overflow-x-auto">
+                        <div className="mt-2">
 
 
-                            <div className="bulk-attendance flex items-center space-x-4 float-right ">
+                            <div className="bulk-attendance flex items-center space-x-4 float-right">
                                 <select
                                     value={bulkAttendance}
                                     onChange={(e) => {
                                         const selectedValue = e.target.value;
                                         setBulkAttendance(selectedValue);
-                                        applyBulkAttendance(selectedValue); // Apply directly on change
+                                        applyBulkAttendance(selectedValue); // Apply the correct selected value
                                     }}
-                                    className="border rounded-md px-4 py-2 "
+                                    className="border rounded-md px-4 py-2"
                                 >
                                     <option value="">Select Attendance</option>
                                     <option value="Present">Present</option>
@@ -330,12 +335,18 @@ const submitAttendance = async () => {
                                 </select>
                             </div>
 
-                            <ReusableTable
-                                rows={students}
-                                columns={Column}
-                                rowsPerPageOptions={[5, 10, 25]}
-                                onCellValueChange={handleCellValueChange}
-                            />
+                            <div className="mt-2">
+
+                                <ReusableTable
+                                    rows={students}
+                                    columns={Column}
+                                    rowsPerPageOptions={[5, 10, 20,30]}
+                                    onCellValueChange={onCellValueChange}
+                                    page={currentPage}
+                                    onPageChange={(newPage: React.SetStateAction<number>) => setCurrentPage(newPage)}
+                                />
+                            </div>
+
                         </div>
 
                         <div className="flex justify-center">

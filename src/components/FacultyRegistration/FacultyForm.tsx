@@ -138,7 +138,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
               {/* State, Joining Date, Leaving Date */}
               <div className="row">
                 <div className="col-md-4 mb-3">
-                  <label htmlFor="fact_state" className="form-label">State </label>
+                  <label htmlFor="fact_state" className="form-label">State <span className="red">*</span> </label>
                   <Field type="text" id="fact_state" name="fact_state" className={`form-control ${errors.fact_state && touched.fact_state ? 'is-invalid' : ''}`} placeholder="Enter state" />
                   {/* <ErrorMessage name="fact_state" component="div" className="invalid-feedback" /> */}
                   <ErrorMessage name="fact_state" component="div" className="invalid-feedback" />

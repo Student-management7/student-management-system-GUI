@@ -8,6 +8,12 @@ import { toast, ToastContainer } from 'react-toastify';
 import { formatToDDMMYYYY } from '../Utils/dateUtils';
 import axiosInstance from '../../services/Utils/apiUtils';
 
+interface Facultys {
+  id: string;
+  name: string;
+  attendance: AttendanceEntry[];
+}
+
 const FacultyAttendance: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [rowData, setRowData] = useState<any[]>([]);
@@ -16,6 +22,9 @@ const FacultyAttendance: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [currentFaculties, setCurrentFaculties] = useState<Faculty[]>([]);
   const [editedFactList, setEditedFactList] = useState<Faculty[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
+  
   const [attendanceData, setAttendanceData] = useState<{
     id: string;
     date: string;
@@ -92,25 +101,52 @@ const FacultyAttendance: React.FC = () => {
           field: "attendance",
           editable: true,
           cellRenderer: (params: any) => {
-                  const [selectedValue, setSelectedValue] = React.useState(params.value || "Present");
-          
-                  React.useEffect(() => {
-                    setSelectedValue(params.value || "Present");
-                  }, [params.value]);
+            // Initialize with params.data.attendance instead of params.value
+            // This ensures we're getting the current value from rowData
+            const [selectedValue, setSelectedValue] = useState(params.data.attendance || "Present");
+            
+            // Update local state when row data changes
+            useEffect(() => {
+              setSelectedValue(params.data.attendance || "Present");
+            }, [params.data.attendance, refreshKey]); // Add refreshKey dependency
+            
             return (
               <div className="flex gap-2">
-                {["Present", "Absent", "Half Day", "Late","Leave"].map((option) => (
-                  <label key={option} className="flex items-center gap-1">
+                {["Present", "Absent", "Half Day", "Late", "Leave"].map((option) => (
+                  <label key={`${option}-${refreshKey}-${params.data.factId}`} className="flex items-center gap-1">
                     <input
                       type="radio"
                       name={`attendance-${params.data.factId}`}
                       value={option}
-                  checked={selectedValue === option}
-                  onChange={() => {
-                    setSelectedValue(option);
-                    params.setValue(option);
-                    handleCellValueChange(params.rowIndex, 'attendance', option);
-                  }}
+                      checked={selectedValue === option}
+                      onChange={() => {
+                        // Update local state
+                        setSelectedValue(option);
+                        
+                        // Update parent component state
+                        const factId = params.data.factId;
+                        
+                        // Update editedFactList directly
+                        setEditedFactList(prevList =>
+                          prevList.map(faculty =>
+                            faculty.factId === factId
+                              ? { ...faculty, attendance: option }
+                              : faculty 
+                          )
+                        );
+                        
+                        // Update rowData directly
+                        setRowData(prevRows =>
+                          prevRows.map(row =>
+                            row.factId === factId
+                              ? { ...row, attendance: option }
+                              : row
+                          )
+                        );
+                        
+                        // Force re-render
+                        setRefreshKey(prev => prev + 1);
+                      }}
                       className="form-radio h-4 w-4 text-blue-600"
                     />
                     <span className="text-sm">{option}</span>
@@ -233,6 +269,9 @@ const FacultyAttendance: React.FC = () => {
               columns={columnDefs}
               rowsPerPageOptions={[5, 10, 20]}
               onCellValueChange={handleCellValueChange} // Pass the handler
+              page={currentPage}
+              onPageChange={(newPage: React.SetStateAction<number>) => setCurrentPage(newPage)}
+              
             />
             <div className="flex justify-center mt-4">
               <button
