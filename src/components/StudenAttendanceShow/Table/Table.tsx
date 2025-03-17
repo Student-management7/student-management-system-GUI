@@ -16,6 +16,7 @@ interface CellRendererParams {
   data: any;
   value: any;
   setValue: (value: any) => void;
+  rowIndex?: number;
 }
 
 interface TableProps {
@@ -49,43 +50,41 @@ const ReusableTable: React.FC<TableProps> = ({
     direction: null
   });
 
-  // Enhanced nested value getter to handle deep objects
+  // Enhanced nested value getter to handle deep objects with better error handling
   const getNestedValue = (obj: any, path: string) => {
+    if (!path) return obj;
+
+    // Handle null or undefined
+    if (obj === null || obj === undefined) return '';
+
     try {
-      if (!path) return obj;
-    
-      // Handle null or undefined
-      if (obj === null || obj === undefined) return '';
-      
       return path.split('.').reduce((acc, part) => {
-        if (acc === null || acc === undefined) return '';
-        return acc[part];
+        return acc !== null && acc !== undefined ? acc[part] : '';
       }, obj);
     } catch (error) {
-      console.log("this error ocuurd here 1")
+      console.error('Error getting nested value:', error);
+      return '';
     }
-   
   };
 
   // Enhanced search functionality to handle objects and arrays
   const filteredAndSortedRows = useMemo(() => {
- 
+    // Filter rows based on search term
     let result = rows.filter((row: any) => {
-      try {
-        if (!searchTerm.trim()) return true;
-      
+      if (!searchTerm.trim()) return true;
+
       return columns.some(column => {
         let value;
-        
+
         if (column.nestedField) {
           value = getNestedValue(row, column.nestedField);
         } else {
           value = row[column.field];
         }
-        
+
         // Skip undefined or null values
         if (value === null || value === undefined) return false;
-        
+
         // Handle objects by converting to string
         if (typeof value === 'object') {
           try {
@@ -94,56 +93,63 @@ const ReusableTable: React.FC<TableProps> = ({
             return false;
           }
         }
-        
+
         // Handle primitive values
         return String(value).toLowerCase().includes(searchTerm.toLowerCase());
       });
-      } catch (error) {
-        console.log("erorrrrrrrrrrrrrrrr");
-        
-      }
-      
     });
 
     // Sort filtered rows
     if (sortConfig.field && sortConfig.direction) {
-      try {
-        result = [...result].sort((a, b) => {
-          let aVal = a[sortConfig.field];
-          let bVal = b[sortConfig.field];
-  
-          const column = columns.find((col: any) => col.field === sortConfig.field);
-          if (column?.nestedField) {
-            aVal = getNestedValue(a, column.nestedField);
-            bVal = getNestedValue(b, column.nestedField);
-          }
-  
-          if (sortConfig.direction === 'asc') {
-            return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
-          } else {
-            return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
-          }
-        });
-      } catch (error) {
-        console.log("errrrrrrrrrrrrrrrr");
-        
-      }
-      
+      result = [...result].sort((a, b) => {
+        let aVal = a[sortConfig.field];
+        let bVal = b[sortConfig.field];
+
+        const column = columns.find((col: any) => col.field === sortConfig.field);
+        if (column?.nestedField) {
+          aVal = getNestedValue(a, column.nestedField);
+          bVal = getNestedValue(b, column.nestedField);
+        }
+
+        if (sortConfig.direction === 'asc') {
+          return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+        } else {
+          return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+        }
+      });
     }
 
     return result;
   }, [rows, searchTerm, sortConfig, columns]);
 
-  const totalPages = Math.ceil(filteredAndSortedRows.length / rowsPerPage);
+  const totalPages = Math.max(1, Math.ceil(filteredAndSortedRows.length / rowsPerPage));
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const paginatedRows = filteredAndSortedRows.slice(startIndex, startIndex + rowsPerPage);
+
+  // Ensure currentPage is valid when data changes
+  React.useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [filteredAndSortedRows.length, rowsPerPage, currentPage, totalPages]);
+
+  // Get paginated rows with safety check
+  const paginatedRows = useMemo(() => {
+    const end = startIndex + rowsPerPage;
+    return filteredAndSortedRows.slice(startIndex, end);
+  }, [filteredAndSortedRows, startIndex, rowsPerPage]);
+
+  // Modified handleCellValueChange to convert pagination rowIndex to global index
+  const handleCellValueChange = (rowIndex: number, field: string, value: any) => {
+    // Convert pagination-based rowIndex to global index
+    const globalRowIndex = startIndex + rowIndex;
+    onCellValueChange?.(globalRowIndex, field, value);
+  };
 
   // Enhanced CSV export with headers
   const exportCsv = () => {
-    try {
-      // Create header row from column names
+    // Create header row from column names
     const headerRow = columns.map(column => column.headerName);
-  
+
     // Create data rows
     const dataRows = filteredAndSortedRows.map((row: any) => {
       return columns.map((column: any) => {
@@ -153,7 +159,7 @@ const ReusableTable: React.FC<TableProps> = ({
         } else {
           value = row[column.field];
         }
-  
+
         // Format value for CSV
         if (value === null || value === undefined) {
           return '';
@@ -177,11 +183,11 @@ const ReusableTable: React.FC<TableProps> = ({
         }
       });
     });
-  
+
     // Combine headers and data rows
     const csvData = [headerRow, ...dataRows];
     const csvContent = csvData.map(row => row.join(',')).join('\n');
-  
+
     // Create download link
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -192,11 +198,6 @@ const ReusableTable: React.FC<TableProps> = ({
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    } catch (error) {
-      console.log("eeeeeeeeeeeeeeeeeeeeee");
-      
-    }
-    
   };
 
   const actionbuttons = (row: any) => {
@@ -209,6 +210,37 @@ const ReusableTable: React.FC<TableProps> = ({
     );
   };
 
+  // Function to create cell renderer wrapper that handles proper value setting
+  // Function to create cell renderer wrapper that handles proper value setting
+  const createCellRendererWrapper = (column: Column, rowIndex: number, row: any) => {
+    const originalValue = column.nestedField
+      ? getNestedValue(row, column.nestedField)
+      : row[column.field];
+
+    const handleSetValue = (value: any) => {
+      if (column.field === 'attendance' && row.factId) {
+        // For attendance field with factId, use the factId-based approach
+        onCellValueChange?.(row.factId, column.field, value);
+      } else {
+        // For other fields, use the row index approach
+        handleCellValueChange(rowIndex, column.field, value);
+      }
+    };
+
+    if (column.cellRenderer) {
+      return column.cellRenderer({
+        data: row,
+        value: originalValue,
+        setValue: handleSetValue
+      });
+    }
+
+    return (
+      <div className="text-gray-900 overflow-hidden text-ellipsis">
+        {formatDisplayValue(originalValue)}
+      </div>
+    );
+  };
   return (
     <>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-4">
@@ -218,7 +250,10 @@ const ReusableTable: React.FC<TableProps> = ({
             type="text"
             placeholder="Search..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1); // Reset to first page when searching
+            }}
             className="w-full px-8 py-2 borderr border rounded-md focus:outline-none focus:ring-2 focus:ring-[#126666] bg-white"
           />
           <span className="absolute left-2.5 top-2.5">
@@ -270,50 +305,38 @@ const ReusableTable: React.FC<TableProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {paginatedRows.map((row: any, rowIndex: any) => (
-                <tr key={rowIndex} className="hover:bg-gray-50">
-                  <td className="text-ellipsis">
-                    <p className='pull-left'>{startIndex + rowIndex + 1}</p>
-                    <div className='ml-4 mobileView'>
-                      {columns.map((column: any) => (
-                        <p className='m-0'
-                          key={`${rowIndex}-${column.field}`}
-                        >
-                          {column.headerName}:
-                          {column.cellRenderer ? (
-                            column.cellRenderer({
-                              data: row,
-                              value: column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field],
-                              setValue: (value: any) => onCellValueChange?.(rowIndex, column.field, value)
-                            })
-                          ) : (
-                            <span className="text-sm text-gray-900 overflow-hidden overflow-ellipsis">
-                              {formatDisplayValue(column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field])}
-                            </span>
-                          )}
-                        </p>
-                      ))}
-                    </div>
-                  </td>
-                  {columns.map((column: any) => (
-                    <td className='webView'
-                      key={`${rowIndex}-${column.field}`}
-                    >
-                      {column.cellRenderer ? (
-                        column.cellRenderer({
-                          data: row,
-                          value: column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field],
-                          setValue: (value: any) => onCellValueChange?.(rowIndex, column.field, value)
-                        })
-                      ) : (
-                        <div className="text-gray-900 overflow-hidden text-ellipsis">
-                          {formatDisplayValue(column.nestedField ? getNestedValue(row, column.nestedField) : row[column.field])}
-                        </div>
-                      )}
+              {paginatedRows.length > 0 ? (
+                paginatedRows.map((row: any, rowIndex: number) => (
+                  <tr key={rowIndex} className="hover:bg-gray-50">
+                    <td className="text-ellipsis">
+                      <p className='pull-left'>{startIndex + rowIndex + 1}</p>
+                      <div className='ml-4 mobileView'>
+                        {columns.map((column: any) => (
+                          <p className='m-0'
+                            key={`${rowIndex}-${column.field}`}
+                          >
+                            {column.headerName}:
+                            {createCellRendererWrapper(column, rowIndex, row)}
+                          </p>
+                        ))}
+                      </div>
                     </td>
-                  ))}
+                    {columns.map((column: any) => (
+                      <td className='webView'
+                        key={`${rowIndex}-${column.field}`}
+                      >
+                        {createCellRendererWrapper(column, rowIndex, row)}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={columns.length + 1} className="text-center py-4">
+                    No data available
+                  </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
@@ -325,6 +348,7 @@ const ReusableTable: React.FC<TableProps> = ({
           <button
             onClick={exportCsv}
             className="flex webView items-center gap-2 px-4 head1 btn button text-white"
+            disabled={paginatedRows.length === 0}
           >
             <Download size={16} />
             Export CSV
@@ -356,18 +380,32 @@ const ReusableTable: React.FC<TableProps> = ({
             Previous
           </button>
           <div className="flex gap-1">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 border rounded-md transition-colors ${currentPage === page
-                  ? 'bg-[#3a8686] text-white'
-                  : 'hover:bg-gray-100'
-                  }`}
-              >
-                {page}
-              </button>
-            ))}
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+              // Show pages around current page
+              let pageToShow;
+              if (totalPages <= 5) {
+                pageToShow = i + 1;
+              } else if (currentPage <= 3) {
+                pageToShow = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageToShow = totalPages - 4 + i;
+              } else {
+                pageToShow = currentPage - 2 + i;
+              }
+
+              return (
+                <button
+                  key={pageToShow}
+                  onClick={() => setCurrentPage(pageToShow)}
+                  className={`px-3 py-1 border rounded-md transition-colors ${currentPage === pageToShow
+                    ? 'bg-[#3a8686] text-white'
+                    : 'hover:bg-gray-100'
+                    }`}
+                >
+                  {pageToShow}
+                </button>
+              );
+            })}
           </div>
           <button
             onClick={() => setCurrentPage(currentPage + 1)}

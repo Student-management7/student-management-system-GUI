@@ -4,7 +4,6 @@ import axiosInstance from '../../services/Utils/apiUtils';
 import { fetchFacultyData, submitAttendance } from '../../services/Faculty/FacultyAttendanceSave/Api';
 import { Faculty } from '../../services/Faculty/FacultyAttendanceSave/Type';
 import ReusableTable from '../StudenAttendanceShow/Table/Table';
-import BackButton from '../Navigation/backButton';
 import Loader from '../loader/loader';
 
 interface AttendanceRow {
@@ -17,6 +16,8 @@ const AttendanceSave: React.FC = () => {
   const [facultyList, setFacultyList] = useState<Faculty[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [bulkAttendance, setBulkAttendance] = useState<string>('');
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,14 +45,31 @@ const AttendanceSave: React.FC = () => {
     fetchData();
   }, []);
 
+  // Add the missing handleCellValueChange function
   const handleCellValueChange = (factId: string, field: string, value: any) => {
     console.log(`Updating factId: ${factId}, field: ${field}, value: ${value}`);
-
-    setFacultyList(prevFaculty =>
-      prevFaculty.map(faculty =>
-        faculty.fact_id === factId ? { ...faculty, [field]: value } : faculty
+    setFacultyList(prevList =>
+      prevList.map(faculty =>
+        faculty.fact_id === factId
+          ? { ...faculty, [field]: value }
+          : faculty
       )
     );
+  };
+
+  // Revised onCellValueChange function
+  const onCellValueChange = (rowIndexOrId: number | string, field: string, value: any) => {
+    // Check if rowIndexOrId is a string (factId) or number (rowIndex)
+    if (typeof rowIndexOrId === 'string') {
+      // Handle factId-based updates
+      handleCellValueChange(rowIndexOrId, field, value);
+    } else {
+      // Handle index-based updates
+      const faculty = facultyList[rowIndexOrId as number];
+      if (faculty) {
+        handleCellValueChange(faculty.fact_id, field, value);
+      }
+    }
   };
 
   const handleSaveAttendance = async () => {
@@ -102,28 +120,37 @@ const AttendanceSave: React.FC = () => {
       field: "attendance",
       editable: true,
       cellRenderer: (params: any) => {
-        const [selectedValue, setSelectedValue] = React.useState(params.value);
+        const factId = params.data.factId;
+        const faculty = facultyList.find(f => f.fact_id === factId);
+        const currentValue = faculty ? faculty.attendance : '';
 
-        React.useEffect(() => {
-          setSelectedValue(params.value);
-        }, [params.value]);
-
-        // Log the factId to ensure it is correct
-        console.log(`Rendering attendance for factId: ${params.data.factId}`);
 
         return (
-          <div className="flex gap-2">
+          <div className="flex gap-2" key={`${factId}-${refreshKey}`}>
             {["Present", "Absent", "Half Day", "Late", "Leave"].map((option) => (
               <label key={option} className="flex items-center gap-1">
                 <input
                   type="radio"
-                  name={`attendance-${params.data.factId}`}
+                  name={`attendance-${factId}`}
                   value={option}
-                  checked={selectedValue === option}
+                  checked={currentValue === option}
                   onChange={() => {
-                    setSelectedValue(option);
-                    console.log(`Radio button changed for factId: ${params.data.factId}, option: ${option}`);
-                    handleCellValueChange(params.data.factId, 'attendance', option);
+                    // Update the state directly
+                    setFacultyList(prevList =>
+                      prevList.map(faculty =>
+                        faculty.fact_id === factId
+                          ? { ...faculty, attendance: option }
+                          : faculty
+                      )
+                    );
+
+                    // Force refresh the component
+                    setRefreshKey(prev => prev + 1);
+
+                    // Attempt to update the table if possible
+                    if (typeof params.setValue === 'function') {
+                      params.setValue(option);
+                    }
                   }}
                   className="form-radio h-4 w-4 text-blue-600"
                 />
@@ -132,7 +159,7 @@ const AttendanceSave: React.FC = () => {
             ))}
           </div>
         );
-      },
+      }
     },
   ];
 
@@ -144,17 +171,16 @@ const AttendanceSave: React.FC = () => {
 
   const rowData = facultyList.map(transformFacultyData);
 
-
-
   const applyBulkAttendance = (value: string) => {
-    if (!value) { // Check the value passed in, not the state.
-        return; // Don't show the toast if they are just clearing the selection.
+    if (!value) {
+      return;
     }
 
     setFacultyList((prevList) =>
-        prevList.map((faculty) => ({ ...faculty, attendance: value })) // Use the passed in value
+      prevList.map((faculty) => ({ ...faculty, attendance: value }))
     );
-};
+  };
+
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
@@ -162,47 +188,42 @@ const AttendanceSave: React.FC = () => {
       {!loading && (
         <div className="box p-4">
           <div className="flex items-center space-x-4 mb-4">
-            
-            <h1 className="head1 items-center ">
-              Faculty Attendance Update
+            <h1 className="head1 items-center">
+              Faculty Attendance 
             </h1>
           </div>
 
           <div className="">
-
-          <span className="flex ">
-            <select
+            <span className="flex">
+              <select
                 value={bulkAttendance}
                 onChange={(e) => {
-                    const selectedValue = e.target.value;
-                    setBulkAttendance(selectedValue);
-                    applyBulkAttendance(selectedValue);
+                  const selectedValue = e.target.value;
+                  setBulkAttendance(selectedValue);
+                  applyBulkAttendance(selectedValue);
                 }}
                 className="border rounded p-2 mr-2 mb-2"
-            >
+              >
                 <option value="">Bulk Attendance</option>
                 <option value="Present">Present</option>
                 <option value="Absent">Absent</option>
                 <option value="Half Day">Half Day</option>
                 <option value="Late">Late</option>
                 <option value="Leave">Leave</option>
-            </select>
-        </span>
-
-            <span >
-
-            <ReusableTable
-              rows={rowData}
-              columns={columns}
-              rowsPerPageOptions={[5, 10, 25]}
-              onCellValueChange={(factId: string, field: string, value: any) => handleCellValueChange(factId, field, value)}
-            />
+              </select>
             </span>
 
-
+            <span>
+              <ReusableTable
+                rows={rowData}
+                columns={columns}
+                rowsPerPageOptions={[5, 10, 20]}
+                onCellValueChange={onCellValueChange}
+                page={currentPage}
+                onPageChange={(newPage: React.SetStateAction<number>) => setCurrentPage(newPage)}
+              />
+            </span>
           </div>
-
-
 
           <div className="flex justify-center mt-4">
             <button
