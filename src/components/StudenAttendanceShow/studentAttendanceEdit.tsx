@@ -36,6 +36,8 @@ const StudentAttendanceEdit: React.FC = () => {
   const [editedStudentList, setEditedStudentList] = useState<Student[]>([]);
   const [attendanceMode, setAttendanceMode] = useState(true); // Default to true (Master Attendance)
   const [loading, setLoading] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
 
   // Load class data on component mount
   useEffect(() => {
@@ -206,25 +208,34 @@ const StudentAttendanceEdit: React.FC = () => {
       field: 'attendance',
       editable: true,
       cellRenderer: (params: any) => {
-        const [selectedValue, setSelectedValue] = React.useState(params.value || "Present");
-
-        React.useEffect(() => {
-          setSelectedValue(params.value || "Present");
-        }, [params.value]);
-
+        const stdId = params.data.stdId;
+        const student = editedStudentList.find((student: Student) => student.stdId === stdId);
+        const currentValue = student ? student.attendance : "Present";
+    
         return (
-          <div className="flex gap-2">
+          <div className="flex gap-2" key={`${stdId}-${refreshKey}`}>
             {["Present", "Absent", "Half Day", "Late", "Leave"].map((option) => (
               <label key={option} className="flex items-center gap-1">
                 <input
                   type="radio"
-                  name={`attendance-${params.data.stdId}`}
+                  name={`attendance-${stdId}`}
                   value={option}
-                  checked={selectedValue === option}
+                  checked={currentValue === option}
                   onChange={() => {
-                    setSelectedValue(option);
-                    params.setValue(option);
-                    handleCellValueChange(params.rowIndex, 'attendance', option);
+                    // Update the state directly
+                    setEditedStudentList((prevList: Student[]) =>
+                      prevList.map((student: Student) =>
+                        student.stdId === stdId
+                          ? { ...student, attendance: option }
+                          : student
+                      )
+                    );
+                    // Force refresh the component
+                    setRefreshKey((prev) => prev + 1);
+                    // Attempt to update the table if possible
+                    if (typeof params.setValue === "function") {
+                      params.setValue(option);
+                    }
                   }}
                   className="form-radio h-4 w-4 text-blue-600"
                 />
@@ -398,6 +409,7 @@ const StudentAttendanceEdit: React.FC = () => {
                     rows={rowData}
                     columns={columnDefs}
                     onCellValueChange={handleCellValueChange}
+                    
                   />
                 </div>
               )}
