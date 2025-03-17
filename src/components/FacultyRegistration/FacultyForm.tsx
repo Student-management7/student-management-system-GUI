@@ -38,7 +38,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
       { type: 'Graduation', grd_name: '', grd_branch: '', grd_grade: '', grd_university: '', grd_yearOfPassing: '' },
     ],
     Fact_Cls: editingFaculty?.Fact_Cls || [{ cls_name: '', cls_sub: [''] }],
-    Fact_Status: editingFaculty?.Fact_Status || '',
+    Fact_Status: editingFaculty?.Fact_Status || 'N/A',
   };
 
   const handleSubmit = async (values: FacultyFormData, { resetForm }: any) => {

@@ -230,9 +230,9 @@ const StudentProfile: React.FC = () => {
           </div>
 
           <div className="details-section p-4 bg-white shadow-md rounded-lg">
-            <div className="flex space-x-4 border-b pb-2">
+            <div className="flex space-x-4 scrol border-b pb-2">
               <button
-                className={`py-2 px-4 rounded-md transition ${activeTab === "personal" ? "bg-[#126666] text-white" : "bg-gray-200"
+                className={`py-2 px-4 rounded-md  transition ${activeTab === "personal" ? "bg-[#126666] text-white" : "bg-gray-200"
                   }`}
                 onClick={() => setActiveTab("personal")}
               >

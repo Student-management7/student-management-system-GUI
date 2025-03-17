@@ -180,9 +180,9 @@ const StudentRegistrationController = () => {
                         </span>
                         <h1 className="head1 items-center mt-2 " >Bulk Upload</h1>
                     </div>
-                    <div className="p-4">
-                        <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
-                        <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 ml-2 rounded hover:bg-blue-600 sm:mt-3 md:mt-2">Upload</button>
+                    <div className="">
+                        <input className="mb-4" type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
+                        <button onClick={handleUpload} className="btn button float-right ml-2">Upload</button>
                     </div>
                     <ReusableTable rows={data} columns={columns} />
                 </div>

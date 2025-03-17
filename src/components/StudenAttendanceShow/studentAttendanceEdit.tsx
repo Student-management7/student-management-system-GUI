@@ -389,7 +389,7 @@ const StudentAttendanceEdit: React.FC = () => {
                   />
                 </div>
 
-                <div className="col-md-6 d-flex align-items-end mb-1">
+                <div className="col-md-6 d-flex align-items-end my-2">
                   <button
                     className="button btn"
                     onClick={handleFetchAttendance}

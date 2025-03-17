@@ -226,7 +226,7 @@ const FormView = ({ editData, onSubmitSuccess }: any) => {
                                         Service StartDate<span className="red">*</span>
                                     </label>
                                     <Field
-                                        type="date"
+                                        type="text"
                                         id="serviceStartDate"
                                         name="serviceStartDate"
                                         className={"form-control"}
@@ -273,7 +273,7 @@ const FormView = ({ editData, onSubmitSuccess }: any) => {
                                         Renewal Date
                                     </label>
                                     <Field
-                                        type="date"
+                                        type="text"
                                         id="renewalDate"
                                         name="renewalDate"
                                         className={"form-control"}
