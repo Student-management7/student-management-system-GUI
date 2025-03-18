@@ -91,45 +91,45 @@ const StudentAttendanceShow: React.FC = () => {
       toast.warning("From date cannot be later than To date.");
       return;
     }
-  
-  setLoading(true);
-  try {
-    const data = await fetchAttendanceData(fromDate, toDate, classSelected, subjectSelected, AttendanceMode);
 
-    if (!data || data.length === 0) {
-      toast.warning("No attendance records found for the selected criteria.");
-      setAttendanceData([]);
-      return;
+    setLoading(true);
+    try {
+      const data = await fetchAttendanceData(fromDate, toDate, classSelected, subjectSelected, AttendanceMode);
+
+      if (!data || data.length === 0) {
+        toast.warning("No attendance records found for the selected criteria.");
+        setAttendanceData([]);
+        return;
+      }
+
+      // Create a Set of current student IDs for faster lookups
+      const currentStudentIds = new Set(currentStudents.map(student => student.id));
+
+      // Filter attendance data to include only current students
+      const filteredData = data.map(entry => ({
+        ...entry,
+        students: entry.students.filter(student =>
+          currentStudentIds.has(String(student.stdId))
+        )
+      }));
+
+      // Filter out any dates that now have no students
+      const nonEmptyDates = filteredData.filter(entry => entry.students.length > 0);
+
+      if (nonEmptyDates.length === 0) {
+        toast.warning("No attendance records found for current students.");
+        setAttendanceData([]);
+        return;
+      }
+
+      setAttendanceData(nonEmptyDates);
+      toast.success("Attendance data fetched successfully.");
+    } catch (err) {
+      toast.error(`No data found on this range of time`);
+    } finally {
+      setLoading(false);
     }
-
-    // Create a Set of current student IDs for faster lookups
-    const currentStudentIds = new Set(currentStudents.map(student => student.id));
-    
-    // Filter attendance data to include only current students
-    const filteredData = data.map(entry => ({
-      ...entry,
-      students: entry.students.filter(student => 
-        currentStudentIds.has(String(student.stdId))
-      )
-    }));
-
-    // Filter out any dates that now have no students
-    const nonEmptyDates = filteredData.filter(entry => entry.students.length > 0);
-
-    if (nonEmptyDates.length === 0) {
-      toast.warning("No attendance records found for current students.");
-      setAttendanceData([]);
-      return;
-    }
-
-    setAttendanceData(nonEmptyDates);
-    toast.success("Attendance data fetched successfully.");
-  } catch (err) {
-    toast.error(`No data found on this range of time`);
-  } finally {
-    setLoading(false);
-  }
-}, [fromDate, toDate, classSelected, subjectSelected, AttendanceMode, currentStudents]);
+  }, [fromDate, toDate, classSelected, subjectSelected, AttendanceMode, currentStudents]);
 
 
   const handleEditButtonClick = () => {
@@ -294,23 +294,23 @@ const StudentAttendanceShow: React.FC = () => {
               </div>
 
               {attendanceData.length > 0 && (
-                
-                  <ReusableTable
-                    columns={[
-                    
-                      { field: 'name', headerName: 'Student Name' },
-                      
-                      ...getDateRange(fromDate, toDate).map((date) => ({
-                        field: date,
-                        headerName: formatToDDMMYYYY(date),  // Format the date here
-                        renderCell: (row: any) => (
-                          <span>{row[date] || '-'}</span>
-                        ),
-                      })),
-                    ]}
-                    rows={transformAttendanceData()}
-                  />
-                
+
+                <ReusableTable
+                  columns={[
+
+                    { field: 'name', headerName: 'Student Name' },
+
+                    ...getDateRange(fromDate, toDate).map((date) => ({
+                      field: date,
+                      headerName: formatToDDMMYYYY(date),  // Format the date here
+                      renderCell: (row: any) => (
+                        <span>{row[date] || '-'}</span>
+                      ),
+                    })),
+                  ]}
+                  rows={transformAttendanceData()}
+                />
+
               )}
             </div>
           </div>

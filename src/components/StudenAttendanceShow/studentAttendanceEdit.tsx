@@ -1,6 +1,5 @@
-import React from "react";
-import { useState, useEffect, useCallback } from "react";
-import { fetchClassData } from "../../services/StudentAttendanceShow/API/api";
+import React, { useState, useEffect, useCallback } from "react";
+import { fetchClassData, fetchAttendanceData } from "../../services/StudentAttendanceShow/API/api";
 import { validateAttendanceForm } from "../../services/StudentAttendanceShow/validation/attendanceValidation";
 import type { ClassData } from "../../services/SaveSubjects/Type";
 import { sortArrayByKey } from "../Utils/sortArrayByKey";
@@ -9,15 +8,20 @@ import ReusableTable from "./Table/Table";
 import Loader from "../loader/loader";
 import BackButton from "../Navigation/backButton";
 import { toast, ToastContainer } from "react-toastify";
-import { formatToDDMMYYYY, formatDateToAPIFormat } from "../Utils/dateUtils";
+import { formatToDDMMYYYY, } from "../Utils/dateUtils";
 import axiosInstance from "../../services/Utils/apiUtils";
 
-// Define proper types based on the actual API response
+interface CurrentStudent {
+  id: string;
+  creationDateTime: string;
+  name: string;
+}
+
 interface Student {
   stdId: string;
   name: string;
   attendance: string;
-  remark: string;
+  remark: string | null;
 }
 
 interface AttendanceRecord {
@@ -26,20 +30,18 @@ interface AttendanceRecord {
 }
 
 const StudentAttendanceEdit: React.FC = () => {
-  // State variables
   const [classData, setClassData] = useState<ClassData[]>([]);
   const [classSelected, setClassSelected] = useState("");
   const [subjectSelected, setSubjectSelected] = useState("");
-  const [fromDate, setFromDate] = useState(() => new Date().toISOString().split("T")[0]);
-  const [toDate, setToDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [fromDate, setFromDate] = useState("");
   const [attendanceData, setAttendanceData] = useState<AttendanceRecord[]>([]);
   const [editedStudentList, setEditedStudentList] = useState<Student[]>([]);
-  const [attendanceMode, setAttendanceMode] = useState(true); // Default to true (Master Attendance)
+  const [attendanceMode, setAttendanceMode] = useState(true);
   const [loading, setLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentStudents, setCurrentStudents] = useState<CurrentStudent[]>([]);
 
-  // Load class data on component mount
+  // Fetch class data on component mount
   useEffect(() => {
     const loadClassData = async () => {
       try {
@@ -48,14 +50,11 @@ const StudentAttendanceEdit: React.FC = () => {
         if (data?.length > 0) {
           const sortedData = sortArrayByKey(data, "className");
           setClassData(sortedData);
-          setClassSelected("");
-          setSubjectSelected("");
         } else {
           toast.warning("No class data found.");
         }
       } catch (err) {
         toast.error("Failed to load class data.");
-        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -64,89 +63,78 @@ const StudentAttendanceEdit: React.FC = () => {
     loadClassData();
   }, []);
 
-  // Update editedStudentList whenever attendance data changes
+  // Fetch current students
   useEffect(() => {
-    if (attendanceData.length > 0 && attendanceData[0]?.students) {
-      // Use the students array from the API response
-      setEditedStudentList(attendanceData[0].students.map(student => ({
-        ...student,
-        attendance: student.attendance || "Present", // Default to Present if not set
-        remark: student.remark || ""
-      })));
-    } else {
-      setEditedStudentList([]);
-    }
-  }, [attendanceData]);
-
-  // Custom function to fetch attendance data
-  const fetchAttendanceData = async (fromDate: string, toDate: string, className: string, subject: string, isMasterAttendance: boolean) => {
-    // Format dates from YYYY-MM-DD to DD/MM/YYYY for API
-    const formattedFromDate = formatDateToAPIFormat(fromDate);
-    const formattedToDate = formatDateToAPIFormat(toDate);
-    
-    const response = await axiosInstance.post(
-      `/attendance/getAttendance?cls=${className}&fromDate=${formattedFromDate}&toDate=${formattedToDate}&subject=${subject}&masterAttendance=${isMasterAttendance}`
-    );
-    
-    return response.data;
-  };
-
-  // Fetch attendance data
-  const handleFetchAttendance = useCallback(async () => {
-    const attendanceModeLabel = attendanceMode ? "Master Attendance" : "Subject-wise Attendance";
-
-    // Adjust validation based on attendance mode
-    const isFormValid = attendanceMode
-      ? validateAttendanceForm(fromDate, toDate, classSelected, "", attendanceModeLabel)
-      : validateAttendanceForm(fromDate, toDate, classSelected, subjectSelected, attendanceModeLabel);
-
-    if (!isFormValid) {
-      toast.warning("Please fill in all required fields with valid values.");
-      return;
-    }
-
-    const fromDateObj = new Date(fromDate);
-    const toDateObj = new Date(toDate);
-
-    // Validate date range
-    if (fromDateObj > toDateObj) {
-      toast.warning("From date cannot be later than To date.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const data = await fetchAttendanceData(
-        fromDate, 
-        toDate, 
-        classSelected, 
-        subjectSelected, 
-        attendanceMode
-      );
-
-      if (!data || data.length === 0) {
-        toast.warning("No attendance records found for the selected criteria.");
-        setAttendanceData([]);
-        setEditedStudentList([]);
-        return;
+    const fetchCurrentStudents = async () => {
+      try {
+        const response = await axiosInstance.get("/student/findAllStudent");
+        setCurrentStudents(response.data);
+      } catch (err) {
+        toast.error("Failed to fetch current students.");
       }
+    };
 
-      console.log("Fetched attendance data:", data);
-      setAttendanceData(data);
-      toast.success("Attendance data fetched successfully.");
-    } catch (err) {
-      console.error("Error fetching attendance data:", err);
-      toast.error("No data found for this time range");
+    fetchCurrentStudents();
+  }, []);
+
+  // Handle fetch attendance button click
+ 
+// Update the fetch attendance function to use only fromDate
+const handleFetchAttendance = useCallback(async () => {
+  const attendanceModeLabel = attendanceMode ? "Master Attendance" : "Subject-wise Attendance";
+
+  const isFormValid = attendanceMode
+    ? validateAttendanceForm(fromDate, fromDate, classSelected, "", attendanceModeLabel) // Use fromDate for both from and to dates
+    : validateAttendanceForm(fromDate, fromDate, classSelected, subjectSelected, attendanceModeLabel);
+
+  if (!isFormValid) {
+    toast.warning("Please fill in all required fields with valid values.");
+    return;
+  }
+
+  setAttendanceData([]);
+  setEditedStudentList([]);
+
+
+  setLoading(true);
+  try {
+    const data = await fetchAttendanceData(
+      fromDate,
+      fromDate, // Use fromDate for both from and to dates
+      classSelected,
+      subjectSelected,
+      attendanceMode
+    );
+
+    if (!data || data.length === 0) {
+      toast.warning("No attendance records found for the selected criteria.");
       setAttendanceData([]);
       setEditedStudentList([]);
-    } finally {
-      setLoading(false);
+      return;
     }
-  }, [fromDate, toDate, classSelected, subjectSelected, attendanceMode]);
 
+    // Filter attendance data to include only current students
+    const currentStudentIds = new Set(currentStudents.map(student => student.id));
+    const filteredData = data.map((record: any) => ({
+      date: record.date,
+      students: record.students.filter((student: any) =>
+        currentStudentIds.has(String(student.stdId))
+      ),
+    }));
+
+    setAttendanceData(filteredData);
+    setEditedStudentList(filteredData[0]?.students || []);
+    toast.success("Attendance data fetched successfully.");
+  } catch (err) {
+    console.error("Error fetching attendance data:", err);
+    toast.error("No data found for this date.");
+  } finally {
+    setLoading(false);
+  }
+}, [fromDate, classSelected, subjectSelected, attendanceMode, currentStudents]);
   // Handle cell value changes
   const handleCellValueChange = (rowIndex: number, field: string, value: any) => {
-    setEditedStudentList(prevStudents => {
+    setEditedStudentList((prevStudents) => {
       if (rowIndex >= 0 && rowIndex < prevStudents.length) {
         const newStudents = [...prevStudents];
         newStudents[rowIndex] = {
@@ -168,10 +156,9 @@ const StudentAttendanceEdit: React.FC = () => {
 
     try {
       setLoading(true);
-      
-      // Extract date from the first attendance record
+
       const date = attendanceData[0]?.date || fromDate;
-      
+
       const payload = {
         date: formatToDDMMYYYY(date),
         className: classSelected,
@@ -184,13 +171,11 @@ const StudentAttendanceEdit: React.FC = () => {
         })),
       };
 
-      console.log("Saving attendance with payload:", payload);
-
       await axiosInstance.post(
         `/attendance/update?masterAttendance=${attendanceMode}`,
         payload
       );
-      
+
       toast.success('Attendance updated successfully!');
     } catch (err) {
       console.error("Error saving attendance:", err);
@@ -211,7 +196,7 @@ const StudentAttendanceEdit: React.FC = () => {
         const stdId = params.data.stdId;
         const student = editedStudentList.find((student: Student) => student.stdId === stdId);
         const currentValue = student ? student.attendance : "Present";
-    
+
         return (
           <div className="flex gap-2" key={`${stdId}-${refreshKey}`}>
             {["Present", "Absent", "Half Day", "Late", "Leave"].map((option) => (
@@ -222,7 +207,6 @@ const StudentAttendanceEdit: React.FC = () => {
                   value={option}
                   checked={currentValue === option}
                   onChange={() => {
-                    // Update the state directly
                     setEditedStudentList((prevList: Student[]) =>
                       prevList.map((student: Student) =>
                         student.stdId === stdId
@@ -230,9 +214,7 @@ const StudentAttendanceEdit: React.FC = () => {
                           : student
                       )
                     );
-                    // Force refresh the component
                     setRefreshKey((prev) => prev + 1);
-                    // Attempt to update the table if possible
                     if (typeof params.setValue === "function") {
                       params.setValue(option);
                     }
@@ -265,7 +247,6 @@ const StudentAttendanceEdit: React.FC = () => {
     },
   ];
 
-  // Prepare row data for the table
   const rowData = editedStudentList.map((student, index) => ({
     ...student,
     rowIndex: index,
@@ -273,171 +254,159 @@ const StudentAttendanceEdit: React.FC = () => {
 
   return (
     <>
-      {loading && <Loader />}
-      {!loading && (
-        <>
-          <ToastContainer position="top-right" autoClose={3000} />
 
-          <div className="box">
-            <div className="flex items-center space-x-4 mb-4">
-              <span>
-                <BackButton />
-              </span>
-              <h1 className="head1">Student Attendance Update</h1>
+      <ToastContainer position="top-right" autoClose={3000} />
+        {loading && <Loader />}   
+        {!loading && (
+      <div className="box">
+        <div className="flex items-center space-x-4 mb-4">
+          <span>
+            <BackButton />
+          </span>
+          <h1 className="head1">Student Attendance Update</h1>
+        </div>
+
+        <div className="box">
+          {/* Attendance Mode Toggle */}
+          <div className="flex items-center space-x-7 mb-10">
+            <span className="text-gray-900 font-semibold">
+              {attendanceMode ? "Master Attendance" : "Subject-wise Attendance"}
+            </span>
+            <Switch
+              checked={attendanceMode}
+              onChange={setAttendanceMode}
+              disabled={loading}
+              className={`
+                float-left 
+                ${attendanceMode ? 'bg-[#3a8686]' : 'bg-gray-200'}
+                relative inline-flex h-6 w-11 items-center rounded-full transition-colors 
+                focus:outline-none focus:ring-2 focus:ring-[#126666]-500 focus:ring-offset-2 mt-1
+              `}
+            >
+              <span className="sr-only">Toggle attendance mode</span>
+              <span
+                className={`${attendanceMode ? 'translate-x-6' : 'translate-x-1'} 
+                  inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+              />
+            </Switch>
+          </div>
+
+          {/* Class and Subject Selection */}
+          <div className="row form-group">
+            <div className="col-md-6">
+              <label htmlFor="classSelect" className="form-label">
+                Class:
+              </label>
+              <select
+                id="classSelect"
+                className="form-control"
+                value={classSelected}
+                onChange={(e) => {
+                  setClassSelected(e.target.value);
+                  setSubjectSelected("");
+                  setAttendanceData([]);
+                  setEditedStudentList([]);
+                }}
+                disabled={loading || classData.length === 0}
+              >
+                <option value="" disabled>
+                  Select a class
+                </option>
+                {classData.map(({ className }) => (
+                  <option key={className} value={className}>
+                    Class {className}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div className="box">
-              <div className="flex items-center space-x-7 mb-10">
-                <span className="text-gray-900 font-semibold">
-                  {attendanceMode ? "Master Attendance" : "Subject-wise Attendance"}
-                </span>
-                <Switch
-                  checked={attendanceMode}
-                  onChange={setAttendanceMode}
-                  disabled={loading}
-                  className={`
-                    float-left 
-                    ${attendanceMode ? 'bg-[#3a8686]' : 'bg-gray-200'}
-                    relative inline-flex h-6 w-11 items-center rounded-full transition-colors 
-                    focus:outline-none focus:ring-2 focus:ring-[#126666]-500 focus:ring-offset-2 mt-1
-                  `}
+            {!attendanceMode && (
+              <div className="col-md-6">
+                <label htmlFor="subjectSelect" className="form-label">
+                  Subject:
+                </label>
+                <select
+                  id="subjectSelect"
+                  className="form-control"
+                  value={subjectSelected}
+                  onChange={(e) => {
+                    setSubjectSelected(e.target.value);
+                    setAttendanceData([]);
+                    setEditedStudentList([]);
+                  }}
+                  disabled={loading || !classSelected}
                 >
-                  <span className="sr-only">Toggle attendance mode</span>
-                  <span
-                    className={`${attendanceMode ? 'translate-x-6' : 'translate-x-1'} 
-                      inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                  />
-                </Switch>
-              </div>
-
-              <div className="row form-group">
-                <div className="col-md-6">
-                  <label htmlFor="classSelect" className="form-label">
-                    Class:
-                  </label>
-                  <select
-                    id="classSelect"
-                    className="form-control"
-                    value={classSelected}
-                    onChange={(e) => {
-                      setClassSelected(e.target.value);
-                      setSubjectSelected(""); // Reset subject when class changes
-                      setAttendanceData([]); // Clear attendance data when class changes
-                      setEditedStudentList([]); // Clear edited student list
-                    }}
-                    disabled={loading}
-                  >
-                    <option value="" disabled>
-                      Select a class
-                    </option>
-                    {classData.map(({ className }) => (
-                      <option key={className} value={className}>
-                        Class {className}
+                  <option value="" disabled>
+                    Select a subject
+                  </option>
+                  {classData
+                    .find(({ className }) => className === classSelected)
+                    ?.subject?.map((subj) => (
+                      <option key={subj} value={subj}>
+                        {subj}
                       </option>
                     ))}
-                  </select>
-                </div>
-
-                {!attendanceMode && (
-                  <div className="col-md-6">
-                    <label htmlFor="subjectSelect" className="form-label">
-                      Subject:
-                    </label>
-                    <select
-                      id="subjectSelect"
-                      className="form-control"
-                      value={subjectSelected}
-                      onChange={(e) => {
-                        setSubjectSelected(e.target.value);
-                        setAttendanceData([]); // Clear attendance data when subject changes
-                        setEditedStudentList([]); // Clear edited student list
-                      }}
-                      disabled={loading || !classSelected}
-                    >
-                      <option value="" disabled>
-                        Select a subject
-                      </option>
-                      {classData
-                        .find(({ className }) => className === classSelected)
-                        ?.subject?.map((subj) => (
-                          <option key={subj} value={subj}>
-                            {subj}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-                )}
-              </div>
-
-              <div className="row form-group d-flex align-items-end">
-                <div className="col-md-6">
-                  <label htmlFor="fromDate" className="form-label">
-                    From Date:
-                  </label>
-                  <input
-                    type="date"
-                    id="fromDate"
-                    className="form-control"
-                    value={fromDate}
-                    onChange={(e) => {
-                      setFromDate(e.target.value);
-                      setToDate(e.target.value); // Set "to date" to match "from date" initially
-                      setAttendanceData([]); // Clear attendance data when date changes
-                      setEditedStudentList([]); // Clear edited student list
-                    }}
-                    disabled={loading}
-                  />
-                </div>
-
-                <div className="col-md-6 d-flex align-items-end mb-1">
-                  <button
-                    className="button btn"
-                    onClick={handleFetchAttendance}
-                    disabled={loading || !classSelected}
-                  >
-                    {loading ? "Loading..." : "Fetch Attendance"}
-                  </button>
-                </div>
-              </div>
-
-              {editedStudentList.length > 0 && (
-                <div className="mt-4">
-                  <h2 className="text-lg font-semibold mb-2">
-                    Attendance for {attendanceData[0]?.date ? new Date(attendanceData[0].date).toLocaleDateString() : fromDate}
-                  </h2>
-                  <ReusableTable
-                    rows={rowData}
-                    columns={columnDefs}
-                    onCellValueChange={handleCellValueChange}
-                    
-                  />
-                </div>
-              )}
-              
-              {editedStudentList.length === 0 && attendanceData.length > 0 && (
-                <div className="mt-4 p-4 bg-yellow-100 rounded">
-                  <p className="text-yellow-800">No student data found in the attendance record.</p>
-                </div>
-              )}
-            </div>
-
-            {editedStudentList.length > 0 && (
-              <div className='flex justify-center mt-4 mb-4'>
-                <button
-                  onClick={saveEditedAttendance}
-                  className="button btn"
-                  disabled={loading}
-                >
-                  {loading ? "Saving..." : "Save Changes"}
-                </button>
+                </select>
               </div>
             )}
           </div>
-        </>
+
+          {/* Date Range Selection */}
+          <div className="row form-group">
+            <div className="col-md-6">
+              <label htmlFor="fromDate" className="form-label">
+                Date:
+              </label>
+              <input
+                type="date"
+                id="fromDate"
+                className="form-control"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+          </div>
+
+          {/* Fetch Attendance Button */}
+          <div className="text-center mt-4">
+            <button
+              className="button btn"
+              onClick={handleFetchAttendance}
+            >
+              {loading ? "Loading..." : "Fetch Attendance"}
+            </button>
+          </div>
+
+          {/* Attendance Table */}
+          {!loading && editedStudentList.length > 0 && (
+            <div className="mt-4">
+             
+              <ReusableTable
+                rows={rowData}
+                columns={columnDefs}
+                onCellValueChange={handleCellValueChange}
+              />
+            </div>
+          )}
+
+          {/* Save Button */}
+          {!loading && editedStudentList.length > 0 && (
+            <div className='flex justify-center mt-4 mb-4'>
+              <button
+                onClick={saveEditedAttendance}
+                className="button btn"
+                disabled={loading}
+              >
+                {loading ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
       )}
     </>
   );
 };
-
 
 export default StudentAttendanceEdit;
