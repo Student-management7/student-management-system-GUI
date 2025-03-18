@@ -31,7 +31,7 @@ export const facultyValidationSchema = (editmode: boolean) =>
     .required('Joining Date is required'),
     
 
-    // Conditional Validation based on edit mode
+    
     email: Yup.string()
       .email('Invalid email'),
      
