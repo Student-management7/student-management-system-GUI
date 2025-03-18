@@ -46,42 +46,42 @@ const UserPassword: React.FC = () => {
 
   return (
     <div className='box m-4 p-4'>
-      <ToastContainer position="top-right" autoClose={3000} />
-      <h2 className="head1">Change Password</h2>
-      <form onSubmit={handleSubmit} className="">
-        <div className='row'>
-          <div className='col-6'>
-            <label>Email</label>
-            <input
-              type="email"
-              value={userEmail}
-              readOnly
-              className="form-control"
-            />
-          </div>
-          <div className='col-6'>
-            <label>New Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="form-control"
-              placeholder="Enter new password"
-              required
-            />
-          </div>
+    <ToastContainer position="top-right" autoClose={3000} />
+    <h2 className="head1">Change Password</h2>
+    <form onSubmit={handleSubmit} className="">
+      <div className='row'>
+        <div className='col-12 col-md-6 py-2'>
+          <label>Email</label>
+          <input
+            type="email"
+            value={userEmail}
+            readOnly
+            className="form-control"
+          />
         </div>
-        <div className='row mt-4'>
-          <button
-            type="submit"
-            disabled={loading}
-            className={`btn col-2 button ${loading ? 'loading' : ''}`}
-          >
-            {loading ? 'Updating...' : 'Update Password'}
-          </button>
+        <div className='col-12 col-md-6 py-2'>
+          <label>New Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="form-control"
+            placeholder="Enter new password"
+            required
+          />
         </div>
-      </form>
-    </div>
+      </div>
+      <div className='mt-4 text-center'>
+        <button
+          type="submit"
+          disabled={loading}
+          className={`btn col-12 col-md-2 button ${loading ? 'loading' : ''}`}
+        >
+          {loading ? 'Updating...' : 'Update Password'}
+        </button>
+      </div>
+    </form>
+  </div>
   );
 };
 

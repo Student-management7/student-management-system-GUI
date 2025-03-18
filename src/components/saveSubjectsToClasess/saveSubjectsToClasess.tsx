@@ -9,10 +9,7 @@ interface SaveSubjectsToClassesProps {
   onClose: () => void;
   onSave: () => void;
   editableRow?: ClassData;
-
 }
-
-
 
 const allSubjects = [
   "Maths", "Science", "English", "History", "Geography",
@@ -140,12 +137,14 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
       console.log("Save Payload:", payload);
 
       const response = await axiosInstance.post("class/save", payload);
-      toast.success("Class and subjects saved successfully!");
+      setTimeout(() => {
+        toast.success("Class and subjects saved successfully!");
+      }, 1000);
       onSave();
     } catch (error: any) {
       console.error("Error saving class data:", error);
       toast.error(
-        error.response?.data?.message || "Failed to save data. Please try again."
+        error.response?.data?.detail || "Failed to save data. Please try again."
       );
     } finally {
       setLoading(false);
@@ -165,12 +164,14 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
         `class/edit?className=${encodeURIComponent(editableRow?.className || "")}`,
         payload
       );
-      toast.success("Class and subjects updated successfully!");
+      setTimeout(() => {
+        toast.success("Class and subjects     updated successfully!");
+      }, 1000);
       onSave();
     } catch (error: any) {
       console.error("Error updating class data:", error);
       toast.error(
-        error.response?.data?.message || "Failed to update data. Please try again."
+        error.response?.data?.detail || "Failed to update data. Please try again."
       );
     } finally {
       setLoading(false);
@@ -180,22 +181,20 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
-        <div className="head1 flex items-center">
-          <button onClick={onClose} className="p-2 rounded-full arrow transition">
-            <ArrowLeft className="h-7 w-7" />
-          </button>
-          {editableRow ? "Update Subjects" : "Save Subjects to Classes"}
-        </div>
+      <div className="head1 flex items-center">
+        <button onClick={onClose} className="p-2 rounded-full arrow transition">
+          <ArrowLeft className="h-7 w-7" />
+        </button>
+        {editableRow ? "Update Subjects" : "Save Subjects to Classes"}
+      </div>
       <div className="box">
-
-        
-
         <div className="mb-6">
           <label className="block mb-4">
             <span className="text-gray-600">Select Class:</span>
             <select
               value={selectedClass} // Bind value to selectedClass
               onChange={handleClassSelect}
+              disabled={!!editableRow} // Disable dropdown in edit mode
               className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a Class</option>
@@ -207,21 +206,24 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
             </select>
           </label>
 
-          <div className="flex gap-2 mb-4">
-            <input
-              type="text"
-              value={newClass}
-              onChange={(e) => setNewClass(e.target.value)}
-              placeholder="Add New Class"
-              className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              onClick={handleAddNewClass}
-              className="btn button text-white md:block"
-            >
-              Add Class
-            </button>
-          </div>
+          {/* Hide "Add New Class" input and button in edit mode */}
+          {!editableRow && (
+            <div className="flex gap-2 mb-4">
+              <input
+                type="text"
+                value={newClass}
+                onChange={(e) => setNewClass(e.target.value)}
+                placeholder="Add New Class"
+                className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#126666]"
+              />
+              <button
+                onClick={handleAddNewClass}
+                className="btn button text-white md:block"
+              >
+                Add Class
+              </button>
+            </div>
+          )}
         </div>
 
         {selectedClass && (
@@ -267,7 +269,7 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
           </button>
           <button
             onClick={editableRow ? handleUpdateClass : handleSaveNewClass}
-            disabled={loading || !selectedClass}
+            disabled={loading || !selectedClass || selectedSubjects.length === 0}
             className={`py-2 px-4 rounded-md ${loading || !selectedClass || selectedSubjects.length === 0
               ? "btn button"
               : "btn button"

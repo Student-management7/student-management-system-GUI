@@ -115,3 +115,8 @@
 .red{
   color: #FF0000;
 }
+@media screen and (max-width: 767px) {
+  .scrol {
+    overflow-x: scroll; /* Enable horizontal scroll only for mobile view */
+  }
+}

@@ -31,10 +31,10 @@ const UserProfile = () => {
   return (
     <div className="min-h-screen  p-6">
       <div className="max-w-4xl mx-auto  rounded-lg  overflow-hidden">
-        {/* Profile Header with Avatar */}
+   
         <div className="bg-[#126666] p-6 flex items-center space-x-6">
-          <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center">
-            <span className="text-4xl text-blue-600 font-bold">U</span> {/* Default Avatar */}
+          <div className="md:w-24 md:h-24 w-20 h-16  rounded-full bg-white flex items-center justify-center">
+            <span className="text-4xl text-blue-600 font-bold">P</span> 
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white">User Profile</h1>

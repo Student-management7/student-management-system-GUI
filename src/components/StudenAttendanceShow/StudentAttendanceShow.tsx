@@ -283,7 +283,7 @@ const StudentAttendanceShow: React.FC = () => {
                 </div>
               </div>
 
-              <div className="text-center mt-4">
+              <div className="text-center my-4">
                 <button
                   className="button btn"
                   onClick={handleFetchAttendance}
