@@ -107,7 +107,7 @@ export default function Permission() {
         const data = response.data.map((faculty: any) => ({
           id: faculty.fact_id,
           name: faculty.fact_Name,
-          email: faculty.fact_email,
+          email: faculty.email,
         }));
         setFacultyData(data);
       } catch (error) {

@@ -11,7 +11,7 @@ interface FacultyFormProps {
   setIsFormVisible: (visible: boolean) => void;
   fetchFacultyDetails: () => void;
   setEditingFaculty: (faculty: FacultyFormData | null) => void;
-  editmode: boolean
+  editmode: boolean;
 }
 
 const FacultyForm: React.FC<FacultyFormProps> = ({
@@ -47,31 +47,35 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
         ...values,
         fact_id: editingFaculty?.fact_id || values.fact_id,
       };
-
-
+  
       let response;
       if (editingFaculty) {
         response = await updateFacultyDetails(submissionData);
-        toast.success('Faculty details updated successfully.');
-
+        setTimeout(() => {
+          toast.success('Faculty details updated successfully.');
+        }, 1000);
       } else {
         response = await saveFacultyDetails(submissionData);
-        toast.success('Faculty details saved successfully.');
+        setTimeout(() => {
+          toast.success('Faculty details saved successfully.');
+        }, 1000);
       }
-
-
+  
       if (response?.status === 200) {
         await fetchFacultyDetails();
         setIsFormVisible(false);
         setEditingFaculty(null);
         resetForm();
-      } else {
-
       }
-    } catch (error) {
-      toast.error('Failed to save faculty details. Please try again.');
+    } catch (error: any) {
+      // Check if the error response contains "Email already registered"
+      if (error.response && error.response.data && error.response.data.detail === "Email already registered") {
+        toast.warn('Email already registered. Please try another email.');
+      } else {
+        // Generic error message for other errors
+        toast.warn('An error occurred. Please try again.');
+      }
       console.error('Error saving faculty details:', error);
-
     }
   };
 
@@ -85,7 +89,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
         enableReinitialize={true}
       >
         {({ values, errors, touched, handleSubmit, resetForm }) => {
-          console.log('Form errors:', errors); // Debugging
+          console.log('Form errors:', errors); 
           return (
 
             <Form className='p-2 m-2' onSubmit={handleSubmit}>

@@ -144,7 +144,7 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
     } catch (error: any) {
       console.error("Error saving class data:", error);
       toast.error(
-        error.response?.data?.message || "Failed to save data. Please try again."
+        error.response?.data?.detail || "Failed to save data. Please try again."
       );
     } finally {
       setLoading(false);
@@ -165,13 +165,13 @@ const SaveSubjectsToClasses: React.FC<SaveSubjectsToClassesProps> = ({
         payload
       );
       setTimeout(() => {
-        toast.success("Class and subjects saved successfully!");
+        toast.success("Class and subjects     updated successfully!");
       }, 1000);
       onSave();
     } catch (error: any) {
       console.error("Error updating class data:", error);
       toast.error(
-        error.response?.data?.message || "Failed to update data. Please try again."
+        error.response?.data?.detail || "Failed to update data. Please try again."
       );
     } finally {
       setLoading(false);

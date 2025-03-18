@@ -6,6 +6,7 @@ import { AxiosResponse } from 'axios';
 import axiosInstance from '../../../Utils/apiUtils';
 import { FacultyFormData } from '../Type/FecultyRegistrationType';
 import {  ApiError , ApiResponse, } from '../Type/FecultyRegistrationType';
+import { toast } from 'react-toastify';
 const API_URL = 'https://s-m-s-keyw.onrender.com';
 export const saveFacultyDetails = async (data: any) => {
   try {
@@ -23,6 +24,7 @@ export const getFacultyDetails = async () => {
     return response;
   } catch (error) {
     console.error('Error fetching faculty details:', error);
+    toast.error('Error fetching faculty details:', error);
     throw error;
   }
 };
@@ -45,6 +47,7 @@ export const updateFacultyDetails = async (data: FacultyFormData, ): Promise<Api
 
     // Log the response for debugging
     console.log('Update Faculty Response:', response);
+    toast.success('Update Faculty Response:', response);
 
     return {
       status: response.status,
