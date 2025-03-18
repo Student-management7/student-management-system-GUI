@@ -108,7 +108,7 @@ const StudentRegistrationController = () => {
             toast.success("Upload successful!");
             fetchStudentData(); // Refresh table data after upload
         } catch (error) {
-            toast.error("Upload failed. Please try again.");
+            toast.error("Upload failed or please create first Clasees .");
         } finally {
             setLoading(false);
         }

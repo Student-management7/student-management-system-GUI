@@ -13,7 +13,7 @@ export const SideBarData = [
        
         subNav: [
             {
-                title: 'Super Admin Registration',
+                title: 'School Registration ',
                 path: '/superAdminController',
                 icon: FaUserPlus,
                 
