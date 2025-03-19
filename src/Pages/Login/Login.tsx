@@ -6,6 +6,7 @@ import './login.scss';
 import axiosInstance from '../../services/Utils/apiUtils';
 import { toast, ToastContainer } from 'react-toastify';
 
+
 const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
@@ -102,13 +103,13 @@ const Login: React.FC = () => {
   
 
   return (
-    <div className="flex h-screen md:bg-[white] ">
+    <div className="flex h-screen bg-[#126666] md:bg-[white] ">
       <ToastContainer position='top-right' autoClose={3000}/>
       <div className="hidden md:flex w-1/2 bg-[#126666]  justify-center items-center relative overflow-hidden">
         <div className="absolute bottom-10 animate-bounce text-white text-4xl font-bold">School Management</div>
       </div>
       <div className="w-full md:w-1/2  flex items-center justify-center p-6">
-        <div className="bg-gray shadow-lg rounded-lg p-8 w-full max-w-md">
+        <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
           <h1 className="text-3xl font-bold text-center mb-6  text-[#126666]">Login</h1>
           {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
 

@@ -493,6 +493,7 @@ export default function Permission() {
         if (selectedFacultyPermissions) {
           // Set permissions if found
           setPermissions(selectedFacultyPermissions.permission.permissions);
+          
         } else {
           // Reset permissions if not found
           setPermissions({
