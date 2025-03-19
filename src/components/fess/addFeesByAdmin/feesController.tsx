@@ -27,7 +27,7 @@ const FeesController: React.FC = () => {
       field: "otherAmount",
       cellRenderer: (params: any) =>
         params.value && params.value.length
-          ? params.value.map((item: any) => `${item.name}: ${item.amount}`).join(", ")
+          ? params.value.map((item: any) => `${item.name} ${item.amount}`).join(", ") // Removed the colon
           : "0",
     },
     { headerName: "Total Fees", field: "totalFee", editable: false },

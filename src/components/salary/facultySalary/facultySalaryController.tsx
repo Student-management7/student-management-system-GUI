@@ -66,7 +66,6 @@ const FacultySalaryController: React.FC = () => {
   const navigate = useNavigate();
   const [showForm, setShowForm] = useState<boolean>(false);
   const [rowData, setRowData] = useState<FacultySalaryDetails[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   const columns: Column[] = [
@@ -104,7 +103,6 @@ const FacultySalaryController: React.FC = () => {
   ];
 
   const fetchSalaryDetails = useCallback(async () => {
-    setError(null);
     try {
       setLoading(true);
       const data: FacultySalaryResponse[] = await fetchFacultySalaries();
@@ -112,7 +110,7 @@ const FacultySalaryController: React.FC = () => {
       setRowData(transformedData);
     } catch (error) {
       toast.error("Error fetching faculty salary details");
-      setError("Failed to fetch salary details. Please try again.");
+      
     } finally {
       setLoading(false);
     }
@@ -124,7 +122,6 @@ const FacultySalaryController: React.FC = () => {
 
   const handleSave = async (payload: FacultySalaryFormValues) => {
     setLoading(true);
-    setError(null);
     try {
       await saveFacultySalary(payload);
       toast.success("Salary information saved successfully"); // Add success toaster message
@@ -133,7 +130,6 @@ const FacultySalaryController: React.FC = () => {
     } catch (error) {
       console.error("Error saving faculty salary details:", error);
       toast.error("Failed to save salary information"); // Add error toaster message
-      setError("Failed to save salary details. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -155,14 +151,7 @@ const FacultySalaryController: React.FC = () => {
       ) : (
         <div className="box">
           <ToastContainer position="top-right" autoClose={3000} />
-          {error && (
-            <div className="alert alert-error mb-4">
-              {error}
-              <button onClick={() => setError(null)} className="ml-2">
-                Dismiss
-              </button>
-            </div>
-          )}
+          
 
           {loading && (
             <div className="text-center my-4">

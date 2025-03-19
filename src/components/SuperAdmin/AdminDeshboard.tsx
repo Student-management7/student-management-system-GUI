@@ -68,14 +68,14 @@ const Dashboard: React.FC = () => {
 
         <>
             <div className='box'>
-                    <div className="flex items-center">
-                        <span>
-                        <BackButton />
-                        </span>
-                        <span>
-                        <h1 className="head1 ">School Management Dashboard</h1>
-                        </span>
-                    </div>
+            <div className="flex items-center space-x-4 mb-4">
+            <span>
+              <BackButton />
+            </span>
+            <h1 className="text-xl items-center font-bold text-[#27727A]">
+              Admin Dashboard
+            </h1>
+          </div>
                 <div className="min-h-screen bg-White-100 p-6">
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
