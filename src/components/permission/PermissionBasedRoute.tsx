@@ -89,6 +89,16 @@ const PermissionBasedRoute: React.FC = () => {
   if (!permissions) return <div>Access Denied: Permissions missing.</div>;
   console.log(permissions);
 
+
+
+  const onClose={function (): void {
+    throw new Error("Function not implemented.");
+  } } 
+  const onSave={function (): void {
+    throw new Error("Function not implemented.");
+  } }
+
+
  
 const allRoutes = [
   { path: "/main", element: <MasterController />, visible:role === "user" || (role === "sub-user") }, 
@@ -105,7 +115,7 @@ const allRoutes = [
   { path: "/facultyAttendanceShow", element: <FacultyAttendanceShow />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultyAttendanceShow) },
   { path: "/facultyAttendanceSave", element: <FacultyAttendanceSave />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultyAttendanceSave) },
   { path: "/facultySalaryDetails", element: <FacultySalaryDetails />, visible: role === "user" || (role === "sub-user" && permissions?.faculty?.facultySalaryDetails) },
-  { path: "/saveSubjectsToClasses", element: <SaveSubjectsToClasses />, visible: role === "user" || (role === "sub-user" && permissions?.subject?.saveSubjectsToClasses) },
+  { path: "/saveSubjectsToClasses", element: <SaveSubjectsToClasses   />, visible: role === "user" || (role === "sub-user" && permissions?.subject?.saveSubjectsToClasses) },
   { path: "/viewNotification", element: <NotificationList />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.notificationList) },
   { path: "/createNotification", element: <CreateNotification />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.createNotification) },
   { path: "/holiday", element: <HolidayFormController />, visible: role === "user" || (role === "sub-user" && permissions?.notification?.holidayFormController) },
@@ -145,9 +155,7 @@ const allRoutes = [
   { path: "/schoolsDetails/:id", element: <SchoolsDetails />, visible: role === "admin" }, // Only visible for admin
   { path: "/setting", element: <UserPassword />, visible: true }, 
   { path: "/profile", element: <Profile />, visible: true }, 
-  { path: "/admindeshboard", element: <Admindeshboard showRevenueChart={false} showExpiringPlansChart={false} showUpcomingExpirations={false} updateDashboardLayout={function (layout: Partial<{ showRevenueChart: boolean; showExpiringPlansChart: boolean; showUpcomingExpirations: boolean; }>): void {
-    throw new Error("Function not implemented.");
-  } } />, visible: true }, 
+  { path: "/admindeshboard", element: <Admindeshboard  />, visible: true }, 
 
 ];
 

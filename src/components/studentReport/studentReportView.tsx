@@ -395,7 +395,7 @@ const StudentReport: React.FC = () => {
                       <div className="text-2xl">📅</div>
                     </div>
                     <p className="text-xs uppercase tracking-wide font-semibold text-gray-600">Exam Date</p>
-                    <p className="fs-6 font-bold mt-2">{filteredExam.examDate}</p>
+                    <p className="fs-6 font-bold mt-2 ">{filteredExam.examDate}</p>
                   </div>
 
                   {/* Total Marks */}
