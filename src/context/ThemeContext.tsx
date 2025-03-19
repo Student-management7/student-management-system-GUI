@@ -24,7 +24,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     showExpiringPlansChart: true,
     showUpcomingExpirations: true,
   });
-
+ 
   useEffect(() => {
     // Check system preference on initial load
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
