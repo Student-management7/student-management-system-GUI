@@ -41,7 +41,7 @@ const fetchAttendance = async (selectedDate: string): Promise<AttendanceEntry[]>
     const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
     const url = `https://s-m-s-keyw.onrender.com/faculty/getAttendance?fromDate=${formattedDate}&toDate=${formattedDate}`;
     const response = await axiosInstance.get(url);
-    
+
     if (!response.data || !Array.isArray(response.data)) {
       throw new Error('Invalid response format');
     }
@@ -106,7 +106,7 @@ const FacultyAttendanceEdit: React.FC = () => {
 
       // Filter attendance data to include only current faculty
       const currentFacultyIds = new Set(currentFaculty.map(faculty => faculty.fact_id));
-      
+
       const filteredData = data.map((record) => {
         return {
           id: record.id,
@@ -229,7 +229,7 @@ const FacultyAttendanceEdit: React.FC = () => {
 
   return (
     <>
-     <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} />
       {loading && <Loader />}
       {!loading && (
         <div className="box">
@@ -240,23 +240,23 @@ const FacultyAttendanceEdit: React.FC = () => {
             <h1 className="head1">Faculty Attendance Update</h1>
           </div>
 
-          <div className="box">
+          <div className="">
             {/* Date Selection and Fetch Button in the same line */}
-            <div className="row form-group">
-              <div className="col-md-6 d-flex align-items-center">
-                <label htmlFor="selectedDate" className="form-label me-2">
-                  Date:
-                </label>
+            <div className="row form-group d-flex align-items-end">
+              <div className="col-6 col-md-3 mb-2 mb-md-0">
+                <label className="form-label">Select Date:</label>
                 <input
                   type="date"
                   id="selectedDate"
-                  className="form-control me-2"
+                  className="form-control me-md-2"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   disabled={loading}
                 />
+              </div>
+              <div className="col-6 col-md-3 d-flex align-items-end mt-3 mt-md-0 mb-1"> {/* Added mt-3 for mobile gap */}
                 <button
-                  className="button btn  "
+                  className="button btn w-100 w-md-auto"
                   onClick={handleFetchAttendance}
                   disabled={loading}
                 >
@@ -264,33 +264,34 @@ const FacultyAttendanceEdit: React.FC = () => {
                 </button>
               </div>
             </div>
-
-            {/* Attendance Table */}
-            {!loading && editedFacultyList.length > 0 && (
-              <div className="mt-4">
-                
-                <ReusableTable
-                  rows={rowData}
-                  columns={columnDefs}
-                  onCellValueChange={handleCellValueChange}
-                />
-              </div>
-            )}
-
-            {/* Save Button */}
-            {!loading && editedFacultyList.length > 0 && (
-              <div className='flex justify-center mt-4 mb-4'>
-                <button
-                  onClick={saveEditedAttendance}
-                  className="button btn"
-                  disabled={loading}
-                >
-                  {loading ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
-            )}
           </div>
+
+          {/* Attendance Table */}
+          {!loading && editedFacultyList.length > 0 && (
+            <div className="mt-4">
+
+              <ReusableTable
+                rows={rowData}
+                columns={columnDefs}
+                onCellValueChange={handleCellValueChange}
+              />
+            </div>
+          )}
+
+          {/* Save Button */}
+          {!loading && editedFacultyList.length > 0 && (
+            <div className='flex justify-center mt-4 mb-4'>
+              <button
+                onClick={saveEditedAttendance}
+                className="button btn"
+                disabled={loading}
+              >
+                {loading ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          )}
         </div>
+
       )}
     </>
   );

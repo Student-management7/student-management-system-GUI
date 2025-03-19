@@ -395,32 +395,32 @@
 
 //           <div className="box">
 //             {/* Date Selection */}
-//             <div className="row form-group">
-//               <div className="col-md-6">
-//                 <label htmlFor="selectedDate" className="form-label">
-//                   Date:
-//                 </label>
-//                 <input
-//                   type="date"
-//                   id="selectedDate"
-//                   className="form-control"
-//                   value={selectedDate}
-//                   onChange={(e) => setSelectedDate(e.target.value)}
-//                   disabled={loading}
-//                 />
-//               </div>
-//             </div>
+            // <div className="row form-group">
+            //   <div className="col-md-6">
+            //     <label htmlFor="selectedDate" className="form-label">
+            //       Date:
+            //     </label>
+            //     <input
+            //       type="date"
+            //       id="selectedDate"
+            //       className="form-control"
+            //       value={selectedDate}
+            //       onChange={(e) => setSelectedDate(e.target.value)}
+            //       disabled={loading}
+            //     />
+            //   </div>
+            // </div>
 
-//             {/* Fetch Attendance Button */}
-//             <div className="text-center mt-4">
-//               <button
-//                 className="button btn"
-//                 onClick={handleFetchAttendance}
-//                 disabled={loading}
-//               >
-//                 {loading ? "Loading..." : "Fetch Attendance"}
-//               </button>
-//             </div>
+            // {/* Fetch Attendance Button */}
+            // <div className="text-center mt-4">
+            //   <button
+            //     className="button btn"
+            //     onClick={handleFetchAttendance}
+            //     disabled={loading}
+            //   >
+            //     {loading ? "Loading..." : "Fetch Attendance"}
+            //   </button>
+            // </div>
 
 //             {/* Attendance Table */}
 //             {!loading && editedFacultyList.length > 0 && (

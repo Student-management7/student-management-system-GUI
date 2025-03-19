@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
 
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { toast, ToastContainer } from "react-toastify";
+import { formatToDDMMYYYY } from "../Utils/dateUtils";
+
 
 const FormView = ({ editData, onSubmitSuccess }: any) => {
 
@@ -27,7 +28,8 @@ const FormView = ({ editData, onSubmitSuccess }: any) => {
         renewalDate: editData?.renewalDate || "",
         status: editData?.status || "",
         email: editData?.email || "",
-        password: ""    //   ffor resion privacy its not required
+        password: ""   ,
+        landline: editData?.landline ||''
     }
 
     const validationSchema = Yup.object().shape({
@@ -43,27 +45,54 @@ const FormView = ({ editData, onSubmitSuccess }: any) => {
     const handleSubmit = async (values: typeof initialValues, { setSubmitting, resetForm }: any) => {
         try {
             let response;
+    
+           
+    
+            // Constructing the payload
+            const payload = {
+                id: values.id || "",
+                schoolName: values.schoolName ,
+                schoolAddress: values.schoolAddress ,
+                city: values.city ,
+                state: values.state ,
+                schoolLandlineNo: values.schoolLandlineNo ,
+                ownerName: values.ownerName ,
+                gst: values.gst ,
+                boardType: values.boardType ,
+                adminContact: values.adminContact ,
+                serviceStartDate: formatToDDMMYYYY(values.serviceStartDate) ,
+                currentPlan: values.currentPlan ,
+                subscriptionType: values.subscriptionType ,
+                renewalDate: formatToDDMMYYYY(values.renewalDate) ,
+                status: values.status ,
+                email: values.email ,
+                password: values.password,
+                landline: values.landline ,
+            };
+    
             if (values.id) {
-                console.log(" ID:", values.id);
-                
+                console.log("ID:", values.id);
                 // Update 
-                response = await axiosInstance.post(`/school/update`, values);
+                response = await axiosInstance.post(`/school/update`, payload);
                 console.log("Form updated successfully:", response.data);
                 toast.success("Form updated successfully.");
             } else {
                 // Submit 
-                response = await axiosInstance.post("/school/save", values);
+                response = await axiosInstance.post("/school/save", payload);
                 console.log("Form submitted successfully:", response.data);
                 toast.success("Form submitted successfully.");
             }
+    
             resetForm();
             onSubmitSuccess();
         } catch (error) {
+            console.error("Form submission error:", error);
             toast.error("An error occurred while processing the form.");
         } finally {
             setSubmitting(false);
         }
     };
+    
     return (
         <>
         <ToastContainer position="top-right" autoClose={3000} />
