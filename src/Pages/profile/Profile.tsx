@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Loader from "../../components/loader/loader";
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
@@ -18,7 +19,7 @@ const UserProfile = () => {
   }, []);
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>; // Show a loading spinner
+    return <div className="flex justify-center items-center h-screen"><Loader/></div>; // Show a loading spinner
   }
 
   if (!user) {
