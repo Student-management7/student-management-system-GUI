@@ -57,8 +57,13 @@ const StudentFeesController: React.FC = () => {
       setLoading(true);
       const response = await axiosInstance.get<FeeData[]>("/student/findAllStudent");
       setRowData(response.data);
-    } catch (error) {
-      toast.error("Errorfetching Fee")
+    } catch (error:any) {
+      if (error.response && error.response.data && error.response.data.detail) {
+            toast.warn(`Error: ${error.response.data.detail}`);
+          } else {
+            toast.error("Error fetching fee details. Please try again");
+          }
+      
       console.error("Error fetching fees:", error);
     } finally {
       setLoading(false);

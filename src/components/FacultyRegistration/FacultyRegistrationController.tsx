@@ -91,7 +91,7 @@ const FacultyRegistrationController: React.FC = () => {
     navigate(`/FacultyDetails/${id}`);
   }, [navigate]);
 
-  const columns = [
+  const columns:any = [
     { field: 'fact_Name', headerName: 'Name' },
     { field: 'fact_email', headerName: 'Email' },
     { field: 'fact_contact', headerName: 'Contact' },

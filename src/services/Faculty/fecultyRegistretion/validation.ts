@@ -14,18 +14,12 @@ export const facultyValidationSchema = (editmode: boolean) =>
     fact_gender: Yup.string().required('Gender is required'),
     fact_address: Yup.string().required('Address is required')
     .min(3, "Address must be at least 3 characters")
-    .matches(
-      /^(?=.*[A-Za-z])[A-Za-z0-9\s.,\-(){}]*$/,
-      "Address must contain at least one letter and can include numbers, spaces, and .,-"
-    ).max(60, "Name must be at most 20 characters"),
+    .max(80, "Address must be at most 80 characters"),
     fact_city: Yup.string().required('City is required').matches(
       /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
       "City must contain at least one letter and can include numbers, spaces, and .,-"
     ).max(40, "Name must be at most 20 characters"),
-    fact_state: Yup.string().required('State is required').matches(
-      /^[A-Za-z\s.-]+$/,
-      "State must contain only letters, spaces, dots, or hyphens (no numbers or other special characters)"
-    ).max(40, "Name must be at most 20 characters"),
+    fact_state: Yup.string().required('State is required'),
    
     fact_joiningDate: Yup.date()
     .required('Joining Date is required'),

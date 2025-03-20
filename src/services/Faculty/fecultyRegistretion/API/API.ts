@@ -24,7 +24,6 @@ export const getFacultyDetails = async () => {
     return response;
   } catch (error) {
     console.error('Error fetching faculty details:', error);
-    toast.error('Error fetching faculty details:', error);
     throw error;
   }
 };
@@ -58,7 +57,7 @@ export const updateFacultyDetails = async (data: FacultyFormData, ): Promise<Api
     console.error("Error updating faculty details:", error);
     
     const apiError: ApiError = {
-      message: error.response?.data?.message || 'Failed to update faculty details',
+      message: error.response?.data?.detail || 'Failed to update faculty details',
       status: error.response?.status || 500
     };
     

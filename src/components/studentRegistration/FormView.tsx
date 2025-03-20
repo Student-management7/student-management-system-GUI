@@ -319,7 +319,7 @@ const FormView: React.FC<FormViewProps> = ({
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="contact" className="form-label">
-                      Contact <span className="red">*</span>
+                      Mobile No. <span className="red">*</span>
                     </label>
                     <Field
                       type="text"

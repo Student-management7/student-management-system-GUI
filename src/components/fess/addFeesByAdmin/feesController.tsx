@@ -51,18 +51,26 @@ const FeesController: React.FC = () => {
     },
   ];
 
-  const fetchFeeDetails = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data = await fetchFees();
-      setRowData(data);
-    } catch (error) {
-      toast.error("Error fetching fee details");
-      console.error("Error fetching fee details:", error);
-    } finally {
-      setLoading(false);
+
+
+const fetchFeeDetails = useCallback(async () => {
+  try {
+    setLoading(true);
+    const data = await fetchFees();
+    setRowData(data);
+  } catch (error: any) {
+    console.error("Error fetching fee details:", error);
+
+    if (error.response && error.response.data && error.response.data.detail) {
+      toast.warn(`Error: ${error.response.data.detail}`);
+    } else {
+      toast.error("Error fetching fee details. Please try again.");
     }
-  }, []);
+  } finally {
+    setLoading(false);
+  }
+}, []);
+
 
   useEffect(() => {
     fetchFeeDetails();
