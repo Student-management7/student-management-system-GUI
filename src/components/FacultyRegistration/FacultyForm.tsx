@@ -5,7 +5,7 @@ import { facultyValidationSchema } from '../../services/Faculty/fecultyRegistret
 import { FacultyFormData } from '../../services/Faculty/fecultyRegistretion/Type/FecultyRegistrationType';
 import { saveFacultyDetails, updateFacultyDetails } from '../../services/Faculty/fecultyRegistretion/API/API';
 import { toast, ToastContainer, } from 'react-toastify';
-
+import Select from 'react-select';
 interface FacultyFormProps {
   editingFaculty: FacultyFormData | null;
   setIsFormVisible: (visible: boolean) => void;
@@ -79,6 +79,42 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
     }
   };
 
+  const states = [
+    { value: 'Andhra Pradesh', label: 'Andhra Pradesh' },
+    { value: 'Arunachal Pradesh', label: 'Arunachal Pradesh' },
+    { value: 'Assam', label: 'Assam' },
+    { value: 'Bihar', label: 'Bihar' },
+    { value: 'Chhattisgarh', label: 'Chhattisgarh' },
+    { value: 'Goa', label: 'Goa' },
+    { value: 'Gujarat', label: 'Gujarat' },
+    { value: 'Haryana', label: 'Haryana' },
+    { value: 'Himachal Pradesh', label: 'Himachal Pradesh' },
+    { value: 'Jharkhand', label: 'Jharkhand' },
+    { value: 'Karnataka', label: 'Karnataka' },
+    { value: 'Kerala', label: 'Kerala' },
+    { value: 'Madhya Pradesh', label: 'Madhya Pradesh' },
+    { value: 'Maharashtra', label: 'Maharashtra' },
+    { value: 'Manipur', label: 'Manipur' },
+    { value: 'Meghalaya', label: 'Meghalaya' },
+    { value: 'Mizoram', label: 'Mizoram' },
+    { value: 'Nagaland', label: 'Nagaland' },
+    { value: 'Odisha', label: 'Odisha' },
+    { value: 'Punjab', label: 'Punjab' },
+    { value: 'Rajasthan', label: 'Rajasthan' },
+    { value: 'Sikkim', label: 'Sikkim' },
+    { value: 'Tamil Nadu', label: 'Tamil Nadu' },
+    { value: 'Telangana', label: 'Telangana' },
+    { value: 'Tripura', label: 'Tripura' },
+    { value: 'Uttar Pradesh', label: 'Uttar Pradesh' },
+    { value: 'Uttarakhand', label: 'Uttarakhand' },
+    { value: 'West Bengal', label: 'West Bengal' }
+  ];
+
+  
+  const handleStateChange = (selectedOption: any, form: any, field: any) => {
+    form.setFieldValue(field.name, selectedOption ? selectedOption.value : ''); // Set the selected state's value
+  };
+
   return (
     <div className="box">
       <ToastContainer position='top-right' autoClose={3000} />
@@ -88,7 +124,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
         onSubmit={handleSubmit}
         enableReinitialize={true}
       >
-        {({ values, errors, touched, handleSubmit, resetForm }) => {
+        {({ values, errors, touched, handleSubmit, resetForm,setFieldValue }) => {
           console.log('Form errors:', errors); 
           return (
 
@@ -109,7 +145,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
                   <ErrorMessage name="fact_email" component="div" className="invalid-feedback" />
                 </div>
                 <div className="col-md-4 mb-3">
-                  <label htmlFor="fact_contact" className="form-label">Contact  <span className="red">*</span> </label>
+                  <label htmlFor="fact_contact" className="form-label">  Mobile No.<span className="red">*</span> </label>
                   <Field type="text" id="fact_contact" name="fact_contact" className={`form-control ${errors.fact_contact && touched.fact_contact ? 'is-invalid' : ''}`} placeholder="Enter contact number" />
                   <ErrorMessage name="fact_contact" component="div" className="invalid-feedback" />
                 </div>
@@ -141,13 +177,32 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
 
               {/* State, Joining Date, Leaving Date */}
               <div className="row">
-                <div className="col-md-4 mb-3">
-                  <label htmlFor="fact_state" className="form-label">State <span className="red">*</span> </label>
-                  <Field type="text" id="fact_state" name="fact_state" className={`form-control ${errors.fact_state && touched.fact_state ? 'is-invalid' : ''}`} placeholder="Enter state" />
-                  {/* <ErrorMessage name="fact_state" component="div" className="invalid-feedback" /> */}
-                  <ErrorMessage name="fact_state" component="div" className="invalid-feedback" />
 
-                </div>
+
+
+              <div className="col-md-4 mb-3">
+            <label htmlFor="fact_state" className="form-label">
+              State <span className="red">*</span>
+            </label>
+            <Field name="fact_state">
+              {({ field, form }: any) => (
+                <Select
+                 required
+                  {...field}
+                  options={states}
+                  value={states.find(option => option.value === field.value)}
+                  onChange={(selectedOption: any) => handleStateChange(selectedOption, form, field)}
+                  className={`focus:ring-[#126666] ${form.errors.fact_state && form.touched.fact_state ? 'is-invalid' : ''}`}
+                  placeholder="Select a state"
+                />
+              )}
+            </Field>
+            <ErrorMessage name="fact_state" component="div" className="invalid-feedback" />
+          </div>
+
+
+
+
                 <div className="col-md-4 mb-3">
                   <label htmlFor="fact_joiningDate" className="form-label">Joining Date  <span className="red">*</span> </label>
                   <Field type="date" id="fact_joiningDate" name="fact_joiningDate" className={`form-control ${errors.fact_joiningDate && touched.fact_joiningDate ? 'is-invalid' : ''}`} />
