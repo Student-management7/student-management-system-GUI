@@ -132,7 +132,7 @@ const ClassSubjectShow: React.FC = () => {
                 setEditableRow(null);
               }}
               onSave={handleSave}
-              editableRow={editableRow||null} 
+              editableRow={editableRow ?? undefined } 
             />
           )}
         </div>

@@ -170,10 +170,10 @@ const StudentAttendanceShow: React.FC = () => {
       {loading && <Loader />} {/* Show loader when loading */}
       {!loading && (
         <>
-          <ToastContainer position="top-right" autoClose={3000} />
           <div className="box">
-            <h1 className="head1 m-4">Student Attendance View</h1>
-            <div className="box">
+          <ToastContainer position="top-right" autoClose={3000} />
+            <h1 className="head1 ">Student Attendance View</h1>
+            <div className="mt-4">
               <div className="flex items-center space-x-7 mb-10">
                 <span className="text-gray-900 font-semibold">
                   {AttendanceMode ? "Master Attendance" : "Subject-wise Attendance"}
