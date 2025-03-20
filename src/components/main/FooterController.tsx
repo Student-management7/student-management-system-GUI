@@ -6,7 +6,7 @@ const FooterController = () =>{
     return(
         <>
             <div className="footer ">
-                Footer
+               
             </div>
         </>
     );

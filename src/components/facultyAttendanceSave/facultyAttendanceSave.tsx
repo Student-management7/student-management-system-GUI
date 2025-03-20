@@ -31,19 +31,31 @@ const AttendanceSave: React.FC = () => {
           }));
           setFacultyList(initializedFacultyList);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching attendance data:', error);
-        toast.error('Failed to fetch faculty data. Please try again.', {
-          position: 'top-right',
-          autoClose: 3000,
-        });
+  
+        // Display error from backend response if available
+        if (error.response && error.response.data && error.response.data.message) {
+          // Assuming the backend sends an error message in response.data.message
+          toast.error(`Error: ${error.response.data.message}`, {
+            position: 'top-right',
+            autoClose: 3000,
+          });
+        } else {
+          // If no specific error message is provided, show a generic error
+          toast.error('Failed to fetch faculty data. Please try again.', {
+            position: 'top-right',
+            autoClose: 3000,
+          });
+        }
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, []);
+  
 
   // Add the missing handleCellValueChange function
   const handleCellValueChange = (factId: string, field: string, value: any) => {
