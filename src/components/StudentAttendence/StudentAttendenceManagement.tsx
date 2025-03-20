@@ -249,7 +249,7 @@ const StudentManagementSystem: React.FC = () => {
             {!loading && (
 
                 <div className="box">
-                    <div className="box grid grid-cols-1 gap-6 p-6">
+                    <div className=" grid grid-cols-1 gap-6 ">
 
                         {/* <h1 className="head1Class Fee Page">Student Attendance</h1> */}
                         <h1 className="head1">Student Attendance</h1>
@@ -360,7 +360,6 @@ const StudentManagementSystem: React.FC = () => {
                         </div>
                     </div>
                 </div>
-
 
             )}
         </>

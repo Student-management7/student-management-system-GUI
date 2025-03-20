@@ -44,6 +44,9 @@ const Dashboard: React.FC = () => {
                 const totalInactiveSchools = data.filter(school => school.status === 'Inactive').length;
 
                 const currentDate = new Date();
+
+                // upComing Renewals logic here 
+
                 const upcomingRenewals = data.filter(school => {
                     const renewalDate = new Date(school.renewalDate);
                     const diffInDays = Math.ceil((renewalDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24));
@@ -68,6 +71,7 @@ const Dashboard: React.FC = () => {
 
         <>
             <div className='box'>
+
             <div className="flex items-center space-x-4 mb-4">
             <span>
               <BackButton />
@@ -110,3 +114,5 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+
+

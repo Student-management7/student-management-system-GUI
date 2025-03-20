@@ -7,6 +7,8 @@ import axiosInstance from '../../services/Utils/apiUtils';
 import { toast, ToastContainer } from 'react-toastify';
 
 
+
+
 const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
@@ -66,7 +68,23 @@ const Login: React.FC = () => {
       setUserDetails(data); // Update context with user details
       localStorage.setItem('userDetails', JSON.stringify(data));
       
-      navigate('/main'); 
+      const  loginUser = data.role
+      console.log("login user role",loginUser);
+        
+        if(loginUser === "admin" ){
+
+          navigate('/admindeshboard')
+
+        }else if(loginUser === "user" || "sub-user" )
+
+         {
+          navigate('/main')
+          
+         }
+        
+
+      
+      
     } catch (error) {
       setErrorMessage('Login failed. Please check your credentials.');
       console.error('Login Error:', error);
