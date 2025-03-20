@@ -61,7 +61,7 @@ const StudentFeesController: React.FC = () => {
       if (error.response && error.response.data && error.response.data.detail) {
             toast.warn(`Error: ${error.response.data.detail}`);
           } else {
-            toast.error("Error fetching fee details. Please try again.");
+            toast.error("Error fetching fee details. Please try again");
           }
       
       console.error("Error fetching fees:", error);
