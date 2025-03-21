@@ -20,7 +20,7 @@ export const SalaryValidationSchema = Yup.object().shape({
         "Amount Name must contain only letters and spaces (no numbers or special characters)"
       ),
       amount: Yup.number()
-        .positive("Deduction amount must be positive")
+        .min(0, "Deduction amount cannot be negative")
         
     })
   ),
