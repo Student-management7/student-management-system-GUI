@@ -6,7 +6,6 @@ import { ClassData } from "../../services/SaveSubjects/Type";
 import { handleApiError } from "../Utility/toastUtils";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { formatToDDMMYYYY } from "../../components/Utils/dateUtils";
-import Loader from "../loader/loader";
 import Select from 'react-select';
 import { Formik, Form, Field, FieldArray, ErrorMessage, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
@@ -51,17 +50,20 @@ const StudentReportForm: React.FC = () => {
         subjects: Yup.array().of(
             Yup.object().shape({
                 marksObtained: Yup.number()
-                    .nullable()
-                    .transform((value) => (isNaN(value) ? null : value))
+                    .transform((value, originalValue) => (isNaN(originalValue) ? undefined : parseFloat(originalValue)))
+                    .typeError('Marks must be a number')
+                    .positive('Marks must be a positive number')
+                    .required('Marks are required')
                     .test(
                         'valid-marks',
-                        'Marks must be between 0 and maximum marks',
+                        'Marks must be less than or equal to maximum marks',
                         function (value, context) {
                             const { maxMarks } = context.parent;
-                            if (value === null) return true;
-                            return value >= 0 && maxMarks !== null && value <= maxMarks;
+                            if (value === undefined || maxMarks === null) return true;
+                            return value <= maxMarks;
                         }
                     ),
+
                 maxMarks: Yup.number()
                     .nullable()
                     .transform((value) => (isNaN(value) ? null : value))
@@ -258,7 +260,7 @@ const StudentReportForm: React.FC = () => {
                                             id="classSelected"
                                             name="classSelected"
                                             className={`form-select ${errors.classSelected && touched.classSelected ? 'is-invalid' : ''}`}
-                                            
+
                                             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                                 const selectedClass = e.target.value;
                                                 setFieldValue('classSelected', selectedClass);
@@ -304,17 +306,24 @@ const StudentReportForm: React.FC = () => {
                                                 menu: (provided) => ({
                                                     ...provided,
                                                     maxHeight: "200px",
-                                                    overflowY: "auto",
+                                                    overflow: "hidden", // Prevent extra scrollbar
                                                     zIndex: 9999,
                                                 }),
-                                                control: (provided) => ({
+                                                menuList: (provided) => ({
+                                                    ...provided,
+                                                    maxHeight: "200px",
+                                                    overflowY: "auto", // Only the list should scroll
+                                                    padding: 0,
+                                                }),
+                                                control: (provided, state) => ({
                                                     ...provided,
                                                     zIndex: 1,
-                                                    borderColor: errors.studentSelected && touched.studentSelected
-                                                        ? '#dc3545'
-                                                        : provided.borderColor,
+                                                    borderColor: state.isFocused ? '#86b7fe' : (errors.studentSelected && touched.studentSelected ? '#dc3545' : provided.borderColor),
+                                                    boxShadow: state.isFocused ? '0 0 0 0.2rem rgba(13,110,253,.25)' : undefined,
                                                 }),
                                             }}
+                                            
+                                            
                                         />
                                         <ErrorMessage name="studentSelected" component="div" className="text-danger" />
                                     </div>
@@ -326,7 +335,7 @@ const StudentReportForm: React.FC = () => {
                                             id="examType"
                                             name="examType"
                                             className={`form-select ${errors.examType && touched.examType ? 'is-invalid' : ''}`}
-                                            
+
                                         >
                                             <option value="">Select Exam Type</option>
                                             <option value="Test">Test</option>
@@ -344,7 +353,7 @@ const StudentReportForm: React.FC = () => {
                                             id="examDate"
                                             name="examDate"
                                             className={`form-control ${errors.examDate && touched.examDate ? 'is-invalid' : ''}`}
-                                            
+
                                         />
                                         <ErrorMessage name="examDate" component="div" className="text-danger" />
                                     </div>
@@ -371,12 +380,13 @@ const StudentReportForm: React.FC = () => {
                                                                     type="number"
                                                                     name={`subjects.${index}.marksObtained`}
                                                                     className={`form-control ${errors.subjects?.[index]?.marksObtained &&
-                                                                            touched.subjects?.[index]?.marksObtained ? 'is-invalid' : ''
+                                                                        touched.subjects?.[index]?.marksObtained ? 'is-invalid' : ''
                                                                         }`}
                                                                     min="0"
                                                                     max={values.subjects[index].maxMarks ?? undefined}
-                                                                    
+                                                                    step="0.01"  // Allows decimal values
                                                                 />
+
                                                                 <ErrorMessage
                                                                     name={`subjects.${index}.marksObtained`}
                                                                     component="div"
@@ -388,10 +398,10 @@ const StudentReportForm: React.FC = () => {
                                                                     type="number"
                                                                     name={`subjects.${index}.maxMarks`}
                                                                     className={`form-control ${errors.subjects?.[index]?.maxMarks &&
-                                                                            touched.subjects?.[index]?.maxMarks ? 'is-invalid' : ''
+                                                                        touched.subjects?.[index]?.maxMarks ? 'is-invalid' : ''
                                                                         }`}
                                                                     min="1"
-                                                                    
+
                                                                 />
                                                                 <ErrorMessage
                                                                     name={`subjects.${index}.maxMarks`}
@@ -404,7 +414,7 @@ const StudentReportForm: React.FC = () => {
                                                                     type="text"
                                                                     name={`subjects.${index}.remarks`}
                                                                     className="form-control"
-                                                                    
+
                                                                 />
                                                             </td>
                                                         </tr>
@@ -421,7 +431,7 @@ const StudentReportForm: React.FC = () => {
                                         className="btn button"
                                         disabled={loading || isSubmitting || !isValid || !dirty}
                                     >
-                                       Submit
+                                        Submit
                                     </button>
                                 </div>
                             </Form>

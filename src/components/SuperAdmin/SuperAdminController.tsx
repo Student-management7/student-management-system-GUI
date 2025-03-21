@@ -121,7 +121,10 @@ const SuperAdminController = () => {
             if (values.id) {
                 response = await updateSchool(values); // Ensure this is awaited
                 console.log("Form updated successfully:", response);
-                toast.success("Form updated successfully.");
+                if (response?.status === 200) {
+                    
+                    toast.success("Form updated successfully.");
+                }
             } else {
                 response = await saveSchool(values); // Ensure this is awaited
                 console.log("Form submitted successfully:", response);
