@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import axiosInstance from "../../services/Utils/apiUtils";
 
 export const fetchSchools = async () => {
@@ -6,8 +7,21 @@ export const fetchSchools = async () => {
 };
 
 export const saveSchool = async (payload: any) => {
-    const response = await axiosInstance.post("/school/save", payload);
-    return response.data;
+    try {
+        const response = await axiosInstance.post("/school/save", payload);
+        toast.success('School saved successfully!');
+        return response.data;
+    } catch (error: any) {
+        if (error.response || error.response.data) {
+            const { data } = error.response;
+             setTimeout(() => {
+                toast.error(data.detail)
+             }, 1000);
+        } else {
+            setTimeout(()=> toast.error('An error occurred while saving school data.'),1000)
+        }
+        throw error;
+    }
 };
 
 export const updateSchool = async (payload: any) => {
