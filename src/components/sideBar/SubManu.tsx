@@ -1,7 +1,5 @@
-import React from 'react';
+
 import { Link } from "react-router-dom";
-
-
 
 
 const SubManu = (props: any) =>{
@@ -23,9 +21,7 @@ return(
                         <span> <Link to={item.path} className="submenudata">{item.title}</Link> </span> 
                         </p>
                     </>
-                    );
-    
-                    
+                    );              
 
             })
     

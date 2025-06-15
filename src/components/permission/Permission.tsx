@@ -23,6 +23,7 @@ interface Permissions {
     studentReportForm: boolean;
     studentReport: boolean;
     studentDetails: boolean;
+    bulkupload:boolean
   };
   faculty: {
     facultySalaryDetails: boolean;
@@ -68,6 +69,7 @@ export default function Permission() {
       studentReportForm: false,
       studentReport: false,
       studentDetails: false,
+      bulkupload:false
     },
     faculty: {
       facultySalaryDetails: false,
@@ -160,6 +162,7 @@ export default function Permission() {
               studentReportForm: false,
               studentReport: false,
               studentDetails: false,
+              bulkupload:false
             },
             faculty: {
               facultySalaryDetails: false,
@@ -210,6 +213,7 @@ export default function Permission() {
           studentReportForm: false,
           studentReport: false,
           studentDetails: false,
+          bulkupload:false
         },
         faculty: {
           facultySalaryDetails: false,
