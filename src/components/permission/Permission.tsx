@@ -23,7 +23,7 @@ interface Permissions {
     studentReportForm: boolean;
     studentReport: boolean;
     studentDetails: boolean;
-    bulkupload:boolean
+    bulkupload: boolean;
   };
   faculty: {
     facultySalaryDetails: boolean;
@@ -69,7 +69,7 @@ export default function Permission() {
       studentReportForm: false,
       studentReport: false,
       studentDetails: false,
-      bulkupload:false
+      bulkupload: false
     },
     faculty: {
       facultySalaryDetails: false,
@@ -104,6 +104,7 @@ export default function Permission() {
       setIsLoading(true);
       try {
         const token = localStorage.getItem("authToken");
+        console.log("token", token);
         const response = await axiosInstance.get("/faculty/findAllFaculty", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -162,7 +163,7 @@ export default function Permission() {
               studentReportForm: false,
               studentReport: false,
               studentDetails: false,
-              bulkupload:false
+              bulkupload: false
             },
             faculty: {
               facultySalaryDetails: false,
@@ -213,7 +214,7 @@ export default function Permission() {
           studentReportForm: false,
           studentReport: false,
           studentDetails: false,
-          bulkupload:false
+          bulkupload: false
         },
         faculty: {
           facultySalaryDetails: false,
@@ -245,12 +246,15 @@ export default function Permission() {
     }
   };
 
-  const handlePermissionChange = (section: string, key: string) => {
+  const handlePermissionChange = <T extends keyof Permissions>(
+    section: T,
+    key: keyof Permissions[T]
+  ) => {
     setPermissions((prevState) => ({
       ...prevState,
       [section]: {
-        ...prevState[section as keyof Permissions],
-        [key]: !prevState[section as keyof Permissions][key],
+        ...prevState[section],
+        [key]: !prevState[section][key],
       },
     }));
   };
@@ -263,18 +267,36 @@ export default function Permission() {
 
     try {
       const token = localStorage.getItem("authToken");
+
+      // Get role from localStorage
+      const userDetailsStr = localStorage.getItem("userDetails");
+      const userDetails = userDetailsStr ? JSON.parse(userDetailsStr) : null;
+      const role = userDetails?.role;
+      console.log("Role:", role);
+
+      // Determine user type for query param
+      let userType = "";
+      if (role === "admin") {
+        userType = "school";
+      } else if (role === "user") {
+        userType = "faculty";
+      }
+
       const payload = {
         facultyId: selectedFaculty.id,
         email: selectedFaculty.email,
         permissions,
       };
-      await axiosInstance.post("/permissions/save", payload, {
+
+      await axiosInstance.post(`/permissions/save?user=${userType}`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+
       toast.success("Permissions updated successfully!");
     } catch (error) {
+      console.error(error);
       toast.error("Error updating permissions");
     }
   };
@@ -282,7 +304,7 @@ export default function Permission() {
   return (
     <div className="container mt-5">
       {isLoading ? (
-        <div><Loader/></div>
+        <div><Loader /></div>
       ) : (
         <div>
           <ToastContainer position="top-right" autoClose={3000} />
@@ -352,8 +374,11 @@ export default function Permission() {
                             <input
                               className="form-check-input"
                               type="checkbox"
-                              checked={value}
-                              onChange={() => handlePermissionChange(section, key)}
+                              checked={value as boolean}  // Explicitly type as boolean
+                              onChange={() => handlePermissionChange(
+                                section as keyof Permissions,  // Cast section to keyof Permissions
+                                key as keyof Permissions[keyof Permissions]  // Cast key appropriately
+                              )}
                               id={`${section}-${key}`}
                             />
                             <label className="form-check-label" htmlFor={`${section}-${key}`}>
