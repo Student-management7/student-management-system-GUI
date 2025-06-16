@@ -23,6 +23,7 @@ interface Permissions {
     studentReportForm: boolean;
     studentReport: boolean;
     studentDetails: boolean;
+    bulkupload:boolean
   };
   faculty: {
     facultySalaryDetails: boolean;
@@ -68,6 +69,7 @@ export default function Permission() {
       studentReportForm: false,
       studentReport: false,
       studentDetails: false,
+      bulkupload:false
     },
     faculty: {
       facultySalaryDetails: false,
@@ -97,11 +99,14 @@ export default function Permission() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
+
+
   useEffect(() => {
     const fetchFaculty = async () => {
       setIsLoading(true);
       try {
         const token = localStorage.getItem("authToken");
+        console.log("token",token);
         const response = await axiosInstance.get("/faculty/findAllFaculty", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -160,6 +165,7 @@ export default function Permission() {
               studentReportForm: false,
               studentReport: false,
               studentDetails: false,
+              bulkupload:false
             },
             faculty: {
               facultySalaryDetails: false,
@@ -210,6 +216,7 @@ export default function Permission() {
           studentReportForm: false,
           studentReport: false,
           studentDetails: false,
+          bulkupload:false
         },
         faculty: {
           facultySalaryDetails: false,
@@ -251,29 +258,49 @@ export default function Permission() {
     }));
   };
 
-  const handleSubmit = async () => {
-    if (!selectedFaculty) {
-      toast.warning("Please select a faculty member.");
-      return;
+ const handleSubmit = async () => {
+  if (!selectedFaculty) {
+    toast.warning("Please select a faculty member.");
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("authToken");
+
+    // Get role from localStorage
+    const userDetailsStr = localStorage.getItem("userDetails");
+    const userDetails = userDetailsStr ? JSON.parse(userDetailsStr) : null;
+    const role = userDetails?.role;
+    console.log("Role:", role);
+
+
+    // Determine user type for query param
+    let userType = "";
+    if (role === "admin") {
+      userType = "school";
+    } else if (role === "user") {
+      userType = "faculty";
     }
 
-    try {
-      const token = localStorage.getItem("authToken");
-      const payload = {
-        facultyId: selectedFaculty.id,
-        email: selectedFaculty.email,
-        permissions,
-      };
-      await axiosInstance.post("/permissions/save", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      toast.success("Permissions updated successfully!");
-    } catch (error) {
-      toast.error("Error updating permissions");
-    }
-  };
+    const payload = {
+      facultyId: selectedFaculty.id,
+      email: selectedFaculty.email,
+      permissions,
+    };
+
+    await axiosInstance.post(`/permissions/save?user=${userType}`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    toast.success("Permissions updated successfully!");
+  } catch (error) {
+    console.error(error);
+    toast.error("Error updating permissions");
+  }
+};
+
 
   return (
     <div className="container mt-5">

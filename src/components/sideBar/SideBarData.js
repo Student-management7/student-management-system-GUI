@@ -1,6 +1,6 @@
 
 import { FaBook, FaIdCard, FaRegEdit, FaUserEdit,  } from "react-icons/fa";
-import {  FaHandshakeAngle, FaCaretDown, FaCaretUp, FaMoneyBill, FaUserLarge, FaUserTie ,FaBell, FaUserPlus ,FaClipboardList , } from "react-icons/fa6";
+import {  FaLandmark,FaCoins,FaPiggyBank, FaCaretDown, FaCaretUp,FaUserShield, FaMoneyBill, FaUserLarge, FaUserTie ,FaBell, FaUserPlus ,FaClipboardList , } from "react-icons/fa6";
 export const SideBarData = [
 
    
@@ -16,6 +16,13 @@ export const SideBarData = [
                 title: 'School Registration ',
                 path: '/superAdminController',
                 icon: FaUserPlus,
+                
+            },
+            
+            {
+                title: 'School Permission ',
+                path: '/schoolpermission',
+                icon: FaUserShield,
                 
             }
         ]
@@ -76,7 +83,7 @@ export const SideBarData = [
     {
         title: 'Finance',
         path: '/',
-        icon: FaHandshakeAngle,
+        icon: FaLandmark,
         iconClosed: FaCaretUp,
         iconeOpened: FaCaretDown,
         subNav: [
@@ -84,12 +91,12 @@ export const SideBarData = [
             {
                 title: 'Class Fees',
                 path: '/fees',
-                icon: FaMoneyBill,
+                icon: FaCoins,
             },
             {
                 title: 'Student Fees',
                 path: '/studentFeesController',
-                icon: FaMoneyBill,
+                icon: FaPiggyBank,
             },
             {
                 title: 'Faculty Salary',
@@ -99,7 +106,7 @@ export const SideBarData = [
             {
                 title: 'Permission',
                 path: '/permission',
-                icon: FaMoneyBill,
+                icon: FaUserShield,
             },
         ]
     },

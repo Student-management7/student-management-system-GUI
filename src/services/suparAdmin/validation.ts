@@ -4,10 +4,12 @@ export const getSchoolValidationSchema = (isEditMode: boolean) => {
     return Yup.object().shape({
         schoolName: Yup.string()
             .required("Name is required")
-            .min(2, "Name must be at least 2 characters"),
+            .min(2, "Name must be at least 2 characters")
+            .max(30, "Name must be at most 30 characters"),
         schoolAddress: Yup.string()
             .required("Address is required")
-            .min(2, "Address must be at least 2 characters"),
+            .min(2, "Address must be at least 2 characters")
+            .max(80, "Address must be most 80 characters"),
         adminContact: Yup.string().required("Admin contact is required"),
         serviceStartDate: Yup.date().required("Service start date is required"),
         email: isEditMode

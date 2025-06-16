@@ -135,7 +135,7 @@ const FormView: React.FC<FormViewProps> = ({
       .required("Address is required")
       .min(3, "Address must be at least 3 characters").max(60, "Address must be at most 20 characters"),
 
-    email: Yup.string().email("Invalid email format"),
+    email: Yup.string().email("Invalid email format").required('Email is required'),
     department: Yup.string().matches(
       /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
       "Department must contain at least one letter and can include numbers, spaces, and .,-"
@@ -195,7 +195,6 @@ const FormView: React.FC<FormViewProps> = ({
           "State must contain only letters, spaces, dots, or hyphens (no numbers or other special characters)"
         ).max(30, "Name must be at most 20 characters"),
       stdo_email: Yup.string()
-        .required("Family Email is Required")
         .email("Invalid email format"),
     }),
   });
@@ -382,15 +381,21 @@ const FormView: React.FC<FormViewProps> = ({
                 <div className="col-md-4">
                   <div className="form-group">
                     <label htmlFor="email" className="form-label">
-                      Email
+                      
+                      Email<span className="red">*</span>
                     </label>
                     <Field
                       type="email"
                       id="email"
                       name="email"
-                      className="form-control"
+                      className={`form-control ${
+                        errors.email && touched.email ? "is-invalid" : ""
+                      }`}
                       placeholder="Enter email"
                     />
+                     {errors.email && touched.email && (
+                      <div className="invalid-feedback">{errors.email}</div>
+                    )}
                   </div>
                 </div>
                 <div className="col-md-4">
