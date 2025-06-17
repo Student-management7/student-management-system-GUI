@@ -34,7 +34,7 @@ const SyllabusList: React.FC = () => {
           </div>
           <button
             onClick={() => navigate("/UploadSyllabus")}
-            className="flex items-center px-5 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-md hover:from-blue-600 hover:to-blue-700 transition-all duration-300"
+            className="button float-right "
           >
             <FiPlus className="mr-2" />
             Upload New Syllabus

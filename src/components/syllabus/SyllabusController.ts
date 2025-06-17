@@ -7,27 +7,46 @@ import {
 } from '../../services/syllabusServices/syllabusService';
 import { Syllabus } from '../../services/syllabusServices/syllabus.types';
 
+
 export const useSyllabusController = () => {
   const [syllabusList, setSyllabusList] = useState<Syllabus[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchSyllabus = async () => {
     setLoading(true);
-    const res = await getAllSyllabus();
-    setSyllabusList(res.data);
-    setLoading(false);
+    try {
+      const res = await getAllSyllabus();
+      setSyllabusList(res.data);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const upload = async (data: FormData) => {
-    return await uploadSyllabus(data);
+  const upload = async (params: Record<string, string>, data: FormData) => {
+    setLoading(true);
+    try {
+      return await uploadSyllabus(params, data);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const update = async (data: FormData) => {
-    return await updateSyllabus(data);
+    setLoading(true);
+    try {
+      return await updateSyllabus(data);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const remove = async (id: string) => {
-    return await deleteSyllabus(id);
+    setLoading(true);
+    try {
+      return await deleteSyllabus(id);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {

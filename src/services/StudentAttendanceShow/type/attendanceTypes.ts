@@ -14,6 +14,7 @@ export interface StudentAttendance {
   }
   
   export interface ClassData {
+  [x: string]: string;
   className: string;
   subject: string[];
 }

@@ -1,22 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { PDFDocument, rgb } from "pdf-lib";
-import {
-  FiUpload, 
-  FiType, 
-  FiBook, 
-  FiBookOpen, 
-  FiCheckSquare, 
-  FiFileText,
-  FiSave,
-  FiArrowLeft
-} from "react-icons/fi";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Loader from '../../components/loader/loader';
+import BackButton from "../Navigation/backButton";
+import { FiUpload, FiFileText, FiBook, FiBookOpen, FiCheckCircle } from "react-icons/fi";
+import { fetchClassData } from "../../services/StudentAttendanceShow/API/api";
 
 type FormData = {
   title: string;
-  description: string;
   class: string;
   subject: string;
   publish: boolean;
@@ -26,85 +21,75 @@ type FormData = {
 
 const schema = yup.object({
   title: yup.string().required("Title is required"),
-  description: yup.string(),
   class: yup.string().required("Class is required"),
   subject: yup.string().required("Subject is required"),
   publish: yup.boolean(),
   file: yup.mixed(),
   textContent: yup.string(),
-}).test("file-or-text", "Either file or manual text is required", function (values) {
-  const filePresent = values.file && values.file.length > 0;
-  const textPresent = values.textContent && values.textContent.trim().length > 0;
-  return filePresent || textPresent;
+}).test("file-or-text", "Either file or text content is required", function (values) {
+  return !!(values.file?.[0] || values.textContent?.trim());
 });
 
 type Props = {
   onSubmit: (formData: FormData & { pdfFile?: File }) => void;
-  defaultValues?: Partial<FormData>;
-  onCancel?: () => void;
+  loading: boolean;
 };
 
-const SyllabusForm: React.FC<Props> = ({ onSubmit, defaultValues, onCancel }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    watch,
-    setError,
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
-    defaultValues,
+const SyllabusForm: React.FC<Props> = ({ onSubmit, loading }) => {
+  const { register, handleSubmit, formState: { errors }, watch, setError, setValue } = useForm<FormData>({
+    resolver: yupResolver(schema)
   });
 
-  const [inputType, setInputType] = useState<"file" | "text">(
-    defaultValues?.textContent ? "text" : "file"
-  );
-  const [isConverting, setIsConverting] = useState(false);
-
+  const [inputType, setInputType] = useState<"file" | "text">("file");
+  const [isDragging, setIsDragging] = useState(false);
+  const [classData, setClassData] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState<string[]>([]);
   const watchedFile = watch("file");
-  const watchedText = watch("textContent");
+  const watchedClass = watch("class");
+
+useEffect(() => {
+  const getData = async () => {
+    try {
+      const data = await fetchClassData();
+      setClassData(data);
+    } catch (error) {
+      toast.error("Failed to load class data");
+    }
+  };
+
+  getData();
+}, []);
+
+  useEffect(() => {
+    // Update subjects when class changes
+    if (watchedClass) {
+      const selectedClass = classData.find(c => c.className === watchedClass);
+      setSubjects(selectedClass?.subject || []);
+      setValue("subject", ""); // Reset subject when class changes
+    }
+  }, [watchedClass, classData, setValue]);
 
   const convertTextToPdf = async (text: string, title: string) => {
-    try {
-      const pdfDoc = await PDFDocument.create();
-      const page = pdfDoc.addPage([600, 800]);
-      const { height } = page.getSize();
-      
-      // Add title
-      page.drawText(title, {
-        x: 50,
-        y: height - 50,
-        size: 20,
-        color: rgb(0, 0, 0),
-      });
-      
-      // Add content
-      const lines = text.split('\n');
-      let yPosition = height - 80;
-      
-      for (const line of lines) {
-        if (yPosition < 50) {
-          // Add new page if we run out of space
-          page = pdfDoc.addPage([600, 800]);
-          yPosition = height - 50;
-        }
-        
-        page.drawText(line, {
-          x: 50,
-          y: yPosition,
-          size: 12,
-          color: rgb(0, 0, 0),
-        });
-        
-        yPosition -= 15;
+    const pdfDoc = await PDFDocument.create();
+    let page = pdfDoc.addPage([600, 800]);
+    const { height } = page.getSize();
+    
+    page.drawText(title, { x: 50, y: height - 50, size: 20, color: rgb(0, 0, 0) });
+    
+    const lines = text.split('\n');
+    let yPosition = height - 80;
+    
+    for (const line of lines) {
+      if (yPosition < 50) {
+        page = pdfDoc.addPage([600, 800]);
+        yPosition = height - 50;
       }
-      
-      const pdfBytes = await pdfDoc.save();
-      return new Blob([pdfBytes], { type: 'application/pdf' });
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      throw new Error("Failed to generate PDF from text");
+      page.drawText(line, { x: 50, y: yPosition, size: 12, color: rgb(0, 0, 0) });
+      yPosition -= 15;
     }
+    
+    const pdfBytes = await pdfDoc.save();
+    return new File([pdfBytes], `${title}.pdf`, { type: 'application/pdf' });
   };
 
   const onSubmitHandler = async (data: FormData) => {
@@ -112,282 +97,212 @@ const SyllabusForm: React.FC<Props> = ({ onSubmit, defaultValues, onCancel }) =>
       let pdfFile: File | undefined;
       
       if (inputType === "text" && data.textContent) {
-        setIsConverting(true);
-        const pdfBlob = await convertTextToPdf(data.textContent, data.title);
-        pdfFile = new File([pdfBlob], `${data.title}.pdf`, { type: 'application/pdf' });
-        setIsConverting(false);
+        pdfFile = await convertTextToPdf(data.textContent, data.title);
       }
       
       onSubmit({ ...data, pdfFile });
     } catch (error) {
-      setIsConverting(false);
-      setError("", {
-        type: "manual",
-        message: "Failed to convert text to PDF. Please try again.",
-      });
+      setError("", { message: "Failed to convert text to PDF" });
+      toast.error("Failed to convert text to PDF");
+    }
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      if (file.type.match('application/pdf|text/plain|application/msword|application/vnd.openxmlformats-officedocument.wordprocessingml.document')) {
+        const fileList = {
+          0: file,
+          length: 1,
+          item: (index: number) => file
+        } as FileList;
+        setValue("file", fileList);
+      } else {
+        toast.error("Only PDF, TXT, DOC, and DOCX files are allowed");
+      }
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="bg-white p-6 rounded-xl shadow-lg space-y-6 max-w-2xl mx-auto"
-    >
-      <div className=" flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-          <FiBookOpen className="mr-2 text-blue-600" />
-          Upload New Syllabus
-        </h2>
-        {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="flex items-center text-gray-600 hover:text-gray-800"
-          >
-            <FiArrowLeft className="mr-1" />
-            Back
-          </button>
-        )}
-      </div>
 
-      <div className="space-y-6">
-        {/* Title Field */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 flex items-center">
-            <FiType className="mr-2 text-gray-500" />
-            Title
-          </label>
-          <input
-            {...register("title")}
-            className={`mt-1 block w-full px-4 py-2 border ${
-              errors.title ? "border-red-300" : "border-gray-300"
-            } rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-            placeholder="Syllabus title"
-          />
-          {errors.title && (
-            <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
-          )}
-        </div>
+    <>
+    <div className="box">
 
-        {/* Description Field */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 flex items-center">
-            <FiFileText className="mr-2 text-gray-500" />
-            Description (Optional)
-          </label>
-          <textarea
-            {...register("description")}
-            rows={3}
-            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Brief description of the syllabus"
-          />
-        </div>
+    <div className="max-w-4xl mx-auto p-6">
+      <ToastContainer position="top-right" autoClose={3000} />
+      {loading && <Loader />}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Class Field */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 flex items-center">
-              <FiBook className="mr-2 text-gray-500" />
-              Class
-            </label>
-            <select
-              {...register("class")}
-              className={`mt-1 block w-full px-4 py-2 border ${
-                errors.class ? "border-red-300" : "border-gray-300"
-              } rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-            >
-              <option value="">Select Class</option>
-              {["LKG", "UKG", ...Array.from({ length: 12 }, (_, i) => (i + 1).toString())].map(
-                (cls) => (
-                  <option key={cls} value={cls}>
-                    Class {cls}
-                  </option>
-                )
-              )}
-            </select>
-            {errors.class && (
-              <p className="mt-1 text-sm text-red-600">{errors.class.message}</p>
-            )}
-          </div>
+      <span className="flex items-center gap-4 mb-6">
+  <div className="flex items-center">
+    <BackButton />
+  </div>
+  <h1 className="text-2xl head1 font-semibold flex items-center">
+    <FiBookOpen className="mr-2" /> Upload Syllabus
+  </h1>
+</span>
 
-          {/* Subject Field */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 flex items-center">
-              <FiBookOpen className="mr-2 text-gray-500" />
-              Subject
+
+      <form onSubmit={handleSubmit(onSubmitHandler)} >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+              <FiBook className="mr-2" /> Title*
             </label>
             <input
-              {...register("subject")}
-              className={`mt-1 block w-full px-4 py-2 border ${
-                errors.subject ? "border-red-300" : "border-gray-300"
-              } rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Subject name"
+              {...register("title")}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter syllabus title"
             />
-            {errors.subject && (
-              <p className="mt-1 text-sm text-red-600">{errors.subject.message}</p>
-            )}
+            {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
           </div>
-        </div>
 
-        {/* Publish Field */}
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="publish"
-            {...register("publish")}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          />
-          <label htmlFor="publish" className="ml-2 block text-sm text-gray-700 flex items-center">
-            <FiCheckSquare className="mr-2 text-gray-500" />
-            Publish immediately
-          </label>
-        </div>
+         {/* Class Dropdown */}
+<div className="w-full">
+  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+    <FiBook className="mr-2" /> Class*
+  </label>
+  <select
+    {...register("class")}
+    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+  >
+    <option value="">Select Class</option>
+    {classData.map((cls) => (
+      <option key={cls.id} value={cls.className}>{cls.className}</option>
+    ))}
+  </select>
+  {errors.class && <p className="text-red-500 text-sm mt-1">{errors.class.message}</p>}
+</div>
 
-        {/* Content Type Selection */}
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Content Type
-            </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
-                inputType === "file" ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"
-              }`}>
-                <input
-                  type="radio"
-                  name="uploadType"
-                  value="file"
-                  checked={inputType === "file"}
-                  onChange={() => setInputType("file")}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                />
-                <div className="ml-3 flex items-center">
-                  <FiUpload className="text-gray-700 mr-2" />
-                  <span className="text-sm font-medium text-gray-700">Upload File</span>
-                </div>
-              </label>
+{/* Subject Dropdown */}
+<div className="w-full">
+  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+    <FiBook className="mr-2" /> Subject*
+  </label>
+  <select
+    {...register("subject")}
+    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+    disabled={!watchedClass}
+  >
+    <option value="">Select Subject</option>
+    {subjects.map((subject) => (
+      <option key={subject} value={subject}>{subject}</option>
+    ))}
+  </select>
+  {errors.subject && <p className="text-red-500 text-sm mt-1">{errors.subject.message}</p>}
+</div>
 
-              <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
-                inputType === "text" ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"
-              }`}>
-                <input
-                  type="radio"
-                  name="uploadType"
-                  value="text"
-                  checked={inputType === "text"}
-                  onChange={() => setInputType("text")}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                />
-                <div className="ml-3 flex items-center">
-                  <FiFileText className="text-gray-700 mr-2" />
-                  <span className="text-sm font-medium text-gray-700">Enter Text</span>
-                </div>
+
+          <div className="flex items-center justify-start md:justify-end">
+            <div className="flex items-center h-full mt-6">
+              <input 
+                type="checkbox" 
+                id="publish" 
+                {...register("publish")} 
+                className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="publish" className="ml-2 text-sm font-medium text-gray-700 flex items-center">
+                <FiCheckCircle className="mr-1" /> Publish immediately
               </label>
             </div>
           </div>
+        </div>
 
-          {/* File Upload or Text Input */}
+        <div className="mb-6">
+          <div className="flex space-x-4 mb-4">
+            <button
+              type="button"
+              className={`flex items-center px-4 py-2 rounded-lg ${inputType === "file" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"}`}
+              onClick={() => setInputType("file")}
+            >
+              <FiUpload className="mr-2" /> Upload File
+            </button>
+            <button
+              type="button"
+              className={`flex items-center px-4 py-2 rounded-lg ${inputType === "text" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"}`}
+              onClick={() => setInputType("text")}
+            >
+              <FiFileText className="mr-2" /> Enter Text
+            </button>
+          </div>
+
           {inputType === "file" ? (
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Syllabus File
-              </label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
-                <div className="space-y-1 text-center">
-                  <FiUpload className="mx-auto h-12 w-12 text-gray-400" />
-                  <div className="flex text-sm text-gray-600">
-                    <label
-                      htmlFor="file-upload"
-                      className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none"
-                    >
-                      <span>Upload a file</span>
-                      <input
-                        id="file-upload"
-                        type="file"
-                        accept=".pdf,.txt,.doc,.docx"
-                        {...register("file")}
-                        className="sr-only"
-                      />
-                    </label>
-                    <p className="pl-1">or drag and drop</p>
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    PDF, DOC, DOCX, TXT up to 10MB
-                  </p>
-                </div>
+            <div 
+              className={`border-2 border-dashed rounded-lg p-8 text-center ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
+              onDragEnter={handleDragEnter}
+              onDragOver={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              <div className="flex flex-col items-center justify-center">
+                <FiUpload className="w-12 h-12 text-gray-400 mb-3" />
+                <p className="mb-2 text-sm text-gray-500">
+                  <span className="font-semibold">Click to upload</span> or drag and drop
+                </p>
+                <p className="text-xs text-gray-500">
+                  PDF, DOC, DOCX, or TXT (MAX. 10MB)
+                </p>
+                <input
+                  type="file"
+                  accept=".pdf,.txt,.doc,.docx"
+                  {...register("file")}
+                  className="hidden"
+                  id="file-upload"
+                />
+                <label
+                  htmlFor="file-upload"
+                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
+                >
+                  Select File
+                </label>
               </div>
               {watchedFile?.[0]?.name && (
-                <p className="text-sm text-gray-600 mt-2">
-                  Selected file: <span className="font-medium">{watchedFile[0].name}</span>
+                <p className="mt-3 text-sm text-gray-700">
+                  Selected: <span className="font-medium">{watchedFile[0].name}</span>
                 </p>
               )}
-              {errors.file && (
-                <p className="mt-1 text-sm text-red-600">{errors.file.message}</p>
-              )}
+              {errors.file && <p className="text-red-500 text-sm mt-2">{errors.file.message}</p>}
             </div>
           ) : (
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Syllabus Content
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <FiFileText className="mr-2" /> Syllabus Content*
               </label>
               <textarea
                 {...register("textContent")}
                 rows={8}
-                className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter the syllabus content here..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter syllabus content here..."
               />
-              {errors.textContent && (
-                <p className="mt-1 text-sm text-red-600">{errors.textContent.message}</p>
-              )}
+              {errors.textContent && <p className="text-red-500 text-sm mt-1">{errors.textContent.message}</p>}
             </div>
           )}
-          {errors?.[""]?.message && (
-            <p className="mt-1 text-sm text-red-600">{errors[""].message}</p>
-          )}
+          {errors[""] && <p className="text-red-500 text-sm mt-2">{errors[""].message}</p>}
         </div>
 
-        {/* Form Actions */}
-          <div className="flex justify-end space-x-4 pt-4">
-        {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Cancel
-          </button>
-        )}
         <button
           type="submit"
-          disabled={isSubmitting || isConverting}
-          className="px-6 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center disabled:opacity-50"
+          disabled={loading}
+          className=" button  flex items-center justify-center "
         >
-          {isConverting ? (
-            <>
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Converting...
-            </>
-          ) : isSubmitting ? (
-            <>
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Submitting...
-            </>
-          ) : (
-            <>
-              <FiSave className="mr-2" />
-              Submit Syllabus
-            </>
-          )}
+          {loading ? "Uploading..." : "Upload Syllabus"}
         </button>
-      </div>
-      </div>
-    </form>
+      </form>
+    </div>
+    </div>
+    </>
   );
 };
 

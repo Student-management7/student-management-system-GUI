@@ -8,45 +8,36 @@ const UploadSyllabus: React.FC = () => {
   const navigate = useNavigate();
 
   const handleUpload = async (data: any) => {
-    const formData = new FormData();
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    formData.append("class", data.class);
-    formData.append("subject", data.subject);
-    formData.append("publish", String(data.publish));
-    
-    // Use either the uploaded file or the generated PDF
-    if (data.file?.[0]) {
-      formData.append("file", data.file[0]);
-    } else if (data.pdfFile) {
-      formData.append("file", data.pdfFile);
-    }
-
     try {
-      await upload(formData);
-      alert("Syllabus uploaded successfully!");
+      const formData = new FormData();
+      
+      // Handle file upload (either direct file or converted PDF)
+      const fileToUpload = data.pdfFile || (data.file?.[0] instanceof File ? data.file[0] : null);
+      
+      if (!fileToUpload) {
+        throw new Error("No valid file to upload");
+      }
+      
+      formData.append("file", fileToUpload);
+
+      // Prepare query parameters
+      const params = {
+        tittle: data.title,  // Note: backend expects "tittle" with two 't's
+        subject: data.subject,
+        publish: String(data.publish),
+        cls: data.class,
+      };
+
+      // Upload with proper error handling
+      await upload(params, formData);
       navigate("/syllabus");
     } catch (err) {
-      alert("Upload failed. Please try again.");
       console.error("Upload error:", err);
+      alert(`Upload failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     }
   };
 
-  return (
-    <>
-  
-
-    <div className=" box min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <SyllabusForm 
-          onSubmit={handleUpload} 
-          onCancel={() => navigate("/syllabus")} 
-        />
-      </div>
-    </div>
-    </>
-
-  );
+  return <SyllabusForm onSubmit={handleUpload} loading={false} />;
 };
 
 export default UploadSyllabus;
