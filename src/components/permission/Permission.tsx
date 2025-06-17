@@ -23,7 +23,7 @@ interface Permissions {
     studentReportForm: boolean;
     studentReport: boolean;
     studentDetails: boolean;
-    bulkupload:boolean
+    bulkupload: boolean;
   };
   faculty: {
     facultySalaryDetails: boolean;
@@ -69,7 +69,7 @@ export default function Permission() {
       studentReportForm: false,
       studentReport: false,
       studentDetails: false,
-      bulkupload:false
+      bulkupload: false
     },
     faculty: {
       facultySalaryDetails: false,
@@ -165,7 +165,7 @@ export default function Permission() {
               studentReportForm: false,
               studentReport: false,
               studentDetails: false,
-              bulkupload:false
+              bulkupload: false
             },
             faculty: {
               facultySalaryDetails: false,
@@ -216,7 +216,7 @@ export default function Permission() {
           studentReportForm: false,
           studentReport: false,
           studentDetails: false,
-          bulkupload:false
+          bulkupload: false
         },
         faculty: {
           facultySalaryDetails: false,
@@ -248,12 +248,15 @@ export default function Permission() {
     }
   };
 
-  const handlePermissionChange = (section: string, key: string) => {
+  const handlePermissionChange = <T extends keyof Permissions>(
+    section: T,
+    key: keyof Permissions[T]
+  ) => {
     setPermissions((prevState) => ({
       ...prevState,
       [section]: {
-        ...prevState[section as keyof Permissions],
-        [key]: !prevState[section as keyof Permissions][key],
+        ...prevState[section],
+        [key]: !prevState[section][key],
       },
     }));
   };
@@ -305,7 +308,7 @@ export default function Permission() {
   return (
     <div className="container mt-5">
       {isLoading ? (
-        <div><Loader/></div>
+        <div><Loader /></div>
       ) : (
         <div>
           <ToastContainer position="top-right" autoClose={3000} />
@@ -375,8 +378,11 @@ export default function Permission() {
                             <input
                               className="form-check-input"
                               type="checkbox"
-                              checked={value}
-                              onChange={() => handlePermissionChange(section, key)}
+                              checked={value as boolean}  // Explicitly type as boolean
+                              onChange={() => handlePermissionChange(
+                                section as keyof Permissions,  // Cast section to keyof Permissions
+                                key as keyof Permissions[keyof Permissions]  // Cast key appropriately
+                              )}
                               id={`${section}-${key}`}
                             />
                             <label className="form-check-label" htmlFor={`${section}-${key}`}>
