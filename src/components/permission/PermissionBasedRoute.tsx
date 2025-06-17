@@ -37,6 +37,8 @@ import UserPassword from "../../Pages/setting/UserPassord";
 import Profile from "../../Pages/profile/Profile";
 import Loader from "../loader/loader";
 import SchoolPermission from "../SuperAdmin/SchoolPermission";
+import  SyllabusList  from "../syllabus/SyllabusList";
+import UploadSyllabus from "../syllabus/UploadSyllabus";
 
 interface Permission {
   [module: string]: {
@@ -248,6 +250,24 @@ const PermissionBasedRoute: React.FC = () => {
       element: <Admindeshboard />, 
       visible: true 
     },
+    { 
+      path: "/syllabus", 
+      element: <SyllabusList />, 
+      visible: true 
+    },
+    { 
+      path: "/UploadSyllabus", 
+      element: <UploadSyllabus />, 
+      visible: true 
+    },
+    
+    
+    
+
+    
+
+
+
   ];
 
   const finalRoutes = allRoutes.filter(({ visible }) => visible);
