@@ -18,3 +18,10 @@ export const updateSyllabus = (data: FormData) =>
 
 export const deleteSyllabus = (id: string) =>
   axiosInstance.post(`${BASE_URL}/delete?id=${id}`);
+
+
+export const downloadSyllabus = (id: string) => {
+  return axiosInstance.get(`${BASE_URL}/download/${id}`, {
+    responseType: 'blob'
+  });
+};

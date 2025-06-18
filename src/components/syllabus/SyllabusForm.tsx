@@ -163,7 +163,7 @@ useEffect(() => {
             </label>
             <input
               {...register("title")}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 form-control"
               placeholder="Enter syllabus title"
             />
             {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
