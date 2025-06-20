@@ -4,8 +4,10 @@ import {
   uploadSyllabus,
   updateSyllabus,
   deleteSyllabus,
+  downloadSyllabus,
 } from '../../services/syllabusServices/syllabusService';
 import { Syllabus } from '../../services/syllabusServices/syllabus.types';
+import { toast } from 'react-toastify';
 
 
 export const useSyllabusController = () => {
@@ -49,6 +51,28 @@ export const useSyllabusController = () => {
     }
   };
 
+ const handleDownload = async (id: string, name: string) => {
+  setLoading(true);
+  try {
+    const response = await downloadSyllabus(id);
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', name);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
+    toast.success("Download started successfully");
+  } catch (error) {
+    toast.error("Failed to download file");
+    console.error("Download error:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  
   return {
     syllabusList,
     loading,
@@ -56,5 +80,6 @@ export const useSyllabusController = () => {
     upload,
     update,
     remove,
+    handleDownload,
   };
 };
