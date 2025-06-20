@@ -39,14 +39,17 @@ export const useSyllabusController = () => {
     }
   };
 
-  const update = async (data: FormData) => {
-    setLoading(true);
-    try {
-      return await updateSyllabus(data);
-    } finally {
-      setLoading(false);
-    }
-  };
+ const update = async (params: Record<string, string>, data: FormData) => {
+  setLoading(true);
+  try {
+    return await updateSyllabus(params, data);
+  } catch (error) {
+    console.error('Update error:', error);
+    throw error;
+  } finally {
+    setLoading(false);
+  }
+};
 
   const remove = async (id: string) => {
     setLoading(true);
@@ -56,6 +59,7 @@ export const useSyllabusController = () => {
       setLoading(false);
     }
   };
+
   const updatePublishStatus = async (payload: Array<{ id: string; publish: string }>) => {
     setLoading(true);
     try {
@@ -64,7 +68,6 @@ export const useSyllabusController = () => {
       setLoading(false);
     }
   };
-
  const handleDownload = async (id: string, name: string) => {
   setLoading(true);
   try {

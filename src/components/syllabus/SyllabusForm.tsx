@@ -58,26 +58,31 @@ const SyllabusForm: React.FC<Props> = ({ onSubmit, loading, defaultValues, isEdi
   const watchedClass = watch("class");
 
   // Add this to your existing SyllabusForm component
-useEffect(() => {
-  console.log('[SyllabusForm] Received defaultValues:', defaultValues);
-  console.log('[SyllabusForm] Current inputType:', inputType);
-  
-  if (defaultValues) {
-    console.log('[SyllabusForm] Resetting form with default values');
-    reset({
-      title: defaultValues.title,
-      class: defaultValues.class,
-      subject: defaultValues.subject,
-      publish: defaultValues.publish,
-      textContent: defaultValues.textContent || ""
-    });
-    
-    if (defaultValues.textContent) {
-      console.log('[SyllabusForm] Setting input type to text');
-      setInputType("text");
+  useEffect(() => {
+    console.log('[SyllabusForm] Received defaultValues:', defaultValues);
+    console.log('[SyllabusForm] Current inputType:', inputType);
+
+    if (defaultValues) {
+      console.log('[SyllabusForm] Resetting form with default values');
+      reset({
+        title: defaultValues.title,
+        class: defaultValues.class,
+        subject: defaultValues.subject,
+        publish: defaultValues.publish,
+        textContent: defaultValues.textContent || ""
+      });
+
+      if (defaultValues.class) {
+        const selectedClass = classData.find(c => c.className === defaultValues.class);
+        const classSubjects = selectedClass?.subject || [];
+        setSubjects(classSubjects);
+
+        // Log for debugging
+        console.log('Available subjects:', classSubjects);
+        console.log('Default subject:', defaultValues.subject);
+      }
     }
-  }
-}, [defaultValues, reset]);
+  }, [defaultValues, reset, classData]);
 
   useEffect(() => {
     const getData = async () => {
