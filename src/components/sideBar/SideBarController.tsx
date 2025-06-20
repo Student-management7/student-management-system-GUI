@@ -88,7 +88,11 @@ const SideBarController = () => {
             'viewNotification': 'notification.notificationList',
             'classSubjectShow': 'subject.classSubjectShow',
             'saveSubjectsToClasses': 'subject.saveSubjectsToClasses',
-            'bulkUpload': 'student.bulkUpload'
+            'bulkUpload': 'student.bulkUpload',
+            "syllabus": "syallabus.SyllabusList",
+            "UploadSyllabus": "syallabus.UploadSyllabus",
+            "syllabus/edit/:id": "syallabus.EditSyllabus"
+
         };
 
         const permissionPath = routePermissions[routeKey];

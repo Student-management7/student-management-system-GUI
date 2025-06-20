@@ -1,6 +1,6 @@
 export interface Syllabus {
   id: string;
-  tittle: string;
+  title: string;
   description?: string;
   cls: string;
   subject: string;

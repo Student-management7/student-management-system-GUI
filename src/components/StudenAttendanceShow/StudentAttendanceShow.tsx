@@ -196,8 +196,8 @@ const StudentAttendanceShow: React.FC = () => {
                   />
                 </Switch>
 
-                <span className="">
-                  <button onClick={handleEditButtonClick} className="button btn">
+                <span className=""> 
+                  <button onClick={handleEditButtonClick} className="button ">
                     <Pencil size={20} color='White' />
                   </button>
                 </span>
@@ -321,3 +321,4 @@ const StudentAttendanceShow: React.FC = () => {
 };
 
 export default StudentAttendanceShow;
+

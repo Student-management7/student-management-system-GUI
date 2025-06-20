@@ -5,7 +5,13 @@ import {
   updateSyllabus,
   deleteSyllabus,
   downloadSyllabus,
+  updatePublishStatus as apiUpdatePublishStatus,
+
+  
 } from '../../services/syllabusServices/syllabusService';
+
+
+
 import { Syllabus } from '../../services/syllabusServices/syllabus.types';
 import { toast } from 'react-toastify';
 
@@ -50,6 +56,14 @@ export const useSyllabusController = () => {
       setLoading(false);
     }
   };
+  const updatePublishStatus = async (payload: Array<{ id: string; publish: string }>) => {
+    setLoading(true);
+    try {
+     return await apiUpdatePublishStatus(payload);
+    } finally {
+      setLoading(false);
+    }
+  };
 
  const handleDownload = async (id: string, name: string) => {
   setLoading(true);
@@ -72,6 +86,8 @@ export const useSyllabusController = () => {
 };
 
 
+
+
   
   return {
     syllabusList,
@@ -81,5 +97,6 @@ export const useSyllabusController = () => {
     update,
     remove,
     handleDownload,
+    updatePublishStatus,
   };
 };

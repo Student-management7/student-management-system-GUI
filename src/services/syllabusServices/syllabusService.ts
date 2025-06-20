@@ -25,3 +25,8 @@ export const downloadSyllabus = (id: string) => {
     responseType: 'blob'
   });
 };
+
+// SyllabusService.ts
+export const updatePublishStatus = (payload: Array<{ id: string; publish: string }>) => {
+  return axiosInstance.post(`${BASE_URL}/syllabus/update`, payload);
+};

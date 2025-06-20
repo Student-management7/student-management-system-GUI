@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { toast, ToastContainer } from "react-toastify";
 import Loader from "../loader/loader";
+import SyllabusList from "../syllabus/SyllabusList";
 
 interface Faculty {
   id: string;
@@ -50,6 +51,11 @@ interface Permissions {
     saveSubjectsToClasses: boolean;
     classSubjectShow: boolean;
   };
+  syallabus: {
+    SyllabusList: boolean;
+    UploadSyllabus: boolean;
+    EditSyllabus: boolean;
+  };
 }
 
 export default function Permission() {
@@ -96,6 +102,11 @@ export default function Permission() {
       saveSubjectsToClasses: false,
       classSubjectShow: false,
     },
+    syallabus: {
+    SyllabusList: false,
+    UploadSyllabus: false,
+    EditSyllabus: false,
+  },
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -192,6 +203,11 @@ export default function Permission() {
               saveSubjectsToClasses: false,
               classSubjectShow: false,
             },
+            syallabus: {
+              SyllabusList: false,
+              UploadSyllabus: false,
+              EditSyllabus: false,
+            },
           });
         }
       } catch (error) {
@@ -243,6 +259,12 @@ export default function Permission() {
           saveSubjectsToClasses: false,
           classSubjectShow: false,
         },
+         syallabus: {
+              SyllabusList: false,
+              UploadSyllabus: false,
+              EditSyllabus: false,
+            },
+
       });
       setIsLoading(false);
     }

@@ -1,6 +1,6 @@
 
-import { FaBook, FaIdCard, FaRegEdit, FaUserEdit,  } from "react-icons/fa";
-import {  FaLandmark,FaCoins,FaPiggyBank, FaCaretDown, FaCaretUp,FaUserShield, FaMoneyBill, FaUserLarge, FaUserTie ,FaBell, FaUserPlus ,FaClipboardList , } from "react-icons/fa6";
+import { FaBook, FaIdCard, FaRegEdit, FaUserEdit, } from "react-icons/fa";
+import {  FaLandmark,FaCoins,FaPiggyBank, FaCaretDown, FaCaretUp,FaUserShield, FaMoneyBill, FaUserLarge, FaUserTie ,FaBell, FaUserPlus ,FaClipboardList ,FaFile } from "react-icons/fa6";
 export const SideBarData = [
 
    
@@ -163,7 +163,25 @@ export const SideBarData = [
             
             
         ]
-    }
+    },
+    {
+        title: 'Syllabus',
+        path: '/',
+        icon: FaFile,
+        iconClosed: FaCaretUp,
+        iconeOpened: FaCaretDown,
+        subNav: [
+
+            {
+                title: 'Syllabus',
+                path: '/syllabus',
+                icon: FaFile,
+            },
+            
+            
+        ]
+    },
+   
 
 ]
 
