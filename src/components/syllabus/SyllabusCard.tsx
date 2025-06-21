@@ -15,7 +15,7 @@ const SyllabusCard: React.FC<Props> = ({ data, onEdit, onDelete }) => {
       {/* Card Header with Status */}
       <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
         <h3 className="text-xl font-bold text-gray-800 line-clamp-1 group-hover:text-blue-600 transition-colors">
-          {data.tittle}
+          {data.title}
         </h3>
         <span
           className={`px-3 py-1 text-xs font-semibold rounded-full ${

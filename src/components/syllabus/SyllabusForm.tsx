@@ -9,6 +9,7 @@ import Loader from '../../components/loader/loader';
 import BackButton from "../Navigation/backButton";
 import { FiUpload, FiFileText, FiBook, FiBookOpen, FiCheckCircle } from "react-icons/fi";
 import { fetchClassData } from "../../services/StudentAttendanceShow/API/api";
+import { sortArrayByKey } from "../Utils/sortArrayByKey";
 
 type FormData = {
   title: string;
@@ -33,11 +34,20 @@ const schema = yup.object({
 type Props = {
   onSubmit: (formData: FormData & { pdfFile?: File }) => void;
   loading: boolean;
+  defaultValues?: {
+    title: string;
+    class: string;
+    subject: string;
+    publish: boolean;
+    textContent?: string;
+  };
+  isEditMode?: boolean;
 };
 
-const SyllabusForm: React.FC<Props> = ({ onSubmit, loading }) => {
-  const { register, handleSubmit, formState: { errors }, watch, setError, setValue } = useForm<FormData>({
-    resolver: yupResolver(schema)
+const SyllabusForm: React.FC<Props> = ({ onSubmit, loading, defaultValues, isEditMode = false }) => {
+  const { register, handleSubmit, formState: { errors }, watch, setError, setValue, reset } = useForm<FormData>({
+    resolver: yupResolver(schema),
+    defaultValues: defaultValues
   });
 
   const [inputType, setInputType] = useState<"file" | "text">("file");
@@ -47,11 +57,34 @@ const SyllabusForm: React.FC<Props> = ({ onSubmit, loading }) => {
   const watchedFile = watch("file");
   const watchedClass = watch("class");
 
+  // Add this to your existing SyllabusForm component
+useEffect(() => {
+  console.log('[SyllabusForm] Received defaultValues:', defaultValues);
+  console.log('[SyllabusForm] Current inputType:', inputType);
+  
+  if (defaultValues) {
+    console.log('[SyllabusForm] Resetting form with default values');
+    reset({
+      title: defaultValues.title,
+      class: defaultValues.class,
+      subject: defaultValues.subject,
+      publish: defaultValues.publish,
+      textContent: defaultValues.textContent || ""
+    });
+    
+    if (defaultValues.textContent) {
+      console.log('[SyllabusForm] Setting input type to text');
+      setInputType("text");
+    }
+  }
+}, [defaultValues, reset]);
+
   useEffect(() => {
     const getData = async () => {
       try {
         const data = await fetchClassData();
         setClassData(data);
+        console.log(data);
       } catch (error) {
         toast.error("Failed to load class data");
       }
@@ -136,57 +169,60 @@ const SyllabusForm: React.FC<Props> = ({ onSubmit, loading }) => {
     }
   };
 
+  const sortedClassData = sortArrayByKey(classData, "className");
   return (
 
     <>
       <div className="box">
 
-        <div className="p-4">
+        <div className="container mx-auto">
           <ToastContainer position="top-right" autoClose={3000} />
           {loading && <Loader />}
 
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex items-center gap-2 mb-4 ">
             <span className="flex items-center mb-2">
               <BackButton />
             </span>
-            <h1 className="text-2xl head1 font-semibold flex items-center">
+            <h1 className="text-2xl head1 font-semibold flex items-center mt-1 ">
               <FiBookOpen className="mr-2" /> Upload Syllabus
             </h1>
           </div>
 
 
           <form onSubmit={handleSubmit(onSubmitHandler)} className="space-y-6">
-  {/* Title */}
-  <div className="flex flex-col">
-    <label className="text-sm font-medium  mb-1 flex items-center">
-      <FiBook className="mr-2" /> Title*
-    </label>
-    <input
-      {...register("title")}
-      className="p-2 form-control max-w-md"
-      placeholder="Enter syllabus title"
-    />
-    {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
-  </div>
+            {/* Title */}
+            <div className="flex flex-col">
+              <label className="text-sm font-medium  mb-1 flex items-center">
+                <FiBook className="mr-2" /> Title*
+              </label>
+              <input
+                {...register("title")}
+                className="p-2 form-control max-w-md"
+                placeholder="Enter syllabus title"
+              />
+              {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
+            </div>
 
-  {/* Class & Subject */}
-  <div className="flex flex-col md:flex-row gap-6">
-    {/* Class */}
-    <div className="flex flex-col w-full md:max-w-sm">
-      <label className="text-sm font-medium text-gray-700 mb-1 flex items-center">
-        <FiBook className="mr-2" /> Class*
-      </label>
-      <select
-        {...register("class")}
-        className="p-2 form-control"
-      >
-        <option value="">Select Class</option>
-        {classData.map((cls) => (
-          <option key={cls.id} value={cls.className}>{cls.className}</option>
-        ))}
-      </select>
-      {errors.class && <p className="text-red-500 text-sm mt-1">{errors.class.message}</p>}
-    </div>
+            {/* Class & Subject */}
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Class */}
+              <div className="flex flex-col w-full md:max-w-sm">
+                <label className="text-sm font-medium text-gray-700 mb-1 flex items-center">
+                  <FiBook className="mr-2" /> Class*
+                </label>
+                <select
+                  {...register("class")}
+                  className="p-2 form-control"
+                >
+                  <option value="">Select Class</option>
+                  {sortedClassData.map((cls) => (
+                    <option key={cls.id} value={cls.className}>
+                      {cls.className}
+                    </option>
+                  ))}
+                </select>
+                {errors.class && <p className="text-red-500 text-sm mt-1">{errors.class.message}</p>}
+              </div>
 
     {/* Subject */}
     <div className="flex flex-col w-full md:max-w-sm">
@@ -207,97 +243,97 @@ const SyllabusForm: React.FC<Props> = ({ onSubmit, loading }) => {
     </div>
   </div>
 
-  {/* Publish Checkbox */}
-  <div className="flex items-center">
-    <input
-      type="checkbox"
-      id="publish"
-      {...register("publish")}
-      className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-    />
-    <label htmlFor="publish" className="ml-2 text-sm font-medium text-gray-700 flex items-center">
-      <FiCheckCircle className="mr-1" /> Publish immediately
-    </label>
-  </div>
+            {/* Publish Checkbox */}
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="publish"
+                {...register("publish")}
+                className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="publish" className="ml-2 text-sm font-medium text-gray-700 flex items-center">
+                <FiCheckCircle className="mr-1" /> Publish immediately
+              </label>
+            </div>
 
-  {/* File/Text Toggle */}
-  <div className="flex space-x-4">
-    <button
-      type="button"
-      className={`flex items-center px-4 py-2 rounded-md ${inputType === "file" ? "bg-[#0d774b11] text-[#519186]" : "bg-gray-100 text-gray-700"}`}
-      onClick={() => setInputType("file")}
-    >
-      <FiUpload className="mr-2" /> Upload File
-    </button>
-    <button
-      type="button"
-      className={`flex items-center px-4 py-2 rounded-md ${inputType === "text" ? "bg-[#0d774b11] text-[#519186" : "bg-gray-100 text-gray-700"}`}
-      onClick={() => setInputType("text")}
-    >
-      <FiFileText className="mr-2" /> Enter Text
-    </button>
-  </div>
+            {/* File/Text Toggle */}
+            <div className="flex space-x-4">
+              <button
+                type="button"
+                className={`flex items-center px-4 py-2 rounded-md ${inputType === "file" ? "bg-[#0d774b11] text-[#519186]" : "bg-gray-100 text-gray-700"}`}
+                onClick={() => setInputType("file")}
+              >
+                <FiUpload className="mr-2" /> Upload File
+              </button>
+              <button
+                type="button"
+                className={`flex items-center px-4 py-2 rounded-md ${inputType === "text" ? "bg-[#0d774b11] text-[#519186" : "bg-gray-100 text-gray-700"}`}
+                onClick={() => setInputType("text")}
+              >
+                <FiFileText className="mr-2" /> Enter Text
+              </button>
+            </div>
 
-  {/* File Upload or Text Content */}
-  {inputType === "file" ? (
-    <div
-      className={`border-2 border-dashed rounded-md p-6 text-center ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
-      onDragEnter={handleDragEnter}
-      onDragOver={handleDragEnter}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-    >
-      <div className="flex flex-col items-center">
-        <FiUpload className="w-10 h-10 text-gray-400 mb-3" />
-        <p className="text-sm text-gray-500 mb-1">
-          <span className="font-semibold">Click to upload</span> or drag and drop
-        </p>
-        <p className="text-xs text-gray-500">PDF, DOC, DOCX, or TXT (MAX. 10MB)</p>
-        <input
-          type="file"
-          accept=".pdf,.txt,.doc,.docx"
-          {...register("file")}
-          className="hidden"
-          id="file-upload"
-        />
-        <label
-          htmlFor="file-upload"
-          className="mt-3 px-4 py-2 btn button"
-        >
-          Select File
-        </label>
-      </div>
-      {watchedFile?.[0]?.name && (
-        <p className="mt-2 text-sm text-gray-700">
-          Selected: <span className="font-medium">{watchedFile[0].name}</span>
-        </p>
-      )}
-      {errors.file && <p className="text-red-500 text-sm mt-2">{errors.file.message}</p>}
-    </div>
-  ) : (
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 mb-1 flex items-center">
-        <FiFileText className="mr-2" /> Syllabus Content*
-      </label>
-      <textarea
-        {...register("textContent")}
-        rows={6}
-        className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full max-w-2xl"
-        placeholder="Enter syllabus content here..."
-      />
-      {errors.textContent && <p className="text-red-500 text-sm mt-1">{errors.textContent.message}</p>}
-    </div>
-  )}
+            {/* File Upload or Text Content */}
+            {inputType === "file" ? (
+              <div
+                className={`border-2 border-dashed rounded-md p-6 text-center ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
+                onDragEnter={handleDragEnter}
+                onDragOver={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <div className="flex flex-col items-center">
+                  <FiUpload className="w-10 h-10 text-gray-400 mb-3" />
+                  <p className="text-sm text-gray-500 mb-1">
+                    <span className="font-semibold">Click to upload</span> or drag and drop
+                  </p>
+                  <p className="text-xs text-gray-500">PDF, DOC, DOCX, or TXT (MAX. 10MB)</p>
+                  <input
+                    type="file"
+                    accept=".pdf,.txt,.doc,.docx"
+                    {...register("file")}
+                    className="hidden"
+                    id="file-upload"
+                  />
+                  <label
+                    htmlFor="file-upload"
+                    className="mt-3 px-4 py-2 btn button"
+                  >
+                    Select File
+                  </label>
+                </div>
+                {watchedFile?.[0]?.name && (
+                  <p className="mt-2 text-sm text-gray-700">
+                    Selected: <span className="font-medium">{watchedFile[0].name}</span>
+                  </p>
+                )}
+                {errors.file && <p className="text-red-500 text-sm mt-2">{errors.file.message}</p>}
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                <label className="text-sm font-medium text-gray-700 mb-1 flex items-center">
+                  <FiFileText className="mr-2" /> Syllabus Content*
+                </label>
+                <textarea
+                  {...register("textContent")}
+                  rows={6}
+                  className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full max-w-2xl"
+                  placeholder="Enter syllabus content here..."
+                />
+                {errors.textContent && <p className="text-red-500 text-sm mt-1">{errors.textContent.message}</p>}
+              </div>
+            )}
 
-  {/* Submit Button */}
-  <button
-    type="submit"
-    disabled={loading}
-    className="btn button font-medium py-2 px-6 rounded-md flex items-center justify-center"
-  >
-    {loading ? "Uploading..." : "Upload Syllabus"}
-  </button>
-</form>
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn button font-medium py-2 px-6 rounded-md flex items-center justify-center"
+            >
+              {loading ? (isEditMode ? "Updating..." : "Uploading...") : (isEditMode ? "Update Syllabus" : "Upload Syllabus")}
+            </button>
+          </form>
 
         </div>
       </div>

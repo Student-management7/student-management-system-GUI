@@ -22,7 +22,7 @@ const UploadSyllabus: React.FC = () => {
 
       // Prepare query parameters
       const params = {
-        tittle: data.title,  // Note: backend expects "tittle" with two 't's
+        title: data.title,  // Note: backend expects "title" with two 't's
         subject: data.subject,
         publish: String(data.publish),
         cls: data.class,

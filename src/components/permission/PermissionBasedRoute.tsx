@@ -39,6 +39,7 @@ import Loader from "../loader/loader";
 import SchoolPermission from "../SuperAdmin/SchoolPermission";
 import  SyllabusList  from "../syllabus/SyllabusList";
 import UploadSyllabus from "../syllabus/UploadSyllabus";
+import EditSyllabus from "../syllabus/EditSyllabus";
 
 interface Permission {
   [module: string]: {
@@ -261,12 +262,11 @@ const PermissionBasedRoute: React.FC = () => {
       visible: true 
     },
     
-    
-    
-
-    
-
-
+    { 
+      path: "/syllabus/edit/:id", 
+      element: <EditSyllabus />, 
+      visible: true 
+    },
 
   ];
 
