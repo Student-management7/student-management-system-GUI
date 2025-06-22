@@ -13,8 +13,14 @@ export const uploadSyllabus = (params: Record<string, string>, data: FormData) =
   });
 };
 
-export const updateSyllabus = (data: FormData) =>
-  axiosInstance.post(`${BASE_URL}/update`, data);
+export const updateSyllabus = (params: Record<string, string>, data: FormData) => {
+  const queryString = new URLSearchParams(params).toString();
+  return axiosInstance.post(`${BASE_URL}/update?${queryString}`, data, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    }
+  });
+};
 
 export const deleteSyllabus = (id: string) =>
   axiosInstance.post(`${BASE_URL}/delete?id=${id}`);

@@ -18,33 +18,31 @@ const EditSyllabus: React.FC = () => {
 
   console.log('[EditSyllabus] Current syllabus data:', current);
 
-  const handleUpdate = async (data: any) => {
-    console.log('[EditSyllabus] Form submission data:', data);
-    
+const handleUpdate = async (data: any) => {
+  try {
     const formData = new FormData();
-    formData.append("title", data.title);
-    formData.append("cls", data.class);
-    formData.append("subject", data.subject);
-    formData.append("publish", String(data.publish));
-    if (data.file?.[0]) {
-      formData.append("file", data.file[0]);
-    }
-    formData.append("id", id || "");
-
-    console.log('[EditSyllabus] FormData contents:');
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
+    const fileToUpload = data.pdfFile || (data.file?.[0] instanceof File ? data.file[0] : null);
+    
+    if (fileToUpload) {
+      formData.append("file", fileToUpload);
     }
 
-    try {
-      await update(formData);
-      toast.success("Updated successfully!");
-      navigate("/syllabus");
-    } catch (err) {
-      console.error('[EditSyllabus] Update error:', err);
-      toast.error("Update failed.");
-    }
-  };
+    const params = {
+      title: data.title,
+      subject: data.subject,
+      publish: String(data.publish),
+      cls: data.class,
+      id: id || ""
+    };
+
+    await update(params, formData);
+    toast.success("Updated successfully!");
+    navigate("/syllabus");
+  } catch (err) {
+    console.error('Update error:', err);
+    toast.error(`Update failed: ${err instanceof Error ? err.message : "Unknown error"}`);
+  }
+};
 
   if (!current) {
     console.error('[EditSyllabus] No syllabus data found in location state');

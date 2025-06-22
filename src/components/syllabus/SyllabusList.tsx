@@ -62,9 +62,7 @@ const SyllabusList: React.FC = () => {
     setModifiedStatus({});
   }, [syllabusList, classFilter, subjectFilter]);
 
-  const handleEdit = (id: string) => {
-    navigate(`/syllabus/edit/${id}`);
-  };
+
 
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this syllabus document?")) {
@@ -292,4 +290,4 @@ const SyllabusList: React.FC = () => {
   );
 };
 
-export default SyllabusList;
+export default SyllabusList;                            

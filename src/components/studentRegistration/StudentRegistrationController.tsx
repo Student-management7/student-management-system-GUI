@@ -14,6 +14,7 @@ import Loader from "../loader/loader";
 import ReusableTable from "../StudenAttendanceShow/Table/Table";
 import './StudentRegistration.scss';
 
+
 const StudentRegistrationController = () => {
   const navigate = useNavigate();
   const [data, setData] = useState<any[]>([]);
@@ -146,7 +147,8 @@ const StudentRegistrationController = () => {
 
 
   const handeledBulkUplade = () => {
-    navigate(`/bulkupload`);
+    
+ navigate('bulk')
   };
 
   return (
