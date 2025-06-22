@@ -290,4 +290,4 @@ const SyllabusList: React.FC = () => {
   );
 };
 
-export default SyllabusList;
+export default SyllabusList;                            
