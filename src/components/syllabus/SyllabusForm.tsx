@@ -369,7 +369,7 @@ const SyllabusForm: React.FC<Props> = ({ onSubmit, loading, defaultValues, isEdi
             {loading
               ? isEditMode
                 ? "Updating..."
-                : "Uploading..."
+                : "Uploading.."
               : isEditMode
                 ? "Update Syllabus"
                 : "Upload Syllabus"}
