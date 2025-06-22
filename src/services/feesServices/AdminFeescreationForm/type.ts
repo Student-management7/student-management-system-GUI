@@ -4,6 +4,7 @@ export interface OtherAmount {
 }
 
 export interface FeeFormValues {
+  id: string;
 
   className: string;
   schoolFee: number;

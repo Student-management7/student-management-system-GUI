@@ -5,9 +5,10 @@ import { API_ENDPOINTS } from "../../services/StudentAttendence/API/studentAtten
 import axiosInstance from "../../services/Utils/apiUtils";
 import { sortArrayByKey } from "../Utils/sortArrayByKey";
 import Loader from "../loader/loader";
-import BackButton from "../Navigation/backButton";
+import '../../global.scss'
 import ReusableTable from "../StudenAttendanceShow/Table/Table";
-
+import { toast, ToastContainer } from "react-toastify";
+import React from "react";
 
 
 const StudentManagementSystem: React.FC = () => {
@@ -16,37 +17,49 @@ const StudentManagementSystem: React.FC = () => {
     const [selectedClass, setSelectedClass] = useState<string>("");
     const [selectedSubject, setSelectedSubject] = useState<string>("");
     const [students, setStudents] = useState<Student[]>([]);
-    const [attendanceMode, setAttendanceMode] = useState<"subject" | "master">("subject");
+    const [AttendanceMode, setAttendanceMode] = useState<"subject" | "master">("subject");
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
+    const [bulkAttendance, setBulkAttendance] = useState<string>('');
+    const [refreshKey, setRefreshKey] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
+
+
+
+
 
     // Fetch class data
     const fetchClasses = async () => {
         try {
-          setError("");
-          setLoading(true);
-          const response = await axiosInstance.get("/class/data");
-          const sortedClasses = sortArrayByKey(response.data.classData, "className"); // Sort data by className
-          setClasses(sortedClasses); // Set the sorted class data
+            setError("");
+            setLoading(true);
+
+            const response = await axiosInstance.get("/class/data");
+            const sortedClasses = sortArrayByKey(response.data.classData, "className");
+            setClasses(sortedClasses); // Set the sorted class data
+            setAttendanceMode("master")
         } catch (error) {
-          setError("Failed to fetch class data");
+
+            toast.warning("Failed to fetch class data")
         } finally {
-          setLoading(false);
+            setLoading(false);
+
+
         }
-      };
-      
-      useEffect(() => {
+    };
+
+    useEffect(() => {
         fetchClasses();
-      }, []);
-      
-      // Handle class change
-      const handleClassChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    }, []);
+
+    // Handle class change
+    const handleClassChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedClassName = event.target.value;
         setSelectedClass(selectedClassName);
         const classData = classes.find((cls) => cls.className === selectedClassName);
         setSubjects(classData ? classData.subject : []);
-      };
-      
+    };
+
 
     // Handle subject change
     const handleSubjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -59,7 +72,7 @@ const StudentManagementSystem: React.FC = () => {
         try {
             setError("");
             setLoading(true);
-            const endpoint = API_ENDPOINTS.STUDENT_DATA(selectedClass, attendanceMode === "master");
+            const endpoint = API_ENDPOINTS.STUDENT_DATA(selectedClass, AttendanceMode === "master");
             const response = await axiosInstance.get(endpoint);
             const filteredStudents = response.data.map((student: any) => ({
                 stdId: student.id,
@@ -68,8 +81,14 @@ const StudentManagementSystem: React.FC = () => {
                 remark: "",
             }));
             setStudents(filteredStudents);
+            if (filteredStudents.length === 0) {
+                toast.warning("No students found for the selected class.");
+            }
+
         } catch (error) {
+
             setError("Failed to fetch student data");
+            toast.error("Failed to fetch student data try again")
         } finally {
             setLoading(false);
         }
@@ -81,69 +100,130 @@ const StudentManagementSystem: React.FC = () => {
     const submitAttendance = async () => {
         const payload: AttendancePayload = {
             className: selectedClass,
-            subject: attendanceMode === "master" ? "" : selectedSubject,
+            subject: AttendanceMode === "master" ? "" : selectedSubject,
             studentList: students.map((student) => ({
                 stdId: student.stdId,
                 remark: student.remark || "",
                 name: student.name,
                 attendance: student.attendance || "Absent",
             })),
-            masterAttendance: attendanceMode === "master",
+            masterAttendance: AttendanceMode === "master",
         };
 
         try {
-            const endpoint = API_ENDPOINTS.SAVE_ATTENDANCE(attendanceMode === "master");
+            const endpoint = API_ENDPOINTS.SAVE_ATTENDANCE(AttendanceMode === "master");
             const response = await axiosInstance.post(endpoint, payload);
 
             if (response.status === 200) {
-                alert("Attendance submitted successfully!");
+                toast.success("Attendance submitted successfully!");
             } else {
                 throw new Error("Failed to submit attendance");
             }
         } catch (error) {
-            alert("Error submitting attendance: " + error);
+            toast.error("Error submitting attendance");
         }
     };
 
-    const handleCellValueChange = (rowIndex: number, field: string, value: any) => {
-        setStudents(prevStudents => {
-            const newStudents = [...prevStudents];
-            newStudents[rowIndex] = {
-                ...newStudents[rowIndex],
-                [field]: value
-            };
-            return newStudents;
-        });
+    // In your StudentManagementSystem component
+    // const handleCellValueChange = (factId: string, field: string, value: any) => {
+    //     console.log(`Updating factId: ${factId}, field: ${field}, value: ${value}`);
+    //     setFacultyList(prevList =>
+    //       prevList.map(faculty =>
+    //         faculty.fact_id === factId
+    //           ? { ...faculty, [field]: value }
+    //           : faculty
+    //       )
+    //     );
+    //   };
+
+    const handleCellValueChange = (stdId: string, field: string, value: any) => {
+        console.log(`Updating stdId: ${stdId}, field: ${field}, value: ${value}`);
+        setStudents(prevList =>
+            prevList.map(student =>
+                student.stdId === stdId
+                    ? { ...student, [field]: value }
+                    : student
+            )
+        );
     };
 
 
+    const onCellValueChange = (rowIndexOrId: number | string, field: string, value: any) => {
+        // Check if rowIndexOrId is a string (factId) or number (rowIndex)
+        if (typeof rowIndexOrId === 'string') {
+            // Handle factId-based updates
+            handleCellValueChange(rowIndexOrId, field, value);
+        } else {
+            // Handle index-based updates
+            const student = students[rowIndexOrId as number];
+            if (student) {
+                handleCellValueChange(student.stdId, field, value);
+            }
+        }
+    };
+
+
+
+
+    const applyBulkAttendance = (value: string) => {
+        if (!value) {
+            toast.warning("Please select an attendance status before applying.");
+            return;
+        }
+
+        setStudents((prevList: any) =>
+            prevList.map((faculty: any) => ({ ...faculty, attendance: value }))
+        );
+    };
+
     const Column = [
-        { 
-            headerName: "Student Name", 
-            field: "name"  
+        {
+            headerName: "Student Name",
+            field: "name"
         },
         {
             headerName: "Attendance",
             field: "attendance",
             editable: true,
-            cellRenderer: (params: any) => (
-                <div className="flex gap-2">
-                    {["Present", "Absent", "Half Day", "Late"].map((option) => (
-                        <label key={option} className="flex items-center gap-1">
-                            <input
-                                type="radio"
-                                name={`attendance-${params.data.stdId}`}
-                                value={option}
-                                checked={params.value === option}
-                                onChange={() => params.setValue(option)}
-                                className="form-radio h-4 w-4 text-blue-600"
-                            />
-                            <span className="text-sm">{option}</span>
-                        </label>
-                    ))}
-                </div>
-            ),
+            cellRenderer: (params: any) => {
+                const stdId = params.data.stdId;
+                const student = students.find((student: any) => student.stdId === stdId);
+                const currentValue = student ? student.attendance : "";
+
+                return (
+                    <div className="flex gap-2" key={`${stdId}-${refreshKey}`}>
+                        {["Present", "Absent", "Half Day", "Late", "Leave"].map((option) => (
+                            <label key={option} className="flex items-center gap-1">
+                                <input
+                                    type="radio"
+                                    name={`attendance-${stdId}`}
+                                    value={option}
+                                    checked={currentValue === option}
+                                    onChange={() => {
+                                        // Update the state directly
+                                        setStudents((prevList: any) =>
+                                            prevList.map((student: any) =>
+                                                student.stdId === stdId
+                                                    ? { ...student, attendance: option }
+                                                    : student
+                                            )
+                                        );
+                                        // Force refresh the component
+                                        setRefreshKey((prev) => prev + 1);
+                                        // Attempt to update the table if possible
+                                        if (typeof params.setValue === "function") {
+                                            params.setValue(option);
+                                        }
+                                    }}
+                                />
+                                {option}
+                            </label>
+                        ))}
+                    </div>
+                );
+            },
         },
+
         {
             headerName: "Remarks",
             field: "remark",
@@ -162,108 +242,127 @@ const StudentManagementSystem: React.FC = () => {
 
     return (
 
-        
-    <>
-    {loading && <Loader />} {/* Show loader when loading */}
-    {!loading && (
 
-        
-        
-        <div className="box">
-        <div className="flex items-center space-x-4 mb-4">
-            <span>
-              <BackButton />
-            </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Attendance </h1>
-          </div>
+        <>
+            <ToastContainer position="top-right" autoClose={3000} />
+            {loading && <Loader />} {/* Show loader when loading */}
+            {!loading && (
 
-            {error && <p className="text-red-500 mb-4">{error}</p>}
+                <div className="box">
+                    <div className=" grid grid-cols-1 gap-6 ">
 
-            {/* Attendance Mode Selector */}
-            <div className="attendance-mode-selector mb-4">
-                <label className="mr-4">
-                    <input
-                        type="radio"
-                        name="attendanceMode"
-                        value="subject"
-                        checked={attendanceMode === "subject"}
-                        onChange={() => setAttendanceMode("subject")}
-                    />{" "}
-                    Subject-Wise Attendance
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        name="attendanceMode"
-                        value="master"
-                        checked={attendanceMode === "master"}
-                        onChange={() => setAttendanceMode("master")}
-                    />{" "}
-                    Master Attendance
-                </label>
-            </div>
+                        {/* <h1 className="head1Class Fee Page">Student Attendance</h1> */}
+                        <h1 className="head1">Student Attendance</h1>
 
-            {/* Dropdowns */}
-            <div className="dropdowns-container flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
-                <select
-                    value={selectedClass}
-                    onChange={handleClassChange}
-                    className="custom-dropdown p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option value="">Select Class</option>
-                    {classes.map((cls) => (
-                        <option key={cls.className} value={cls.className}>
-                            Class {cls.className}
-                        </option>
-                    ))}
-                </select>
+                        {error && <p className="text-red-500">{error}</p>}
 
-                <select
-                    value={selectedSubject}
-                    onChange={handleSubjectChange}
-                    disabled={attendanceMode === "master"}
-                    className="custom-dropdown p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option value="">Select Subject</option>
-                    {subjects.map((sub, index) => (
-                        <option key={index} value={sub}>
-                            {sub}
-                        </option>
-                    ))}
-                </select>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+                            <div className="attendance-mode-selector flex items-center space-x-4">
+                                <span className="font-medium">
+                                    {AttendanceMode === "subject" ? "Subject-Wise Attendance" : "Master Attendance"}
+                                </span>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only peer"
+                                        checked={AttendanceMode === "master"}
+                                        onChange={() =>
+                                            setAttendanceMode(AttendanceMode === "subject" ? "master" : "subject")
+                                        }
+                                    />
+                                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#3a8686] dark:peer-focus:ring-[#3a8686] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3a8686]"></div>
+                                </label>
+                            </div>
 
-                <button
-                    onClick={fetchStudents}
-                    disabled={!selectedClass}
-                    className="fetch-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 button"
-                >
-                    {loading ? "Loading..." : "Fetch Students"}
-                </button>
-            </div>
+                            <select
+                                value={selectedClass}
+                                onChange={handleClassChange}
+                                className="custom-dropdown p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="">Select Class</option>
+                                {classes.map((cls) => (
+                                    <option key={cls.className} value={cls.className}>
+                                        Class {cls.className}
+                                    </option>
+                                ))}
+                            </select>
 
-          
+                            <select
+                                value={selectedSubject}
+                                onChange={handleSubjectChange}
+                                hidden={AttendanceMode === "master"}
 
-            <div className="mt-6">
-                        <ReusableTable 
-                            rows={students}
-                            columns={Column}
-                            rowsPerPageOptions={[5, 10, 25]}
-                            onCellValueChange={handleCellValueChange}
-                        />
+                                className="custom-dropdown p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="">Select Subject</option>
+                                {subjects.map((sub, index) => (
+                                    <option key={index} value={sub}>
+                                        {sub}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <button
+                                onClick={fetchStudents}
+                                disabled={!selectedClass}
+                                className="button text-lg"
+                            >
+                                {loading ? "Loading..." : "Fetch Students"}
+                            </button>
+
+                        </div>
+
+
+                        <div className="mt-2">
+
+
+                            <div className="bulk-attendance flex items-center space-x-4 float-right">
+                                <select
+                                    value={bulkAttendance}
+                                    onChange={(e) => {
+                                        const selectedValue = e.target.value;
+                                        setBulkAttendance(selectedValue);
+                                        applyBulkAttendance(selectedValue); // Apply the correct selected value
+                                    }}
+                                    className="border rounded-md px-4 py-2"
+                                >
+                                    <option value="">Select Attendance</option>
+                                    <option value="Present">Present</option>
+                                    <option value="Absent">Absent</option>
+                                    <option value="Half Day">Half Day</option>
+                                    <option value="Late">Late</option>
+                                    <option value="Leave">Leave</option>
+                                </select>
+                            </div>
+
+                            <div className="mt-2">
+
+                                <ReusableTable
+                                    rows={students}
+                                    columns={Column}
+                                    rowsPerPageOptions={[5, 10, 20,30]}
+                                    onCellValueChange={onCellValueChange}
+                                    page={currentPage}
+                                    onPageChange={(newPage: React.SetStateAction<number>) => setCurrentPage(newPage)}
+                                />
+                            </div>
+
+                        </div>
+
+                        <div className="flex justify-center">
+                            <button
+                                onClick={submitAttendance}
+                                disabled={students.length === 0}
+                                className="mt-4 button py-2 px-4 bg-[#27727A] text-white"
+                            >
+                                Submit Attendance
+                            </button>
+                        </div>
                     </div>
+                </div>
 
-            {/* Submit Button */}
-            <button
-                onClick={submitAttendance}
-                disabled={students.length === 0}
-                className="submit-btn px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 mt-6"
-            >
-                Submit Attendance
-            </button>
-        </div>
-        
-    )}
-    </>
+            )}
+        </>
     );
 };
 

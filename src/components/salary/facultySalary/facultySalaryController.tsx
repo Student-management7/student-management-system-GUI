@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import GridView from "./gridView";
 import FacultySalaryForm from "./FacultySalaryForm";
-import { fetchFacultySalaries, updateFacultySalary, saveFacultySalary } from "../../../services/salary/facultysalary/Api";
-import { Eye, Pencil } from "lucide-react";
+import { fetchFacultySalaries, saveFacultySalary } from "../../../services/salary/facultysalary/Api";
+import { Eye } from "lucide-react";
 import Loader from "../../loader/loader";
-import BackButton from "../../Navigation/backButton";
-import ReusableTable from "../../MUI Table/ReusableTable";
-// Define types with improved clarity
+import ReusableTable from "../../StudenAttendanceShow/Table/Table";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 type DeductionItem = {
   name: string;
   amount: number;
@@ -31,7 +30,7 @@ type FacultySalaryResponse = {
     facultySalary?: number;
     facultyTax?: number;
     facultyTransport?: number;
-    facultyDeduction?: string; // Stored as a JSON string
+    facultyDeduction?: string; 
     total?: number;
   }[];
 };
@@ -67,8 +66,6 @@ const FacultySalaryController: React.FC = () => {
   const navigate = useNavigate();
   const [showForm, setShowForm] = useState<boolean>(false);
   const [rowData, setRowData] = useState<FacultySalaryDetails[]>([]);
-  const [editData, setEditData] = useState<FacultySalaryDetails | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   const columns: Column[] = [
@@ -91,47 +88,31 @@ const FacultySalaryController: React.FC = () => {
     },
 
     { headerName: "Total", field: "total", editable: false },
+   
     {
-      field: "edit",
-      headerName: "Edit",
-      cellRenderer: (params: any) => (
-        
-          <button
-            onClick={() => params.data && handleEditButtonClick(params.data)}
-          >
-           <Pencil size={20} color='orange' />
-          </button>
-         
-      ),
-    },
-    { 
       field: "view",
       headerName: "View Details",
       cellRenderer: (params: any) => (
         <button
-            onClick={() => params.data?.facultyID && handleViewDetails(params.data.facultyID)}
-          >
-           <Eye size={20} color='blue' />
-          </button>
-      )},
-
-      
+          onClick={() => params.data?.facultyID && handleViewDetails(params.data.facultyID)}
+        >
+          <Eye size={20} color='blue' />
+        </button>
+      )
+    },
   ];
 
   const fetchSalaryDetails = useCallback(async () => {
-    
-    setError(null);
     try {
       setLoading(true);
       const data: FacultySalaryResponse[] = await fetchFacultySalaries();
       const transformedData = transformFacultySalaryData(data);
       setRowData(transformedData);
     } catch (error) {
-      console.error("Error fetching faculty salary details:", error);
-      setError("Failed to fetch salary details. Please try again.");
+      toast.error("Error fetching faculty salary details");
+      
     } finally {
       setLoading(false);
-      
     }
   }, []);
 
@@ -139,26 +120,16 @@ const FacultySalaryController: React.FC = () => {
     fetchSalaryDetails();
   }, [fetchSalaryDetails]);
 
-  const handleEditButtonClick = (data: FacultySalaryDetails) => {
-    setEditData(data);
-    setShowForm(true);
-  };
-
   const handleSave = async (payload: FacultySalaryFormValues) => {
     setLoading(true);
-    setError(null);
     try {
-      if (editData) {
-        await updateFacultySalary(payload.facultyID, payload);
-      } else {
-        await saveFacultySalary(payload);
-      }
+      await saveFacultySalary(payload);
+      toast.success("Salary information saved successfully"); // Add success toaster message
       setShowForm(false);
-      setEditData(null);
       await fetchSalaryDetails();
     } catch (error) {
       console.error("Error saving faculty salary details:", error);
-      setError("Failed to save salary details. Please try again.");
+      toast.error("Failed to save salary information"); // Add error toaster message
     } finally {
       setLoading(false);
     }
@@ -170,74 +141,64 @@ const FacultySalaryController: React.FC = () => {
 
   const handleCancel = () => {
     setShowForm(false);
-    setEditData(null);
   };
 
   return (
-
     <>
-    {loading ? (
-      <Loader /> // Show loader while data is being fetched
-    ) : (
-    <div className="box">
-      {error && (
-        <div className="alert alert-error mb-4">
-          {error}
-          <button onClick={() => setError(null)} className="ml-2">
-            Dismiss
-          </button>
-        </div>
-      )}
 
-      {loading && (
-        <div className="text-center my-4">
-          <span className="loading loading-spinner loading-lg"></span>
-          <p>Loading...</p>
-        </div>
-      )}
-
-      {!showForm ? (
-        <>
-          <div className="text-right mb-4">
-          <div className="flex items-center space-x-4 mb-4 ">
-            <span >
-              <BackButton />
-            </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Faculty Salary </h1>
-          </div>            <button
-              onClick={() => {
-                setShowForm(true);
-                setEditData(null);
-              }}
-              className={`btn button ${loading ? "btn-disabled" : ""}`}
-              disabled={loading}
-            >
-              Add Salary
-            </button>
-
-          </div>
-          <ReusableTable
-            rows={rowData}
-            columns={columns}
-          // loading={loading}
-          />
-        </>
+      {loading ? (
+        <Loader /> // Show loader while data is being fetched
       ) : (
-        <FacultySalaryForm
-          initialData={editData || {
-            facultyID: "",
-            facultySalary: 0,
-            facultyTax: 0,
-            facultyTransport: 0,
-            facultyDeduction: [],
+        <div className="box">
+          <ToastContainer position="top-right" autoClose={3000} />
+          
 
-          }}
-          onSave={handleSave}
-          onCancel={handleCancel}
-        />
+          {loading && (
+            <div className="text-center my-4">
+              <span className="loading loading-spinner loading-lg"></span>
+              <p>Loading...</p>
+            </div>
+          )}
+
+          {!showForm ? (
+            <>
+              <div className="text-right mb-4">
+                <div className="flex items-center space-x-4 mb-4 ">
+                  <h1 className="head1">Faculty Salary</h1>
+                </div>
+                <span
+                  onClick={() => {
+                    setShowForm(true);
+                  }}
+                  className='btn float-right button'
+                  
+                >
+                  Add Salary
+                </span>
+              </div>
+              <ReusableTable
+                rows={rowData}
+                columns={columns}
+              />
+            </>
+          ) : (
+            <FacultySalaryForm
+              initialData={{
+                facultyID: "",
+                facultySalary: 0,
+                facultyTax: 0,
+                facultyTransport: 0,
+                facultyDeduction: [],
+                paymentMode: "Cash"
+
+                
+              }}
+              onSave={handleSave}
+              onCancel={handleCancel}
+            />
+          )}
+        </div>
       )}
-    </div>
-    )}
     </>
   );
 };

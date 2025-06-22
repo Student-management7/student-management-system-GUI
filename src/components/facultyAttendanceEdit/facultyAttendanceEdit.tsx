@@ -1,138 +1,304 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { fetchAttendance } from '../../services/Faculty/facultyAttendanceEdit/Api/api';
-import { Faculty, AttendanceEntry } from '../../services/Faculty/facultyAttendanceEdit/Type/type';
-import { Pencil } from 'lucide-react';
-import ReusableTable from '../MUI Table/ReusableTable';
-import Loader from '../loader/loader';
-import BackButton from '../Navigation/backButton';
-const FacultyAttendance: React.FC = () => {
-  const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState<string>('');
-  const [rowData, setRowData] = useState<any[]>([]);
-  const [columnDefs, setColumnDefs] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
 
-  useEffect(() => {
-    if (selectedDate) {
-      
+
+
+import React, { useState, useEffect, useCallback } from "react";
+import ReusableTable from "../StudenAttendanceShow/Table/Table";
+import Loader from "../loader/loader";
+import BackButton from "../Navigation/backButton";
+import { toast, ToastContainer } from "react-toastify";
+import axiosInstance from "../../services/Utils/apiUtils";
+
+interface Faculty {
+  factId: string;
+  name: string;
+  attendance: string;
+}
+
+interface AttendanceEntry {
+  date: string;
+  id: string;
+  factList: Faculty[];
+}
+
+interface CurrentFaculty {
+  fact_id: string;
+  fact_Name: string;
+}
+
+// Include validation function in the same file
+const validateAttendanceForm = (date: string): boolean => {
+  if (!date || date.trim() === "") {
+    return false;
+  }
+  return true;
+};
+
+// Include API functions in the same file
+const fetchAttendance = async (selectedDate: string): Promise<AttendanceEntry[]> => {
+  try {
+    // Format date from YYYY-MM-DD to DD/MM/YYYY
+    const parts = selectedDate.split('-');
+    const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+    const url = `https://s-m-s-keyw.onrender.com/faculty/getAttendance?fromDate=${formattedDate}&toDate=${formattedDate}`;
+    const response = await axiosInstance.get(url);
+
+    if (!response.data || !Array.isArray(response.data)) {
+      throw new Error('Invalid response format');
     }
-  }, [selectedDate]);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
-  const fetchAttendanceData = async (): Promise<void> => {
+const FacultyAttendanceEdit: React.FC = () => {
+  const [selectedDate, setSelectedDate] = useState("");
+  const [attendanceData, setAttendanceData] = useState<AttendanceEntry[]>([]);
+  const [editedFacultyList, setEditedFacultyList] = useState<Faculty[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [currentFaculty, setCurrentFaculty] = useState<CurrentFaculty[]>([]);
+  const [attendanceId, setAttendanceId] = useState<string>("");
+
+  // Fetch current faculty members
+  useEffect(() => {
+    const fetchCurrentFaculty = async () => {
+      try {
+        const response = await axiosInstance.get("https://s-m-s-keyw.onrender.com/faculty/findAllFaculty");
+        setCurrentFaculty(response.data);
+      } catch (err) {
+        toast.error("Failed to fetch current faculty.");
+      }
+    };
+
+    fetchCurrentFaculty();
+  }, []);
+
+  // Format date from YYYY-MM-DD to DD/MM/YYYY for API payload
+  const formatDateForPayload = (dateString: string): string => {
+    const date = new Date(dateString);
+    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+  };
+
+  // Handle fetch attendance button click
+  const handleFetchAttendance = useCallback(async () => {
+    const isFormValid = validateAttendanceForm(selectedDate);
+
+    if (!isFormValid) {
+      toast.warning("Please select a valid date.");
+      return;
+    }
+
+    setAttendanceData([]);
+    setEditedFacultyList([]);
+    setAttendanceId("");
+
     setLoading(true);
-    setError('');
     try {
       const data = await fetchAttendance(selectedDate);
-      const rows = mapAttendanceToRows(data, selectedDate);
-      setColumnDefs([
-        { field: 'name', headerName: 'Faculty Name' },
-        // { field: 'factId', headerName: 'Faculty ID' },
-        {
-          field: selectedDate,
-          headerName: selectedDate,
-          cellStyle: (params: { value: string }) => ({
-            backgroundColor: params.value === 'Present' ? '#FFFFFF' : '#FFFFFF',
-            color: params.value === 'Present' ? '#3C763D' : '#A94442',
-          }),
-        },
-        {
-          field: 'edit',
-          headerName: 'Actions',
-          cellRenderer: (params: any) => (
-            <button
-              className=""
-              onClick={() =>
-                handleEditButtonClick(params.data.factId, selectedDate, params.data.factList)
-              }
-            >
-              <Pencil size={20} color='orange' />
-            </button>
-          ),
-        },
-      ]);
-      setRowData(rows);
+
+      if (!data || data.length === 0) {
+        toast.warning("No attendance records found for the selected date.");
+        setAttendanceData([]);
+        setEditedFacultyList([]);
+        return;
+      }
+
+      // Filter attendance data to include only current faculty
+      const currentFacultyIds = new Set(currentFaculty.map(faculty => faculty.fact_id));
+
+      const filteredData = data.map((record) => {
+        return {
+          id: record.id,
+          date: record.date,
+          factList: record.factList.filter((faculty) =>
+            currentFacultyIds.has(faculty.factId)
+          )
+        };
+      });
+
+      setAttendanceData(filteredData);
+      setEditedFacultyList(filteredData[0]?.factList || []);
+      setAttendanceId(filteredData[0]?.id || "");
+      toast.success("Faculty attendance data fetched successfully.");
     } catch (err) {
-      console.error('Error fetching attendance:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch attendance data');
-      setRowData([]);
-      setColumnDefs([]);
+      console.error("Error fetching attendance data:", err);
+      toast.error("No data found for this date.");
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedDate, currentFaculty]);
+
+  // Handle cell value changes
+  const handleCellValueChange = (rowIndex: number, field: string, value: any) => {
+    setEditedFacultyList((prevFaculty) => {
+      if (rowIndex >= 0 && rowIndex < prevFaculty.length) {
+        const newFaculty = [...prevFaculty];
+        newFaculty[rowIndex] = {
+          ...newFaculty[rowIndex],
+          [field]: value,
+        };
+        return newFaculty;
+      }
+      return prevFaculty;
+    });
+  };
+
+  // Save edited attendance
+  const saveEditedAttendance = async () => {
+    if (editedFacultyList.length === 0 || attendanceData.length === 0) {
+      toast.warning("No attendance data to save.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Format date for the payload
+      const formattedDate = formatDateForPayload(selectedDate);
+
+      const payload = {
+        id: attendanceId,
+        date: formattedDate,
+        factList: editedFacultyList.map((faculty) => ({
+          factId: faculty.factId,
+          name: faculty.name,
+          attendance: faculty.attendance,
+        })),
+      };
+
+      await axiosInstance.post("https://s-m-s-keyw.onrender.com/faculty/attendanceEdit", payload);
+      toast.success('Faculty attendance updated successfully!');
+    } catch (err) {
+      console.error("Error saving attendance:", err);
+      toast.error('Failed to save changes. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const mapAttendanceToRows = (data: AttendanceEntry[], date: string): any[] => {
-    const facultyMap: { [id: string]: any } = {};
-  
-    data.forEach((entry) => {
-      entry.factList.forEach((faculty) => {
-        if (!facultyMap[faculty.factId]) {
-          facultyMap[faculty.factId] = {
-            name: faculty.name,
-            factId: faculty.factId,
-            factList: entry.factList,
-            [date]: faculty.attendance,
-          };
-        }
-      });
-    });
-  
-    return Object.values(facultyMap);
-  };
+  // Column definitions for the table
+  const columnDefs = [
+    { headerName: 'Faculty Name', field: 'name', editable: false },
+    {
+      headerName: 'Attendance',
+      field: 'attendance',
+      editable: true,
+      cellRenderer: (params: any) => {
+        const factId = params.data.factId;
+        const faculty = editedFacultyList.find((faculty: Faculty) => faculty.factId === factId);
+        const currentValue = faculty ? faculty.attendance : "Present";
 
-  const handleEditButtonClick = (id: string, date: string, factList: Faculty[]) => {
-    if (!date || !factList) {
-      console.error('Error: Missing date or factList', { id, date, factList });
-      return;
-    }
-    
-    navigate('/facultyAttendanceEditSave', {
-      state: { id, date, factList },
-    });
-  };
+        return (
+          <div className="flex gap-2" key={`${factId}-${refreshKey}`}>
+            {["Present", "Absent", "Half Day", "Late", "Leave"].map((option) => (
+              <label key={option} className="flex items-center gap-1">
+                <input
+                  type="radio"
+                  name={`attendance-${factId}`}
+                  value={option}
+                  checked={currentValue === option}
+                  onChange={() => {
+                    setEditedFacultyList((prevList: Faculty[]) =>
+                      prevList.map((faculty: Faculty) =>
+                        faculty.factId === factId
+                          ? { ...faculty, attendance: option }
+                          : faculty
+                      )
+                    );
+                    setRefreshKey((prev) => prev + 1);
+                    if (typeof params.setValue === "function") {
+                      params.setValue(option);
+                    }
+                  }}
+                  className="form-radio h-4 w-4 text-blue-600"
+                />
+                <span className="text-sm">{option}</span>
+              </label>
+            ))}
+          </div>
+        );
+      },
+    },
+  ];
+
+  const rowData = editedFacultyList.map((faculty, index) => ({
+    ...faculty,
+    rowIndex: index,
+  }));
 
   return (
-
     <>
-     {loading && <Loader />} {/* Show loader when loading */}
-     {!loading && (
-    <div className="box">
-      <div className="flex items-center space-x-4 mb-4">
+      <ToastContainer position="top-right" autoClose={3000} />
+      {loading && <Loader />}
+      {!loading && (
+        <div className="box">
+          <div className="flex items-center space-x-4 mb-4">
             <span>
               <BackButton />
             </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]" >Student Attendance Edit </h1>
+            <h1 className="head1">Faculty Attendance Update</h1>
           </div>
-      <div className="filters space-y-4 md:flex md:space-y-0 md:space-x-4 md:items-center mb-2">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Select Date:</label>
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={e => setSelectedDate(e.target.value)}
-            className="border rounded p-2"
-          />
+
+          <div className="">
+            {/* Date Selection and Fetch Button in the same line */}
+            <div className="row form-group d-flex align-items-end">
+              <div className="col-6 col-md-3 mb-2 mb-md-0">
+                <label className="form-label">Select Date:</label>
+                <input
+                  type="date"
+                  id="selectedDate"
+                  className="form-control me-md-2"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  disabled={loading}
+                />
+              </div>
+              <div className="col-6 col-md-3 d-flex align-items-end mt-3 mt-md-0 mb-1"> {/* Added mt-3 for mobile gap */}
+                <button
+                  className="button btn w-100 w-md-auto"
+                  onClick={handleFetchAttendance}
+                  disabled={loading}
+                >
+                  {loading ? "Loading..." : "Fetch Attendance"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Attendance Table */}
+          {!loading && editedFacultyList.length > 0 && (
+            <div className="mt-4">
+
+              <ReusableTable
+                rows={rowData}
+                columns={columnDefs}
+                onCellValueChange={handleCellValueChange}
+              />
+            </div>
+          )}
+
+          {/* Save Button */}
+          {!loading && editedFacultyList.length > 0 && (
+            <div className='flex justify-center mt-4 mb-4'>
+              <button
+                onClick={saveEditedAttendance}
+                className="button btn"
+                disabled={loading}
+              >
+                {loading ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          )}
         </div>
-        <button
-          onClick={fetchAttendanceData}
-          disabled={loading}
-          className="bg-blue-500 text-white rounded px-3 py-1.75 mt-2 disabled:opacity-50"
-        >
-          {loading ? 'Fetching...' : 'Fetch Attendance'}
-        </button>
-      </div>
-      {error && (
-        <div className="bg-red-100 text-red-600 p-3 rounded">{error}</div>
+
       )}
-      <div className="box">
-        <ReusableTable rows={rowData} columns={columnDefs} rowsPerPageOptions={[5, 10, 20]}  />
-      </div>
-    </div>
-     )}
     </>
   );
 };
 
-export default FacultyAttendance;
+export default FacultyAttendanceEdit;
+
+
+
+

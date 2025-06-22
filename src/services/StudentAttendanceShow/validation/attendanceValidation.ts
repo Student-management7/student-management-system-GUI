@@ -21,5 +21,20 @@ export const validateAttendanceForm = (
     console.log("Validation passed: Subject is not required for Master Attendance.");
   }
 
+  // Future date validation
+  const today = new Date();
+  const fromDateObj = new Date(fromDate);
+  const toDateObj = new Date(toDate);
+
+  if (fromDateObj > today || toDateObj > today) {
+    console.error("Validation failed: Dates cannot be in the future.");
+    return false;
+  }
+
+  if (fromDateObj > toDateObj) {
+    console.error("Validation failed: From Date cannot be after To Date.");
+    return false;
+  }
+
   return true; // All validations passed
 };

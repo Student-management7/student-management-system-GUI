@@ -11,6 +11,33 @@ export const formatToDDMMYYYY = (date: string): string => {
 
 
 
+export const formatToDDMMYYYY1 = (dateString: string): string => {
+  if (!dateString) return "Invalid Date";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "Invalid Date";
+  return date.toLocaleDateString("en-GB"); // Format: DD/MM/YYYY
+};
+
+
+
+
+const formatToDDMMYYYY2 = (dateString: string) => {
+  if (!dateString) return ""; // Handle empty values
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return ""; // Handle invalid dates
+  return date.toLocaleDateString("en-GB"); // Converts to DD/MM/YYYY format
+};
+
+
+
+
+export const changeFormatToDDMMYYYY = (dateString: string): string => {
+  if (!dateString) return "";  // Handle null or undefined values
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-GB"); // "dd/mm/yyyy" format
+};
+
+
 export const formatDate = (date: string): string => {
   const d = new Date(date);
   return `${d.getDate().toString().padStart(2, '0')}/${
@@ -30,4 +57,9 @@ export const getDateRange = (start: string, end: string): string[] => {
   }
 
   return dateArray;
+};
+
+export const formatDateToAPIFormat = (dateString: string | number | Date) => {
+  const date = new Date(dateString);
+  return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
 };

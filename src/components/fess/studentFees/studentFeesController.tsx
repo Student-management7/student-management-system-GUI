@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, Pencil, Trash2 } from "lucide-react";
-import axiosInstance from "../../../services/Utils/apiUtils";
+import { Eye, Pencil, Send } from "lucide-react";
 import StudentFeesForm from "./studentFeesForm";
 import Loader from "../../loader/loader";
-import BackButton from "../../Navigation/backButton";
-import ReusableTable from "../../MUI Table/ReusableTable";
+import ReusableTable from "../../StudenAttendanceShow/Table/Table";
+import { toast, ToastContainer } from "react-toastify";
+import axiosInstance from "../../../services/Utils/apiUtils";
 
 interface FeeData {
   id: string;
@@ -18,120 +18,71 @@ interface FeeData {
   cls: string;
   totalFees: number;
   remainingFees: number;
+  status?: string; // Adding status field for better filtering
 }
-
 
 const StudentFeesController: React.FC = () => {
   const [rowData, setRowData] = useState<FeeData[]>([]);
+  const [filteredData, setFilteredData] = useState<FeeData[]>([]);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editingFee, setEditingFee] = useState<FeeData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [selectedClass, setSelectedClass] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [availableClasses, setAvailableClasses] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  const columns= [
-    
+  const columns = [
+    { field: "name", headerName: "Name", editable: false },
+    { field: "cls", headerName: "Class", editable: false },
+    { field: "totalFees", headerName: "Total Fees", editable: false },
+    { field: "remainingFees", headerName: "Remaining Fees", editable: false },
     { 
-      field: "name", 
-      headerName: "Name",
-      editable: false 
-    },
-    { 
-      field: "familyDetails.stdo_FatherName", 
-      headerName: "Father Name",
-      nestedField: 'familyDetails.stdo_FatherName',
-      editable: false  
-    },
-    
-    { 
-      field: "cls", 
-      headerName: "Class",
-      editable: false  
-    },
-    { 
-      field: "totalFee", 
-      headerName: "Total Fees",
-      
-      editable: false  
-
-    },
-    { 
-      field: "remainingFees", 
-      headerName: "Remaining Fees",
-      editable: false  
-    },
-   { 
-         field: "view",
-         headerName: "View Details",
-         cellRenderer: (params: any) => (
-           <button
-               onClick={() => params.data?.id && handleViewDetails(params.data.id)}
-             >
-              <Eye size={20} color='blue' />
-             </button>
-         )},
-    {
-      field: "actions",
-      headerName: "Edit",
-      cellRenderer: (row: FeeData) => (
-        <button
-          onClick={() => handleEdit(row)}
-          className="text-yellow-600 hover:text-yellow-800"
-          aria-label="Edit Details"
-        >
-          <Pencil size={20} />
-        </button>
+      field: "status", 
+      headerName: "Fees Status", 
+      editable: false,
+      cellRenderer: (params: any) => (
+        <span className={`badge ${params.data.remainingFees === 0 ? 'bg-success' : 'bg-danger'}`}>
+          {params.data.remainingFees === 0 ? 'Complete' : 'Incomplete'}
+        </span>
       )
     },
     {
-      field: "actions",
-      headerName: "Delete",
-      cellRenderer: (row: FeeData) => (
-        <button
-          onClick={() => handleDelete(row.id)}
-          className="text-red-600 hover:text-red-800"
-          aria-label="Delete Record"
-        >
-          <Trash2 size={20} />
+      field: "view",
+      headerName: "View Details",
+      cellRenderer: (params: any) => (
+        <button onClick={() => handleViewDetails(params.data.id)}>
+          <Eye size={20} color="blue" />
         </button>
-      )
-    }
+      ),
+    },
   ];
-
 
   const handleViewDetails = (id: string) => {
     navigate(`/studentFeesDetails/${id}`);
   };
 
-  const handleEdit = (feeData: FeeData) => {
-    setEditingFee(feeData);
-    setShowForm(true);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this fee record?")) {
-      try {
-        await axiosInstance.delete(`https://s-m-s-keyw.onrender.com/student/fees/${id}`);
-        fetchFees();
-      } catch (error) {
-        alert("Failed to delete fee record");
-      }
-    }
-  };
-
-  const handleRowUpdate = (updatedRow: any, rowIndex: number) => {
-    const newRows = [...rowData];
-    newRows[rowIndex] = updatedRow;
-    setRowData(newRows);
-    // Here you can also make an API call to update the data on the server
-    // Example: axiosInstance.put(`/student/fees/${updatedRow.id}`, updatedRow);
-  };
-
   const fetchFees = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get<FeeData[]>("https://s-m-s-keyw.onrender.com/student/findAllStudent");
-      setRowData(response.data);
-    } catch (error) {
+      const response = await axiosInstance.get<FeeData[]>("/student/findAllStudent");
+      // Add status field to each student
+      const dataWithStatus = response.data.map(student => ({
+        ...student,
+        status: student.remainingFees === 0 ? 'Complete' : 'Incomplete'
+      }));
+      setRowData(dataWithStatus);
+      setFilteredData(dataWithStatus);
+      
+      // Extract unique classes for filter dropdown
+      const classes = Array.from(new Set(response.data.map(student => student.cls)));
+      setAvailableClasses(classes);
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.detail) {
+        toast.warn(`Error: ${error.response.data.detail}`);
+      } else {
+        toast.error("Error fetching fee details. Please try again");
+      }
       console.error("Error fetching fees:", error);
     } finally {
       setLoading(false);
@@ -142,38 +93,111 @@ const StudentFeesController: React.FC = () => {
     fetchFees();
   }, []);
 
+  useEffect(() => {
+    // Apply filters whenever selectedClass or selectedStatus changes
+    let filtered = [...rowData];
+    
+    if (selectedClass !== "all") {
+      filtered = filtered.filter(student => student.cls === selectedClass);
+    }
+    
+    if (selectedStatus !== "all") {
+      filtered = filtered.filter(student => 
+        selectedStatus === "complete" 
+          ? student.remainingFees === 0 
+          : student.remainingFees > 0
+      );
+    }
+    
+    setFilteredData(filtered);
+  }, [selectedClass, selectedStatus, rowData]);
 
-  
+  const handleSendFilteredList = () => {
+    // Here you would typically send the filtered data to a server or perform an action
+    // For now, we'll just show a toast with the count of filtered students
+    const count = filteredData.length;
+    toast.info(`Preparing to send list of ${count} ${count === 1 ? 'student' : 'students'}`);
+    
+    // In a real implementation, you might:
+    // 1. Open a modal to confirm
+    // 2. Make an API call to send notifications/emails
+    // 3. Or export the list to a file
+  };
+
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} />
       {loading && <Loader />}
       {!loading && (
-        <div className="box">
-          <div className="flex items-center space-x-4 mb-4">
-            <span>
-              <BackButton />
-            </span>
-            <h1 className="text-xl items-center font-bold text-[#27727A]">
-              Student Fees
-            </h1>
-          </div>
-          {!showForm ? (
+        <div className="box p-3">
+          {!showForm && (
             <>
-              <div className="text-right mb-3">
-                <button
-                  onClick={() => setShowForm(true)}
-                  className="btn button"
-                >
-                  Add Fees
-                </button>
+              <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                <h1 className="head1 mb-2 mb-md-0">Student Fees</h1>
+                <div className="d-flex gap-2 flex-wrap">
+                  <button 
+                    onClick={() => setShowForm(true)} 
+                    className="button btn mt-1 d-flex align-items-center gap-1"
+                  >
+                    Add Fees
+                  </button>
+                  <button 
+                    onClick={handleSendFilteredList}
+                    disabled={filteredData.length === 0}
+                    className="btn btn-primary mt-1 d-flex align-items-center gap-1"
+                  >
+                    <Send size={18} />
+                    Send List
+                  </button>
+                </div>
               </div>
-              <ReusableTable 
-                rows={rowData} 
-                columns={columns}
-                onRowUpdate={handleRowUpdate}
-                rowsPerPageOptions={[5, 10, 25]}
-              />
+              
+              <div className="row mb-3">
+                <div className="col-md-6 col-lg-3 mb-2 mb-md-0 mt-4">
+                 
+                  <select
+                    id="classFilter"
+                    className="form-select"
+                    value={selectedClass}
+                    onChange={(e) => setSelectedClass(e.target.value)}
+                  >
+                    <option value="all">All Classes</option>
+                    {availableClasses.map(cls => (
+                      <option key={cls} value={cls}>{cls}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="col-md-6 col-lg-3 mt-4">
+                 
+                  <select
+                    id="statusFilter"
+                    className="form-select"
+                    value={selectedStatus}
+                    onChange={(e) => setSelectedStatus(e.target.value)}
+                  >
+                    <option value="all">All Statuses</option>
+                    <option value="complete">Fees Complete</option>
+                    <option value="incomplete">Fees Incomplete</option>
+                  </select>
+                </div>
+              </div>
             </>
+          )}
+          
+          {!showForm ? (
+            <div className="table-responsive">
+              <ReusableTable 
+                rows={filteredData} 
+                columns={columns} 
+                rowsPerPageOptions={[5, 10, 25]} 
+              />
+              {filteredData.length === 0 && (
+                <div className="alert alert-info mt-3">
+                  No students match the current filters.
+                </div>
+              )}
+            </div>
           ) : (
             <StudentFeesForm
               onClose={() => {
@@ -181,7 +205,6 @@ const StudentFeesController: React.FC = () => {
                 setEditingFee(null);
                 fetchFees();
               }}
-              // editingData={editingFee}
             />
           )}
         </div>

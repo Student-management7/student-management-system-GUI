@@ -1,13 +1,31 @@
 
-import { FaBook, FaIdCard, FaRegEdit, FaUserEdit,  } from "react-icons/fa";
-import { FaHouse, FaHandshakeAngle, FaCaretDown, FaCaretUp, FaMoneyBill, FaUserLarge, FaUserTie ,FaBell, FaUserPlus ,FaClipboardList , } from "react-icons/fa6";
+import { FaBook, FaIdCard, FaRegEdit, FaUserEdit, } from "react-icons/fa";
+import {  FaLandmark,FaCoins,FaPiggyBank, FaCaretDown, FaCaretUp,FaUserShield, FaMoneyBill, FaUserLarge, FaUserTie ,FaBell, FaUserPlus ,FaClipboardList ,FaFile } from "react-icons/fa6";
 export const SideBarData = [
 
+   
     {
-        title: 'Home',
-        path: '/Home',
-        icon: FaHouse,
-
+        title: 'Super Admin',
+        path: '/',
+        icon: FaUserLarge,
+        iconClosed: FaCaretUp,
+        iconeOpened: FaCaretDown,
+       
+        subNav: [
+            {
+                title: 'School Registration ',
+                path: '/superAdminController',
+                icon: FaUserPlus,
+                
+            },
+            
+            {
+                title: 'School Permission ',
+                path: '/schoolpermission',
+                icon: FaUserShield,
+                
+            }
+        ]
     },
     {
         title: 'Student',
@@ -18,17 +36,17 @@ export const SideBarData = [
         subNav: [
             {
                 title: 'Student Registration',
-                path: '/StudentRegistrationController',
+                path: '/studentRegistrationController',
                 icon: FaUserPlus,
             },
             {
                 title: 'Student Attendance View',
-                path: '/StudentAttendanceShow',
+                path: '/studentAttendanceShow',
                 icon: FaClipboardList,
             },
             {
                 title: 'Studence Attendance ',
-                path: '/StudentAttendenceManagement',
+                path: '/studentAttendenceManagement',
                 icon: FaUserEdit,
             }
         ]
@@ -43,12 +61,12 @@ export const SideBarData = [
         subNav: [
             {
                 title: 'Faculty Registration',
-                path: '/FacultyRegistration',
+                path: '/facultyRegistration',
                 icon: FaUserPlus,
             },
             {
                 title: 'Faculty Attendance View',
-                path: '/FacultyAttendanceShow',
+                path: '/facultyAttendanceShow',
                 icon: FaClipboardList,
             },
             {
@@ -65,30 +83,30 @@ export const SideBarData = [
     {
         title: 'Finance',
         path: '/',
-        icon: FaHandshakeAngle,
+        icon: FaLandmark,
         iconClosed: FaCaretUp,
         iconeOpened: FaCaretDown,
         subNav: [
 
             {
-                title: 'Admin Fees',
+                title: 'Class Fees',
                 path: '/fees',
-                icon: FaMoneyBill,
+                icon: FaCoins,
             },
             {
                 title: 'Student Fees',
-                path: '/StudentFeesController',
-                icon: FaMoneyBill,
+                path: '/studentFeesController',
+                icon: FaPiggyBank,
             },
             {
                 title: 'Faculty Salary',
-                path: '/FacultySalary',
+                path: '/facultySalary',
                 icon: FaMoneyBill,
             },
             {
                 title: 'Permission',
                 path: '/permission',
-                icon: FaMoneyBill,
+                icon: FaUserShield,
             },
         ]
     },
@@ -102,11 +120,11 @@ export const SideBarData = [
 
             {
                 title: 'Notification',
-                path: '/Notification',
+                path: '/notification',
                 icon: FaBell,
             },
             {
-                title: 'Hollyday',
+                title: 'Holiday',
                 path: '/holiday',
                 icon: FaBell,
             },
@@ -123,7 +141,7 @@ export const SideBarData = [
 
             {
                 title: 'Save Subjects',
-                path: '/ClassSubjectShow',
+                path: '/classSubjectShow',
                 icon: FaBook,
             },
             
@@ -139,13 +157,31 @@ export const SideBarData = [
 
             {
                 title: 'Create Report',
-                path: '/StudentReportForm',
+                path: '/studentReportForm',
                 icon: FaIdCard,
             },
             
             
         ]
-    }
+    },
+    {
+        title: 'Syllabus',
+        path: '/',
+        icon: FaFile,
+        iconClosed: FaCaretUp,
+        iconeOpened: FaCaretDown,
+        subNav: [
+
+            {
+                title: 'Syllabus',
+                path: '/syllabus',
+                icon: FaFile,
+            },
+            
+            
+        ]
+    },
+   
 
 ]
 

@@ -1,3 +1,4 @@
+import { fetchStudents } from "../../studentFees/api";
 import axiosInstance from "../../Utils/apiUtils";
 
 
@@ -16,11 +17,12 @@ export const saveStdDetails = async (data: any) =>{
     }
 };
 
-export const updateStudentDeteails = async (data: any) =>{
+export const updateStdDetails = async (data: any) =>{
 
     try{
         const response = await axiosInstance.post(`${API_URL}/student/update`, data);
         return response.data;
+        
     }catch (error){
         console.log('Error saving details:', error);
         throw error;

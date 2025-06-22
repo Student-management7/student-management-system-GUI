@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from "react";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { formatToDDMMYYYY } from "../Utils/dateUtils";
+import { toast, ToastContainer } from "react-toastify";
+import { ArrowLeft } from "lucide-react";
 
 type NotificationPayload = {
   startDate: string;
@@ -78,12 +80,12 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    
     if (!isFormValid()) {
-      alert("Please fill all required fields correctly");
+      toast.warning("Please fill all required fields correctly");
       return;
     }
-
+    
     const formattedData = {
       ...formData,
       startDate: formatToDDMMYYYY(formData.startDate),
@@ -94,17 +96,21 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
       await axiosInstance.post(
         "https://s-m-s-keyw.onrender.com/notification/save",
         formattedData,
-        {
+         {
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
 
-      alert("Notification created successfully!");
+      toast.success("Notification created successfully!");
+      onClose();
       resetForm();
+      
+
+
     } catch (error: unknown) {
-      alert(`Error creating notification: ${error}`);
+      toast.error(`Error creating notification: ${error}`);
       console.error("Submission Error:", error);
     }
   };
@@ -114,12 +120,23 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="box">
-      <div className="container mt-4">
+
+    <>
+   
+      <ToastContainer position="top-right" autoClose={3000} />
+    <div className="head1 flex items-center">
+                <button onClick={onClose} className="p-2 rounded-full arrow transition">
+                  <ArrowLeft className="h-7 w-7" />
+                </button>
+                {/* <span className="ml-4">Add Fees Page</span> */}
+                <span>create Notification</span>
+              </div>      
+      
+      <div className="box">
         <div className="row justify-content-center">
-          <div className="col-md-10">
-            <div className="card shadow-sm p-4">
-              <h2 className="head1 text-center">Create Notification</h2>
+          <div className="">
+            <div className="">
+           
 
               <form onSubmit={handleSubmit}>
                 <div className="row row-cols-1 row-cols-md-2 g-3">
@@ -155,27 +172,7 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
                     />
                   </div>
 
-                  <div className="col">
-                    <label htmlFor="cato" className="form-label fw-bold">
-                      Category
-                    </label>
-                    <select
-                      id="cato"
-                      name="cato"
-                      className="form-select"
-                      value={formData.cato}
-                      onChange={handleInputChange}
-                      required
-                    >
-                      <option value="All">All</option>
-                      <option value="Student">Student</option>
-                      <option value="Teacher">Teacher</option>
-                      <option value="Staff">Staff</option>
-                      <option value="Event">Event</option>
-                      <option value="Holiday">Holiday</option>
-                      <option value="Exam">Exam</option>
-                    </select>
-                  </div>
+                 
 
                   {formData.cato === "Student" && (
                     <div className="col">
@@ -209,7 +206,7 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
                       id="description"
                       name="description"
                       className="form-control"
-                      rows={3}
+                      rows={4}
                       value={formData.description}
                       onChange={handleInputChange}
                       maxLength={500}
@@ -217,8 +214,32 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
                     />
                   </div>
 
-                  <div className="col-12 text-center mt-3">
+
+                  <div className="col">
+                    <label htmlFor="cato" className="form-label fw-bold">
+                      Category
+                    </label>
+                    <select
+                      id="cato"
+                      name="cato"
+                      className="form-select"
+                      value={formData.cato}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="All">All</option>
+                      <option value="Student">Student</option>
+                      <option value="Teacher">Teacher</option>
+                      <option value="Staff">Staff</option>
+                      <option value="Event">Event</option>
+                      <option value="Holiday">Holiday</option>
+                      <option value="Exam">Exam</option>
+                    </select>
+                  </div>
+
+                  <div className="col-12 text-center mt-11">
                     <button
+                      
                       type="submit"
                       className={`btn button ${
                         isFormValid() ? "btn-primary" : "btn-secondary"
@@ -235,7 +256,9 @@ const NotificationCreate: React.FC<NotificationCreateProps> = ({ onClose }) => {
           </div>
         </div>
       </div>
-    </div>
+    
+    
+    </>
   );
 };
 
