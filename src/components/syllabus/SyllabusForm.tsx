@@ -381,3 +381,4 @@ const SyllabusForm: React.FC<Props> = ({ onSubmit, loading, defaultValues, isEdi
 };
 
 export default SyllabusForm;
+
