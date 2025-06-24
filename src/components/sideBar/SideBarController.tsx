@@ -55,8 +55,10 @@ const SideBarController = () => {
             return path === '/superAdminController' || path === '/schoolpermission';
         }
         if (!permissions) return true;
-
-        const alwaysVisibleRoutes = ['/setting', '/profile', '/admindeshboard'];
+       if (path.startsWith('/syllabus')) {
+        return true;
+        }
+        const alwaysVisibleRoutes = ['/setting', '/profile', '/admindeshboard',];
         if (alwaysVisibleRoutes.includes(path)) return true;
 
         const routeKey = path.replace(/^\//, '').split('/')[0];
@@ -94,7 +96,7 @@ const SideBarController = () => {
             "syllabus/edit/:id": "syallabus.EditSyllabus"
 
         };
-
+ 
         const permissionPath = routePermissions[routeKey];
         if (!permissionPath) return false;
 

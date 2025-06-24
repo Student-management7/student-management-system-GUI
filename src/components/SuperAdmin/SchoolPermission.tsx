@@ -49,7 +49,12 @@ interface Permissions {
   subject: {
     saveSubjectsToClasses: boolean;
     classSubjectShow: boolean;
-  };
+  }, 
+  syllabus: {
+    SyllabusList: false,
+    UploadSyllabus: false,
+    EditSyllabus: false,
+  },
 }
 
 export default function SchoolUserPermission() {
@@ -94,6 +99,11 @@ export default function SchoolUserPermission() {
       saveSubjectsToClasses: false,
       classSubjectShow: false,
     },
+     syllabus: {
+    SyllabusList: false,
+    UploadSyllabus: false,
+    EditSyllabus: false,
+  },
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
