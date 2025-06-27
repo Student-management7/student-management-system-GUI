@@ -56,7 +56,7 @@ const FeesManagement = () => {
     const paidMonths = student.month;
     const remainingMonths = totalMonths - paidMonths;
 
-    const perMonthFee = student.totalFees / totalMonths;
+    const perMonthFee = parseFloat((student.totalFees / totalMonths).toFixed(2));
     const calculatedRemaining = remainingMonths * perMonthFee;
     const apiRemaining = student.remainingFees;
 
@@ -141,7 +141,7 @@ const FeesManagement = () => {
       const orderResponse = await axiosInstance.post(
         '/api/payment/create-order',
         null,
-        { params: { amount: paymentAmount * 100 } } // Convert to paise
+        { params: { amount: paymentAmount } } // Convert to paise
       );
 
       const order = orderResponse.data;
@@ -275,10 +275,10 @@ const FeesManagement = () => {
                   key={fm.month}
                   onClick={() => !fm.isPaid && handleMonthSelect(fm.month)}
                   className={`p-4 rounded-lg border cursor-pointer transition-all ${fm.isPaid
-                      ? 'bg-green-50 border-green-200'
-                      : selectedMonths.includes(fm.month)
-                        ? 'bg-blue-50 border-blue-300'
-                        : 'bg-gray-50 border-gray-200 hover:border-blue-200'
+                    ? 'bg-green-50 border-green-200'
+                    : selectedMonths.includes(fm.month)
+                      ? 'bg-blue-50 border-blue-300'
+                      : 'bg-gray-50 border-gray-200 hover:border-blue-200'
                     }`}
                 >
                   <h3 className="font-medium">{fm.month}</h3>
@@ -306,8 +306,8 @@ const FeesManagement = () => {
             {otherFees > 0 && (
               <div
                 className={`p-4 rounded-lg border mb-4 cursor-pointer ${selectedOtherFee
-                    ? 'bg-blue-50 border-blue-300'
-                    : 'bg-gray-50 border-gray-200 hover:border-blue-200'
+                  ? 'bg-blue-50 border-blue-300'
+                  : 'bg-gray-50 border-gray-200 hover:border-blue-200'
                   }`}
                 onClick={() => setSelectedOtherFee(!selectedOtherFee)}
               >
