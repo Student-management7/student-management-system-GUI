@@ -58,6 +58,9 @@ const SideBarController = () => {
        if (path.startsWith('/syllabus')) {
         return true;
         }
+       if (path.startsWith('/tc')) {
+        return true;
+        }
         const alwaysVisibleRoutes = ['/setting', '/profile', '/admindeshboard',];
         if (alwaysVisibleRoutes.includes(path)) return true;
 

@@ -40,6 +40,7 @@ import SchoolPermission from "../SuperAdmin/SchoolPermission";
 import  SyllabusList  from "../syllabus/SyllabusList";
 import UploadSyllabus from "../syllabus/UploadSyllabus";
 import EditSyllabus from "../syllabus/EditSyllabus";
+import TransferCertificate from "../tc/TransferCertificate";
 
 interface Permission {
   [module: string]: {
@@ -265,6 +266,11 @@ const PermissionBasedRoute: React.FC = () => {
     { 
       path: "/syllabus/edit/:id", 
       element: <EditSyllabus />, 
+      visible: true 
+    },
+    { 
+      path: "/tc", 
+      element: <TransferCertificate />, 
       visible: true 
     },
 

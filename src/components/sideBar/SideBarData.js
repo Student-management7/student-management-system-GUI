@@ -160,6 +160,7 @@ export const SideBarData = [
                 path: '/studentReportForm',
                 icon: FaIdCard,
             },
+        
             
             
         ]
@@ -181,7 +182,24 @@ export const SideBarData = [
             
         ]
     },
-   
+    {
+        title: 'TC',
+        path: '/',
+        icon: FaFile,
+        iconClosed: FaCaretUp,
+        iconeOpened: FaCaretDown,
+        subNav: [
+
+             {
+                title: 'Transfer Certificate',
+                path: '/tc',
+                icon: FaIdCard,
+   },
+            
+            
+        ]
+    },
+
 
 ]
 
