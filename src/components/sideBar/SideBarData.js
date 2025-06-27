@@ -178,7 +178,7 @@ export const SideBarData = [
                 path: '/syllabus',
                 icon: FaFile,
             },
-            
+        
             
         ]
     },
@@ -194,11 +194,17 @@ export const SideBarData = [
                 title: 'Transfer Certificate',
                 path: '/tc',
                 icon: FaIdCard,
-   },
+              },
             
+             {
+                title: 'Fees Management',
+                path: '/FeesManagement',
+                icon: FaIdCard,
+              },
             
         ]
     },
+ 
 
 
 ]
