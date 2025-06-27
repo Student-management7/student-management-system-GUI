@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/Utils/apiUtils";
 import { toast, ToastContainer } from "react-toastify";
 import Loader from "../loader/loader";
-import SyllabusList from "../syllabus/SyllabusList";
+
 
 interface Faculty {
   id: string;
@@ -51,7 +51,7 @@ interface Permissions {
     saveSubjectsToClasses: boolean;
     classSubjectShow: boolean;
   };
-  syallabus: {
+  syllabus: {
     SyllabusList: boolean;
     UploadSyllabus: boolean;
     EditSyllabus: boolean;
@@ -102,7 +102,7 @@ export default function Permission() {
       saveSubjectsToClasses: false,
       classSubjectShow: false,
     },
-    syallabus: {
+    syllabus: {
     SyllabusList: false,
     UploadSyllabus: false,
     EditSyllabus: false,
@@ -203,7 +203,7 @@ export default function Permission() {
               saveSubjectsToClasses: false,
               classSubjectShow: false,
             },
-            syallabus: {
+            syllabus: {
               SyllabusList: false,
               UploadSyllabus: false,
               EditSyllabus: false,
@@ -259,7 +259,7 @@ export default function Permission() {
           saveSubjectsToClasses: false,
           classSubjectShow: false,
         },
-         syallabus: {
+         syllabus: {
               SyllabusList: false,
               UploadSyllabus: false,
               EditSyllabus: false,
