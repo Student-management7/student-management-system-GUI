@@ -40,6 +40,7 @@ import SchoolPermission from "../SuperAdmin/SchoolPermission";
 import  SyllabusList  from "../syllabus/SyllabusList";
 import UploadSyllabus from "../syllabus/UploadSyllabus";
 import EditSyllabus from "../syllabus/EditSyllabus";
+import FeesManagement from "../fess/studentFees/FeesManagement";
 
 interface Permission {
   [module: string]: {
@@ -267,6 +268,13 @@ const PermissionBasedRoute: React.FC = () => {
       element: <EditSyllabus />, 
       visible: true 
     },
+    { 
+      path: "/FeesManagement", 
+      element: <FeesManagement />, 
+      visible: true 
+    },
+
+    
 
   ];
 
