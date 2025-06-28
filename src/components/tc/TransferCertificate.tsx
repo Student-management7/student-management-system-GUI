@@ -318,12 +318,12 @@ function TransferCertificate() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Auto-filled fields (read-only) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Student Name (Auto-filled)</label>
+                <label className="block  text-sm font-medium text-gray-700 mb-2">Student Name* (Auto-filled)</label>
                 <input
                   type="text"
                   value={selectedStudent.name}
                   disabled
-                  className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
+                  className="w-full p-2 border  border-gray-300 rounded-md bg-gray-100"
                 />
               </div>
               <div>
