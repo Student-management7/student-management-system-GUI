@@ -6,7 +6,7 @@ interface StudentData {
   id: string;
   name: string;
   familyDetails: string;
-  email: string;
+  email: string; 
   cls: string;
   totalFees: number;
   remainingFees: number;
