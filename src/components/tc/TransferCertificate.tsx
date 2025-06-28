@@ -240,7 +240,7 @@ function TransferCertificate() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Class</label>
             <select
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-1/2 form-control"
               value={classFilter}
               onChange={(e) => setClassFilter(e.target.value)}
             >
@@ -256,7 +256,7 @@ function TransferCertificate() {
             <label className="block text-sm font-medium text-gray-700 mb-2">Search by Name</label>
             <input
               type="text"
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-2/3 form-control"
               placeholder="Enter student name..."
               value={nameFilter}
               onChange={(e) => setNameFilter(e.target.value)}
@@ -266,7 +266,7 @@ function TransferCertificate() {
             <button
               onClick={fetchStudents}
               disabled={loading}
-              className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full btn button text-white p-2 rounded-md  disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Loading..." : "Refresh"}
             </button>
@@ -281,7 +281,7 @@ function TransferCertificate() {
 
         {loading ? (
           <div className="flex justify-center p-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#126666]"></div>
           </div>
         ) : (
           <div className="grid gap-2 max-h-60 overflow-y-auto">
@@ -289,7 +289,7 @@ function TransferCertificate() {
               <div
                 key={student.id}
                 className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                  selectedStudent?.id === student.id ? "bg-blue-600 text-white" : "hover:bg-gray-50 border-gray-200"
+                  selectedStudent?.id === student.id ? "bg-[#126666] text-white" : "hover:bg-[3a8686] border-gray-200"
                 }`}
                 onClick={() => selectStudent(student)}
               >
@@ -323,7 +323,8 @@ function TransferCertificate() {
                   type="text"
                   value={selectedStudent.name}
                   disabled
-                  className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
+                //   className="w-full  p-2 border border-gray-300 rounded-md bg-gray-100"
+                className="w-1/2 form-control"
                 />
               </div>
               <div>
@@ -332,7 +333,7 @@ function TransferCertificate() {
                   type="text"
                   value={selectedStudent.familyDetails.stdo_FatherName}
                   disabled
-                  className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
+                  className="w-1/2 form-control"
                 />
               </div>
               <div>
@@ -341,7 +342,7 @@ function TransferCertificate() {
                   type="text"
                   value={selectedStudent.familyDetails.stdo_MotherName}
                   disabled
-                  className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
+                  className="w-1/2 form-control"
                 />
               </div>
               <div>
@@ -350,7 +351,7 @@ function TransferCertificate() {
                   type="text"
                   value={selectedStudent.category}
                   disabled
-                  className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
+                  className="w-1/2 form-control"
                 />
               </div>
               <div>
@@ -359,7 +360,7 @@ function TransferCertificate() {
                   type="text"
                   value={formatDateForDisplay(selectedStudent.dob)}
                   disabled
-                  className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
+                  className="w-1/2 form-control"
                 />
               </div>
               <div>
@@ -368,7 +369,7 @@ function TransferCertificate() {
                   type="text"
                   value={selectedStudent.cls}
                   disabled
-                  className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
+                  className="w-1/2 form-control"
                 />
               </div>
 
@@ -380,7 +381,7 @@ function TransferCertificate() {
                   placeholder="e.g., 2024/001"
                   value={formData.tcNo}
                   onChange={(e) => handleInputChange("tcNo", e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-control w-1/2"
                 />
               </div>
               <div>
@@ -390,7 +391,7 @@ function TransferCertificate() {
                   placeholder="Admission number"
                   value={formData.admissionNo}
                   onChange={(e) => handleInputChange("admissionNo", e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-control w-1/2"
                 />
               </div>
               <div>
@@ -400,7 +401,7 @@ function TransferCertificate() {
                   placeholder="e.g., Fifteenth August Two Thousand Ten"
                   value={formData.dobWords}
                   onChange={(e) => handleInputChange("dobWords", e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-control w-1/2"
                 />
               </div>
               <div>
@@ -409,7 +410,7 @@ function TransferCertificate() {
                   type="text"
                   value={formData.nationality}
                   onChange={(e) => handleInputChange("nationality", e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-control w-1/2"
                 />
               </div>
               <div>
@@ -419,7 +420,7 @@ function TransferCertificate() {
                   placeholder="e.g., IX"
                   value={formData.promotedTo}
                   onChange={(e) => handleInputChange("promotedTo", e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-control w-1/2"
                 />
               </div>
               <div>
@@ -428,7 +429,7 @@ function TransferCertificate() {
                   type="date"
                   value={formData.admissionDate}
                   onChange={(e) => handleInputChange("admissionDate", e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-control w-1/2"
                 />
               </div>
               <div>
@@ -437,7 +438,7 @@ function TransferCertificate() {
                   type="date"
                   value={formData.leavingDate}
                   onChange={(e) => handleInputChange("leavingDate", e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-control w-1/2"
                 />
               </div>
               <div>
@@ -447,7 +448,7 @@ function TransferCertificate() {
                   placeholder="e.g., Parent Transfer"
                   value={formData.reason}
                   onChange={(e) => handleInputChange("reason", e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-1/2 form-control"
                 />
               </div>
               <div>
@@ -455,7 +456,7 @@ function TransferCertificate() {
                 <select
                   value={formData.conduct}
                   onChange={(e) => handleInputChange("conduct", e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-1/2 form-control"
                 >
                   <option value="Excellent">Excellent</option>
                   <option value="Very Good">Very Good</option>
@@ -470,7 +471,7 @@ function TransferCertificate() {
                   placeholder="e.g., Mr. A. Sharma"
                   value={formData.principalName}
                   onChange={(e) => handleInputChange("principalName", e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-1/2 form-control"
                 />
               </div>
             </div>
@@ -482,14 +483,15 @@ function TransferCertificate() {
                 value={formData.remarks}
                 onChange={(e) => handleInputChange("remarks", e.target.value)}
                 rows={3}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                
+                className="form-control w-1/2"
               />
             </div>
 
             <button
               onClick={downloadTC}
               disabled={downloading}
-              className="w-full bg-green-600 text-white p-3 rounded-md text-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className=" btn button  text-white p-2 rounded-md text-lg font-medium  disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {downloading ? (
                 <>
