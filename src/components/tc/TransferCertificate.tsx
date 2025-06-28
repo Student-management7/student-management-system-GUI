@@ -59,11 +59,11 @@ function TransferCertificate() {
   const [loading, setLoading] = useState(false)
   const [downloading, setDownloading] = useState(false)
 
-  // Filter states
+  
   const [classFilter, setClassFilter] = useState("All Classes")
   const [nameFilter, setNameFilter] = useState("")
 
-  // Form data for missing fields
+  
   const [formData, setFormData] = useState<Partial<TCPayload>>({
     tcNo: "",
     admissionNo: "",
@@ -79,19 +79,19 @@ function TransferCertificate() {
     principalName: "",
   })
 
-  // API Token - You can replace this with your actual token
+  
   const API_TOKEN = localStorage.getItem("token")
 
   if (!API_TOKEN) {
     console.log("token not found")
   }
 
-  // Fetch students on component mount
+  
   useEffect(() => {
     fetchStudents()
   }, [])
 
-  // Filter students when filters change
+  
   useEffect(() => {
     let filtered = students
 
@@ -135,7 +135,7 @@ function TransferCertificate() {
 
   const selectStudent = (student: Student) => {
     setSelectedStudent(student)
-    // Pre-fill form with available data
+    
     setFormData((prev) => ({
       ...prev,
       studentName: student.name,
@@ -227,13 +227,13 @@ function TransferCertificate() {
 
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-6xl">
-      {/* Header */}
+      
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-800">Transfer Certificate Generator</h1>
         <p className="text-gray-600 mt-2">Generate and download student transfer certificates</p>
       </div>
 
-      {/* Filters */}
+      
       <div className="bg-white p-6 rounded-lg shadow-md border">
         <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">🔍 Search & Filter Students</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -266,7 +266,7 @@ function TransferCertificate() {
             <button
               onClick={fetchStudents}
               disabled={loading}
-              className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full  text-white btn button p-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Loading..." : "Refresh"}
             </button>
@@ -274,7 +274,7 @@ function TransferCertificate() {
         </div>
       </div>
 
-      {/* Students List */}
+   
       <div className="bg-white p-6 rounded-lg shadow-md border">
         <h2 className="text-xl font-semibold mb-4">Students ({filteredStudents.length})</h2>
         <p className="text-gray-600 mb-4">Click on a student to generate their TC</p>
@@ -289,7 +289,7 @@ function TransferCertificate() {
               <div
                 key={student.id}
                 className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                  selectedStudent?.id === student.id ? "bg-blue-600 text-white" : "hover:bg-gray-50 border-gray-200"
+                  selectedStudent?.id === student.id ? "bg-blue-500 text-white" : "hover:bg-gray-50 border-gray-200"
                 }`}
                 onClick={() => selectStudent(student)}
               >
@@ -297,7 +297,7 @@ function TransferCertificate() {
                   <div>
                     <p className="font-medium">{student.name}</p>
                     <p className="text-sm opacity-70">
-                      Class: {student.cls} | Code: {student.studentCode} | Category: {student.category}
+                      Class: {student.cls} | status: {student.status} | Category: {student.category}
                     </p>
                   </div>
                   <div className="text-sm opacity-70">{student.contact}</div>
@@ -308,7 +308,7 @@ function TransferCertificate() {
         )}
       </div>
 
-      {/* TC Form */}
+     
       {selectedStudent && (
         <div className="bg-white p-6 rounded-lg shadow-md border">
           <h2 className="text-xl font-semibold mb-4">Generate TC for {selectedStudent.name}</h2>
@@ -316,9 +316,9 @@ function TransferCertificate() {
 
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Auto-filled fields (read-only) */}
+              
               <div>
-                <label className="block  text-sm font-medium text-gray-700 mb-2">Student Name* (Auto-filled)</label>
+                <label className="block  text-sm font-medium text-gray-700 mb-2">Student Name (Auto-filled)</label>
                 <input
                   type="text"
                   value={selectedStudent.name}
@@ -372,7 +372,7 @@ function TransferCertificate() {
                 />
               </div>
 
-              {/* Manual input fields */}
+            
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">TC Number</label>
                 <input
@@ -489,7 +489,7 @@ function TransferCertificate() {
             <button
               onClick={downloadTC}
               disabled={downloading}
-              className="w-full bg-green-600 text-white p-3 rounded-md text-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className=" btn button text-white p-2 rounded-md text-lg font-medium  disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {downloading ? (
                 <>
