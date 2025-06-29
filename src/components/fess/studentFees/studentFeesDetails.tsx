@@ -78,7 +78,7 @@ const StudentFeesDetails = () => {
   // New function to generate and download new receipt
   const handleGenerateNewReceipt = async () => {
     if (!studentData) {
-      toast.error("Student data not available")
+      toast.error("Student Data Not Available")
       return
     }
 
@@ -107,10 +107,10 @@ const StudentFeesDetails = () => {
         section: studentData.section || "A", // Default section as 'A' since not available
         fatherName: studentData.familyDetails?.stdo_FatherName || "", // Correct father name path
         tuitionFee: totalTuitionFee || 0,
-        libraryFee: 0, // Not available in API, setting to 0
-        sportsFee: 0, // Not available in API, setting to 0
-        paymentMode: latestPaymentMode || "Cash", // Using latest payment mode from feeInfo
-        amountInWords: convertToWords(totalTuitionFee), // Only tuition fee since others are 0
+        libraryFee: 0, 
+        sportsFee: 0,
+        paymentMode: latestPaymentMode || "Cash", 
+        amountInWords: convertToWords(totalTuitionFee), 
       }
 
       console.log("Sending payload:", payload)
