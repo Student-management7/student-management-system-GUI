@@ -201,6 +201,11 @@ export const SideBarData = [
                 path: '/FeesManagement',
                 icon: FaIdCard,
               },
+             {
+                title: 'Marksheet',
+                path: '/marksheet',
+                icon: FaIdCard,
+              },
             
         ]
     },

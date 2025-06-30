@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import axiosInstance from "../../../services/Utils/apiUtils"
@@ -75,47 +74,55 @@ const StudentFeesDetails = () => {
     },
   ]
 
-  // New function to generate and download new receipt
-  const handleGenerateNewReceipt = async () => {
-    if (!studentData) {
-      toast.error("Student Data Not Available")
-      return
+  // Common function to generate receipt payload
+  const generateReceiptPayload = (specificFeeId?: string) => {
+    if (!studentData) return null
+
+    let targetFee: FeeInfo | null = null
+    let totalTuitionFee = 0
+    let paymentMode = "Cash"
+
+    if (specificFeeId) {
+      // For specific fee receipt
+      targetFee = feeInfo.find((fee) => fee.id === specificFeeId) || null
+      if (targetFee) {
+        totalTuitionFee = targetFee.fee
+        paymentMode = targetFee.paymentMode
+      }
+    } else {
+      // For new receipt (all fees)
+      totalTuitionFee = feeInfo.reduce((sum, fee) => sum + (fee.fee || 0), 0)
+      paymentMode = feeInfo.length > 0 ? feeInfo[feeInfo.length - 1].paymentMode : "Cash"
     }
 
+    return {
+      receiptNo: `RCP${Date.now()}${specificFeeId ? "_" + specificFeeId.slice(-4) : ""}`,
+      date: new Date()
+        .toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+        .replace(/\//g, "-"),
+      studentName: studentData.name || "",
+      studentClass: studentData.cls || "",
+      rollNo: studentData.studentCode || "",
+      section: studentData.section || "A",
+      fatherName: studentData.familyDetails?.stdo_FatherName || "",
+      tuitionFee: totalTuitionFee || 0,
+      libraryFee: 0,
+      sportsFee: 0,
+      paymentMode: paymentMode || "Cash",
+      amountInWords: convertToWords(totalTuitionFee),
+    }
+  }
+
+  // Common function to download receipt
+  const downloadReceipt = async (payload: any, fileName: string) => {
     try {
       setLoading(true)
-
-      // Calculate total fees from feeInfo
-      const totalTuitionFee = feeInfo.reduce((sum, fee) => sum + (fee.fee || 0), 0)
-
-      // Get the latest payment mode from feeInfo
-      const latestPaymentMode = feeInfo.length > 0 ? feeInfo[feeInfo.length - 1].paymentMode : "Cash"
-
-      // Prepare payload with correct field mappings
-      const payload = {
-        receiptNo: `RCP${Date.now()}`, // Generate unique receipt number
-        date: new Date()
-          .toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })
-          .replace(/\//g, "-"),
-        studentName: studentData.name || "",
-        studentClass: studentData.cls || "", // Using 'cls' field
-        rollNo: studentData.studentCode || "", // Using 'studentCode' as rollNo
-        section: studentData.section || "A", // Default section as 'A' since not available
-        fatherName: studentData.familyDetails?.stdo_FatherName || "", // Correct father name path
-        tuitionFee: totalTuitionFee || 0,
-        libraryFee: 0, 
-        sportsFee: 0,
-        paymentMode: latestPaymentMode || "Cash", 
-        amountInWords: convertToWords(totalTuitionFee), 
-      }
-
       console.log("Sending payload:", payload)
 
-      // Send to your API endpoint
       const response = await axiosInstance.post("https://s-m-s-keyw.onrender.com/student/download-receipt", payload, {
         responseType: "blob",
         headers: {
@@ -129,11 +136,10 @@ const StudentFeesDetails = () => {
         // Handle PDF download
         const blob = new Blob([response.data], { type: "application/pdf" })
         const url = window.URL.createObjectURL(blob)
-
         const link = document.createElement("a")
         link.style.display = "none"
         link.href = url
-        link.download = `receipt_${payload.receiptNo}.pdf`
+        link.download = fileName
         document.body.appendChild(link)
         link.click()
 
@@ -143,11 +149,11 @@ const StudentFeesDetails = () => {
           window.URL.revokeObjectURL(url)
         }, 100)
 
-        toast.success("New receipt generated and downloaded successfully!")
+        return true
       }
+      return false
     } catch (error: any) {
-      console.error("Error generating new receipt:", error)
-
+      console.error("Error downloading receipt:", error)
       if (error.response) {
         switch (error.response.status) {
           case 404:
@@ -164,8 +170,45 @@ const StudentFeesDetails = () => {
       } else {
         toast.error("Failed to generate receipt")
       }
+      return false
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleGenerateNewReceipt = async () => {
+    if (!studentData) {
+      toast.error("Student Data Not Available")
+      return
+    }
+
+    const payload = generateReceiptPayload()
+    if (!payload) {
+      toast.error("Failed to generate receipt payload")
+      return
+    }
+
+    const success = await downloadReceipt(payload, `receipt_${payload.receiptNo}.pdf`)
+    if (success) {
+      toast.success("New receipt generated and downloaded successfully!")
+    }
+  }
+
+  const handleDownloadPDF = async (feeId: string) => {
+    if (!studentData) {
+      toast.error("Student Data Not Available")
+      return
+    }
+
+    const payload = generateReceiptPayload(feeId)
+    if (!payload) {
+      toast.error("Failed to generate receipt payload")
+      return
+    }
+
+    const success = await downloadReceipt(payload, `receipt_${feeId}.pdf`)
+    if (success) {
+      toast.success("Receipt downloaded successfully!")
     }
   }
 
@@ -188,7 +231,6 @@ const StudentFeesDetails = () => {
     } catch (error) {
       setLoading(false)
       console.error("Error sending receipt to email:", error)
-
       if (error.response) {
         switch (error.response.status) {
           case 404:
@@ -222,6 +264,7 @@ const StudentFeesDetails = () => {
               ...fee,
               creationDateTime: formatToDDMMYYYY(fee.creationDateTime),
             })) || []
+
           setStudentData(data)
           setFeeInfo(formattedFeeInfo)
           if (data.remainingFees !== undefined) {
@@ -270,14 +313,17 @@ const StudentFeesDetails = () => {
       toast.error("Please enter a valid fee amount")
       return
     }
+
     if (!validateFeeAmount(editFeeAmount)) {
       return
     }
+
     try {
       const response = await axiosInstance.post(`/student/editFees`, {
         id: editFeeId,
         fee: editFeeAmount,
       })
+
       if (response.status === 200) {
         toast.success("Fee updated successfully!")
         const updatedFeeInfo = feeInfo.map((fee) => (fee.id === editFeeId ? { ...fee, fee: editFeeAmount } : fee))
@@ -290,6 +336,7 @@ const StudentFeesDetails = () => {
             studentData.remainingFees !== undefined
               ? studentData.remainingFees - (editFeeAmount - (feeInfo.find((f) => f.id === editFeeId)?.fee || 0))
               : remainingFees
+
           setRemainingFees(newRemainingFees)
         }
       } else {
@@ -298,68 +345,6 @@ const StudentFeesDetails = () => {
     } catch (error) {
       toast.error("An error occurred. Please try again.")
       console.error("Error updating fee:", error)
-    }
-  }
-
-  const handleDownloadPDF = async (feeId: string) => {
-    try {
-      setLoading(true)
-      const response = await axiosInstance.post(
-        `/pdf/receipt?id=${feeId}`,
-        {},
-        {
-          responseType: "blob",
-          headers: {
-            "Content-Type": "application/json",
-            "Cache-Control": "no-cache",
-            Pragma: "no-cache",
-          },
-        },
-      )
-
-      console.log("Response status:", response.status)
-      console.log("Content-Type:", response.headers["content-type"])
-      console.log("Data size:", response.data.size)
-
-      if (response.data.size === 0) {
-        throw new Error("Server returned empty PDF")
-      }
-
-      const blob = new Blob([response.data], { type: "application/pdf" })
-      const url = window.URL.createObjectURL(blob)
-
-      const link = document.createElement("a")
-      link.style.display = "none"
-      link.href = url
-      link.download = `receipt_${feeId}.pdf`
-      document.body.appendChild(link)
-      link.click()
-
-      setTimeout(() => {
-        document.body.removeChild(link)
-        window.URL.revokeObjectURL(url)
-        setLoading(false)
-      }, 100)
-    } catch (error: any) {
-      setLoading(false)
-      console.error("Download error:", error)
-
-      if (error.response) {
-        switch (error.response.status) {
-          case 404:
-            toast.error("Receipt not found - payment record might be missing")
-            break
-          case 500:
-            toast.error("Server error while generating receipt")
-            break
-          default:
-            toast.error(`Error: ${error.response.statusText}`)
-        }
-      } else if (error.message.includes("Network Error")) {
-        toast.error("Network error - check your connection")
-      } else {
-        toast.error("Failed to download receipt")
-      }
     }
   }
 

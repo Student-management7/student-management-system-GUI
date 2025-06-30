@@ -16,7 +16,8 @@ interface FeeData {
   contact: string;
   email: string;
   cls: string;
-  totalFees: number;
+  // totalFees: number;
+  totalFee:number
   remainingFees: number;
   status?: string; // Adding status field for better filtering
 }
@@ -35,7 +36,10 @@ const StudentFeesController: React.FC = () => {
   const columns = [
     { field: "name", headerName: "Name", editable: false },
     { field: "cls", headerName: "Class", editable: false },
-    { field: "totalFees", headerName: "Total Fees", editable: false },
+    // { field: "totalFees", headerName: "Total Fees", editable: false },
+    
+   
+    { field: "totalFee", headerName: "Total Fee", editable: false },
     { field: "remainingFees", headerName: "Remaining Fees", editable: false },
     { 
       field: "status", 
@@ -118,10 +122,7 @@ const StudentFeesController: React.FC = () => {
     const count = filteredData.length;
     toast.info(`Preparing to send list of ${count} ${count === 1 ? 'student' : 'students'}`);
     
-    // In a real implementation, you might:
-    // 1. Open a modal to confirm
-    // 2. Make an API call to send notifications/emails
-    // 3. Or export the list to a file
+   
   };
 
   return (

@@ -64,6 +64,9 @@ const SideBarController = () => {
        if (path.startsWith('/FeesManagement')) {
         return true;
         }
+       if (path.startsWith('/marksheet')) {
+        return true;
+        }
         const alwaysVisibleRoutes = ['/setting', '/profile', '/admindeshboard',];
         if (alwaysVisibleRoutes.includes(path)) return true;
 
