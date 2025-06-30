@@ -42,6 +42,7 @@ import UploadSyllabus from "../syllabus/UploadSyllabus";
 import EditSyllabus from "../syllabus/EditSyllabus";
 import TransferCertificate from "../tc/TransferCertificate";
 import FeesManagement from "../fess/studentFees/FeesManagement";
+import Marksheet from "../tc/Marksheet";
 
 
 interface Permission {
@@ -278,6 +279,11 @@ const PermissionBasedRoute: React.FC = () => {
     {
       path: "/FeesManagement", 
       element: <FeesManagement />, 
+      visible: true 
+    },
+    {
+      path: "/marksheet", 
+      element: <Marksheet />, 
       visible: true 
     },
 
