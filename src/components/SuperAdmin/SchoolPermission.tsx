@@ -38,7 +38,8 @@ interface Permissions {
   finance: {
     adminFees: boolean;
     feesController: boolean;
-    feesmanagement: boolean;
+    // feesmanagement: boolean;
+    feesManagement:false,
     permission: boolean;
   };
   notification: {
@@ -92,7 +93,9 @@ export default function SchoolUserPermission() {
     finance: {
       adminFees: false,
       feesController: false,
-      feesmanagement: false,
+      // feesmanagement: false,
+    
+     feesManagement:false,
       permission: false,
     },
     notification: {
