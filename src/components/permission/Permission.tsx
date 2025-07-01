@@ -3,7 +3,6 @@ import axiosInstance from "../../services/Utils/apiUtils";
 import { toast, ToastContainer } from "react-toastify";
 import Loader from "../loader/loader";
 
-
 interface Faculty {
   id: string;
   name: string;
@@ -39,6 +38,7 @@ interface Permissions {
   finance: {
     adminFees: boolean;
     feesController: boolean;
+    feesmanagement: boolean;
     permission: boolean;
   };
   notification: {
@@ -52,72 +52,80 @@ interface Permissions {
     classSubjectShow: boolean;
   };
   syllabus: {
-    SyllabusList: boolean;
-    UploadSyllabus: boolean;
-    EditSyllabus: boolean;
+    syllabusList: boolean;
+    uploadSyllabus: boolean;
+    editSyllabus: boolean;
+  };
+  tc: {
+    transferCertificate: boolean;
+    marksheet: boolean;
   };
 }
+
+const initialPermissions: Permissions = {
+  student: {
+    studentAttendanceEdit: false,
+    studentAttendenceManagement: false,
+    studentFees: false,
+    studentAttendanceEditSave: false,
+    studentRegistrationController: false,
+    studentAttendanceShow: false,
+    studentFeesController: false,
+    studentFeesForm: false,
+    studentFeesDetails: false,
+    studentReportForm: false,
+    studentReport: false,
+    studentDetails: false,
+    bulkupload: false
+  },
+  faculty: {
+    facultySalaryDetails: false,
+    facultySalaryController: false,
+    facultyAttendanceEditSave: false,
+    facultyAttendanceEdit: false,
+    facultyAttendanceShow: false,
+    facultyAttendanceSave: false,
+    facultyRegistrationForm: false,
+    facultyDetails: false,
+  },
+  finance: {
+    adminFees: false,
+    feesController: false,
+    feesmanagement: false,
+    permission: false,
+  },
+  notification: {
+    createNotification: false,
+    notificationList: false,
+    holidayFormController: false,
+    notificationController: false,
+  },
+  subject: {
+    saveSubjectsToClasses: false,
+    classSubjectShow: false,
+  },
+  syllabus: {
+    syllabusList: false,
+    uploadSyllabus: false,
+    editSyllabus: false,
+  },
+  tc: {
+    transferCertificate: false,
+    marksheet: false
+  }
+};
 
 export default function Permission() {
   const [facultyData, setFacultyData] = useState<Faculty[]>([]);
   const [selectedFaculty, setSelectedFaculty] = useState<Faculty | null>(null);
-  const [permissions, setPermissions] = useState<Permissions>({
-    student: {
-      studentAttendanceEdit: false,
-      studentAttendenceManagement: false,
-      studentFees: false,
-      studentAttendanceEditSave: false,
-      studentRegistrationController: false,
-      studentAttendanceShow: false,
-      studentFeesController: false,
-      studentFeesForm: false,
-      studentFeesDetails: false,
-      studentReportForm: false,
-      studentReport: false,
-      studentDetails: false,
-      bulkupload: false
-    },
-    faculty: {
-      facultySalaryDetails: false,
-      facultySalaryController: false,
-      facultyAttendanceEditSave: false,
-      facultyAttendanceEdit: false,
-      facultyAttendanceShow: false,
-      facultyAttendanceSave: false,
-      facultyRegistrationForm: false,
-      facultyDetails: false,
-    },
-    finance: {
-      adminFees: false,
-      feesController: false,
-      permission: false,
-    },
-    notification: {
-      createNotification: false,
-      notificationList: false,
-      holidayFormController: false,
-      notificationController: false,
-    },
-    subject: {
-      saveSubjectsToClasses: false,
-      classSubjectShow: false,
-    },
-    syllabus: {
-    SyllabusList: false,
-    UploadSyllabus: false,
-    EditSyllabus: false,
-  },
-  });
+  const [permissions, setPermissions] = useState<Permissions>(initialPermissions);
   const [isLoading, setIsLoading] = useState(false);
-
-
 
   useEffect(() => {
     const fetchFaculty = async () => {
       setIsLoading(true);
       try {
         const token = localStorage.getItem("authToken");
-        console.log("token",token);
         const response = await axiosInstance.get("/faculty/findAllFaculty", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -156,116 +164,29 @@ export default function Permission() {
         });
 
         const selectedFacultyPermissions = response.data.find(
-          (item: any) => item.email === faculty.email || item.permission.facultyId === faculty.id
+          (item: any) => item.email === faculty.email || item.permission?.facultyId === faculty.id
         );
 
-        if (selectedFacultyPermissions) {
-          setPermissions(selectedFacultyPermissions.permission.permissions);
+        if (selectedFacultyPermissions?.permission?.permissions) {
+          // Merge with initial state to ensure all properties exist
+          const mergedPermissions = {
+            ...initialPermissions,
+            ...selectedFacultyPermissions.permission.permissions
+          };
+          setPermissions(mergedPermissions);
         } else {
-          setPermissions({
-            student: {
-              studentAttendanceEdit: false,
-              studentAttendenceManagement: false,
-              studentFees: false,
-              studentAttendanceEditSave: false,
-              studentRegistrationController: false,
-              studentAttendanceShow: false,
-              studentFeesController: false,
-              studentFeesForm: false,
-              studentFeesDetails: false,
-              studentReportForm: false,
-              studentReport: false,
-              studentDetails: false,
-              bulkupload: false
-            },
-            faculty: {
-              facultySalaryDetails: false,
-              facultySalaryController: false,
-              facultyAttendanceEditSave: false,
-              facultyAttendanceEdit: false,
-              facultyAttendanceShow: false,
-              facultyAttendanceSave: false,
-              facultyRegistrationForm: false,
-              facultyDetails: false,
-            },
-            finance: {
-              adminFees: false,
-              feesController: false,
-              permission: false,
-            },
-            notification: {
-              createNotification: false,
-              notificationList: false,
-              holidayFormController: false,
-              notificationController: false,
-            },
-            subject: {
-              saveSubjectsToClasses: false,
-              classSubjectShow: false,
-            },
-            syllabus: {
-              SyllabusList: false,
-              UploadSyllabus: false,
-              EditSyllabus: false,
-            },
-          });
+          setPermissions(initialPermissions);
         }
       } catch (error) {
         console.error("Error fetching permissions:", error);
         toast.error("Failed to fetch permissions");
+        setPermissions(initialPermissions);
       } finally {
         setIsLoading(false);
       }
     } else {
       setSelectedFaculty(null);
-      setPermissions({
-        student: {
-          studentAttendanceEdit: false,
-          studentAttendenceManagement: false,
-          studentFees: false,
-          studentAttendanceEditSave: false,
-          studentRegistrationController: false,
-          studentAttendanceShow: false,
-          studentFeesController: false,
-          studentFeesForm: false,
-          studentFeesDetails: false,
-          studentReportForm: false,
-          studentReport: false,
-          studentDetails: false,
-          bulkupload: false
-        },
-        faculty: {
-          facultySalaryDetails: false,
-          facultySalaryController: false,
-          facultyAttendanceEditSave: false,
-          facultyAttendanceEdit: false,
-          facultyAttendanceShow: false,
-          facultyAttendanceSave: false,
-          facultyRegistrationForm: false,
-          facultyDetails: false,
-        },
-        finance: {
-          adminFees: false,
-          feesController: false,
-          permission: false,
-        },
-        notification: {
-          createNotification: false,
-          notificationList: false,
-          holidayFormController: false,
-          notificationController: false,
-        },
-        subject: {
-          saveSubjectsToClasses: false,
-          classSubjectShow: false,
-        },
-         syllabus: {
-              SyllabusList: false,
-              UploadSyllabus: false,
-              EditSyllabus: false,
-            },
-
-      });
+      setPermissions(initialPermissions);
       setIsLoading(false);
     }
   };
@@ -274,58 +195,60 @@ export default function Permission() {
     section: T,
     key: keyof Permissions[T]
   ) => {
-    setPermissions((prevState) => ({
-      ...prevState,
-      [section]: {
-        ...prevState[section],
-        [key]: !prevState[section][key],
-      },
-    }));
+    setPermissions((prevState) => {
+      const sectionObj = prevState[section];
+      if (!sectionObj) return prevState;
+      
+      return {
+        ...prevState,
+        [section]: {
+          ...sectionObj,
+          [key]: !sectionObj[key],
+        },
+      };
+    });
   };
 
- const handleSubmit = async () => {
-  if (!selectedFaculty) {
-    toast.warning("Please select a faculty member.");
-    return;
-  }
-
-  try {
-    const token = localStorage.getItem("authToken");
-
-    // Get role from localStorage
-    const userDetailsStr = localStorage.getItem("userDetails");
-    const userDetails = userDetailsStr ? JSON.parse(userDetailsStr) : null;
-    const role = userDetails?.role;
-    console.log("Role:", role);
-
-
-    // Determine user type for query param
-    let userType = "";
-    if (role === "admin") {
-      userType = "school";
-    } else if (role === "user") {
-      userType = "faculty";
+  const handleSubmit = async () => {
+    if (!selectedFaculty) {
+      toast.warning("Please select a faculty member.");
+      return;
     }
 
-    const payload = {
-      facultyId: selectedFaculty.id,
-      email: selectedFaculty.email,
-      permissions,
-    };
+    try {
+      const token = localStorage.getItem("authToken");
 
-    await axiosInstance.post(`/permissions/save?user=${userType}`, payload, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      // Get role from localStorage
+      const userDetailsStr = localStorage.getItem("userDetails");
+      const userDetails = userDetailsStr ? JSON.parse(userDetailsStr) : null;
+      const role = userDetails?.role;
 
-    toast.success("Permissions updated successfully!");
-  } catch (error) {
-    console.error(error);
-    toast.error("Error updating permissions");
-  }
-};
+      // Determine user type for query param
+      let userType = "";
+      if (role === "admin") {
+        userType = "school";
+      } else if (role === "user") {
+        userType = "faculty";
+      }
 
+      const payload = {
+        facultyId: selectedFaculty.id,
+        email: selectedFaculty.email,
+        permissions,
+      };
+
+      await axiosInstance.post(`/permissions/save?user=${userType}`, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      toast.success("Permissions updated successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Error updating permissions");
+    }
+  };
 
   return (
     <div className="container mt-5">
@@ -389,32 +312,36 @@ export default function Permission() {
                     />
                   </div>
 
-                  {Object.entries(permissions).map(([section, permissionsObj]) => (
-                    <div className="card shadow-sm mb-4" key={section}>
-                      <div className="card-header bg-[#3a8686] text-white">
-                        <h5>{section.charAt(0).toUpperCase() + section.slice(1)} Permissions</h5>
+                  {Object.entries(permissions).map(([section, permissionsObj]) => {
+                    if (!permissionsObj) return null;
+                    
+                    return (
+                      <div className="card shadow-sm mb-4" key={section}>
+                        <div className="card-header bg-[#3a8686] text-white">
+                          <h5>{section.charAt(0).toUpperCase() + section.slice(1)} Permissions</h5>
+                        </div>
+                        <div className="card-body">
+                          {Object.entries(permissionsObj).map(([key, value]) => (
+                            <div className="form-check mb-2" key={key}>
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                checked={value as boolean}
+                                onChange={() => handlePermissionChange(
+                                  section as keyof Permissions,
+                                  key as keyof Permissions[keyof Permissions]
+                                )}
+                                id={`${section}-${key}`}
+                              />
+                              <label className="form-check-label" htmlFor={`${section}-${key}`}>
+                                {key.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <div className="card-body">
-                        {Object.entries(permissionsObj).map(([key, value]) => (
-                          <div className="form-check mb-2" key={key}>
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              checked={value as boolean}  // Explicitly type as boolean
-                              onChange={() => handlePermissionChange(
-                                section as keyof Permissions,  // Cast section to keyof Permissions
-                                key as keyof Permissions[keyof Permissions]  // Cast key appropriately
-                              )}
-                              id={`${section}-${key}`}
-                            />
-                            <label className="form-check-label" htmlFor={`${section}-${key}`}>
-                              {key.replace(/([A-Z])/g, " $1")}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
 
                   <button
                     onClick={handleSubmit}

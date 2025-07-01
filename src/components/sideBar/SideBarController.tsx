@@ -7,14 +7,14 @@ import '../../global.scss';
 import logo from "../../assets/ews-full-white.png";
 
 interface Permission {
-  [module: string]: {
-    [permission: string]: boolean;
-  };
+    [module: string]: {
+        [permission: string]: boolean;
+    };
 }
 
 const SideBarController = () => {
     const [submenu, setSubmenu] = useState<{ [key: number]: boolean }>({});
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [role, setRole] = useState<string>("");
     const [permissions, setPermissions] = useState<Permission | null>(null);
     const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ const SideBarController = () => {
             const user = JSON.parse(userDetails);
             if (user?.role) {
                 setRole(user.role);
-                setPermissions(user.permission?.permissions || null);
+                setPermissions(user.permission?.permissions || {});
                 setLoading(false);
             } else {
                 console.error("Role not found in user data.");
@@ -51,28 +51,21 @@ const SideBarController = () => {
     };
 
     const hasPermission = (path: string): boolean => {
+        // Always show these routes
+        const alwaysVisibleRoutes = ['/setting', '/profile', '/admindeshboard'];
+        if (alwaysVisibleRoutes.includes(path)) return true;
+
+        // Admin has access to specific paths
         if (role === "admin") {
             return path === '/superAdminController' || path === '/schoolpermission';
         }
-        if (!permissions) return true;
-       if (path.startsWith('/syllabus')) {
-        return true;
-        }
-       if (path.startsWith('/tc')) {
-        return true;
-        }
-       if (path.startsWith('/FeesManagement')) {
-        return true;
-        }
-       if (path.startsWith('/marksheet')) {
-        return true;
-        }
-        const alwaysVisibleRoutes = ['/setting', '/profile', '/admindeshboard',];
-        if (alwaysVisibleRoutes.includes(path)) return true;
+       
 
-        const routeKey = path.replace(/^\//, '').split('/')[0];
+        // If no permissions object, show nothing (except always visible)
+        if (!permissions) return false;
 
-        const routePermissions: {[key: string]: string} = {
+        // Map routes to permission paths
+        const routePermissions: { [key: string]: string } = {
             'studentRegistrationController': 'student.studentRegistrationController',
             'studentAttendanceShow': 'student.studentAttendanceShow',
             'studentAttendenceManagement': 'student.studentAttendenceManagement',
@@ -93,22 +86,30 @@ const SideBarController = () => {
             'facultyDetails': 'faculty.facultyDetails',
             'fees': 'finance.adminFees',
             'permission': 'finance.permission',
+            'FeesManagement': 'finance.feesmanagement', 
             'notification': 'notification.notificationController',
             'createNotification': 'notification.createNotification',
             'holiday': 'notification.holidayFormController',
             'viewNotification': 'notification.notificationList',
             'classSubjectShow': 'subject.classSubjectShow',
             'saveSubjectsToClasses': 'subject.saveSubjectsToClasses',
-            'bulkUpload': 'student.bulkUpload',
-            "syllabus": "syallabus.SyllabusList",
-            "UploadSyllabus": "syallabus.UploadSyllabus",
-            "syllabus/edit/:id": "syallabus.EditSyllabus"
-
+            'bulkUpload': 'student.bulkupload', 
+            'marksheet': 'tc.marksheet',
+            'transferCertificate': 'tc.TransferCertificate',
+            'uploadSyllabus': 'syllabus.uploadSyllabus',
+            'syllabusList': 'syllabus.syllabusList',
+            'editSyllabus': 'syllabus.editSyllabus',
+            'syllabus': 'syllabus.syllabusList' 
         };
- 
-        const permissionPath = routePermissions[routeKey];
+
+        // Get the base route without parameters
+        const basePath = path.replace(/^\//, '').split('/')[0];
+        const permissionPath = routePermissions[basePath];
+
+        // If no permission mapping exists, don't show the route
         if (!permissionPath) return false;
 
+        // Check the permission
         const [module, permission] = permissionPath.split('.');
         return permissions[module]?.[permission] === true;
     };
@@ -118,16 +119,19 @@ const SideBarController = () => {
     }
 
     const filteredSideBarData = SideBarData.filter((item) => {
+        // Always show super admin menu for admin role
         if (role === "admin") {
             return item.title === "Super Admin";
         }
 
+        // Filter submenu items
         if (item.subNav) {
             item.subNav = item.subNav.filter(subItem => hasPermission(subItem.path));
             return item.subNav.length > 0;
         }
 
-        return true;
+        // Show items without subNav if they have permission
+        return hasPermission(item.path || '');
     });
 
     return (
