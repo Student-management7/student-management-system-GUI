@@ -7,6 +7,7 @@ export interface FeeInfo {
 }
 
 export interface StudentData {
+  month: any;
   payments: any;
   id: string;
   name: string;
