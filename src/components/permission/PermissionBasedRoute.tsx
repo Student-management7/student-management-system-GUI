@@ -114,9 +114,10 @@ const PermissionBasedRoute: React.FC = () => {
       visible: (role === "user" || role === "sub-user") && permissions?.finance?.adminFees 
     },
      {
-      path: "/FeesManagement", 
+      path: "/feesManagement", 
       element: <FeesManagement />, 
-      visible:  (role === "user" || role === "sub-user") && permissions?.finance?.FeesManagement
+      // visible:  (role === "user" || role === "sub-user") && permissions?.finance?.feesmanagement
+   visible: (role === "user" || role === "sub-user") && permissions?.finance?.feesManagement 
     },
     { 
       path: "/facultySalary", 
@@ -277,7 +278,7 @@ const PermissionBasedRoute: React.FC = () => {
       visible: (role === "user" || role === "sub-user") && permissions?.syllabus?.editSyllabus
     },
     { 
-      path: "/tc", 
+      path: "/transferCertificate", 
       element: <TransferCertificate />, 
       visible: (role === "user" || role === "sub-user") && permissions?.tc?.transferCertificate
     },

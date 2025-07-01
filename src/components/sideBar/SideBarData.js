@@ -105,7 +105,8 @@ export const SideBarData = [
             },
              {
                 title: 'Fees Management',
-                path: '/FeesManagement',
+                // path: '/feesmanagement',
+               path:"/feesManagement",
                 icon: FaIdCard,
               },
             {
@@ -197,7 +198,7 @@ export const SideBarData = [
 
              {
                 title: 'Transfer Certificate',
-                path: '/tc',
+                path: '/transferCertificate',
                 icon: FaIdCard,
               },
             

@@ -621,7 +621,7 @@ function Marksheet() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Select a Student</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Select Student</h3>
                   <p className="text-gray-600">Choose a student from the list to view their report cards</p>
                 </div>
               </div>
