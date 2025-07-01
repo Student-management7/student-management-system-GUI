@@ -42,6 +42,7 @@ import UploadSyllabus from "../syllabus/UploadSyllabus";
 import EditSyllabus from "../syllabus/EditSyllabus";
 import TransferCertificate from "../tc/TransferCertificate";
 import FeesManagement from "../fess/studentFees/FeesManagement";
+import Marksheet from "../tc/Marksheet";
 
 
 interface Permission {
@@ -111,6 +112,11 @@ const PermissionBasedRoute: React.FC = () => {
       path: "/fees", 
       element: <FeesController />, 
       visible: (role === "user" || role === "sub-user") && permissions?.finance?.adminFees 
+    },
+     {
+      path: "/FeesManagement", 
+      element: <FeesManagement />, 
+      visible:  (role === "user" || role === "sub-user") && permissions?.finance?.FeesManagement
     },
     { 
       path: "/facultySalary", 
@@ -257,28 +263,29 @@ const PermissionBasedRoute: React.FC = () => {
     { 
       path: "/syllabus", 
       element: <SyllabusList />, 
-      visible: true 
+      visible:  (role === "user" || role === "sub-user") && permissions?.syllabus?.syllabusList
     },
     { 
       path: "/UploadSyllabus", 
       element: <UploadSyllabus />, 
-      visible: true 
+      visible: (role === "user" || role === "sub-user") && permissions?.syllabus?.uploadSyllabus
     },
     
     { 
       path: "/syllabus/edit/:id", 
       element: <EditSyllabus />, 
-      visible: true 
+      visible: (role === "user" || role === "sub-user") && permissions?.syllabus?.editSyllabus
     },
     { 
       path: "/tc", 
       element: <TransferCertificate />, 
-      visible: true 
+      visible: (role === "user" || role === "sub-user") && permissions?.tc?.transferCertificate
     },
+   
     {
-      path: "/FeesManagement", 
-      element: <FeesManagement />, 
-      visible: true 
+      path: "/marksheet", 
+      element: <Marksheet />, 
+      visible: (role === "user" || role === "sub-user") && permissions?.tc?.marksheet
     },
 
     

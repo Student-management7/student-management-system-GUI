@@ -103,6 +103,11 @@ export const SideBarData = [
                 path: '/facultySalary',
                 icon: FaMoneyBill,
             },
+             {
+                title: 'Fees Management',
+                path: '/FeesManagement',
+                icon: FaIdCard,
+              },
             {
                 title: 'Permission',
                 path: '/permission',
@@ -196,9 +201,10 @@ export const SideBarData = [
                 icon: FaIdCard,
               },
             
+            
              {
-                title: 'Fees Management',
-                path: '/FeesManagement',
+                title: 'Marksheet',
+                path: '/marksheet',
                 icon: FaIdCard,
               },
             

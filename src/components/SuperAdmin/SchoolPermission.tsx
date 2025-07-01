@@ -14,7 +14,7 @@ interface School {
 interface Permissions {
   student: {
     studentAttendanceEdit: boolean;
-    studentAttendenceManagement: boolean;
+    studentAttendenceManagement: boolean;    
     studentAttendanceEditSave: boolean;
     studentRegistrationController: boolean;
     studentAttendanceShow: boolean;
@@ -23,7 +23,7 @@ interface Permissions {
     studentReportForm: boolean;
     studentReport: boolean;
     studentDetails: boolean;
-    bulkupload:boolean;
+    bulkupload: boolean;
   };
   faculty: {
     facultySalaryDetails: boolean;
@@ -38,6 +38,7 @@ interface Permissions {
   finance: {
     adminFees: boolean;
     feesController: boolean;
+    feesmanagement: boolean;
     permission: boolean;
   };
   notification: {
@@ -49,12 +50,16 @@ interface Permissions {
   subject: {
     saveSubjectsToClasses: boolean;
     classSubjectShow: boolean;
-  }, 
+  };
   syllabus: {
-    SyllabusList: false,
-    UploadSyllabus: false,
-    EditSyllabus: false,
-  },
+    syllabusList: boolean;
+    uploadSyllabus: boolean;
+    editSyllabus: boolean;
+  };
+  tc: {
+    transferCertificate: boolean;
+    marksheet: boolean;
+  };
 }
 
 export default function SchoolUserPermission() {
@@ -72,7 +77,7 @@ export default function SchoolUserPermission() {
       studentReportForm: false,
       studentReport: false,
       studentDetails: false,
-      bulkupload:false,
+      bulkupload: false,
     },
     faculty: {
       facultySalaryDetails: false,
@@ -87,6 +92,7 @@ export default function SchoolUserPermission() {
     finance: {
       adminFees: false,
       feesController: false,
+      feesmanagement: false,
       permission: false,
     },
     notification: {
@@ -99,11 +105,15 @@ export default function SchoolUserPermission() {
       saveSubjectsToClasses: false,
       classSubjectShow: false,
     },
-     syllabus: {
-    SyllabusList: false,
-    UploadSyllabus: false,
-    EditSyllabus: false,
-  },
+    syllabus: {
+      syllabusList: false,
+      uploadSyllabus: false,
+      editSyllabus: false,
+    },
+    tc: {
+      transferCertificate: false,
+      marksheet: false,
+    }
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -134,7 +144,12 @@ export default function SchoolUserPermission() {
       try {
         const response = await axiosInstance.get(`/permissions?email=${selectedSchool.email}`);
         if (response.data.permissions) {
-          setPermissions(response.data.permissions);
+          // Merge with initial state to ensure all sections exist
+          const mergedPermissions = {
+            ...permissions,
+            ...response.data.permissions
+          };
+          setPermissions(mergedPermissions);
         }
       } catch (error) {
         toast.error('Failed to load permissions');
@@ -175,6 +190,10 @@ export default function SchoolUserPermission() {
     });
   };
 
+  const isAllChecked = (section: keyof Permissions) => {
+    return Object.values(permissions[section]).every(val => val);
+  };
+
   const savePermissions = async () => {
     if (!selectedSchool) return;
 
@@ -193,8 +212,35 @@ export default function SchoolUserPermission() {
     setIsSaving(false);
   };
 
-  const isAllChecked = (section: keyof Permissions) => {
-    return Object.values(permissions[section]).every(val => val);
+  const renderPermissionSection = (section: keyof Permissions, title: string) => {
+    return (
+      <div className="border rounded-lg p-4 mb-4">
+        <div className="flex justify-between items-center mb-3">
+          <h4 className="font-medium">{title}</h4>
+          <button
+            onClick={() => toggleAllSectionPermissions(section, !isAllChecked(section))}
+            className="text-sm text-[#126666] hover:text-[#7debeb]"
+          >
+            {isAllChecked(section) ? 'Uncheck All' : 'Check All'}
+          </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Object.entries(permissions[section]).map(([key, value]) => (
+            <label key={key} className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                checked={value as boolean}
+                onChange={() => handlePermissionChange(section, key)}
+                className="h-4 w-4 text-[#126666] focus:ring-[#126666] border-gray-300 rounded"
+              />
+              <span className="text-sm text-gray-700">
+                {key.split(/(?=[A-Z])/).join(' ')}
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -205,7 +251,7 @@ export default function SchoolUserPermission() {
         <Loader />
       ) : (
         <div className="bg-white rounded-lg shadow p-6">
-          <h1 className="head1">School User Permission Management</h1>
+          <h1 className="text-2xl font-bold mb-6">School User Permission Management</h1>
           
           {/* School Selection */}
           <div className="mb-6">
@@ -214,7 +260,7 @@ export default function SchoolUserPermission() {
             </label>
             <select
               id="schoolSelect"
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#126666] focus:border-[#126666]"
               onChange={handleSchoolChange}
               value={selectedSchool?.id || ''}
             >
@@ -254,157 +300,27 @@ export default function SchoolUserPermission() {
 
               {/* Permission Management */}
               <div className="mb-6">
-                <h3 className="head1">User Permissions</h3>
+                <h3 className="text-xl font-semibold mb-4">User Permissions</h3>
                 
-                {/* Student Permissions */}
-                <div className="border rounded-lg p-4 mb-4">
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="font-medium">Student Management</h4>
-                    <button
-                      onClick={() => toggleAllSectionPermissions('student', !isAllChecked('student'))}
-                      className="text-sm text-blue-600 hover:text-blue-800"
-                    >
-                      {isAllChecked('student') ? 'Uncheck All' : 'Check All'}
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {Object.entries(permissions.student).map(([key, value]) => (
-                      <label key={key} className="flex items-center space-x-3">
-                        <input
-                          type="checkbox"
-                          checked={value}
-                          onChange={() => handlePermissionChange('student', key)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <span className="text-sm text-gray-700">
-                          {key.replace(/([A-Z])/g, ' $1').trim()}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
+                {renderPermissionSection('student', 'Student Management')}
+                {renderPermissionSection('faculty', 'Faculty Management')}
+                {renderPermissionSection('finance', 'Finance Management')}
+                {renderPermissionSection('notification', 'Notification Management')}
+                {renderPermissionSection('subject', 'Subject Management')}
+                {renderPermissionSection('syllabus', 'Syllabus Management')}
+                {renderPermissionSection('tc', 'Transfer Certificate & Marksheet')}
 
-                {/* Faculty Permissions */}
-                <div className="border rounded-lg p-4 mb-4">
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="font-medium">Faculty Management</h4>
-                    <button
-                      onClick={() => toggleAllSectionPermissions('faculty', !isAllChecked('faculty'))}
-                      className="text-sm text-blue-600 hover:text-blue-800"
-                    >
-                      {isAllChecked('faculty') ? 'Uncheck All' : 'Check All'}
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {Object.entries(permissions.faculty).map(([key, value]) => (
-                      <label key={key} className="flex items-center space-x-3">
-                        <input
-                          type="checkbox"
-                          checked={value}
-                          onChange={() => handlePermissionChange('faculty', key)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <span className="text-sm text-gray-700">
-                          {key.replace(/([A-Z])/g, ' $1').trim()}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Finance Permissions */}
-                <div className="border rounded-lg p-4 mb-4">
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="font-medium">Finance Management</h4>
-                    <button
-                      onClick={() => toggleAllSectionPermissions('finance', !isAllChecked('finance'))}
-                      className="text-sm text-blue-600 hover:text-blue-800"
-                    >
-                      {isAllChecked('finance') ? 'Uncheck All' : 'Check All'}
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {Object.entries(permissions.finance).map(([key, value]) => (
-                      <label key={key} className="flex items-center space-x-3">
-                        <input
-                          type="checkbox"
-                          checked={value}
-                          onChange={() => handlePermissionChange('finance', key)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <span className="text-sm text-gray-700">
-                          {key.replace(/([A-Z])/g, ' $1').trim()}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Notification Permissions */}
-                <div className="border rounded-lg p-4 mb-4">
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="font-medium">Notification Management</h4>
-                    <button
-                      onClick={() => toggleAllSectionPermissions('notification', !isAllChecked('notification'))}
-                      className="text-sm text-blue-600 hover:text-blue-800"
-                    >
-                      {isAllChecked('notification') ? 'Uncheck All' : 'Check All'}
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {Object.entries(permissions.notification).map(([key, value]) => (
-                      <label key={key} className="flex items-center space-x-3">
-                        <input
-                          type="checkbox"
-                          checked={value}
-                          onChange={() => handlePermissionChange('notification', key)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <span className="text-sm text-gray-700">
-                          {key.replace(/([A-Z])/g, ' $1').trim()}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Subject Permissions */}
-                <div className="border rounded-lg p-4 mb-4">
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="font-medium">Subject Management</h4>
-                    <button
-                      onClick={() => toggleAllSectionPermissions('subject', !isAllChecked('subject'))}
-                      className="text-sm text-blue-600 hover:text-blue-800"
-                    >
-                      {isAllChecked('subject') ? 'Uncheck All' : 'Check All'}
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {Object.entries(permissions.subject).map(([key, value]) => (
-                      <label key={key} className="flex items-center space-x-3">
-                        <input
-                          type="checkbox"
-                          checked={value}
-                          onChange={() => handlePermissionChange('subject', key)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <span className="text-sm text-gray-700">
-                          {key.replace(/([A-Z])/g, ' $1').trim()}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
+                {/* Save Button */}
+                <div className="mt-6">
+                  <button
+                    onClick={savePermissions}
+                    disabled={isSaving}
+                    className="btn button text-white font-medium py-2 px-6  disabled:opacity-50"
+                  >
+                    {isSaving ? 'Saving...' : 'Save Permissions'}
+                  </button>
                 </div>
               </div>
-
-              {/* Save Button */}
-              <button
-                onClick={savePermissions}
-                disabled={isSaving}
-                className="btn button text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-              >
-                {isSaving ? 'Saving...' : 'Save Permissions'}
-              </button>
             </>
           )}
         </div>
