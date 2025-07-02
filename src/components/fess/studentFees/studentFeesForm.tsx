@@ -349,7 +349,7 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
                 <>
                   <div className="row mb-3">
                     <div className="col-md-6 mb-4">
-                      <label className="form-label"> <strong>Student Name:</strong> </label>
+                      <label className="form-label"> <strong>Student Name</strong> </label>
                       <div className="info-box">{selectedStudent.name}</div>
                     </div>
                     <div className="col-md-6 mb-4">
@@ -367,7 +367,10 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
                       </span>
                     </div>
                     <div className="col-md-6">
-                      <label className="form-label"><strong>Total Fees</strong> </label>
+                      <label className="form-label"><strong>Total Fees</strong> 
+                      </label>
+                       
+                       
                       <span className="info-box">
                         ₹ {selectedStudent.totalFee}
                       </span>

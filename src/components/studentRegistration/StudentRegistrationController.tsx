@@ -148,7 +148,7 @@ const StudentRegistrationController = () => {
 
   const handeledBulkUplade = () => {
     
- navigate('bulk')
+ navigate('/bulkUpload')
   };
 
   return (
