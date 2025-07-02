@@ -10,7 +10,6 @@ interface StudentData {
   cls: string;
   totalFees: number;
   remainingFees: number;
-  month: number;
   feeInfo: Array<{
     fee: number;
     paymentMode: string;
@@ -48,20 +47,21 @@ const FeesManagement = () => {
     }
   }, [student]);
 
-  // Calculate fee structure with enhanced logic
+  // Calculate fee structure with updated logic
   const { feeMonths, otherFees, perMonthFee } = useMemo(() => {
     if (!student) return { feeMonths: [], otherFees: 0, perMonthFee: 0 };
 
     const totalMonths = 10; // July to April
-    const paidMonths = student.month;
+    const perMonthFee = parseFloat((student.totalFees / totalMonths).toFixed(2));
+    
+    // Calculate paid months based on total fees and remaining fees
+    const paidAmount = student.totalFees - student.remainingFees;
+    const paidMonths = Math.floor(paidAmount / perMonthFee);
     const remainingMonths = totalMonths - paidMonths;
 
-    const perMonthFee = parseFloat((student.totalFees / totalMonths).toFixed(2));
+    // Calculate remaining fees and other fees
     const calculatedRemaining = remainingMonths * perMonthFee;
-    const apiRemaining = student.remainingFees;
-
-    // Check if there's any discrepancy
-    const otherFees = Math.max(0, apiRemaining - calculatedRemaining);
+    const otherFees = Math.max(0, student.remainingFees - calculatedRemaining);
 
     // Create months data
     const feeMonths = monthOrder.map((month, index) => ({
@@ -193,14 +193,12 @@ const FeesManagement = () => {
 
   return (
     <div className="container mx-auto p-4">
-
       <div className="flex items-center space-x-4 mb-4">
         <span className='mb-2'>
           <BackButton />
         </span>
         <h1 className="head1 ">Student Fees Management</h1>
       </div>
-
 
       {/* Student Lookup */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
@@ -366,4 +364,3 @@ const FeesManagement = () => {
 };
 
 export default FeesManagement;
-
