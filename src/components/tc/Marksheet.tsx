@@ -825,7 +825,7 @@ function Marksheet() {
                                   <span
                                     className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getGradeColorClass(subject.grade)}`}
                                   >
-                                    {subject.grade}
+                                    {calculateGrade(subject.percentage)}
                                   </span>
                                 </td>
                               </tr>
@@ -860,7 +860,7 @@ function Marksheet() {
                           {loading ? (
                             <>
                               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white-600 mr-2 inline-block"></div>
-                              Generating PDF...
+                              Generating PDF..
                             </>
                           ) : (
                             <>
