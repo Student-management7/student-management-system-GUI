@@ -23,7 +23,7 @@ interface Permissions {
     studentReportForm: boolean;
     studentReport: boolean;
     studentDetails: boolean;
-    bulkUpload: boolean;
+    bulkupload: boolean;
   };
   faculty: {
     facultySalaryDetails: boolean;
@@ -76,7 +76,7 @@ const initialPermissions: Permissions = {
     studentReportForm: false,
     studentReport: false,
     studentDetails: false,
-    bulkUpload: false
+    bulkupload: false
   },
   faculty: {
     facultySalaryDetails: false,
@@ -211,7 +211,7 @@ export default function Permission() {
 
   const handleSubmit = async () => {
     if (!selectedFaculty) {
-      toast.warning("Please select a faculty member.");
+      toast.warning("Please select faculty member.");
       return;
     }
 

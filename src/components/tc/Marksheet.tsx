@@ -39,12 +39,37 @@ interface ReportCard {
   studentInfo: Student
 }
 
+interface ConsolidatedSubject {
+  subject: string
+  quarterly: { marks: number; maxMarks: number } | null
+  halfYearly: { marks: number; maxMarks: number } | null
+  final: { marks: number; maxMarks: number } | null
+  total: number
+  maxTotal: number
+  percentage: number
+}
+
+interface ConsolidatedReport {
+  subjects: ConsolidatedSubject[]
+  totalMarks: number
+  totalMaxMarks: number
+  overallPercentage: number
+  overallGrade: string
+  examDates: {
+    quarterly?: string
+    halfYearly?: string
+    final?: string
+  }
+}
+
 function Marksheet() {
   const [students, setStudents] = useState<Student[]>([])
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
   const [reportCards, setReportCards] = useState<ReportCard[]>([])
+  const [consolidatedReport, setConsolidatedReport] = useState<ConsolidatedReport | null>(null)
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
+  const [selectedClass, setSelectedClass] = useState("")
   const [error, setError] = useState<string | null>(null)
 
   const token = localStorage.getItem("token")
@@ -69,29 +94,138 @@ function Marksheet() {
     return headers
   }
 
+  // Calculate grade based on percentage
+  const calculateGrade = (percentage: number): string => {
+    if (percentage >= 90) return "A+"
+    if (percentage >= 80) return "A"
+    if (percentage >= 70) return "B+"
+    if (percentage >= 60) return "B"
+    if (percentage >= 50) return "C"
+    if (percentage >= 40) return "D"
+    return "F"
+  }
+
+  // Filter unique exams (take the latest occurrence of each exam type)
+  const getUniqueExams = (reports: ReportCard[]): ReportCard[] => {
+    const examMap = new Map<string, ReportCard>()
+
+    // Normalize exam type names
+    const normalizeExamType = (examType: string): string => {
+      const type = examType.toLowerCase().trim()
+      if (type.includes("quarter") || type.includes("quaterly")) return "quarterly"
+      if (type.includes("half") || type.includes("mid")) return "halfyearly"
+      if (type.includes("final") || type.includes("annual")) return "final"
+      if (type.includes("test")) return "test"
+      return type
+    }
+
+    reports.forEach((report) => {
+      const normalizedType = normalizeExamType(report.examType)
+
+      // Only keep quarterly, halfyearly, and final exams
+      if (["quarterly", "halfyearly", "final"].includes(normalizedType)) {
+        // If we already have this exam type, keep the one with later date
+        if (
+          !examMap.has(normalizedType) ||
+          new Date(report.examDate) > new Date(examMap.get(normalizedType)!.examDate)
+        ) {
+          examMap.set(normalizedType, { ...report, examType: normalizedType })
+        }
+      }
+    })
+
+    return Array.from(examMap.values())
+  }
+
+  // Create consolidated report from unique exams
+  const createConsolidatedReport = (uniqueReports: ReportCard[]): ConsolidatedReport => {
+    const subjectMap = new Map<string, ConsolidatedSubject>()
+    const examDates: { quarterly?: string; halfYearly?: string; final?: string } = {}
+
+    // Initialize subjects from all exams
+    uniqueReports.forEach((report) => {
+      const examType = report.examType as "quarterly" | "halfyearly" | "final"
+      examDates[examType === "halfyearly" ? "halfYearly" : examType] = report.examDate
+
+      report.subjects.forEach((subject) => {
+        if (!subjectMap.has(subject.subject)) {
+          subjectMap.set(subject.subject, {
+            subject: subject.subject,
+            quarterly: null,
+            halfYearly: null,
+            final: null,
+            total: 0,
+            maxTotal: 0,
+            percentage: 0,
+          })
+        }
+
+        const consolidatedSubject = subjectMap.get(subject.subject)!
+        const examKey = examType === "halfyearly" ? "halfYearly" : (examType as keyof ConsolidatedSubject)
+
+        if (examKey === "quarterly" || examKey === "halfYearly" || examKey === "final") {
+          consolidatedSubject[examKey] = {
+            marks: subject.marksObtained,
+            maxMarks: subject.maxMarks,
+          }
+        }
+      })
+    })
+
+    // Calculate totals and percentages
+    const subjects: ConsolidatedSubject[] = Array.from(subjectMap.values()).map((subject) => {
+      const quarterly = subject.quarterly?.marks || 0
+      const halfYearly = subject.halfYearly?.marks || 0
+      const final = subject.final?.marks || 0
+
+      const quarterlyMax = subject.quarterly?.maxMarks || 0
+      const halfYearlyMax = subject.halfYearly?.maxMarks || 0
+      const finalMax = subject.final?.maxMarks || 0
+
+      const total = quarterly + halfYearly + final
+      const maxTotal = quarterlyMax + halfYearlyMax + finalMax
+      const percentage = maxTotal > 0 ? (total / maxTotal) * 100 : 0
+
+      return {
+        ...subject,
+        total,
+        maxTotal,
+        percentage: Math.round(percentage * 100) / 100,
+      }
+    })
+
+    const totalMarks = subjects.reduce((sum, subject) => sum + subject.total, 0)
+    const totalMaxMarks = subjects.reduce((sum, subject) => sum + subject.maxTotal, 0)
+    const overallPercentage = totalMaxMarks > 0 ? (totalMarks / totalMaxMarks) * 100 : 0
+    const overallGrade = calculateGrade(overallPercentage)
+
+    return {
+      subjects,
+      totalMarks,
+      totalMaxMarks,
+      overallPercentage: Math.round(overallPercentage * 100) / 100,
+      overallGrade,
+      examDates,
+    }
+  }
+
   // Fetch all students with token
   const fetchStudents = async () => {
     try {
       setLoading(true)
       setError(null)
-      console.log("Fetching students with token:", token ? "Token present" : "No token")
 
       const response = await fetch("https://s-m-s-keyw.onrender.com/student/findAllStudent", {
         method: "GET",
         headers: getHeaders(),
       })
 
-      console.log("Students API response status:", response.status)
-
       if (!response.ok) {
         const errorText = await response.text()
-        console.error("Students API error response:", errorText)
         throw new Error(`Failed to fetch students: ${response.status}`)
       }
 
       const data = await response.json()
-
-      // Validate and clean student data
       const validatedStudents = Array.isArray(data)
         ? data.map((student) => ({
             ...student,
@@ -112,7 +246,6 @@ function Marksheet() {
           }))
         : []
 
-      console.log("Students data received:", validatedStudents.length, "students")
       setStudents(validatedStudents)
     } catch (error) {
       console.error("Error fetching students:", error)
@@ -126,35 +259,23 @@ function Marksheet() {
     try {
       setLoading(true)
       setError(null)
-      console.log("Fetching report for student ID:", studentId)
 
       const url = `https://s-m-s-keyw.onrender.com/report/getStudentReport?id=${studentId}`
-      console.log("Request URL:", url)
-
       const response = await fetch(url, {
         method: "GET",
         headers: getHeaders(),
       })
 
-      console.log("Response status:", response.status)
-
       if (!response.ok) {
-        const errorText = await response.text()
-        console.error("Error response:", errorText)
-
-        // If it's a 404 or similar, it might just mean no reports exist
         if (response.status === 404) {
           setReportCards([])
+          setConsolidatedReport(null)
           return
         }
-
         throw new Error(`Failed to fetch report: ${response.status}`)
       }
 
       const data = await response.json()
-      console.log("Report data received:", data)
-
-      // Validate report data
       const validatedReports = Array.isArray(data)
         ? data.map((report) => ({
             ...report,
@@ -175,68 +296,122 @@ function Marksheet() {
         : []
 
       setReportCards(validatedReports)
+
+      // Create consolidated report
+      const uniqueReports = getUniqueExams(validatedReports)
+      if (uniqueReports.length > 0) {
+        const consolidated = createConsolidatedReport(uniqueReports)
+        setConsolidatedReport(consolidated)
+      } else {
+        setConsolidatedReport(null)
+      }
     } catch (error) {
       console.error("Error fetching student report:", error)
       setError(`Error fetching student report: ${error.message}`)
-      setReportCards([]) // Set empty array on error
+      setReportCards([])
+      setConsolidatedReport(null)
     } finally {
       setLoading(false)
     }
   }
 
-  const generatePDF = async (reportCard: ReportCard) => {
+  const generateConsolidatedPDF = async () => {
+    if (!consolidatedReport || !selectedStudent) {
+      setError("No consolidated report data available")
+      return
+    }
+
     try {
       setLoading(true)
       setError(null)
 
-      // Validate report card data
-      if (!reportCard) {
-        throw new Error("No report card data available")
-      }
-
-      // Safely extract student info with fallbacks
-      const studentInfo = reportCard.studentInfo || selectedStudent || {}
-      const subjects = Array.isArray(reportCard.subjects) ? reportCard.subjects : []
-
-      // Transform data to match the expected format
+      // Transform consolidated data for PDF
       const pdfData = {
-        studentName: safeValue(studentInfo.name, "Unknown Student"),
-        rollNo: safeValue(studentInfo.studentCode, "N/A"),
-        studentClass: safeValue(studentInfo.cls, "N/A"),
+        studentName: safeValue(selectedStudent.name, "Unknown Student"),
+        rollNo: safeValue(selectedStudent.studentCode, "N/A"),
+        studentClass: safeValue(selectedStudent.cls, "N/A"),
         academicYear: "2024-2025",
-        date: safeValue(reportCard.examDate, new Date().toISOString().split("T")[0]),
-        result: `Grade: ${safeValue(reportCard.grade, "N/A")}`,
-        remarks: `Average: ${reportCard.average || 0}% - ${safeValue(reportCard.grade, "N/A")} Grade`,
-        subjects: subjects.map((subject) => ({
-          name: safeValue(subject.subject, "Unknown Subject"),
-          q: typeof subject.marksObtained === "number" ? subject.marksObtained : 0,
-          h: typeof subject.maxMarks === "number" ? subject.maxMarks : 100,
-          f: typeof subject.marksObtained === "number" ? subject.marksObtained : 0,
+        date: new Date().toISOString().split("T")[0],
+        result: `Grade: ${consolidatedReport.overallGrade}`,
+        remarks: `Overall Percentage: ${consolidatedReport.overallPercentage}% - ${consolidatedReport.overallGrade} Grade`,
+        subjects: consolidatedReport.subjects.map((subject) => ({
+          name: subject.subject,
+          quarterly: subject.quarterly?.marks || 0,
+          halfYearly: subject.halfYearly?.marks || 0,
+          final: subject.final?.marks || 0,
+          total: subject.total,
+          grade: calculateGrade(subject.percentage),
         })),
+        totalMarks: consolidatedReport.totalMarks,
+        totalMaxMarks: consolidatedReport.totalMaxMarks,
+        overallPercentage: consolidatedReport.overallPercentage,
+        overallGrade: consolidatedReport.overallGrade,
       }
 
-      console.log("PDF Data being sent:", pdfData)
-
-      const response = await fetch("https://s-m-s-keyw.onrender.com/marksheet/download", {
+      const response = await fetch("https://s-m-s-keyw.onrender.com/marksheet/downloadConsolidated", {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(pdfData),
       })
 
       if (!response.ok) {
-        const errorText = await response.text()
-        throw new Error(`Server responded with status ${response.status}: ${errorText}`)
+        // Fallback to original endpoint if consolidated endpoint doesn't exist
+        const fallbackData = {
+          studentName: pdfData.studentName,
+          rollNo: pdfData.rollNo,
+          studentClass: pdfData.studentClass,
+          academicYear: pdfData.academicYear,
+          date: pdfData.date,
+          result: pdfData.result,
+          remarks: pdfData.remarks,
+          subjects: consolidatedReport.subjects.map((subject) => ({
+            name: subject.subject,
+            q: subject.quarterly?.marks || 0,
+            h: subject.halfYearly?.marks || 0,
+            f: subject.final?.marks || 0,
+            qMax: subject.quarterly?.maxMarks || 100,
+            hMax: subject.halfYearly?.maxMarks || 100,
+            fMax: subject.final?.maxMarks || 100,
+            total: subject.total,
+            maxTotal: subject.maxTotal,
+            percentage: subject.percentage,
+            grade: calculateGrade(subject.percentage),
+          })),
+          totalMarks: consolidatedReport.totalMarks,
+          totalMaxMarks: consolidatedReport.totalMaxMarks,
+          overallPercentage: consolidatedReport.overallPercentage,
+          overallGrade: consolidatedReport.overallGrade,
+        }
+
+        const fallbackResponse = await fetch("https://s-m-s-keyw.onrender.com/marksheet/download", {
+          method: "POST",
+          headers: getHeaders(),
+          body: JSON.stringify(fallbackData),
+        })
+
+        if (!fallbackResponse.ok) {
+          throw new Error(`Server responded with status ${fallbackResponse.status}`)
+        }
+
+        const blob = await fallbackResponse.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = `${safeValue(selectedStudent.name, "Student")}_Final_Result.pdf`
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+        return
       }
 
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = `${safeValue(studentInfo.name, "Marksheet")}_${safeValue(reportCard.examType, "Report")}_Marksheet.pdf`
+      a.download = `${safeValue(selectedStudent.name, "Student")}_Final_Result.pdf`
       document.body.appendChild(a)
       a.click()
-
-      // Cleanup
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
     } catch (error) {
@@ -253,30 +428,39 @@ function Marksheet() {
     fetchStudentReport(student.id)
   }
 
-  const filteredStudents = students.filter(
-    (student) =>
-      safeValue(student.name).toLowerCase().includes(searchTerm.toLowerCase()) ||
-      safeValue(student.studentCode).includes(searchTerm) ||
-      safeValue(student.cls).toLowerCase().includes(searchTerm.toLowerCase()),
-  )
-
   const getGradeColorClass = (grade: string) => {
     const gradeValue = safeValue(grade).toUpperCase()
     switch (gradeValue) {
+      case "A+":
       case "A":
         return "bg-green-100 text-green-800"
+      case "B+":
       case "B":
         return "bg-blue-100 text-blue-800"
       case "C":
         return "bg-yellow-100 text-yellow-800"
       case "D":
+        return "bg-orange-100 text-orange-800"
+      case "F":
         return "bg-red-100 text-red-800"
       default:
         return "bg-gray-100 text-gray-800"
     }
   }
 
-  // Fetch students when token is available
+  const getUniqueClasses = () => {
+    const classes = students.map((student) => safeValue(student.cls))
+    return [...new Set(classes)].filter((cls) => cls !== "N/A").sort()
+  }
+
+  const filteredStudents = students.filter(
+    (student) =>
+      (safeValue(student.name).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        safeValue(student.studentCode).includes(searchTerm) ||
+        safeValue(student.cls).toLowerCase().includes(searchTerm.toLowerCase())) &&
+      (selectedClass === "" || safeValue(student.cls) === selectedClass),
+  )
+
   useEffect(() => {
     if (token) {
       fetchStudents()
@@ -287,8 +471,8 @@ function Marksheet() {
     <div className="max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Student Marksheet System</h1>
-        <p className="text-gray-600 text-lg">Manage student reports and generate marksheets</p>
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">Student Final Result System</h1>
+        <p className="text-gray-600 text-lg">Consolidated academic performance across all exams</p>
       </div>
 
       {/* Error Display */}
@@ -322,7 +506,7 @@ function Marksheet() {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Authentication Required</h3>
-            <p className="text-gray-600">Please login to access the marksheet system</p>
+            <p className="text-gray-600">Please login to access the final result system</p>
           </div>
         </div>
       ) : (
@@ -340,29 +524,84 @@ function Marksheet() {
                       d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
                     />
                   </svg>
-                  Students ({filteredStudents.length})
+                  Students ({filteredStudents.length}
+                  {selectedClass && ` - Class ${selectedClass}`}
+                  {searchTerm && ` - "${searchTerm}"`})
                 </h2>
-                <div className="relative">
-                  <svg
-                    className="absolute left-3 top-3 h-4 w-4 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                <div className="space-y-4">
+                  {/* Search Input */}
+                  <div className="relative">
+                    <svg
+                      className="absolute left-3 top-3 h-4 w-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                    <input
+                      type="text"
+                      placeholder="Search students..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                     />
-                  </svg>
-                  <input
-                    type="text"
-                    placeholder="Search students..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                  />
+                  </div>
+
+                  {/* Class Filter */}
+                  <div className="relative">
+                    <svg
+                      className="absolute left-3 top-3 h-4 w-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                      />
+                    </svg>
+                    <select
+                      value={selectedClass}
+                      onChange={(e) => setSelectedClass(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none bg-white"
+                    >
+                      <option value="">All Classes</option>
+                      {getUniqueClasses().map((cls) => (
+                        <option key={cls} value={cls}>
+                          Class {cls}
+                        </option>
+                      ))}
+                    </select>
+                    <svg
+                      className="absolute right-3 top-3 h-4 w-4 text-gray-400 pointer-events-none"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+
+                  {/* Clear Filters Button */}
+                  {(searchTerm || selectedClass) && (
+                    <button
+                      onClick={() => {
+                        setSearchTerm("")
+                        setSelectedClass("")
+                      }}
+                      className="w-full px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                    >
+                      Clear Filters
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="max-h-96 overflow-y-auto">
@@ -402,7 +641,7 @@ function Marksheet() {
             </div>
           </div>
 
-          {/* Student Details and Report Cards */}
+          {/* Student Details and Consolidated Report */}
           <div className="lg:col-span-2 space-y-6">
             {selectedStudent ? (
               <>
@@ -468,31 +707,43 @@ function Marksheet() {
                   </div>
                 </div>
 
-                {/* Report Cards */}
+                {/* Consolidated Final Result */}
                 <div className="bg-white rounded-lg shadow-md p-6">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                      <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                        />
-                      </svg>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-900">Final Result</h2>
+                        <p className="text-gray-600">Consolidated performance across all exams</p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900">Report Cards</h2>
-                      <p className="text-gray-600">Academic performance across different exams</p>
-                    </div>
+                    {consolidatedReport && (
+                      <div className="text-right">
+                        <span
+                          className={`inline-block px-4 py-2 rounded-full text-lg font-bold ${getGradeColorClass(consolidatedReport.overallGrade)}`}
+                        >
+                          {consolidatedReport.overallGrade}
+                        </span>
+                        <p className="text-sm text-gray-600 mt-1">{consolidatedReport.overallPercentage}%</p>
+                      </div>
+                    )}
                   </div>
 
                   {loading ? (
                     <div className="text-center py-12">
                       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                      <p className="text-gray-500">Loading report cards...</p>
+                      <p className="text-gray-500">Loading final result...</p>
                     </div>
-                  ) : reportCards.length === 0 ? (
+                  ) : !consolidatedReport ? (
                     <div className="text-center py-12">
                       <svg
                         className="w-16 h-16 text-gray-400 mx-auto mb-4"
@@ -507,103 +758,130 @@ function Marksheet() {
                           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                         />
                       </svg>
-                      <p className="text-gray-500 text-lg font-semibold">No Report Card Available</p>
-                      <p className="text-gray-400 text-sm mt-2">This student doesn't have any report cards yet</p>
+                      <p className="text-gray-500 text-lg font-semibold">No Final Result Available</p>
+                      <p className="text-gray-400 text-sm mt-2">This student doesn't have sufficient exam data</p>
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      {reportCards.map((report) => (
-                        <div
-                          key={report.reportId}
-                          className="border border-gray-200 rounded-lg overflow-hidden border-l-4 border-l-blue-500"
-                        >
-                          <div className="bg-gray-50 px-6 py-4 flex justify-between items-center">
+                      {/* Exam Dates */}
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <h3 className="font-semibold text-gray-900 mb-2">Exam Dates</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                          {consolidatedReport.examDates.quarterly && (
                             <div>
-                              <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm0 0v4a2 2 0 002 2h6a2 2 0 002-2v-4"
-                                  />
-                                </svg>
-                                {safeValue(report.examType, "Unknown Exam")}
-                              </h3>
-                              <p className="text-gray-600">Date: {safeValue(report.examDate)}</p>
+                              <span className="font-medium">Quarterly:</span> {consolidatedReport.examDates.quarterly}
                             </div>
-                            <div className="text-right">
-                              <span
-                                className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${getGradeColorClass(report.grade)}`}
-                              >
-                                Grade {safeValue(report.grade)}
-                              </span>
-                              <p className="text-sm text-gray-600 mt-1">Average: {report.average || 0}%</p>
+                          )}
+                          {consolidatedReport.examDates.halfYearly && (
+                            <div>
+                              <span className="font-medium">Half Yearly:</span>{" "}
+                              {consolidatedReport.examDates.halfYearly}
                             </div>
-                          </div>
-
-                          <div className="p-6">
-                            {report.subjects && report.subjects.length > 0 ? (
-                              <>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                                  {report.subjects.map((subject, index) => (
-                                    <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                                      <div className="font-semibold text-gray-900 mb-1">
-                                        {safeValue(subject.subject, "Unknown Subject")}
-                                      </div>
-                                      <div className="text-lg font-bold text-blue-600 mb-1">
-                                        {subject.marksObtained || 0}/{subject.maxMarks || 100}
-                                      </div>
-                                      <div className="text-sm text-gray-600">
-                                        {safeValue(subject.remarks, "No remarks")}
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-
-                                <div className="border-t border-gray-200 pt-4 flex justify-between items-center">
-                                  <div className="flex items-center gap-6">
-                                    <div className="flex items-center gap-2">
-                                      <svg className="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                      </svg>
-                                      <span className="font-semibold text-gray-900">
-                                        Total: {report.totalMarks || 0}
-                                      </span>
-                                    </div>
-                                    <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-                                      {report.subjects.length > 0
-                                        ? (((report.totalMarks || 0) / (report.subjects.length * 100)) * 100).toFixed(1)
-                                        : 0}
-                                      %
-                                    </div>
-                                  </div>
-
-                                  <button
-                                    onClick={() => generatePDF(report)}
-                                    disabled={loading}
-                                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                                  >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                      />
-                                    </svg>
-                                    {loading ? "Generating..." : "Download PDF"}
-                                  </button>
-                                </div>
-                              </>
-                            ) : (
-                              <div className="text-center py-8">
-                                <p className="text-gray-500">No subjects data available for this report</p>
-                              </div>
-                            )}
-                          </div>
+                          )}
+                          {consolidatedReport.examDates.final && (
+                            <div>
+                              <span className="font-medium">Final:</span> {consolidatedReport.examDates.final}
+                            </div>
+                          )}
                         </div>
-                      ))}
+                      </div>
+
+                      {/* Consolidated Marks Table */}
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse border border-gray-300">
+                          <thead>
+                            <tr className="bg-gray-100">
+                              <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Subject</th>
+                              <th className="border border-gray-300 px-4 py-2 text-center font-semibold">
+                                Quarterly (100)
+                              </th>
+                              <th className="border border-gray-300 px-4 py-2 text-center font-semibold">
+                                Half-Yearly (100)
+                              </th>
+                              <th className="border border-gray-300 px-4 py-2 text-center font-semibold">
+                                Final Exam (100)
+                              </th>
+                              <th className="border border-gray-300 px-4 py-2 text-center font-semibold">
+                                Total (300)
+                              </th>
+                              <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Grade</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {consolidatedReport.subjects.map((subject) => (
+                              <tr key={subject.subject}>
+                                <td className="border border-gray-300 px-4 py-2">{subject.subject}</td>
+                                <td className="border border-gray-300 px-4 py-2 text-center">
+                                  {subject.quarterly?.marks || "N/A"}
+                                </td>
+                                <td className="border border-gray-300 px-4 py-2 text-center">
+                                  {subject.halfYearly?.marks || "N/A"}
+                                </td>
+                                <td className="border border-gray-300 px-4 py-2 text-center">
+                                  {subject.final?.marks || "N/A"}
+                                </td>
+                                <td className="border border-gray-300 px-4 py-2 text-center">{subject.total}</td>
+                                <td className="border border-gray-300 px-4 py-2 text-center">
+                                  <span
+                                    className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getGradeColorClass(subject.grade)}`}
+                                  >
+                                    {calculateGrade(subject.percentage)}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                            <tr className="bg-gray-50">
+                              <td className="border border-gray-300 px-4 py-2 font-semibold">Total</td>
+                              <td className="border border-gray-300 px-4 py-2 text-center">-</td>
+                              <td className="border border-gray-300 px-4 py-2 text-center">-</td>
+                              <td className="border border-gray-300 px-4 py-2 text-center">-</td>
+                              <td className="border border-gray-300 px-4 py-2 text-center font-semibold">
+                                {consolidatedReport.totalMarks} / {consolidatedReport.totalMaxMarks}
+                              </td>
+                              <td className="border border-gray-300 px-4 py-2 text-center">
+                                <span
+                                  className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getGradeColorClass(consolidatedReport.overallGrade)}`}
+                                >
+                                  {consolidatedReport.overallGrade}
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Download Button */}
+                      <div className="text-center mt-6">
+                        <button
+                          onClick={generateConsolidatedPDF}
+                          className="btn button "
+                          disabled={loading}
+                        >
+                          {loading ? (
+                            <>
+                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white-600 mr-2 inline-block"></div>
+                              Generating PDF..
+                            </>
+                          ) : (
+                            <>
+                              <svg
+                                className="w-5 h-5 mr-2 inline-block"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-5l-4 4-4-4m8-3v9"
+                                />
+                              </svg>
+                              Download Final Result
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -611,18 +889,21 @@ function Marksheet() {
             ) : (
               <div className="bg-white rounded-lg shadow-md p-12">
                 <div className="text-center">
-                  <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                      />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Select Student</h3>
-                  <p className="text-gray-600">Choose a student from the list to view their report cards</p>
+                  <svg
+                    className="w-16 h-16 text-gray-300 mx-auto mb-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                    />
+                  </svg>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Select a Student</h3>
+                  <p className="text-gray-600">Choose a student from the list to view their final result</p>
                 </div>
               </div>
             )}
