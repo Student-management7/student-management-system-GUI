@@ -167,28 +167,56 @@ const StudentRegistrationController = () => {
             console.error("Download error:", error);
         }
     };
-
-    return (
-        <>
-            <ToastContainer position="top-right" autoClose={3000} />
-            {loading && <Loader />}
-            {!loading && (
-                <div className="box">
-                    <div className="flex items-center space-x-4 mb-3">
-                        <span>
-                            <BackButton />
-                        </span>
-                        <h1 className="head1 items-center mt-2 " >Bulk Upload</h1>
-                    </div>
-                    <div className="">
-                        <input className="mb-4" type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
-                        <button onClick={handleUpload} className="btn button float-right ml-2">Upload</button>
-                    </div>
-                    <ReusableTable rows={data} columns={columns} />
+return (
+    <>
+        <ToastContainer position="top-right" autoClose={3000} />
+        {loading && <Loader />}
+        {!loading && (
+            <div className="box">
+                <div className="flex items-center space-x-4 mb-3">
+                    <BackButton />
+                    <h1 className="head1 mt-2">Bulk Upload</h1>
                 </div>
-            )}
-        </>
-    );
+
+                {/* File input + sample + upload with upload floated right */}
+                <div className="flex flex-wrap justify-between items-center mb-4">
+                    {/* Left side: file input + sample button */}
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="file"
+                            accept=".xlsx, .xls"
+                            onChange={handleFileChange}
+                            className="border px-3 py-2 rounded-md text-sm"
+                        />
+
+                        <a
+                            href="sample.xlsx"
+                            download
+                            className="bg-gray-600 hover:bg-gray-700 text-white text-sm px-4 py-2 rounded-md shadow inline-block"
+                            title="Download sample Excel file"
+                        >
+                            📄 Sample File
+                        </a>
+                    </div>
+
+                    {/* Right side: upload button */}
+                    <button
+                        onClick={handleUpload}
+                        className="button"
+                    >
+                        Upload File
+                    </button>
+                </div>
+
+                {/* Table */}
+                <ReusableTable rows={data} columns={columns} />
+            </div>
+        )}
+    </>
+);
+
+
+
 };
 
 export default StudentRegistrationController;
