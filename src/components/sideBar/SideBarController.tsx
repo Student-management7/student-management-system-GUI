@@ -94,8 +94,11 @@ const SideBarController = () => {
             'viewNotification': 'notification.notificationList',
             'classSubjectShow': 'subject.classSubjectShow',
             'saveSubjectsToClasses': 'subject.saveSubjectsToClasses',
+           
+            // 'transferCertificate': 'tc.TransferCertificate',
+            "transferCertificate": 'tc.transferCertificate',
             'bulkUpload': 'student.bulkUpload', 
-            'transferCertificate': 'tc.TransferCertificate',
+            
             'marksheet': 'tc.marksheet',
              'uploadSyllabus': 'syllabus.uploadSyllabus',
             'syllabusList': 'syllabus.syllabusList',
