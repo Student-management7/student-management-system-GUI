@@ -114,7 +114,7 @@ const StudentRegistrationController = () => {
         }
     };
 
-    // Function to handle download when a button is clicked
+    // Function to handle download when a button is click
 
 
     const handleDownload = async (id: string, value: string) => {
