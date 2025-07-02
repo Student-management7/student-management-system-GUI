@@ -190,7 +190,7 @@ return (
                         />
 
                         <a
-                            href="/Two_Students.xlsx"
+                            href="sample.xlsx"
                             download
                             className="bg-gray-600 hover:bg-gray-700 text-white text-sm px-4 py-2 rounded-md shadow inline-block"
                             title="Download sample Excel file"
