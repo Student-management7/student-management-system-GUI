@@ -204,6 +204,7 @@ const PermissionBasedRoute: React.FC = () => {
       element: <BulkUpload />, 
       visible: (role === "user" || role === "sub-user") && permissions?.student?.bulkUpload 
     },
+   
     { 
       path: "/ClassSubjectShow", 
       element: <ClassSubjectShow />, 
