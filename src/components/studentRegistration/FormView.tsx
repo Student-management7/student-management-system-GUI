@@ -223,10 +223,17 @@ const FormView: React.FC<FormViewProps> = ({
       <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(values, helpers) => handleOpenDialog(values, helpers)}
+          onSubmit={(values, helpers) =>{
+          
+            const firstName = values.name?.split(' ')[0];
+            const lastFiveDigits = values.contact?.slice(-5);
+             values.familyDetails.stdo_email = `${firstName}${lastFiveDigits}`;
+            handleOpenDialog(values, helpers)
+            
+          }}
           enableReinitialize 
         >
-          {({ errors, touched, setFieldValue }) => (
+          {({ errors, touched, setFieldValue,values }) => (
             <Form>
               <div className="row">
                 <div className="col-md-4">
@@ -666,36 +673,24 @@ const FormView: React.FC<FormViewProps> = ({
                 </div>
               </div>
 
-              <div className="row">
-                <div className="col-md-4">
-                  <div className="form-group">
-                    <label
-                      htmlFor="familyDetails.stdo_email"
-                      className="form-label"
-                    >
-                      Student Id 
-                    </label>
-                    <Field
-                      
-                      id="familyDetails.stdo_email"
-                      name="familyDetails.stdo_email"
-                      className={`form-control ${
-                        errors.familyDetails?.stdo_email &&
-                        touched.familyDetails?.stdo_email
-                          ? "is-invalid"
-                          : ""
-                      } text-[12px]`}
-                      placeholder="Enter first name and last five digit of contact number"
-                    />
-                    {errors.familyDetails?.stdo_email &&
-                      touched.familyDetails?.stdo_email && (
-                        <div className="invalid-feedback">
-                          {errors.familyDetails.stdo_email}
-                        </div>
-                      )}
-                  </div>
-                </div>
-              </div>
+               <div className="row">
+        <div className="col-md-4">
+          <div className="form-group">
+            <label htmlFor="familyDetails.stdo_email" className="form-label">
+              Student ID 
+            </label>
+            <Field
+              type="text"
+              id="familyDetails.stdo_email"
+              name="familyDetails.stdo_email"
+              className="form-control "
+              placeholder="Auto-generated student ID"
+              readOnly
+            />
+            
+          </div>
+        </div>
+      </div>
 
               <div className="row-1 mt-4 flex justify-around  items-center md-4">
                 <button type="submit" className="btn button head1 text-white">
