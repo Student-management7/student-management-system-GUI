@@ -17,7 +17,7 @@ interface Student {
   email: string;
   familyDetails: {
     stdo_FatherName: string;
-    stodo_email:string;
+    stdo_email:string
   };
   cls: string;
 
@@ -315,7 +315,7 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
                     </option>
                     {filteredStudents.map((student) => (
                       <option key={student.id} value={student.id}>
-                        {student.name} ({student?.familyDetails?.stdo_FatherName || "N/A"})
+                        {student.name} ({student?.familyDetails?.stdo_FatherName || 'N/A'})
                       </option>
                     ))}
                   </select>
@@ -352,6 +352,11 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
                     <div className="col-md-6 mb-4">
                       <label className="form-label"> <strong>Student Name</strong> </label>
                       <div className="info-box">{selectedStudent.name}</div>
+                      <label className="form-label"> <strong>Student Id</strong> </label>
+                      <div className="info-box">
+                        
+                           {selectedStudent.familyDetails?.stdo_email || 'N/A'}
+                        </div>
                     </div>
                     <div className="col-md-6 mb-4">
                       <label className="form-label"><strong>Father Name</strong> </label>
@@ -359,6 +364,7 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
                         {selectedStudent.familyDetails?.stdo_FatherName}
                       </div>
                     </div>
+                   
                   </div>
                   <div className="row mb-3">
                     <div className="col-md-6">
