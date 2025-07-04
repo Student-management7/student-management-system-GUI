@@ -135,18 +135,12 @@ const FormView: React.FC<FormViewProps> = ({
       .required("Address is required")
       .min(3, "Address must be at least 3 characters").max(60, "Address must be at most 20 characters"),
 
-    email: Yup.string().email("Invalid email format").required('Email is required'),
-    department: Yup.string().matches(
-      /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
-      "Department must contain at least one letter and can include numbers, spaces, and .,-"
-    ).max(40, "Department must be at most 20 characters"),
+    email: Yup.string().email("Invalid email format"),
+    department: Yup.string().max(40, "Department must be at most 20 characters"),
     city: Yup.string()
       .required("City is required")
-      .min(3, "Address must be at least 3 characters")
-      .matches(
-        /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
-        "must contain at least one letter and can include numbers, spaces, and .,-"
-      ),
+      .min(3, "Address must be at least 3 characters"),
+      
     state: Yup.string()
       .required("State is required")
       .matches(
@@ -185,7 +179,7 @@ const FormView: React.FC<FormViewProps> = ({
       stdo_city: Yup.string()
         .min(3, "City must be at least 3 characters")
         .matches(
-          /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
+          /^(?=.[A-Za-z])[A-Za-z0-9\s.,-]$/,
           " City must contain at least one letter and can include numbers, spaces .,-"
         ).max(40, "Name must be at most 20 characters"),
       stdo_state: Yup.string()
@@ -194,8 +188,7 @@ const FormView: React.FC<FormViewProps> = ({
           /^[A-Za-z\s.-]+$/,
           "State must contain only letters, spaces, dots, or hyphens (no numbers or other special characters)"
         ).max(30, "Name must be at most 20 characters"),
-      stdo_email: Yup.string()
-        .email("Invalid email format"),
+     
     }),
   });
 
@@ -680,10 +673,10 @@ const FormView: React.FC<FormViewProps> = ({
                       htmlFor="familyDetails.stdo_email"
                       className="form-label"
                     >
-                      Family Email<span className="red">*</span>
+                      Student Id 
                     </label>
                     <Field
-                      type="email"
+                      
                       id="familyDetails.stdo_email"
                       name="familyDetails.stdo_email"
                       className={`form-control ${
@@ -691,8 +684,8 @@ const FormView: React.FC<FormViewProps> = ({
                         touched.familyDetails?.stdo_email
                           ? "is-invalid"
                           : ""
-                      }`}
-                      placeholder="Enter family email"
+                      } text-[12px]`}
+                      placeholder="Enter first name and last five digit of contact number"
                     />
                     {errors.familyDetails?.stdo_email &&
                       touched.familyDetails?.stdo_email && (

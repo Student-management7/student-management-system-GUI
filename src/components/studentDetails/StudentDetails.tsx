@@ -134,7 +134,8 @@ const StudentProfile: React.FC = () => {
       </div>
       <div className="detail-row">
         <span className="detail-label">Email</span>
-        <span className="detail-value">{student.email}</span>
+        <span className="detail-value">{student.email ? student.email : 'N/A'}</span>
+
       </div>
       <div className="detail-row">
         <span className="detail-label">Contact</span>
@@ -169,6 +170,10 @@ const StudentProfile: React.FC = () => {
         <span className="detail-label">Category</span>
         <span className="detail-value">{student.category}</span>
       </div>
+       <div className="detail-row">
+        <span className="detail-label">Student Id</span>
+        <span className="detail-value">{student.familyDetails.stdo_email  || 'N/A'}</span>
+      </div>
     </div>
   );
 
@@ -180,20 +185,17 @@ const StudentProfile: React.FC = () => {
       </div>
       <div className="detail-row">
         <span className="detail-label">Mother's Name</span>
-        <span className="detail-value">{student.familyDetails.stdo_MotherName}</span>
+        <span className="detail-value">{student.familyDetails.stdo_MotherName  || 'N/A'}</span>
       </div>
       <div className="detail-row">
         <span className="detail-label">Primary Contact</span>
-        <span className="detail-value">{student.familyDetails.stdo_primaryContact}</span>
+        <span className="detail-value">{student.familyDetails.stdo_primaryContact  || 'n/a'}</span>
       </div>
       <div className="detail-row">
         <span className="detail-label">Secondary Contact</span>
-        <span className="detail-value">{student.familyDetails.stdo_secondaryContact}</span>
+        <span className="detail-value">{student.familyDetails.stdo_secondaryContact  || 'N/A' }</span>
       </div>
-      <div className="detail-row">
-        <span className="detail-label">Email</span>
-        <span className="detail-value">{student.familyDetails.stdo_email}</span>
-      </div>
+     
     </div>
   );
 
