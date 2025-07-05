@@ -382,7 +382,7 @@ const FormView: React.FC<FormViewProps> = ({
                   <div className="form-group">
                     <label htmlFor="email" className="form-label">
                       
-                      Email<span className="red">*</span>
+                      Email
                     </label>
                     <Field
                       type="email"
