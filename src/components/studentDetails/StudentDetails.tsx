@@ -170,10 +170,8 @@ const StudentProfile: React.FC = () => {
         <span className="detail-label">Category</span>
         <span className="detail-value">{student.category}</span>
       </div>
-       <div className="detail-row">
-        <span className="detail-label">Student Id</span>
-        <span className="detail-value">{student.familyDetails.stdo_email  || 'N/A'}</span>
-      </div>
+      
+       
     </div>
   );
 
@@ -194,6 +192,10 @@ const StudentProfile: React.FC = () => {
       <div className="detail-row">
         <span className="detail-label">Secondary Contact</span>
         <span className="detail-value">{student.familyDetails.stdo_secondaryContact  || 'N/A' }</span>
+      </div>
+      <div className="detail-row">
+        <span className="detail-label">Family Email</span>
+        <span className="detail-value">{student.familyDetails.stdo_email  || 'N/A'}</span>
       </div>
      
     </div>

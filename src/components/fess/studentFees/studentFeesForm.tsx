@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import FeesCalculator from "./FeesCalculator";
 
 interface Student {
+  contact: string;
   totalFee: number;
   id: string;
   name: string;
@@ -17,7 +18,9 @@ interface Student {
   email: string;
   familyDetails: {
     stdo_FatherName: string;
-    stdo_email:string
+    stdo_email: string
+    stdo_primaryContact: string;
+
   };
   cls: string;
 
@@ -44,8 +47,9 @@ const getValidationSchema = (remainingFees: number) => {
       .positive("Fee must be positive")
       .max(remainingFees, `Fee cannot exceed remaining amount (₹${remainingFees})`)
       .test("is-not-zero", "Fee amount cannot be zero", (value) => value !== 0),
-    paymentMode: Yup.string().required("Payment mode is required"),
-    
+    paymentMode: Yup.string().required("Please Choose the Payment Mode"),
+
+
   });
 };
 
@@ -66,7 +70,7 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
-  const [loading , setLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const loadScript = async () => {
@@ -94,7 +98,7 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
         console.error("Error fetching students:", error);
         toast.error("Failed to fetch students. Please try again.");
       }
-      finally{
+      finally {
         setLoading(false)
       }
     };
@@ -178,8 +182,8 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
 
   // Update the Razorpay payment handler
   const handleRazorpayPayment = async (values: FormValues) => {
-    
-    
+
+
     try {
       if (!razorpayLoaded) {
         toast.error("Payment gateway not available. Please use cash payment.");
@@ -187,7 +191,7 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
       }
 
       console.log("Initiating Razorpay payment for amount:", values.fee); // Debug log
-       
+
       const response = await axiosInstance.post(
         '/api/payment/create-order',
         null,
@@ -196,7 +200,7 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
             amount: values.fee,
           },
         }
-        
+
       );
 
       console.log("Razorpay order response:", response.data); // Debug log
@@ -337,11 +341,7 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
                     <option value="Debit Card">Debit Card</option>
                     <option value="Cash">Cash</option>
                   </Field>
-                  <ErrorMessage
-                    name="paymentMode"
-                    component="div"
-                    className="text-danger"
-                  />
+
                 </div>
               </div>
 
@@ -350,21 +350,25 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
                 <>
                   <div className="row mb-3">
                     <div className="col-md-6 mb-4">
-                      <label className="form-label"> <strong>Student Name</strong> </label>
+                      <label className="form-label mt-2"> <strong>Student Name</strong> </label>
                       <div className="info-box">{selectedStudent.name}</div>
-                      <label className="form-label"> <strong>Student Id</strong> </label>
+                      <label className="form-label mt-2"> <strong>Phone Number</strong> </label>
                       <div className="info-box">
-                        
-                           {selectedStudent.familyDetails?.stdo_email || 'N/A'}
-                        </div>
+
+                        {selectedStudent.contact || 'N/A'}
+                      </div>
                     </div>
                     <div className="col-md-6 mb-4">
-                      <label className="form-label"><strong>Father Name</strong> </label>
+                      <label className="form-label mt-2"><strong>Father Name</strong> </label>
                       <div className="info-box">
                         {selectedStudent.familyDetails?.stdo_FatherName}
                       </div>
+                      <label className="form-label mt-2"><strong>Father Phone</strong> </label>
+                      <div className="info-box">
+                        {selectedStudent.familyDetails?.stdo_primaryContact || 'N/A'}
+                      </div>
                     </div>
-                   
+
                   </div>
                   <div className="row mb-3">
                     <div className="col-md-6">
@@ -374,10 +378,10 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
                       </span>
                     </div>
                     <div className="col-md-6">
-                      <label className="form-label"><strong>Total Fees</strong> 
+                      <label className="form-label"><strong>Total Fees</strong>
                       </label>
-                       
-                       
+
+
                       <span className="info-box">
                         ₹ {selectedStudent.totalFee}
                       </span>
@@ -398,12 +402,17 @@ const StudentFeesForm: React.FC<StudentFeesFormProps> = ({ onClose }) => {
                 </>
               )}
 
+              <ErrorMessage
+                name="paymentMode"
+                component="div"
+                className="text-danger"
+              />
               {/* Buttons */}
               <div className="d-flex justify-content-between mt-4">
                 <button
                   type="submit"
                   className="btn button"
-                 
+
                 >
                   {values.paymentMode === 'Cash' ? 'Submit Fee' : 'Proceed to Payment'}
                 </button>

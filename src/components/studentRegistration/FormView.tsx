@@ -136,11 +136,17 @@ const FormView: React.FC<FormViewProps> = ({
       .min(3, "Address must be at least 3 characters").max(60, "Address must be at most 20 characters"),
 
     email: Yup.string().email("Invalid email format"),
-    department: Yup.string().max(40, "Department must be at most 20 characters"),
+    department: Yup.string().matches(
+      /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
+      "Department must contain at least one letter and can include numbers, spaces, and .,-"
+    ).max(40, "Department must be at most 20 characters"),
     city: Yup.string()
       .required("City is required")
-      .min(3, "Address must be at least 3 characters"),
-      
+      .min(3, "Address must be at least 3 characters")
+      .matches(
+        /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
+        "must contain at least one letter and can include numbers, spaces, and .,-"
+      ),
     state: Yup.string()
       .required("State is required")
       .matches(
@@ -179,7 +185,7 @@ const FormView: React.FC<FormViewProps> = ({
       stdo_city: Yup.string()
         .min(3, "City must be at least 3 characters")
         .matches(
-          /^(?=.[A-Za-z])[A-Za-z0-9\s.,-]$/,
+          /^(?=.*[A-Za-z])[A-Za-z0-9\s.,-]*$/,
           " City must contain at least one letter and can include numbers, spaces .,-"
         ).max(40, "Name must be at most 20 characters"),
       stdo_state: Yup.string()
@@ -188,7 +194,8 @@ const FormView: React.FC<FormViewProps> = ({
           /^[A-Za-z\s.-]+$/,
           "State must contain only letters, spaces, dots, or hyphens (no numbers or other special characters)"
         ).max(30, "Name must be at most 20 characters"),
-     
+      stdo_email: Yup.string()
+        .email("Invalid email format"),
     }),
   });
 
@@ -223,17 +230,10 @@ const FormView: React.FC<FormViewProps> = ({
       <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(values, helpers) =>{
-          
-            const firstName = values.name?.split(' ')[0];
-            const lastFiveDigits = values.contact?.slice(-5);
-             values.familyDetails.stdo_email = `${firstName}${lastFiveDigits}`;
-            handleOpenDialog(values, helpers)
-            
-          }}
+          onSubmit={(values, helpers) => handleOpenDialog(values, helpers)}
           enableReinitialize 
         >
-          {({ errors, touched, setFieldValue,values }) => (
+          {({ errors, touched, setFieldValue }) => (
             <Form>
               <div className="row">
                 <div className="col-md-4">
@@ -388,14 +388,10 @@ const FormView: React.FC<FormViewProps> = ({
                       type="email"
                       id="email"
                       name="email"
-                      className={`form-control ${
-                        errors.email && touched.email ? "is-invalid" : ""
-                      }`}
+                      className='form-control'
                       placeholder="Enter email"
                     />
-                     {errors.email && touched.email && (
-                      <div className="invalid-feedback">{errors.email}</div>
-                    )}
+                     
                   </div>
                 </div>
                 <div className="col-md-4">
@@ -662,35 +658,32 @@ const FormView: React.FC<FormViewProps> = ({
                       }`}
                       placeholder="Enter family state"
                     />
-                     {errors.familyDetails?.stdo_state &&
-                      touched.familyDetails?.stdo_state && (
-                        <div className="invalid-feedback">
-                          {errors.familyDetails.stdo_state}
-                        </div>
-                      )}
+                    
 
                   </div>
                 </div>
               </div>
 
-               <div className="row">
-        <div className="col-md-4">
-          <div className="form-group">
-            <label htmlFor="familyDetails.stdo_email" className="form-label">
-              Student ID 
-            </label>
-            <Field
-              type="text"
-              id="familyDetails.stdo_email"
-              name="familyDetails.stdo_email"
-              className="form-control "
-              placeholder="Auto-generated student ID"
-              readOnly
-            />
-            
-          </div>
-        </div>
-      </div>
+              <div className="row">
+                <div className="col-md-4">
+                  <div className="form-group">
+                    <label
+                      htmlFor="familyDetails.stdo_email"
+                      className="form-label"
+                    >
+                      Family Email
+                    </label>
+                    <Field
+                      type="email"
+                      id="familyDetails.stdo_email"
+                      name="familyDetails.stdo_email"
+                      className='form-control'
+                      placeholder="Enter family email"
+                    />
+                    
+                  </div>
+                </div>
+              </div>
 
               <div className="row-1 mt-4 flex justify-around  items-center md-4">
                 <button type="submit" className="btn button head1 text-white">

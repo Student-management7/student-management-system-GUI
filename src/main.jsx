@@ -8,14 +8,16 @@ import Login from './Pages/Login/Login';
 import SideBarController from './components/sideBar/SideBarController';
 import HeaderController from './components/main/HeaderController';
 import FooterController from './components/main/FooterController';
-import PermissionBasedRoute from './components/permission/PermissionBasedRoute'; 
+import PermissionBasedRoute from './components/permission/PermissionBasedRoute';
 import Loader from './components/loader/loader';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+const queryClient = new QueryClient();
 
 
 const App = () => {
-  const { isAuthenticated , isLoading} = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   if (isLoading) {
-    return <div><Loader/></div>; 
+    return <div><Loader /></div>;
   }
 
   return (
@@ -43,12 +45,15 @@ const App = () => {
       </Routes>
     </>
   );
-}; 
+};
 
 createRoot(document.getElementById('root')).render(
-  <Router>
-    <AuthProvider>
-      <App/>
-    </AuthProvider>
-  </Router>
+  <QueryClientProvider client={queryClient}>
+
+    <Router>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </Router>
+  </QueryClientProvider>
 );

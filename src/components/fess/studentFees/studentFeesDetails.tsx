@@ -30,6 +30,8 @@ interface StudentData {
   id: string
   name: string
   email: string
+  number: string
+  cls: string
   feeInfo: FeeInfo[]
   remainingFees?: number
   [key: string]: any
@@ -381,7 +383,7 @@ const StudentFeesDetails = () => {
               </p>
               <p className="mb-3">
                 <span className="text-xl font-semibold">Email:</span>
-                <span className="ml-2 text-xl"> {studentData.email}</span>
+                <span className="ml-2 text-xl"> {studentData.email ||'N/A'}</span>
               </p>
               {remainingFees !== undefined && (
                 <p className="mb-4">
