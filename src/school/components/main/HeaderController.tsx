@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { UserCircleIcon, LogOutIcon, SettingsIcon, UserIcon } from 'lucide-react';
 import { FaCaretDown } from 'react-icons/fa';
-import '../../global.scss';
+import '../../../global.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 

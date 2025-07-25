@@ -5,7 +5,7 @@ import { API_ENDPOINTS } from "../../services/StudentAttendence/API/studentAtten
 import axiosInstance from "../../services/Utils/apiUtils";
 import { sortArrayByKey } from "../Utils/sortArrayByKey";
 import Loader from "../loader/loader";
-import '../../global.scss'
+import '../../../global.scss'
 import ReusableTable from "../StudenAttendanceShow/Table/Table";
 import { toast, ToastContainer } from "react-toastify";
 import React from "react";
@@ -23,8 +23,6 @@ const StudentManagementSystem: React.FC = () => {
     const [bulkAttendance, setBulkAttendance] = useState<string>('');
     const [refreshKey, setRefreshKey] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
-
-
 
 
 
