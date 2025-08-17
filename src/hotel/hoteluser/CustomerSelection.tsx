@@ -1,44 +1,41 @@
+"use client"
 
-
-import { User, Fingerprint, Loader2, AlertCircle } from "lucide-react"
+import { User, Fingerprint, Loader2, AlertCircle, CreditCard } from "lucide-react"
 import { useState, useEffect } from "react"
 import { toast } from "react-toastify"
+import { useNavigate } from "react-router-dom"
 
 interface Props {
   onNewCustomer: () => void
-  onExistingCustomer: () => void
 }
 
-
-const CustomerSelection = ({ onNewCustomer, onExistingCustomer }: Props) => {
+const CustomerSelection = ({ onNewCustomer }: Props) => {
+  const navigate = useNavigate()
   const [isScanning, setIsScanning] = useState(false)
   const [hasScanner, setHasScanner] = useState(false)
   const [scannerInitialized, setScannerInitialized] = useState(false)
+  const [verificationMethod, setVerificationMethod] = useState<"fingerprint" | "aadhar">("fingerprint")
+  const [aadharNumber, setAadharNumber] = useState("")
 
   // Check for fingerprint scanner on component mount
   useEffect(() => {
     checkScanner()
   }, [])
 
-  // Fingerprint scanner detection logic
   const checkFingerprintScanner = async (): Promise<boolean> => {
     return new Promise((resolve) => {
       try {
-        // Check if DigitalPersona Web SDK is available
         if (typeof window !== "undefined" && (window as any).DPWebSDK) {
           const sdk = (window as any).DPWebSDK
-          
-          // Check if scanner is connected
-          sdk.getDevices()
+          sdk
+            .getDevices()
             .then((devices: any[]) => {
-              const scannerConnected = devices.some(device => device.type === 'fingerprint')
+              const scannerConnected = devices.some((device) => device.type === "fingerprint")
               resolve(scannerConnected)
             })
             .catch(() => resolve(false))
         } else {
-          // Alternative check for other scanner types
           if (navigator.usb || navigator.hid) {
-            // For WebUSB or WebHID compatible scanners
             resolve(true)
           } else {
             resolve(false)
@@ -51,17 +48,14 @@ const CustomerSelection = ({ onNewCustomer, onExistingCustomer }: Props) => {
     })
   }
 
-  // Initialize scanner check
   const checkScanner = async () => {
     try {
       const scannerAvailable = await checkFingerprintScanner()
       setHasScanner(scannerAvailable)
       setScannerInitialized(true)
-      
+
       if (!scannerAvailable) {
-        toast.warning("Fingerprint scanner not detected", {
-          autoClose: 3000
-        })
+        toast.warning("Fingerprint scanner not detected", { autoClose: 3000 })
       }
     } catch (error) {
       console.error("Scanner initialization failed:", error)
@@ -70,27 +64,21 @@ const CustomerSelection = ({ onNewCustomer, onExistingCustomer }: Props) => {
     }
   }
 
-  // Fingerprint verification logic
-  const verifyFingerprint = async (): Promise<boolean> => {
-    setIsScanning(true)
-    
+  const verifyFingerprint = async (): Promise<string> => {
     return new Promise((resolve, reject) => {
       try {
         if (typeof window !== "undefined" && (window as any).DPWebSDK) {
           const sdk = (window as any).DPWebSDK
-          
-          sdk.scanFingerprint()
+          sdk
+            .scanFingerprint()
             .then((result: any) => {
               if (result?.data) {
-                // Here you would typically verify with your backend
-                resolve(true)
+                resolve(result.data)
               } else {
                 reject(new Error("No fingerprint data received"))
               }
             })
-            .catch((error: any) => {
-              reject(error)
-            })
+            .catch(reject)
         } else {
           reject(new Error("Scanner not available"))
         }
@@ -100,19 +88,112 @@ const CustomerSelection = ({ onNewCustomer, onExistingCustomer }: Props) => {
     })
   }
 
-  // Handle existing customer flow
+  // Single API call - no multiple attempts
+  const fetchCustomerByAadhar = async (aadharNo: string) => {
+    const token = localStorage.getItem("token")
+    if (!token) {
+      throw new Error("Authentication token not found")
+    }
+
+    console.log(`Making single API call for Aadhar: ${aadharNo}`)
+
+    try {
+      const response = await fetch(`https://s-m-s-keyw.onrender.com/hotel/customer/get?aadhar=${aadharNo}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error("API Error Response:", errorText)
+
+        // Parse error details
+        try {
+          const errorJson = JSON.parse(errorText)
+          if (errorJson.detail && errorJson.detail.includes("encodeBase64")) {
+            throw new Error("CORRUPTED_DATA")
+          } else if (errorJson.detail && errorJson.detail.includes("not found")) {
+            throw new Error("NOT_FOUND")
+          } else {
+            throw new Error(errorJson.detail || `API Error: ${response.status}`)
+          }
+        } catch (parseError) {
+          if (errorText.includes("encodeBase64") || errorText.includes("NullPointerException")) {
+            throw new Error("CORRUPTED_DATA")
+          } else {
+            throw new Error(`Request failed with status ${response.status}`)
+          }
+        }
+      }
+
+      const customerData = await response.json()
+      console.log("Customer data received successfully")
+      return customerData
+    } catch (error) {
+      console.error("Fetch error:", error)
+      throw error
+    }
+  }
+
   const handleExistingCustomer = async () => {
     setIsScanning(true)
     try {
-      const verified = await verifyFingerprint()
-      if (verified) {
-        onExistingCustomer()
+      let customerData
+
+      if (verificationMethod === "fingerprint") {
+        // Fingerprint verification
+        try {
+          const fingerprintData = await verifyFingerprint()
+          toast.info("Fingerprint captured. Backend integration pending.")
+          // TODO: Send fingerprint to backend for customer lookup
+          return
+        } catch (error) {
+          throw new Error("Fingerprint scan failed")
+        }
       } else {
-        toast.error("Fingerprint verification failed")
+        // Aadhar verification
+      
+
+        // Single API call
+        customerData = await fetchCustomerByAadhar(aadharNumber)
       }
+
+      if (!customerData) {
+        throw new Error("Customer not found")
+      }
+
+      // Success - navigate to check-in
+      navigate("/customer-checkin", {
+        state: {
+          customerData,
+          isExisting: true,
+        },
+      })
+
+      toast.success("Customer verified successfully!")
     } catch (error: any) {
-      console.error("Fingerprint error:", error)
-      toast.error(error.message || "Fingerprint scan failed")
+      console.error("Verification error:", error)
+
+      // Handle specific error types
+      if (error.message === "CORRUPTED_DATA") {
+        toast.error("Customer found but data is corrupted!")
+        toast.info("Please register again to update your information", {
+          autoClose: 5000,
+        })
+      } else if (error.message === "NOT_FOUND") {
+        toast.error("Customer not found")
+        toast.info("Please check Aadhar number or register as new customer")
+      } else if (error.message.includes("encodeBase64") || error.message.includes("NullPointerException")) {
+        toast.error("Customer data is corrupted in database!")
+        toast.info("Please register again with fresh information", {
+          autoClose: 5000,
+        })
+      } else {
+        toast.error(error.message || "Verification failed")
+      }
     } finally {
       setIsScanning(false)
     }
@@ -128,15 +209,80 @@ const CustomerSelection = ({ onNewCustomer, onExistingCustomer }: Props) => {
         <p className="text-gray-600 mt-2">Select an option to continue</p>
       </div>
 
-      {scannerInitialized && !hasScanner && (
-        <div className="mb-6 p-4 bg-yellow-50 rounded-lg flex items-start gap-3">
-          <AlertCircle className="text-yellow-500 mt-0.5 flex-shrink-0" />
+      {/* Verification Method Toggle */}
+      <div className="flex gap-4 mb-6">
+        <button
+          onClick={() => setVerificationMethod("fingerprint")}
+          className={`flex-1 py-2 rounded-lg transition-colors ${
+            verificationMethod === "fingerprint" ? "bg-[#126666] text-white" : "bg-gray-100 hover:bg-gray-200"
+          }`}
+        >
+          Fingerprint
+        </button>
+        <button
+          onClick={() => setVerificationMethod("aadhar")}
+          className={`flex-1 py-2 rounded-lg transition-colors ${
+            verificationMethod === "aadhar" ? "bg-[#126666] text-white" : "bg-gray-100 hover:bg-gray-200"
+          }`}
+        >
+          Aadhar Number
+        </button>
+      </div>
+
+      {/* Data Corruption Warning */}
+      <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+        <div className="flex items-start gap-3">
+          <AlertCircle className="text-orange-500 mt-0.5 flex-shrink-0 w-5 h-5" />
           <div>
-            <p className="text-yellow-700 font-medium">Scanner Not Available</p>
-            <p className="text-yellow-600 text-sm mt-1">
-              To check existing customers, please connect a fingerprint scanner and refresh the page.
+            <p className="text-orange-800 font-medium text-sm">Known Issue</p>
+            <p className="text-orange-700 text-sm mt-1">
+              Some existing customer data may be corrupted. If verification fails, please register as a new customer.
             </p>
           </div>
+        </div>
+      </div>
+
+      {verificationMethod === "fingerprint" ? (
+        scannerInitialized && !hasScanner ? (
+          <div className="mb-6 p-4 bg-yellow-50 rounded-lg flex items-start gap-3">
+            <AlertCircle className="text-yellow-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-yellow-700 font-medium">Scanner Not Available</p>
+              <p className="text-yellow-600 text-sm mt-1">
+                To check existing customers, please connect a fingerprint scanner and refresh the page.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={handleExistingCustomer}
+            disabled={!hasScanner || isScanning}
+            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#1e7878] hover:bg-[#165a5a] disabled:bg-gray-400 text-white rounded-lg transition-colors disabled:cursor-not-allowed mb-6"
+          >
+            {isScanning ? <Loader2 className="w-5 h-5 animate-spin" /> : <Fingerprint className="w-5 h-5" />}
+            <span className="font-medium">{isScanning ? "Scanning..." : "Verify with Fingerprint"}</span>
+          </button>
+        )
+      ) : (
+        <div className="mb-6 space-y-4">
+          <div className="relative">
+            <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              value={aadharNumber}
+              onChange={(e) => setAadharNumber(e.target.value.replace(/\D/g, ""))}
+              maxLength={12}
+              placeholder="Enter 12-digit Aadhar number"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:border-[#126666] focus:ring-1 focus:ring-[#126666] transition-colors"
+            />
+          </div>
+          <button
+            onClick={handleExistingCustomer}
+            disabled={isScanning || !aadharNumber }
+            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#1e7878] hover:bg-[#165a5a] disabled:bg-gray-400 text-white rounded-lg transition-colors disabled:cursor-not-allowed"
+          >
+            {isScanning ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Verify with Aadhar</span>}
+          </button>
         </div>
       )}
 
@@ -148,30 +294,6 @@ const CustomerSelection = ({ onNewCustomer, onExistingCustomer }: Props) => {
           <User className="w-5 h-5" />
           <span className="font-medium">Register New Customer</span>
         </button>
-
-        <button
-          onClick={handleExistingCustomer}
-          disabled={!hasScanner || isScanning}
-          className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#1e7878] hover:bg-[#165a5a] disabled:bg-gray-400 text-white rounded-lg transition-colors disabled:cursor-not-allowed"
-        >
-          {isScanning ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <Fingerprint className="w-5 h-5" />
-          )}
-          <span className="font-medium">
-            {isScanning ? "Scanning..." : "Check Existing Customer"}
-          </span>
-        </button>
-      </div>
-
-      <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-        <h3 className="text-blue-700 font-medium mb-2">Scanner Requirements</h3>
-        <ul className="text-blue-600 text-sm space-y-1">
-          <li>• Supported scanners: DigitalPersona U.are.U 4500/5160</li>
-          <li>• Requires Chrome/Firefox with WebUSB/WebHID enabled</li>
-          <li>• May need to install manufacturer drivers</li>
-        </ul>
       </div>
     </div>
   )

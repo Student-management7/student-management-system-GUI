@@ -34,6 +34,8 @@ interface HotelFormData {
     totalRooms: string
     subscription: string
     gstNumber: string
+    referrel?: string
+    type?: string
 }
 
 const HotelForm: React.FC = () => {
@@ -52,6 +54,8 @@ const HotelForm: React.FC = () => {
         totalRooms: "",
         subscription: "Basic",
         gstNumber: "",
+        referrel: "",
+        type: "hotel",
     })
 
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -89,6 +93,8 @@ const HotelForm: React.FC = () => {
                 totalRooms: formData.totalRooms.trim(),
                 subscription: formData.subscription,
                 gstNumber: formData.gstNumber.trim(),
+                referrel: formData.referrel ? formData.referrel.trim() : undefined,
+                type: formData.type,
             }
 
             console.log("Sending hotel creation payload:", JSON.stringify(payload))
@@ -139,6 +145,8 @@ const HotelForm: React.FC = () => {
             totalRooms: "",
             subscription: "Basic",
             gstNumber: "",
+            referrel: "",
+            type: "hotel",
         })
     }
 
@@ -171,7 +179,7 @@ const HotelForm: React.FC = () => {
                             <div className="w-8 h-8 bg-[#126666] bg-opacity-10 rounded-lg flex items-center justify-center mr-3">
                                 <Building2 className="w-4 h-4 text-[#126666]" />
                             </div>
-                            <h2 className="text-lg font-semibold text-[#126666]">Hotel Business Details</h2>
+                             <h2 className="text-lg font-semibold text-[#126666]">Hotel Business Details</h2>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -187,6 +195,18 @@ const HotelForm: React.FC = () => {
                                     required
                                 />
                             </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Referral Code</label>
+                                <input
+                                    type="text"
+                                    name="referrel"
+                                    value={formData.referrel}
+                                    onChange={handleInputChange}
+                                    placeholder="Optional referral code"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#126666] focus:border-transparent text-sm"
+                                />
+                            </div>
+                           
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Total Rooms</label>

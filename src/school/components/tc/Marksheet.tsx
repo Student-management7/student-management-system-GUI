@@ -347,7 +347,7 @@ function Marksheet() {
         overallPercentage: consolidatedReport.overallPercentage,
         overallGrade: consolidatedReport.overallGrade,
       }
-
+     console.log(pdfData)
       const response = await fetch("https://s-m-s-keyw.onrender.com/marksheet/downloadConsolidated", {
         method: "POST",
         headers: getHeaders(),

@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { Hotel, Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, UserPlus, Send } from "lucide-react"
@@ -17,60 +16,124 @@ interface ForgotPasswordData {
 
 const HotelLogin: React.FC = () => {
   const navigate = useNavigate()
-
-  const [loginData, setLoginData] = useState<LoginFormData>({
-    email: "",
-    password: "",
+  const [loginData, setLoginData] = useState<LoginFormData>({ 
+    email: "", 
+    password: "" 
   })
-
-  const [forgotPasswordData, setForgotPasswordData] = useState<ForgotPasswordData>({
-    email: "",
+  const [forgotPasswordData, setForgotPasswordData] = useState<ForgotPasswordData>({ 
+    email: "" 
   })
-
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
-  
-  // Email validation function
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
   const isValidEmail = (email: string): boolean => {
-    return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   }
 
-  // Handle login form input changes
   const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setLoginData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+    setLoginData(prev => ({ ...prev, [name]: value }))
   }
 
-  // Handle forgot password form input changes
   const handleForgotPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setForgotPasswordData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+    setForgotPasswordData(prev => ({ ...prev, [name]: value }))
   }
 
-  // Function to handle forgot password request
-  const handleForgotPassword = async (e: React.FormEvent) => {
+  const fetchUserDetails = async (token: string) => {
+    try {
+      const response = await fetch("https://s-m-s-keyw.onrender.com/self", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user details")
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.warn("Error fetching user details:", error)
+      return {
+        role: "hotel",
+        email: loginData.email,
+        hotelName: "Unknown Hotel"
+      }
+    }
+  }
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    const { email } = forgotPasswordData
-
-    if (!email.trim()) {
-      toast.error("Please enter your email address.")
+    
+    if (!loginData.email.trim() || !loginData.password.trim()) {
+      setErrorMessage("Please fill in all fields")
       return
     }
 
-    if (!isValidEmail(email)) {
-      toast.error("Please enter a valid email address.")
+    if (!isValidEmail(loginData.email)) {
+      setErrorMessage("Please enter a valid email address")
       return
     }
 
     setIsLoading(true)
+    setErrorMessage(null)
+
+    try {
+      // Login request
+      const loginResponse = await fetch("https://s-m-s-keyw.onrender.com/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginData),
+      })
+
+      if (!loginResponse.ok) {
+        const errorData = await loginResponse.json()
+        throw new Error(errorData.message || "Invalid email or password")
+      }
+
+      const { token } = await loginResponse.json()
+      localStorage.setItem("token", token)
+
+      // Fetch user details
+      const userDetails = await fetchUserDetails(token)
+      
+      // Store user data
+      localStorage.setItem("userDetails", JSON.stringify(userDetails))
+      localStorage.setItem("role", userDetails.role || "hotel")
+      localStorage.setItem("email", userDetails.email || loginData.email)
+      localStorage.setItem("hotelName", userDetails.hotelName || "Unknown Hotel")
+
+      toast.success("Login Successful!")
+      navigate("/hotel-home")
+
+    } catch (error) {
+      setErrorMessage(error.message || "Login failed. Please try again.")
+      console.error("Login Error:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!forgotPasswordData.email.trim()) {
+      setErrorMessage("Please enter your email address")
+      return
+    }
+
+    if (!isValidEmail(forgotPasswordData.email)) {
+      setErrorMessage("Please enter a valid email address")
+      return
+    }
+
+    setIsLoading(true)
+    setErrorMessage(null)
 
     try {
       const response = await fetch("https://s-m-s-keyw.onrender.com/auth/forget-password", {
@@ -78,107 +141,20 @@ const HotelLogin: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: forgotPasswordData.email }),
       })
 
-      if (response.status === 200) {
-        toast.success("Password reset instructions have been sent to your email.")
+      if (response.ok) {
+        toast.success("Password reset instructions sent to your email")
         setShowForgotPassword(false)
         setForgotPasswordData({ email: "" })
       } else {
-        const responseBody = await response.json()
-        const errorMessage = responseBody.message || "Failed to send password reset email."
-        toast.error(errorMessage)
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to send reset instructions")
       }
     } catch (error) {
-      toast.error("Network error. Please try again.")
-      console.error("Forgot password error:", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  // Function to fetch and store hotel data
-//   const fetchAndStoreHotelData = async (token: string) => {
-//     try {
-//       const response = await fetch("https://s-m-s-keyw.onrender.com/hotel/profile", {
-//         method: "GET",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//       })
-
-//       if (response.status === 200) {
-//         const data = await response.json()
-
-//         // Store hotel data in localStorage
-//         localStorage.setItem("hotelData", JSON.stringify(data))
-//         localStorage.setItem("hotelName", data.hotelName || "Unknown Hotel")
-//         localStorage.setItem("ownerName", data.ownerName || "Unknown Owner")
-//         localStorage.setItem("role", "hotel")
-//       }
-//       navigate("/home")
-//     } catch (error) {
-//       console.error("Failed to load hotel data:", error)
-//     }
-//   }
-
-  // Function to handle hotel login request
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    const { email, password } = loginData
-
-    if (!email.trim() || !password.trim()) {
-      toast.error("Please fill in all fields.")
-      return
-    }
-
-    if (!isValidEmail(email)) {
-      toast.error("Please enter a valid email address.")
-      return
-    }
-
-    setIsLoading(true)
-
-    try {
-      const response = await fetch("https://s-m-s-keyw.onrender.com/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      })
-
-      console.log("Hotel login response status:", response.status)
-      const responseData = await response.json()
-      console.log("Hotel login response body:", responseData)
-
-      if (response.status === 200) {
-        const { token } = responseData
-
-        // Store authentication data in localStorage
-        localStorage.setItem("token", token)
-        // localStorage.setItem("email", email)
-        // localStorage.setItem("userType", "hotel")
-
-        // Fetch and store hotel data
-        // await fetchAndStoreHotelData(token)
-
-        toast.success("Login Successful!")
-
-        // Navigate to hotel home screen after a short delay
-       
-          navigate("/hotel-home")
-       
-      } else {
-        const errorMessage = responseData.message || "Invalid email or password."
-        toast.error(errorMessage)
-      }
-    } catch (error) {
-      toast.error("Network error. Please try again.")
-      console.error("Hotel login error:", error)
+      setErrorMessage(error.message)
+      console.error("Forgot Password Error:", error)
     } finally {
       setIsLoading(false)
     }
@@ -200,6 +176,13 @@ const HotelLogin: React.FC = () => {
       {/* Right Side - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
+          {/* Error Message */}
+          {errorMessage && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              {errorMessage}
+            </div>
+          )}
+
           {/* Login/Forgot Password Card */}
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="text-center mb-6">
@@ -328,7 +311,6 @@ const HotelLogin: React.FC = () => {
               <UserPlus className="w-5 h-5" />
               <span>Register New Hotel</span>
             </button>
-            <button  onClick={() => navigate("/hotel-home")}>temp dashbord</button>
           </div>
         </div>
       </div>

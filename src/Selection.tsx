@@ -47,7 +47,7 @@ const SelectionScreen = () => {
               <div className="space-y-3">
                 {/* School Management Card */}
                 <div
-                  onClick={() => navigate("/login-hotel")}
+                  onClick={() => navigate("/login")}
                   className="group relative w-full p-4 bg-white bg-opacity-80 rounded-xl border border-gray-200 cursor-pointer hover:bg-opacity-90 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
                 >
                   <div className="flex items-center space-x-4">

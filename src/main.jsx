@@ -15,6 +15,7 @@ import Register from './hotel/auth/Register';
 import LoginHotel from './hotel/auth/LoginHotel';
 import Home from './hotel/Home';
 import AddCustomer from './hotel/hoteluser/AddCustomer';
+import CustomerCheckInForm from './hotel/hoteluser/CustomerCheckIn';
 
 const App = () => {
   const { isAuthenticated , isLoading} = useAuth();
@@ -32,6 +33,7 @@ const App = () => {
         <Route path="/login-hotel" element={<LoginHotel />} />
         <Route path="/hotel-customer" element={<AddCustomer />} />
         <Route path="/hotel-home" element={<Home />} />
+        <Route path="/customer-checkin" element={<CustomerCheckInForm />} />
 
 
         {/* Protected routes for authenticated users */}

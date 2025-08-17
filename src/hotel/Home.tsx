@@ -3,14 +3,29 @@
 import type React from "react"
 import { useNavigate } from "react-router-dom"
 import { Hotel, UserPlus, Users, Bed, Calendar, Settings, BarChart3, Bell, LogOut, User } from "lucide-react"
+import { useEffect, useState } from "react" // Added useEffect and useState
 
 const HotelHome: React.FC = () => {
   const navigate = useNavigate()
+  const [hotelDetails, setHotelDetails] = useState<any>(null) // State to store parsed hotel data
 
-  // Get hotel data from localStorage
-  const hotelName = localStorage.getItem("hotelName") || "Hotel Management"
-  const ownerName = localStorage.getItem("ownerName") || "Hotel Owner"
-  
+  useEffect(() => {
+    const hotelDataString = localStorage.getItem("userDetails") // Assuming hotel data is stored under "hotelData"
+    if (hotelDataString) {
+      try {
+        const parsedHotelData = JSON.parse(hotelDataString)
+        if (parsedHotelData.hotelCreationEntity) {
+          setHotelDetails(parsedHotelData.hotelCreationEntity)
+        }
+      } catch (error) {
+        console.error("Failed to parse hotel data from localStorage", error)
+      }
+    }
+  }, [])
+
+  const hotelName = hotelDetails?.hotelName || localStorage.getItem("hotelName") || "Hotel Management"
+  const ownerName = hotelDetails?.ownerName || localStorage.getItem("ownerName") || "Hotel Owner"
+
   const handleLogout = () => {
     // Clear all hotel-related data from localStorage
     localStorage.removeItem("authToken")
@@ -26,14 +41,15 @@ const HotelHome: React.FC = () => {
   }
 
   const dashboardCards = [
-    { 
+    {
       title: "Register New Guest",
       description: "Add new customer to the system",
       icon: UserPlus,
       color: "bg-[#1e7878] hover:bg-teal-600",
       textColor: "text-teal-600",
       bgColor: "bg-teal-50",
-      onClick: () => navigate("/hotel-customer"),
+      // Pass hotelDetailsForNewGuest when navigating to register a new guest
+      onClick: () => navigate("/hotel-customer", { state: { hotelDetailsForNewGuest: hotelDetails } }),
     },
     {
       title: "Manage Guests",
@@ -57,7 +73,7 @@ const HotelHome: React.FC = () => {
       title: "Bookings",
       description: "View and manage reservations",
       icon: Calendar,
-     color: "bg-[#1e7878] hover:bg-teal-600",
+      color: "bg-[#1e7878] hover:bg-teal-600",
       textColor: "text-green-600",
       bgColor: "bg-green-50",
       onClick: () => navigate("/hotel/bookings"),
@@ -75,7 +91,7 @@ const HotelHome: React.FC = () => {
       title: "Settings",
       description: "Hotel settings and configuration",
       icon: Settings,
-     color: "bg-[#1e7878] hover:bg-teal-600",
+      color: "bg-[#1e7878] hover:bg-teal-600",
       textColor: "text-gray-600",
       bgColor: "bg-gray-50",
       onClick: () => navigate("/hotel/settings"),
