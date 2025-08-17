@@ -3,7 +3,7 @@ import { SideBarData } from './SideBarData';
 import SubManu from './SubManu';
 import './SideMenu.scss';
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-import '../../global.scss';
+import '../../../global.scss';
 import logo from "../../assets/ews-full-white.png";
  
 interface Permission {

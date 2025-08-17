@@ -218,6 +218,13 @@ const FormView: React.FC<FormViewProps> = ({
 
   return (
     <div className="mt-[26px]">
+      <a
+  href="/student_form.pdf"
+  download
+  className="btn btn button mb-3"
+>
+  📄 Download Blank Student Form (PDF)
+</a>
       <div>
         <ToastContainer position="top-right" autoClose={3000} />
       <Formik
