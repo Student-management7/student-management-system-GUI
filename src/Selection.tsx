@@ -1,145 +1,342 @@
 "use client"
 
 import { useNavigate } from "react-router-dom"
-import { GraduationCap, Hotel, Building2, Users, Settings, ArrowRight } from "lucide-react"
+import {
+  GraduationCap,
+  Hotel,
+  Building2,
+  ArrowRight,
+  Phone,
+  Mail,
+  Users,
+  Shield,
+  BarChart3,
+  Menu,
+  X,
+} from "lucide-react"
+import { useState } from "react"
 
 const SelectionScreen = () => {
   const navigate = useNavigate()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" })
+    }
+    setIsMenuOpen(false)
+  }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#126666] via-[#1e7878] to-[#0f5555] relative overflow-hidden">
-      {/* Subtle Background Elements */}
-    
-
-      <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-4 relative z-10">
-        <div className="flex flex-col items-center justify-center min-h-screen">
-          {/* Logo and Title Section - Reduced margin */}
-          <div className="flex flex-col items-center mb-6 text-center">
-           
-            <h1 className="text-white text-2xl sm:text-3xl lg:text-4xl font-bold mt-4 tracking-wide drop-shadow-lg">
-              EasyWaySolution
+    <div className="min-h-screen w-full bg-white">
+      <nav className="bg-white shadow-sm border-b border-gray-200 py-4 px-6 fixed w-full z-50">
+        <div className="container mx-auto flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <Building2 className="text-[#126666] w-8 h-8" />
+            <h1 className="text-[#126666] font-bold text-lg md:text-2xl">
+              <span className="hidden sm:inline">EasyWaySolution</span>
+              <span className="sm:hidden">EasyWay</span>
             </h1>
-            <p className="text-white text-base sm:text-lg mt-2 tracking-wide font-light drop-shadow-md">
-              Unified Management Platform
-            </p>
-            <div className="w-20 h-1 bg-white bg-opacity-50 rounded-full mt-3"></div>
           </div>
 
-          {/* Platform Selection Card - Reduced size and padding */}
-          <div className="w-full max-w-xl">
-            <div className="bg-white bg-opacity-25 rounded-2xl border border-white border-opacity-30 shadow-2xl p-4 sm:p-6">
-              {/* Header - Reduced spacing */}
-              <div className="text-center mb-6">
-                <div className="flex items-center justify-center mb-3">
-                  <div className="p-2 bg-white bg-opacity-30 rounded-full">
-                    <Settings className="w-5 h-5 text-white" />
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex space-x-12">
+            <button
+              onClick={() => scrollToSection("services")}
+              className="text-gray-700 hover:text-[#126666] transition-colors font-medium text-xl"
+            >
+              Services
+            </button>
+            <button
+              onClick={() => scrollToSection("about")}
+              className="text-gray-700 hover:text-[#126666] transition-colors font-medium text-xl"
+            >
+              About
+            </button>
+            <button
+              onClick={() => scrollToSection("contact")}
+              className="text-gray-700 hover:text-[#126666] transition-colors font-medium text-xl"
+            >
+              Contact
+            </button>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <button className="hidden md:block bg-[#126666] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#0f5555] transition-colors text-base">
+              Request Demo
+            </button>
+
+            {/* Mobile Menu Button */}
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-gray-700">
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden mt-4 pb-4 border-t border-gray-200 bg-white">
+            <div className="flex flex-col space-y-3 pt-4 px-2">
+              <button
+                onClick={() => scrollToSection("services")}
+                className="text-gray-700 hover:text-[#126666] transition-colors font-medium text-left py-3 px-4 rounded-lg hover:bg-gray-50 text-lg"
+              >
+                Services
+              </button>
+              <button
+                onClick={() => scrollToSection("about")}
+                className="text-gray-700 hover:text-[#126666] transition-colors font-medium text-left py-3 px-4 rounded-lg hover:bg-gray-50 text-lg"
+              >
+                About
+              </button>
+              <button
+                onClick={() => scrollToSection("contact")}
+                className="text-gray-700 hover:text-[#126666] transition-colors font-medium text-left py-3 px-4 rounded-lg hover:bg-gray-50 text-lg"
+              >
+                Contact
+              </button>
+              <button className="bg-[#126666] text-white px-4 py-3 rounded-lg font-medium hover:bg-[#0f5555] transition-colors text-lg mx-4 mt-2">
+                Request Demo
+              </button>
+            </div>
+          </div>
+        )}
+      </nav>
+
+      <main className="pt-20">
+        {/* Hero Section */}
+        <section className="bg-gradient-to-br from-[#126666] via-[#1e7878] to-[#0f5555] text-white py-16">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">Best School & Hotel Management Software in India</h2>
+            <p className="text-lg md:text-xl mb-8 max-w-4xl mx-auto text-white/90">
+              Transform your educational institution or hospitality business with our comprehensive management system.
+              Get complete school administration software and hotel booking management solutions designed for Indian
+              businesses.
+            </p>
+            <button
+              onClick={() => scrollToSection("services")}
+              className="bg-white text-[#126666] px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-flex items-center space-x-2"
+            >
+              <span>View Our Solutions</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </section>
+
+        <section id="services" className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h3 className="text-3xl font-bold text-[#126666] mb-4">
+                School Management System & Hotel Management Software
+              </h3>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Choose from our specialized management solutions designed for educational institutions and hospitality
+                businesses across India
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {/* School Management Card */}
+              <article
+                onClick={() => navigate("/login")}
+                className="group bg-white border-2 border-gray-200 rounded-xl p-6 cursor-pointer hover:border-[#126666] hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+              >
+                <div className="flex flex-col items-center text-center">
+                  <div className="p-4 bg-gradient-to-br from-[#126666] to-[#1e7878] rounded-full mb-4 group-hover:scale-105 transition-transform">
+                    <GraduationCap className="w-12 h-12 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold text-[#126666] mb-3">School Management System</h4>
+                  <p className="text-gray-600 mb-4 leading-relaxed">
+                    Complete school ERP software for student admission, attendance management, fee collection, exam
+                    results, and academic records. Perfect for schools, colleges, and coaching institutes.
+                  </p>
+                  <div className="flex items-center text-[#126666] font-semibold group-hover:translate-x-1 transition-transform">
+                    <span className="mr-2">Start Free Trial</span>
+                    <ArrowRight className="w-5 h-5" />
                   </div>
                 </div>
-                <h2 className="text-gray-800 text-xl sm:text-2xl font-semibold tracking-wide mb-2 drop-shadow-sm">
-                  Select Service Module
-                </h2>
-                <p className="text-gray-700 text-sm sm:text-base leading-relaxed max-w-md mx-auto">
-                  Choose the module you want to access:
+              </article>
+
+              {/* Hotel Management Card */}
+              <article
+                onClick={() => navigate("/login-hotel")}
+                className="group bg-white border-2 border-gray-200 rounded-xl p-6 cursor-pointer hover:border-[#126666] hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+              >
+                <div className="flex flex-col items-center text-center">
+                  <div className="p-4 bg-gradient-to-br from-[#1e7878] to-[#126666] rounded-full mb-4 group-hover:scale-105 transition-transform">
+                    <Hotel className="w-12 h-12 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold text-[#126666] mb-3">Hotel Management System</h4>
+                  <p className="text-gray-600 mb-4 leading-relaxed">
+                    Advanced hotel booking software with room reservation, guest check-in/out, billing system,
+                    housekeeping management, and restaurant POS. Ideal for hotels, resorts, and guest houses.
+                  </p>
+                  <div className="flex items-center text-[#126666] font-semibold group-hover:translate-x-1 transition-transform">
+                    <span className="mr-2">Start Free Trial</span>
+                    <ArrowRight className="w-5 h-5" />
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="about" className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h3 className="text-3xl font-bold text-[#126666] mb-4">
+                Why Choose EasyWaySolution for School & Hotel Management?
+              </h3>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                India's trusted management software provider with 1000+ satisfied customers across education and
+                hospitality sectors
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              <div className="bg-white p-6 rounded-xl shadow-md text-center hover:shadow-lg transition-shadow">
+                <div className="w-16 h-16 bg-gradient-to-br from-[#126666] to-[#1e7878] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-8 h-8 text-white" />
+                </div>
+                <h4 className="text-xl font-bold text-[#126666] mb-3">User-Friendly Interface</h4>
+                <p className="text-gray-600 leading-relaxed">
+                  Simple and intuitive design that requires minimal training. Perfect for schools and hotels of all
+                  sizes.
                 </p>
               </div>
 
-              {/* Service Cards - Reduced padding */}
-              <div className="space-y-3">
-                {/* School Management Card */}
-                <div
-                  onClick={() => navigate("/login")}
-                  className="group relative w-full p-4 bg-white bg-opacity-80 rounded-xl border border-gray-200 cursor-pointer hover:bg-opacity-90 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
-                >
-                  <div className="flex items-center space-x-4">
-                    {/* Icon Section */}
-                    <div className="flex-shrink-0">
-                      <div className="p-3 rounded-xl bg-green-100 border border-green-200 group-hover:bg-green-200 transition-all duration-300">
-                        <GraduationCap className="w-6 h-6 text-green-600" />
-                      </div>
-                    </div>
-
-                    {/* Content Section */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h3 className="text-gray-800 font-semibold text-base sm:text-lg mb-1">School Management</h3>
-                          <p className="text-gray-600 text-sm leading-relaxed">Educational institution management</p>
-                        </div>
-
-                        {/* Arrow Icon */}
-                        <div className="flex-shrink-0 ml-3">
-                          <div className="p-1 rounded-full bg-gray-100 group-hover:bg-gray-200 transition-all duration-300">
-                            <ArrowRight className="w-4 h-4 text-gray-600 group-hover:translate-x-1 transition-all duration-300" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bottom accent */}
-                  <div className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl bg-green-500 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+              <div className="bg-white p-6 rounded-xl shadow-md text-center hover:shadow-lg transition-shadow">
+                <div className="w-16 h-16 bg-gradient-to-br from-[#1e7878] to-[#0f5555] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Shield className="w-8 h-8 text-white" />
                 </div>
-
-                {/* Hotel Management Card */}
-                <div
-                  onClick={() => navigate("/login-hotel")}
-                  className="group relative w-full p-4 bg-white bg-opacity-80 rounded-xl border border-gray-200 cursor-pointer hover:bg-opacity-90 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
-                >
-                  <div className="flex items-center space-x-4">
-                    {/* Icon Section */}
-                    <div className="flex-shrink-0">
-                      <div className="p-3 rounded-xl bg-blue-100 border border-blue-200 group-hover:bg-blue-200 transition-all duration-300">
-                        <Hotel className="w-6 h-6 text-blue-600" />
-                      </div>
-                    </div>
-
-                    {/* Content Section */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h3 className="text-gray-800 font-semibold text-base sm:text-lg mb-1">Hotel Management</h3>
-                          <p className="text-gray-600 text-sm leading-relaxed">Hospitality management platform</p>
-                        </div>
-
-                        {/* Arrow Icon */}
-                        <div className="flex-shrink-0 ml-3">
-                          <div className="p-1 rounded-full bg-gray-100 group-hover:bg-gray-200 transition-all duration-300">
-                            <ArrowRight className="w-4 h-4 text-gray-600 group-hover:translate-x-1 transition-all duration-300" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bottom accent */}
-                  <div className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl bg-blue-500 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-                </div>
+                <h4 className="text-xl font-bold text-[#126666] mb-3">100% Secure & Cloud-Based</h4>
+                <p className="text-gray-600 leading-relaxed">
+                  Bank-level security with automatic backups. Access your school or hotel data from anywhere, anytime.
+                </p>
               </div>
 
-              {/* Call to Action - Reduced margin */}
-              <div className="mt-4 text-center">
-                <p className="text-gray-600 text-xs">Need help? Contact support</p>
+              <div className="bg-white p-6 rounded-xl shadow-md text-center hover:shadow-lg transition-shadow">
+                <div className="w-16 h-16 bg-gradient-to-br from-[#0f5555] to-[#126666] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <BarChart3 className="w-8 h-8 text-white" />
+                </div>
+                <h4 className="text-xl font-bold text-[#126666] mb-3">Smart Reports & Analytics</h4>
+                <p className="text-gray-600 leading-relaxed">
+                  Get detailed insights with automated reports for better decision making in your school or hotel
+                  business.
+                </p>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* Footer - Reduced margin and size */}
-          <div className="mt-6 text-center">
-            <div className="flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-4 mb-2">
-              <div className="flex items-center space-x-1 text-white text-opacity-70">
-                <Building2 className="w-3 h-3" />
-                <span className="text-xs">Enterprise Solutions</span>
+        <section id="contact" className="py-16 bg-gradient-to-br from-[#126666] via-[#1e7878] to-[#0f5555] text-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h3 className="text-3xl font-bold mb-4">Get Free Demo of School & Hotel Management Software</h3>
+              <p className="text-lg text-white/90 max-w-3xl mx-auto">
+                Ready to digitize your school or hotel operations? Book a free demo today and see how our software can
+                transform your business.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <div className="space-y-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                    <Phone className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold mb-1">Call Us Now</h4>
+                    <p className="text-white/90">+91 98765 43210</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                    <Mail className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold mb-1">Email Support</h4>
+                    <p className="text-white/90">support@easywaysolution.com</p>
+                  </div>
+                </div>
               </div>
-              <div className="hidden sm:block w-1 h-1 bg-white bg-opacity-40 rounded-full"></div>
-              <div className="flex items-center space-x-1 text-white text-opacity-70">
-                <Users className="w-3 h-3" />
-                <span className="text-xs">Trusted by 1000+ Organizations</span>
+
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl">
+                <h4 className="text-xl font-bold mb-4">Book Free Demo</h4>
+                <form className="space-y-3">
+                  <input
+                    type="text"
+                    placeholder="Your Name"
+                    className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Your Email"
+                    className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  />
+                  <select className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-white/50">
+                    <option value="">Select Service Type</option>
+                    <option value="school">School Management Software</option>
+                    <option value="hotel">Hotel Management Software</option>
+                  </select>
+                  <button
+                    type="submit"
+                    className="w-full bg-white text-[#126666] p-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                  >
+                    Get Free Demo
+                  </button>
+                </form>
               </div>
             </div>
-            <p className="text-white text-opacity-60 text-xs">© 2024 EasyWaySolution. All rights reserved.</p>
+          </div>
+        </section>
+      </main>
+
+      <footer className="bg-[#0f5555] text-white py-10">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-6 mb-6">
+              <div>
+                <div className="flex items-center space-x-2 mb-3">
+                  <Building2 className="text-white w-6 h-6" />
+                  <span className="text-white font-bold text-xl">EasyWaySolution</span>
+                </div>
+                <p className="text-white/80 leading-relaxed">
+                  Leading provider of school management system and hotel management software in India. Trusted by 1000+
+                  institutions for complete digital transformation.
+                </p>
+              </div>
+
+              <div className="text-center">
+                <h4 className="font-bold text-lg text-white mb-3">Our Solutions</h4>
+                <ul className="space-y-2 text-white/80">
+                  <li>School ERP Software</li>
+                  <li>Hotel Booking System</li>
+                  <li>Student Management</li>
+                  <li>Room Reservation System</li>
+                </ul>
+              </div>
+
+              <div className="text-right">
+                <h4 className="font-bold text-lg text-white mb-3">Contact Details</h4>
+                <div className="space-y-2 text-white/80">
+                  <p>+91 98765 43210</p>
+                  <p>support@easywaysolution.com</p>
+                  <p>24/7 Customer Support</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-white/20 pt-6 text-center">
+              <p className="text-white/60">
+                © 2024 EasyWaySolution. Best School Management System & Hotel Management Software in India.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      </footer>
     </div>
   )
 }
