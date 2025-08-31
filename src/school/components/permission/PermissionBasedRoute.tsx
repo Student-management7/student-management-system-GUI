@@ -63,7 +63,8 @@ const PermissionBasedRoute: React.FC = () => {
       const user = JSON.parse(userDetails);
 
       const role = user.role;
-      const permissions = user.permission.permissions;
+      const permissions = user?.permission?.permissions ?? null;
+
 
       setPermissions(permissions);
       setRole(role);
