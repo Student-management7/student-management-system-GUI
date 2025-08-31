@@ -4,6 +4,7 @@ import { User, Fingerprint, Loader2, AlertCircle, CreditCard } from "lucide-reac
 import { useState, useEffect } from "react"
 import { toast } from "react-toastify"
 import { useNavigate } from "react-router-dom"
+import UnifiedNavbar from "../navbar/HotelNavbar"
 
 interface Props {
   onNewCustomer: () => void
@@ -148,14 +149,12 @@ const CustomerSelection = ({ onNewCustomer }: Props) => {
         try {
           const fingerprintData = await verifyFingerprint()
           toast.info("Fingerprint captured. Backend integration pending.")
-          // TODO: Send fingerprint to backend for customer lookup
           return
         } catch (error) {
           throw new Error("Fingerprint scan failed")
         }
       } else {
         // Aadhar verification
-      
 
         // Single API call
         customerData = await fetchCustomerByAadhar(aadharNumber)
@@ -172,8 +171,6 @@ const CustomerSelection = ({ onNewCustomer }: Props) => {
           isExisting: true,
         },
       })
-
-      toast.success("Customer verified successfully!")
     } catch (error: any) {
       console.error("Verification error:", error)
 
@@ -200,100 +197,94 @@ const CustomerSelection = ({ onNewCustomer }: Props) => {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-8">
-      <div className="text-center mb-8">
-        <div className="w-20 h-20 bg-[#126666] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <User className="w-10 h-10 text-[#126666]" />
-        </div>
-        <h2 className="text-2xl font-bold text-gray-800">Customer Registration</h2>
-        <p className="text-gray-600 mt-2">Select an option to continue</p>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <UnifiedNavbar showBackButton={true} onBackClick={() => navigate(-1)} customTitle="Customer Registration" />
 
-      {/* Verification Method Toggle */}
-      <div className="flex gap-4 mb-6">
-        <button
-          onClick={() => setVerificationMethod("fingerprint")}
-          className={`flex-1 py-2 rounded-lg transition-colors ${
-            verificationMethod === "fingerprint" ? "bg-[#126666] text-white" : "bg-gray-100 hover:bg-gray-200"
-          }`}
-        >
-          Fingerprint
-        </button>
-        <button
-          onClick={() => setVerificationMethod("aadhar")}
-          className={`flex-1 py-2 rounded-lg transition-colors ${
-            verificationMethod === "aadhar" ? "bg-[#126666] text-white" : "bg-gray-100 hover:bg-gray-200"
-          }`}
-        >
-          Aadhar Number
-        </button>
-      </div>
-
-      {/* Data Corruption Warning */}
-      <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-        <div className="flex items-start gap-3">
-          <AlertCircle className="text-orange-500 mt-0.5 flex-shrink-0 w-5 h-5" />
-          <div>
-            <p className="text-orange-800 font-medium text-sm">Known Issue</p>
-            <p className="text-orange-700 text-sm mt-1">
-              Some existing customer data may be corrupted. If verification fails, please register as a new customer.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {verificationMethod === "fingerprint" ? (
-        scannerInitialized && !hasScanner ? (
-          <div className="mb-6 p-4 bg-yellow-50 rounded-lg flex items-start gap-3">
-            <AlertCircle className="text-yellow-500 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-yellow-700 font-medium">Scanner Not Available</p>
-              <p className="text-yellow-600 text-sm mt-1">
-                To check existing customers, please connect a fingerprint scanner and refresh the page.
-              </p>
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-xl shadow-md p-8">
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 bg-[#126666] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <User className="w-10 h-10 text-[#126666]" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800">Customer Registration</h2>
+              <p className="text-gray-600 mt-2">Select an option to continue</p>
             </div>
-          </div>
-        ) : (
-          <button
-            onClick={handleExistingCustomer}
-            disabled={!hasScanner || isScanning}
-            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#1e7878] hover:bg-[#165a5a] disabled:bg-gray-400 text-white rounded-lg transition-colors disabled:cursor-not-allowed mb-6"
-          >
-            {isScanning ? <Loader2 className="w-5 h-5 animate-spin" /> : <Fingerprint className="w-5 h-5" />}
-            <span className="font-medium">{isScanning ? "Scanning..." : "Verify with Fingerprint"}</span>
-          </button>
-        )
-      ) : (
-        <div className="mb-6 space-y-4">
-          <div className="relative">
-            <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              value={aadharNumber}
-              onChange={(e) => setAadharNumber(e.target.value.replace(/\D/g, ""))}
-              maxLength={12}
-              placeholder="Enter 12-digit Aadhar number"
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:border-[#126666] focus:ring-1 focus:ring-[#126666] transition-colors"
-            />
-          </div>
-          <button
-            onClick={handleExistingCustomer}
-            disabled={isScanning || !aadharNumber }
-            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#1e7878] hover:bg-[#165a5a] disabled:bg-gray-400 text-white rounded-lg transition-colors disabled:cursor-not-allowed"
-          >
-            {isScanning ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Verify with Aadhar</span>}
-          </button>
-        </div>
-      )}
 
-      <div className="space-y-4">
-        <button
-          onClick={onNewCustomer}
-          className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#126666] hover:bg-[#0f5555] text-white rounded-lg transition-colors"
-        >
-          <User className="w-5 h-5" />
-          <span className="font-medium">Register New Customer</span>
-        </button>
+            {/* Verification Method Toggle */}
+            <div className="flex gap-4 mb-6 justify-center p-2">
+              <button
+                onClick={() => setVerificationMethod("fingerprint")}
+                className={`w-[325px] p-2 rounded-lg transition-colors ${
+                  verificationMethod === "fingerprint" ? "bg-[#126666] text-white" : "bg-gray-100 hover:bg-gray-200"
+                }`}
+              >
+                Fingerprint
+              </button>
+              <button
+                onClick={() => setVerificationMethod("aadhar")}
+                className={`w-[325px] p-2 rounded-lg transition-colors ${
+                  verificationMethod === "aadhar" ? "bg-[#126666] text-white" : "bg-gray-100 hover:bg-gray-200"
+                }`}
+              >
+                Aadhar Number
+              </button>
+              <button
+                onClick={onNewCustomer}
+                className="w-[325px] p-2 flex items-center justify-center gap-3 bg-[#126666] hover:bg-[#0f5555] text-white rounded-lg transition-colors"
+              >
+                <User className="w-5 h-5" />
+                <span className="font-medium">Register New Customer</span>
+              </button>
+            </div>
+
+           
+
+            {verificationMethod === "fingerprint" ? (
+              scannerInitialized && !hasScanner ? (
+                <div className="mb-6 p-4 bg-yellow-50 rounded-lg flex items-start gap-3">
+                  <AlertCircle className="text-yellow-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-yellow-700 font-medium">Scanner Not Available</p>
+                    <p className="text-yellow-600 text-sm mt-1">
+                      To check existing customers, please connect a fingerprint scanner and refresh the page.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={handleExistingCustomer}
+                  disabled={!hasScanner || isScanning}
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#1e7878] hover:bg-[#165a5a] disabled:bg-gray-400 text-white rounded-lg transition-colors disabled:cursor-not-allowed mb-6"
+                >
+                  {isScanning ? <Loader2 className="w-5 h-5 animate-spin" /> : <Fingerprint className="w-5 h-5" />}
+                  <span className="font-medium">{isScanning ? "Scanning..." : "Verify with Fingerprint"}</span>
+                </button>
+              )
+            ) : (
+              <div className="mb-6 space-y-4">
+                <div className="relative">
+                  <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    value={aadharNumber}
+                    onChange={(e) => setAadharNumber(e.target.value.replace(/\D/g, ""))}
+                    maxLength={12}
+                    placeholder="Enter 12-digit Aadhar number"
+                    className="w-full pl-10 pr-4 py-3 form-control"
+                  />
+                </div>
+                <button
+                  onClick={handleExistingCustomer}
+                  disabled={isScanning || !aadharNumber}
+                  className="w-full flex items-center justify-center gap-3 py-3 bg-[#1e7878] hover:bg-[#165a5a] disabled:bg-gray-400 text-white rounded-lg transition-colors disabled:cursor-not-allowed"
+                >
+                  {isScanning ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Verify with Aadhar</span>}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )

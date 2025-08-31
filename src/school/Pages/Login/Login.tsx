@@ -1,138 +1,145 @@
-import React, { useState, useCallback } from 'react';
-import { useAuth } from '../../context/authContext';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
-import './login.scss';
-import axiosInstance from '../../services/Utils/apiUtils';
-import { toast, ToastContainer } from 'react-toastify';
+"use client"
 
-
-
+import type React from "react"
+import { useState, useCallback } from "react"
+import { useAuth } from "../../context/authContext"
+import { useNavigate } from "react-router-dom"
+import { Eye, EyeOff } from "lucide-react"
+import "./login.scss"
+import axiosInstance from "../../services/Utils/apiUtils"
+import { toast, ToastContainer } from "react-toastify"
 
 const validateEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
 
 const validatePassword = (password: string): boolean => {
-  return password.length >= 3;
-};
-
+  return password.length >= 3
+}
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [formErrors, setFormErrors] = useState<{ email?: string; password?: string }>({});
-  const [showForgotPassword, setShowForgotPassword] = useState(false); // State for forgot password form
-  const [forgotPasswordEmail, setForgotPasswordEmail] = useState(''); // State for forgot password email input
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [formErrors, setFormErrors] = useState<{ email?: string; password?: string }>({})
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState("")
 
-  const { login, setUserDetails } = useAuth();
-  const navigate = useNavigate();
+  const { login, setUserDetails } = useAuth()
+  const navigate = useNavigate()
 
   const validateForm = useCallback(() => {
-    const errors: { email?: string; password?: string } = {};
+    const errors: { email?: string; password?: string } = {}
     if (!email) {
-      errors.email = 'Email is required';
+      errors.email = "Email is required"
     } else if (!validateEmail(email)) {
-      errors.email = 'Invalid email format';
+      errors.email = "Invalid email format"
     }
     if (!password) {
-      errors.password = 'Password is required';
+      errors.password = "Password is required"
     } else if (!validatePassword(password)) {
-      errors.password = 'Password must be at least 3 characters';
+      errors.password = "Password must be at least 3 characters"
     }
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  }, [email, password]);
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
+  }, [email, password])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage(null);
-    if (!validateForm()) return;
-    setIsLoading(true);
+    e.preventDefault()
+    setErrorMessage(null)
+    if (!validateForm()) return
+    setIsLoading(true)
+
     try {
-      await login(email, password);
-  
+      await login(email, password)
+
       // Fetch user details
-      const response = await fetch('https://s-m-s-keyw.onrender.com/self', {
+      const response = await fetch("https://s-m-s-keyw.onrender.com/self", {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      });
-      
-      if (!response.ok) throw new Error('Failed to fetch user details.');
-      const data = await response.json();
-      setUserDetails(data); // Update context with user details
-      localStorage.setItem('userDetails', JSON.stringify(data));
-      
-      const  loginUser = data.role
-      console.log("login user role",loginUser);
-        
-        if(loginUser === "admin" ){
+      })
 
-          navigate('/admindeshboard')
+      if (!response.ok) throw new Error("Failed to fetch user details.")
+      const data = await response.json()
 
-        }else if(loginUser === "user" || "sub-user" )
+      const loginUser = data.role
+      console.log("login user role", loginUser)
 
-         {
-          navigate('/main')
-          
-         }
-        
+      // This page should only allow admin, user, and sub-user roles
+      if (loginUser === "Hotel") {
+        setErrorMessage("Hotel users should login from the Hotel Login page.")
+        toast.error("Hotel users should login from the Hotel Login page.")
+        return
+      }
 
-      
-      
+      // Validate allowed roles for this login page
+      if (!["admin", "user", "sub-user"].includes(loginUser)) {
+        setErrorMessage("Invalid user type for this login page.")
+        toast.error("Invalid user type for this login page.")
+        return
+      }
+
+      setUserDetails(data)
+      localStorage.setItem("userDetails", JSON.stringify(data))
+
+      if (loginUser === "admin") {
+        toast.success("Admin login successful!")
+        navigate("/admindeshboard")
+      } else if (loginUser === "user" || loginUser === "sub-user") {
+        toast.success("Login successful!")
+        navigate("/main")
+      }
     } catch (error) {
-      setErrorMessage('Login failed. Please check your credentials.');
-      console.error('Login Error:', error);
+      setErrorMessage("Login failed. Please check your credentials.")
+      toast.error("Login failed. Please check your credentials.")
+      console.error("Login Error:", error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
-  
-
+  }
 
   const handleForgotPassword = async () => {
     if (!validateEmail(forgotPasswordEmail)) {
-      setErrorMessage('Please enter a valid email address.');
-      return;
+      setErrorMessage("Please enter a valid email address.")
+      return
     }
-  
-    setIsLoading(true);
-    setErrorMessage(null);
-  
+
+    setIsLoading(true)
+    setErrorMessage(null)
+
     try {
-      const response = await axiosInstance.post('/auth/forget-password', {
+      const response = await axiosInstance.post("/auth/forget-password", {
         email: forgotPasswordEmail,
-      });
-  
-      toast.success('Password reset instructions have been sent to your email.');
-      setShowForgotPassword(false); // Hide forgot password form
+      })
+
+      toast.success("Password reset instructions have been sent to your email.")
+      setShowForgotPassword(false)
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || 'Failed to send password reset email.');
-      console.error('Forgot Password Error:', error);
+      setErrorMessage(error.response?.data?.message || "Failed to send password reset email.")
+      toast.error("Failed to send password reset email.")
+      console.error("Forgot Password Error:", error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
-  
+  }
 
   return (
     <div className="flex h-screen bg-[#126666] md:bg-[white] ">
-      <ToastContainer position='top-right' autoClose={3000}/>
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="hidden md:flex w-1/2 bg-[#126666]  justify-center items-center relative overflow-hidden">
         <div className="absolute bottom-10 animate-bounce text-white text-4xl font-bold">School Management</div>
       </div>
       <div className="w-full md:w-1/2  flex items-center justify-center p-6">
         <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
           <h1 className="text-3xl font-bold text-center mb-6  text-[#126666]">Login</h1>
+         
           {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
 
           {!showForgotPassword ? (
-            // Login Form
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-[#126666]">Email</label>
@@ -140,7 +147,7 @@ const Login: React.FC = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="form-control"
+                  className="form-control!"
                   placeholder="Enter your email"
                   required
                 />
@@ -149,7 +156,7 @@ const Login: React.FC = () => {
               <div className="relative">
                 <label className="block text-[#126666]">Password</label>
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="form-control"
@@ -170,7 +177,7 @@ const Login: React.FC = () => {
                 className="w-full py-2 bg-[#126666] text-white rounded hover:bg-[#3a8686] transition duration-300"
                 disabled={isLoading}
               >
-                {isLoading ? 'Logging in...' : 'Login'}
+                {isLoading ? "Logging in..." : "Login"}
               </button>
               <div className="text-center mt-4">
                 <button
@@ -181,9 +188,9 @@ const Login: React.FC = () => {
                   Forgot Password?
                 </button>
               </div>
+            
             </form>
           ) : (
-            // Forgot Password Form
             <div className="space-y-4">
               <div>
                 <label className="block text-[#126666]">Email</label>
@@ -202,7 +209,7 @@ const Login: React.FC = () => {
                 className="w-full py-2 bg-[#126666] text-white rounded hover:bg-[#3a8686] transition duration-300"
                 disabled={isLoading}
               >
-                {isLoading ? 'Sending...' : 'Send Reset Link'}
+                {isLoading ? "Sending..." : "Send Reset Link"}
               </button>
               <div className="text-center mt-4">
                 <button
@@ -218,7 +225,7 @@ const Login: React.FC = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

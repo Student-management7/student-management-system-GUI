@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react"
 import { useState } from "react"
+import { ToastContainer } from "react-toastify"
 
 const SelectionScreen = () => {
   const navigate = useNavigate()
@@ -30,6 +31,7 @@ const SelectionScreen = () => {
 
   return (
     <div className="min-h-screen w-full bg-white">
+      <ToastContainer position="top-right" autoClose={3000} />
       <nav className="bg-white shadow-sm border-b border-gray-200 py-4 px-6 fixed w-full z-50">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-2">
@@ -127,9 +129,10 @@ const SelectionScreen = () => {
         <section id="services" className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold text-[#126666] mb-4">
+              <div className="text-3xl font-bold text-[#095555] mb-4">Services</div>
+              <div className="text-2xl text-[#126666] mb-4">
                 School Management System & Hotel Management Software
-              </h3>
+              </div>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
                 Choose from our specialized management solutions designed for educational institutions and hospitality
                 businesses across India

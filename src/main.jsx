@@ -16,6 +16,9 @@ import LoginHotel from './hotel/auth/LoginHotel';
 import Home from './hotel/Home';
 import AddCustomer from './hotel/hoteluser/AddCustomer';
 import CustomerCheckInForm from './hotel/hoteluser/CustomerCheckIn';
+import { ToastContainer } from 'react-toastify';
+import HotelAdminDashboard from './hotel/admin/HotelAdminDashboard';
+import HotelTabel from './hotel/hoteluser/HotelTabel';
 
 const App = () => {
   const { isAuthenticated , isLoading} = useAuth();
@@ -25,6 +28,7 @@ const App = () => {
 
   return (
     <>
+    <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
 
         <Route path="/" element={<Selection />} />
@@ -33,7 +37,9 @@ const App = () => {
         <Route path="/login-hotel" element={<LoginHotel />} />
         <Route path="/hotel-customer" element={<AddCustomer />} />
         <Route path="/hotel-home" element={<Home />} />
+        <Route path="/hotel-tabel" element={<HotelTabel />} />
         <Route path="/customer-checkin" element={<CustomerCheckInForm />} />
+        <Route path="/hotel-admin-dashboard" element={<HotelAdminDashboard />} />
 
 
         {/* Protected routes for authenticated users */}

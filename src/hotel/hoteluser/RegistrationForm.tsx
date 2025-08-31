@@ -16,7 +16,10 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
+  ArrowBigLeftDash,
 } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import UnifiedNavbar from "../navbar/HotelNavbar"
 
 interface Props {
   isExistingCustomer: boolean
@@ -47,27 +50,27 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
     return new Promise((resolve, reject) => {
       // Check if already loaded
       if ((window as any).Mantra) {
-        console.log("✅ Official MFS110 SDK already loaded")
+        console.log(" Official MFS110 SDK already loaded")
         return resolve()
       }
 
       const script = document.createElement("script")
 
-      // ✅ OFFICIAL FILE PATH - आपको यहाँ सही path देना है
-      script.src = "/MFS110-official.js" // Official file का नाम
+      
+      script.src = "/MFS110-official.js" // Official file 
       script.type = "text/javascript"
       script.async = false // Sync loading for official SDK
 
       script.onload = () => {
-        console.log("📦 Official MFS110 script loaded")
+        console.log(" Official MFS110 script loaded")
 
         // Check for Mantra object
         if ((window as any).Mantra) {
-          console.log("✅ Official Mantra SDK detected")
+          console.log(" Official Mantra SDK detected")
           console.log("Available methods:", Object.keys((window as any).Mantra))
           resolve()
         } else {
-          console.error("❌ Official SDK loaded but Mantra object not found")
+          console.error(" Official SDK loaded but Mantra object not found")
           reject(new Error("Official MFS110 SDK loaded but Mantra object not found"))
         }
       }
@@ -91,8 +94,7 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
   const [isScanning, setIsScanning] = useState(false)
   const [fingerprintStatus, setFingerprintStatus] = useState("Initializing...")
   const [fingerprintDevice, setFingerprintDevice] = useState<any>(null)
-  const [deviceInfo, setDeviceInfo] = useState<any>(null)
-  const [initSteps, setInitSteps] = useState<string[]>([])
+ 
 
   const fileInputRefs = {
     face: useRef<HTMLInputElement>(null),
@@ -106,16 +108,16 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
 
       try {
         // Step 1: Load Official SDK
-        steps.push("🔄 Loading official Mantra MFS110 SDK...")
+        steps.push(" Loading official Mantra MFS110 SDK...")
         setInitSteps([...steps])
         setFingerprintStatus("Loading official SDK...")
 
         await loadOfficialMFS110()
-        steps.push("✅ Official SDK loaded successfully")
+        steps.push(" Official SDK loaded successfully")
         setInitSteps([...steps])
 
         // Step 2: Create device instance
-        steps.push("🔄 Creating MFS110 device instance...")
+        steps.push(" Creating MFS110 device instance...")
         setInitSteps([...steps])
         setFingerprintStatus("Creating device instance...")
 
@@ -123,7 +125,7 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
         console.log("📱 Official MFS110 instance created")
 
         // Step 3: Initialize device with proper error handling
-        steps.push("🔄 Initializing device (may take 10-15 seconds)...")
+        steps.push(" Initializing device (may take 10-15 seconds)...")
         setInitSteps([...steps])
         setFingerprintStatus("Connecting to hardware...")
 
@@ -137,58 +139,58 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
             .Init()
             .then((result: any) => {
               clearTimeout(timeout)
-              console.log("🎉 Official device initialized:", result)
+              console.log(" Official device initialized:", result)
               resolve(result)
             })
             .catch((error: any) => {
               clearTimeout(timeout)
-              console.error("❌ Official init failed:", error)
+              console.error(" Official init failed:", error)
               reject(error)
             })
         })
 
-        steps.push("✅ Device initialized successfully")
+        steps.push(" Device initialized successfully")
         setInitSteps([...steps])
         setFingerprintDevice(mfs110)
 
         // Step 4: Get device information
         try {
-          steps.push("🔄 Retrieving device information...")
+          steps.push(" Retrieving device information...")
           setInitSteps([...steps])
 
           const info = await mfs110.GetDeviceInfo()
           setDeviceInfo(info)
-          console.log("📋 Official device info:", info)
+          console.log(" Official device info:", info)
 
-          steps.push("✅ Device information retrieved")
+          steps.push("Device information retrieved")
           setInitSteps([...steps])
 
-          setFingerprintStatus("✅ Official device ready for scanning!")
+          setFingerprintStatus(" Official device ready for scanning!")
           toast.success("Official Mantra MFS110 device connected successfully!", { autoClose: 3000 })
         } catch (infoError) {
-          console.warn("⚠️ Could not get device info (device may still work):", infoError)
-          steps.push("⚠️ Device info unavailable (device functional)")
+          console.warn(" Could not get device info (device may still work):", infoError)
+          steps.push(" Device info unavailable (device functional)")
           setInitSteps([...steps])
-          setFingerprintStatus("✅ Device ready (limited info)")
+          setFingerprintStatus(" Device ready (limited info)")
         }
       } catch (error: any) {
-        console.error("❌ Official device initialization failed:", error)
-        steps.push(`❌ Failed: ${error.message}`)
+        console.error(" Official device initialization failed:", error)
+        steps.push(` Failed: ${error.message}`)
         setInitSteps([...steps])
 
         // Detailed error messages
         if (error.message.includes("timeout")) {
-          setFingerprintStatus("❌ Device timeout - Check connections")
+          setFingerprintStatus(" Device timeout - Check connections")
           toast.error(
             "Device connection timeout. Please check:\n• USB cable\n• Device power\n• Driver installation\n• RD Service running",
           )
         } else if (error.message.includes("not found") || error.message.includes("file")) {
-          setFingerprintStatus("❌ Official SDK file not found")
+          setFingerprintStatus(" Official SDK file not found")
           toast.error(
-            "Official MFS110.js file not found. Please:\n• Download from Mantra website\n• Place in /public/ folder\n• Rename to MFS110-official.js",
+            " MFS110.js file not found. Please:\n• Download from Mantra website\n• Place in /public/ folder\n• Rename to MFS110-official.js",
           )
         } else {
-          setFingerprintStatus(`❌ Error: ${error.message}`)
+          setFingerprintStatus(` Error: ${error.message}`)
           toast.error(`Device initialization error: ${error.message}`)
         }
       }
@@ -510,52 +512,31 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
       setIsSubmitting(false)
     }
   }
+const navigate = useNavigate()
+const handleBack = () => {
+  
+  navigate(-1)
+}
 
   return (
-    <div className="bg-white rounded-xl shadow-md border border-gray-200">
+    <div className="bg-white min-w-screen rounded-xl shadow-md border border-gray-200">
+      <UnifiedNavbar showBackButton={true} onBackClick={() => navigate(-1)} customTitle="Customer Registration Form" />
       {/* Form Header */}
-      <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-        <h2 className="text-xl font-semibold text-gray-900">
+      
+
+      <div className="px-6 pt-4">
+       {/* <ArrowBigLeftDash size={30} className="w-12 " onClick={handleBack} /> */}
+
+        <div className=" head1">
           {isExistingCustomer ? "Update Existing Customer" : "Register New Customer"}
-        </h2>
-
-        {/* Official Device Status */}
-        <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-          <div className="flex items-center gap-2 mb-2">
-            <Fingerprint className="w-5 h-5 text-green-600" />
-            <span className="font-medium text-green-800">Official Mantra MFS110 Device</span>
-          </div>
-
-          {/* Initialization Steps */}
-          <div className="space-y-1">
-            {initSteps.map((step, index) => (
-              <div key={index} className="flex items-center gap-2 text-sm">
-                {step.includes("✅") ? (
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                ) : step.includes("❌") ? (
-                  <XCircle className="w-4 h-4 text-red-500" />
-                ) : step.includes("⚠️") ? (
-                  <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                ) : (
-                  <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
-                )}
-                <span className={step.includes("❌") ? "text-red-700" : "text-gray-700"}>{step}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-2 text-sm font-medium text-green-700">Status: {fingerprintStatus}</div>
-
-          {deviceInfo && (
-            <div className="mt-2 text-xs text-green-600">
-              Device: {deviceInfo.DeviceInfo} | Serial: {deviceInfo.SerialNumber}
-            </div>
-          )}
         </div>
-      </div>
 
-      {/* Main Form */}
-      <form className="p-6 space-y-6" onSubmit={handleSubmit}>
+        
+        
+        
+      </div>
+     
+      <form className=" space-y-6 py-4 sm:!px-10 px-6" onSubmit={handleSubmit}>
         {/* Personal Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -566,7 +547,7 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
               value={formData.name || ""}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#126666] focus:outline-none bg-gray-50 transition-colors"
+              className="w-full px-4 py-3 place-gray-400 form-control    "
               placeholder="Enter full name"
             />
           </div>
@@ -582,7 +563,7 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
                 onChange={handleInputChange}
                 maxLength={10}
                 required
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#126666] focus:outline-none bg-gray-50 transition-colors"
+                className="w-full pl-12 pr-4 py-3 place-gray-400 form-control"
                 placeholder="Enter mobile number"
               />
             </div>
@@ -597,7 +578,7 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
             value={formData.address || ""}
             onChange={handleInputChange}
             rows={3}
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#126666] focus:outline-none bg-gray-50 transition-colors resize-none"
+            className="w-full px-4 py-3 place-gray-400 form-control resize-none"
             placeholder="Enter complete address"
           />
         </div>
@@ -611,7 +592,7 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
               name="city"
               value={formData.city || ""}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#126666] focus:outline-none bg-gray-50 transition-colors"
+              className="w-full px-4 py-3 place-gray-400 form-control"
               placeholder="Enter city"
             />
           </div>
@@ -623,7 +604,7 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
               name="state"
               value={formData.state || ""}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#126666] focus:outline-none bg-gray-50 transition-colors"
+              className="w-full px-4 py-3 place-gray-400 form-control"
               placeholder="Enter state"
             />
           </div>
@@ -637,7 +618,7 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
                 name="nationality"
                 value={formData.nationality || ""}
                 onChange={handleInputChange}
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#126666] focus:outline-none bg-gray-50 transition-colors"
+                className="w-full pl-12 pr-4 py-3 place-gray-400 form-control"
                 placeholder="Enter nationality"
               />
             </div>
@@ -655,7 +636,7 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
               value={formData.adharNo || ""}
               onChange={handleInputChange}
               maxLength={12}
-              className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#126666] focus:outline-none bg-gray-50 transition-colors"
+              className="w-full pl-12 pr-4 py-3 form-control place-gray-400"
               placeholder="Enter Aadhar number"
             />
           </div>
@@ -816,7 +797,9 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
           </button>
         </div>
       </form>
-    </div>
+      </div>
+     
+
   )
 }
 
