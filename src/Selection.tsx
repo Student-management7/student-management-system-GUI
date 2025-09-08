@@ -46,28 +46,26 @@ const SelectionScreen = () => {
           <div className="hidden md:flex space-x-12">
             <button
               onClick={() => scrollToSection("services")}
-              className="text-gray-700 hover:text-[#126666] transition-colors font-medium text-xl"
+              className="text-gray-700 hover:text-[#126666] transition-colors font-medium !text-xl"
             >
               Services
             </button>
             <button
               onClick={() => scrollToSection("about")}
-              className="text-gray-700 hover:text-[#126666] transition-colors font-medium text-xl"
+              className="text-gray-700 hover:text-[#126666] transition-colors font-medium !text-xl"
             >
               About
             </button>
             <button
               onClick={() => scrollToSection("contact")}
-              className="text-gray-700 hover:text-[#126666] transition-colors font-medium text-xl"
+              className="text-gray-700 hover:text-[#126666] transition-colors font-medium !text-xl"
             >
               Contact
             </button>
           </div>
 
           <div className="flex items-center space-x-4">
-            <button className="hidden md:block bg-[#126666] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#0f5555] transition-colors text-base">
-              Request Demo
-            </button>
+          
 
             {/* Mobile Menu Button */}
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-gray-700">
@@ -98,9 +96,7 @@ const SelectionScreen = () => {
               >
                 Contact
               </button>
-              <button className="bg-[#126666] text-white px-4 py-3 rounded-lg font-medium hover:bg-[#0f5555] transition-colors text-lg mx-4 mt-2">
-                Request Demo
-              </button>
+             
             </div>
           </div>
         )}
@@ -251,7 +247,7 @@ const SelectionScreen = () => {
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold mb-1">Call Us Now</h4>
-                    <p className="text-white/90">+91 98765 43210</p>
+                    {/* <p className="text-white/90">+91 98765 43210</p> */}
                   </div>
                 </div>
 
@@ -261,12 +257,12 @@ const SelectionScreen = () => {
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold mb-1">Email Support</h4>
-                    <p className="text-white/90">support@easywaysolution.com</p>
+                    <p className="text-white/90">smssystem786@gmail.com</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl">
+              {/* <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl">
                 <h4 className="text-xl font-bold mb-4">Book Free Demo</h4>
                 <form className="space-y-3">
                   <input
@@ -291,7 +287,7 @@ const SelectionScreen = () => {
                     Get Free Demo
                   </button>
                 </form>
-              </div>
+              </div> */}
             </div>
           </div>
         </section>
@@ -325,8 +321,8 @@ const SelectionScreen = () => {
               <div className="text-right">
                 <h4 className="font-bold text-lg text-white mb-3">Contact Details</h4>
                 <div className="space-y-2 text-white/80">
-                  <p>+91 98765 43210</p>
-                  <p>support@easywaysolution.com</p>
+                  <p>+91 97530 09338</p>
+                  <p>smssystem786@gmail.com</p>
                   <p>24/7 Customer Support</p>
                 </div>
               </div>

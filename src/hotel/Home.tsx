@@ -188,13 +188,13 @@ const HotelHome: React.FC = () => {
   const totalRooms = hotelDetails?.totalRooms || 0
   const availableRooms = totalRooms - currentGuests.length
 
-  const todayRevenue = currentGuests
-    .filter((guest) => {
-      const arrivalDate = new Date(guest.arrivalDate)
-      const today = new Date()
-      return arrivalDate.toDateString() === today.toDateString()
-    })
-    .reduce((total, guest) => total + (Number.parseFloat(guest.amount) || 0), 0)
+ const todayRevenue = guests
+  .filter((guest) => {
+    const arrivalDate = new Date(guest.arrivalDate)
+    const today = new Date()
+    return arrivalDate.toDateString() === today.toDateString()
+  })
+  .reduce((total, guest) => total + (Number.parseFloat(guest.amount) || 0), 0)
 
   const dashboardCards = [
     {
@@ -215,25 +215,7 @@ const HotelHome: React.FC = () => {
       bgColor: "bg-blue-50",
       onClick: () => setShowGuestTable(true),
     },
-    {
-      title: "Room Management",
-      description: "Manage hotel rooms and availability",
-      icon: Bed,
-      color: "bg-[#1e7878] hover:bg-teal-600",
-      textColor: "text-purple-600",
-      bgColor: "bg-purple-50",
-      onClick: () => toast.info("Room Management coming soon!"),
-    },
-    {
-      title: "Bookings",
-      description: "View and manage reservations",
-      icon: Calendar,
-      color: "bg-[#1e7878] hover:bg-teal-600",
-      textColor: "text-green-600",
-      bgColor: "bg-green-50",
-      onClick: () => toast.info("Bookings feature coming soon!"),
-    },
-    {
+     {
       title: "Guest History & Reports",
       description: "View past guests and generate reports",
       icon: BarChart3,
@@ -243,15 +225,34 @@ const HotelHome: React.FC = () => {
       // onClick: () => navigate("/hotel-table"),
       onClick: () => navigate("/hotel-tabel"),
     },
-    {
-      title: "Settings",
-      description: "Hotel settings and configuration",
-      icon: Settings,
-      color: "bg-[#1e7878] hover:bg-teal-600",
-      textColor: "text-gray-600",
-      bgColor: "bg-gray-50",
-      onClick: () => toast.info("Settings feature coming soon!"),
-    },
+    // {
+    //   title: "Room Management",
+    //   description: "Manage hotel rooms and availability",
+    //   icon: Bed,
+    //   color: "bg-[#1e7878] hover:bg-teal-600",
+    //   textColor: "text-purple-600",
+    //   bgColor: "bg-purple-50",
+    //   onClick: () => toast.info("Room Management coming soon!"),
+    // },
+    // {
+    //   title: "Bookings",
+    //   description: "View and manage reservations",
+    //   icon: Calendar,
+    //   color: "bg-[#1e7878] hover:bg-teal-600",
+    //   textColor: "text-green-600",
+    //   bgColor: "bg-green-50",
+    //   onClick: () => toast.info("Bookings feature coming soon!"),
+    // },
+   
+    // {
+    //   title: "Settings",
+    //   description: "Hotel settings and configuration",
+    //   icon: Settings,
+    //   color: "bg-[#1e7878] hover:bg-teal-600",
+    //   textColor: "text-gray-600",
+    //   bgColor: "bg-gray-50",
+    //   onClick: () => toast.info("Settings feature coming soon!"),
+    // },
   ]
 
   const GuestTable = () => {
@@ -428,7 +429,7 @@ const HotelHome: React.FC = () => {
 
   return (
     <div className="min-h-screen min-w-screen bg-gray-50">
-      <ToastContainer position="top-right" autoClose={3000} />
+      {/* <ToastContainer position="top-right" autoClose={3000} /> */}
       <UnifiedNavbar onLogout={handleLogout} />
 
       <main className="px-4 sm:px-6 lg:px-8 py-8">
