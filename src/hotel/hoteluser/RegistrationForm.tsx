@@ -46,43 +46,43 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
   })
 
   // ✅ OFFICIAL MFS110.js loading function
-  const loadOfficialMFS110 = (): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      // Check if already loaded
-      if ((window as any).Mantra) {
-        console.log(" Official MFS110 SDK already loaded")
-        return resolve()
-      }
+  // const loadOfficialMFS110 = (): Promise<void> => {
+  //   return new Promise((resolve, reject) => {
+  //     // Check if already loaded
+  //     if ((window as any).Mantra) {
+  //       console.log(" Official MFS110 SDK already loaded")
+  //       return resolve()
+  //     }
 
-      const script = document.createElement("script")
+  //     const script = document.createElement("script")
 
       
-      script.src = "/MFS110-official.js" // Official file 
-      script.type = "text/javascript"
-      script.async = false // Sync loading for official SDK
+  //     script.src = "/MFS110-official.js" // Official file 
+  //     script.type = "text/javascript"
+  //     script.async = false // Sync loading for official SDK
 
-      script.onload = () => {
-        console.log(" Official MFS110 script loaded")
+  //     script.onload = () => {
+  //       console.log(" Official MFS110 script loaded")
 
-        // Check for Mantra object
-        if ((window as any).Mantra) {
-          console.log(" Official Mantra SDK detected")
-          console.log("Available methods:", Object.keys((window as any).Mantra))
-          resolve()
-        } else {
-          console.error(" Official SDK loaded but Mantra object not found")
-          reject(new Error("Official MFS110 SDK loaded but Mantra object not found"))
-        }
-      }
+  //       // Check for Mantra object
+  //       if ((window as any).Mantra) {
+  //         console.log(" Official Mantra SDK detected")
+  //         console.log("Available methods:", Object.keys((window as any).Mantra))
+  //         resolve()
+  //       } else {
+  //         console.error(" Official SDK loaded but Mantra object not found")
+  //         reject(new Error("Official MFS110 SDK loaded but Mantra object not found"))
+  //       }
+  //     }
 
-      script.onerror = (error) => {
-        console.error("❌ Failed to load official MFS110 SDK:", error)
-        reject(new Error("Failed to load official MFS110 SDK - Check if file exists at /MFS110-official.js"))
-      }
+  //     script.onerror = (error) => {
+  //       console.error(" Failed to load official MFS110 SDK:", error)
+  //       reject(new Error("Failed to load official MFS110 SDK - Check if file exists at /MFS110-official.js"))
+  //     }
 
-      document.head.appendChild(script)
-    })
-  }
+  //     document.head.appendChild(script)
+  //   })
+  // }
 
   const [imagePreview, setImagePreview] = useState({
     face: "",
@@ -392,131 +392,145 @@ const RegistrationForm = ({ isExistingCustomer, onBack }: Props) => {
     }
   }
 
-  const submitToApi = async (data: FormData) => {
-    const token = localStorage.getItem("token")
-    if (!token) throw new Error("Authentication token not found")
+const submitToApi = async (data: FormData) => {
+  const token = localStorage.getItem("token")
+  if (!token) throw new Error("Authentication token not found")
 
-    const formData = new FormData()
+  const formData = new FormData()
 
-    // Add text fields
-    formData.append("name", data.name || "")
-    formData.append("address", data.address || "")
-    formData.append("city", data.city || "")
-    formData.append("state", data.state || "")
-    formData.append("contact", data.contact || "")
-    formData.append("adharNo", data.adharNo || "")
-    formData.append("nationality", data.nationality || "Indian")
+  // Add fields (same as before) ...
+  formData.append("name", data.name || "")
+  formData.append("address", data.address || "")
+  formData.append("city", data.city || "")
+  formData.append("state", data.state || "")
+  formData.append("contact", data.contact || "")
+  formData.append("adharNo", data.adharNo || "")
+  formData.append("nationality", data.nationality || "Indian")
 
-    // Add image files
-    if (data.face_image) {
-      formData.append("face_image", data.face_image, "face_image.jpg")
-    } else {
-      const emptyFile = new File([""], "face_image.jpg", { type: "image/jpeg" })
-      formData.append("face_image", emptyFile)
+  // Images (same as before) ...
+  if (data.face_image) {
+    formData.append("face_image", data.face_image, "face_image.jpg")
+  } else {
+    formData.append("face_image", new File([""], "face_image.jpg", { type: "image/jpeg" }))
+  }
+  if (data.adharImgF) {
+    formData.append("adharImgF", data.adharImgF, "adhar_front.jpg")
+  } else {
+    formData.append("adharImgF", new File([""], "adhar_front.jpg", { type: "image/jpeg" }))
+  }
+  if (data.adharImgB) {
+    formData.append("adharImgB", data.adharImgB, "adhar_back.jpg")
+  } else {
+    formData.append("adharImgB", new File([""], "adhar_back.jpg", { type: "image/jpeg" }))
+  }
+
+  // Fingerprint (same as before) ...
+  if (data.fingerprint_data) {
+    try {
+      const byteCharacters = atob(data.fingerprint_data)
+      const byteNumbers = new Array(byteCharacters.length)
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i)
+      }
+      const byteArray = new Uint8Array(byteNumbers)
+      const fingerprintBlob = new Blob([byteArray], { type: "application/octet-stream" })
+      formData.append("fingerprint_data", fingerprintBlob, "fingerprint.iso")
+    } catch (error) {
+      console.error("Error processing official fingerprint data:", error)
+      formData.append("fingerprint_data", new Blob([data.fingerprint_data], { type: "text/plain" }), "fingerprint.txt")
     }
+  } else {
+    formData.append("fingerprint_data", new Blob([""], { type: "application/octet-stream" }), "fingerprint.iso")
+  }
 
-    if (data.adharImgF) {
-      formData.append("adharImgF", data.adharImgF, "adhar_front.jpg")
-    } else {
-      const emptyFile = new File([""], "adhar_front.jpg", { type: "image/jpeg" })
-      formData.append("adharImgF", emptyFile)
-    }
+  try {
+    const response = await fetch("https://s-m-s-keyw.onrender.com/hotel/customer/register", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    })
 
-    if (data.adharImgB) {
-      formData.append("adharImgB", data.adharImgB, "adhar_back.jpg")
-    } else {
-      const emptyFile = new File([""], "adhar_back.jpg", { type: "image/jpeg" })
-      formData.append("adharImgB", emptyFile)
-    }
-
-    // Add official fingerprint data
-    if (data.fingerprint_data) {
+    if (!response.ok) {
+      
+      const errorText = await response.text()
+      let errorMessage
       try {
-        const byteCharacters = atob(data.fingerprint_data)
-        const byteNumbers = new Array(byteCharacters.length)
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i)
-        }
-        const byteArray = new Uint8Array(byteNumbers)
-        const fingerprintBlob = new Blob([byteArray], { type: "application/octet-stream" })
-        formData.append("fingerprint_data", fingerprintBlob, "fingerprint.iso")
-      } catch (error) {
-        console.error("Error processing official fingerprint data:", error)
-        // Fallback: send as text
-        formData.append(
-          "fingerprint_data",
-          new Blob([data.fingerprint_data], { type: "text/plain" }),
-          "fingerprint.txt",
-        )
+        const errorJson = JSON.parse(errorText)
+        errorMessage =
+          errorJson.detail || errorJson.message || errorJson.error || `Request failed with status ${response.status}`
+      } catch {
+        errorMessage = `Request failed with status ${response.status}: ${errorText}`
       }
-    } else {
-      const emptyBlob = new Blob([""], { type: "application/octet-stream" })
-      formData.append("fingerprint_data", emptyBlob, "fingerprint.iso")
+      throw new Error(errorMessage)
     }
 
-    try {
-      const response = await fetch("https://s-m-s-keyw.onrender.com/hotel/customer/register", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        let errorMessage
-        try {
-          const errorJson = JSON.parse(errorText)
-          errorMessage =
-            errorJson.detail || errorJson.message || errorJson.error || `Request failed with status ${response.status}`
-        } catch {
-          errorMessage = `Request failed with status ${response.status}: ${errorText}`
-        }
-        throw new Error(errorMessage)
-      }
-
-      return await response.json()
-    } catch (error) {
-      console.error("API submission error:", error)
-      throw error
-    }
+   
+    const successText = await response.text()
+    return { success: true, message: successText }
+  } catch (error) {
+    console.error("API submission error:", error)
+    throw error
   }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-
-    try {
-      if (!formData.name?.trim()) {
-        toast.error("Name is required")
-        return
-      }
-      if (!formData.contact?.trim()) {
-        toast.error("Contact number is required")
-        return
-      }
-
-      const result = await submitToApi(formData)
-      toast.success(isExistingCustomer ? "Customer updated successfully!" : "Customer registered successfully!")
-
-      setFormData({ nationality: "Indian" })
-      setImagePreview({ face: "", adharFront: "", adharBack: "" })
-      setFingerprintStatus("✅ Official device ready!")
-
-      onBack()
-    } catch (error) {
-      console.error("Submission error:", error)
-      toast.error(error instanceof Error ? error.message : "Submission failed. Please try again.")
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-const navigate = useNavigate()
-const handleBack = () => {
-  
-  navigate(-1)
 }
+
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setIsSubmitting(true)
+
+  try {
+    if (!formData.name?.trim()) {
+      toast.error("Name is required")
+      return
+    }
+    if (!formData.contact?.trim()) {
+      toast.error("Contact number is required")
+      return
+    }
+
+    const result = await submitToApi(formData)
+    
+
+
+    // ✅ Success case
+    toast.success(
+      isExistingCustomer
+        ? "Customer updated successfully!"
+        : "Customer registered successfully!"
+    )
+
+    // ✅ Reset form completely
+    setFormData({ nationality: "Indian" })
+    setImagePreview({ face: "", adharFront: "", adharBack: "" })
+    setFingerprintStatus("")
+
+    // ✅ Navigate after small delay so toast dikhe
+    
+      navigate("/hotel-home")
+  
+  } catch (error: any) {
+    console.error("Submission error:", error)
+
+    // API se response aa raha h to usko handle karo
+    const errorMsg = error?.message?.toLowerCase() || ""
+
+    if (errorMsg.includes("aadhar") && errorMsg.includes("present")) {
+      toast.error("Aadhar number already exists. Please use a different one.")
+      navigate("/hotel-home")
+    } else {
+      toast.error(errorMsg || "Submission failed. Please try again.")
+    }
+  } finally {
+    setIsSubmitting(false)
+  }
+}
+
+
+
+const navigate = useNavigate()
+
 
   return (
     <div className="bg-white min-w-screen rounded-xl shadow-md border border-gray-200">

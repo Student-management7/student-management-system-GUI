@@ -2,7 +2,7 @@
 
 import { User, Fingerprint, Loader2, AlertCircle, CreditCard } from "lucide-react"
 import { useState, useEffect } from "react"
-import { toast } from "react-toastify"
+import { toast, ToastContainer } from "react-toastify"
 import { useNavigate } from "react-router-dom"
 import UnifiedNavbar from "../navbar/HotelNavbar"
 
@@ -90,54 +90,60 @@ const CustomerSelection = ({ onNewCustomer }: Props) => {
   }
 
   // Single API call - no multiple attempts
-  const fetchCustomerByAadhar = async (aadharNo: string) => {
-    const token = localStorage.getItem("token")
-    if (!token) {
-      throw new Error("Authentication token not found")
-    }
+ const fetchCustomerByAadhar = async (aadharNo: string) => {
+  const token = localStorage.getItem("token")
+  if (!token) {
+    throw new Error("Authentication token not found")
+  }
 
-    console.log(`Making single API call for Aadhar: ${aadharNo}`)
+  console.log(`Making single API call for Aadhar: ${aadharNo}`)
 
-    try {
-      const response = await fetch(`https://s-m-s-keyw.onrender.com/hotel/customer/get?aadhar=${aadharNo}`, {
+  try {
+    const response = await fetch(
+      `https://s-m-s-keyw.onrender.com/hotel/customer/get?aadhar=${aadharNo}`,
+      {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-      })
+      }
+    )
 
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error("API Error Response:", errorText)
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error("API Error Response:", errorText)
 
-        // Parse error details
-        try {
-          const errorJson = JSON.parse(errorText)
-          if (errorJson.detail && errorJson.detail.includes("encodeBase64")) {
-            throw new Error("CORRUPTED_DATA")
-          } else if (errorJson.detail && errorJson.detail.includes("not found")) {
-            throw new Error("NOT_FOUND")
-          } else {
-            throw new Error(errorJson.detail || `API Error: ${response.status}`)
-          }
-        } catch (parseError) {
-          if (errorText.includes("encodeBase64") || errorText.includes("NullPointerException")) {
-            throw new Error("CORRUPTED_DATA")
-          } else {
-            throw new Error(`Request failed with status ${response.status}`)
-          }
-        }
+      // Try to extract useful info
+      let errorMessage = ""
+      try {
+        const errorJson = JSON.parse(errorText)
+        errorMessage = errorJson.detail || errorJson.message || errorJson.error || ""
+      } catch {
+        errorMessage = errorText
       }
 
-      const customerData = await response.json()
-      console.log("Customer data received successfully")
-      return customerData
-    } catch (error) {
-      console.error("Fetch error:", error)
-      throw error
+      // Custom mapping
+      if (response.status === 400 || errorMessage.toLowerCase().includes("not found")) {
+        throw new Error("NOT_FOUND")
+      }
+      if (errorMessage.toLowerCase().includes("encodebase64") || errorMessage.toLowerCase().includes("nullpointerexception")) {
+        throw new Error("CORRUPTED_DATA")
+      }
+
+      throw new Error(errorMessage || `Request failed with status ${response.status}`)
     }
+
+    // ✅ Success
+    const customerData = await response.json()
+    console.log("Customer data received successfully")
+    return customerData
+  } catch (error:any) {
+    console.error("Fetch error:", error)
+    throw new Error(error.message || "Network or server error")
   }
+}
+
 
   const handleExistingCustomer = async () => {
     setIsScanning(true)
@@ -159,9 +165,8 @@ const CustomerSelection = ({ onNewCustomer }: Props) => {
         // Single API call
         customerData = await fetchCustomerByAadhar(aadharNumber)
       }
-
       if (!customerData) {
-        throw new Error("Customer not found")
+        throw new Error("Customer data not found")
       }
 
       // Success - navigate to check-in
@@ -181,8 +186,8 @@ const CustomerSelection = ({ onNewCustomer }: Props) => {
           autoClose: 5000,
         })
       } else if (error.message === "NOT_FOUND") {
-        toast.error("Customer not found")
-        toast.info("Please check Aadhar number or register as new customer")
+        toast.error("Customer not found , Please check Aadhar number or register as new customer")
+       
       } else if (error.message.includes("encodeBase64") || error.message.includes("NullPointerException")) {
         toast.error("Customer data is corrupted in database!")
         toast.info("Please register again with fresh information", {
@@ -198,6 +203,7 @@ const CustomerSelection = ({ onNewCustomer }: Props) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ToastContainer position="top-right" autoClose={3000} />
       <UnifiedNavbar showBackButton={true} onBackClick={() => navigate(-1)} customTitle="Customer Registration" />
 
       <div className="px-4 sm:px-6 lg:px-8 py-8">
@@ -233,7 +239,7 @@ const CustomerSelection = ({ onNewCustomer }: Props) => {
                 onClick={onNewCustomer}
                 className="w-[325px] p-2 flex items-center justify-center gap-3 bg-[#126666] hover:bg-[#0f5555] text-white rounded-lg transition-colors"
               >
-                <User className="w-5 h-5" />
+                
                 <span className="font-medium">Register New Customer</span>
               </button>
             </div>
