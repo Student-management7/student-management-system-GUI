@@ -3,8 +3,8 @@
 import type React from "react"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Hotel, UserPlus, Users, Bed, Calendar, Settings, BarChart3, X } from "lucide-react"
-import { ToastContainer, toast } from "react-toastify"
+import { Hotel, UserPlus, Users, Bed, Calendar, BarChart3, X, Eye, UserCheck } from "lucide-react"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import UnifiedNavbar from "./navbar/HotelNavbar"
 
@@ -30,6 +30,7 @@ interface Customer {
 }
 
 interface Guest {
+  id: string
   arrivalDate: string
   guestNames: string
   address: string | null
@@ -49,7 +50,7 @@ interface Guest {
   billNo: string
   amount: string
   remarks: string
-  customersEntity: Customer
+  customersEntity: Customer[]
 }
 
 const HotelHome: React.FC = () => {
@@ -58,6 +59,7 @@ const HotelHome: React.FC = () => {
   const [guests, setGuests] = useState<Guest[]>([])
   const [loading, setLoading] = useState(true)
   const [showGuestTable, setShowGuestTable] = useState(false)
+  const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null)
 
   useEffect(() => {
     const fetchHotelData = () => {
@@ -131,7 +133,7 @@ const HotelHome: React.FC = () => {
 
   const handleCheckout = async (guestId: string) => {
     try {
-       const departureDate = getLocalISODateTime();
+      const departureDate = getLocalISODateTime()
 
       const userDetails = localStorage.getItem("userDetails")
       let email = ""
@@ -144,14 +146,10 @@ const HotelHome: React.FC = () => {
         }
       }
 
-     
-
-     
-     const payload = {
-  id: guestId,
-  departureDate: departureDate,
-};
-
+      const payload = {
+        id: guestId,
+        departureDate: departureDate,
+      }
 
       const token = localStorage.getItem("token")
       const response = await fetch("https://s-m-s-keyw.onrender.com/checkout", {
@@ -188,13 +186,13 @@ const HotelHome: React.FC = () => {
   const totalRooms = hotelDetails?.totalRooms || 0
   const availableRooms = totalRooms - currentGuests.length
 
- const todayRevenue = guests
-  .filter((guest) => {
-    const arrivalDate = new Date(guest.arrivalDate)
-    const today = new Date()
-    return arrivalDate.toDateString() === today.toDateString()
-  })
-  .reduce((total, guest) => total + (Number.parseFloat(guest.amount) || 0), 0)
+  const todayRevenue = guests
+    .filter((guest) => {
+      const arrivalDate = new Date(guest.arrivalDate)
+      const today = new Date()
+      return arrivalDate.toDateString() === today.toDateString()
+    })
+    .reduce((total, guest) => total + (Number.parseFloat(guest.amount) || 0), 0)
 
   const dashboardCards = [
     {
@@ -215,7 +213,7 @@ const HotelHome: React.FC = () => {
       bgColor: "bg-blue-50",
       onClick: () => setShowGuestTable(true),
     },
-     {
+    {
       title: "Guest History & Reports",
       description: "View past guests and generate reports",
       icon: BarChart3,
@@ -243,7 +241,7 @@ const HotelHome: React.FC = () => {
     //   bgColor: "bg-green-50",
     //   onClick: () => toast.info("Bookings feature coming soon!"),
     // },
-   
+
     // {
     //   title: "Settings",
     //   description: "Hotel settings and configuration",
@@ -255,18 +253,181 @@ const HotelHome: React.FC = () => {
     // },
   ]
 
+  const GuestDetailsModal = ({ guest, onClose }: { guest: Guest; onClose: () => void }) => {
+    const customers = Array.isArray(guest.customersEntity)
+      ? guest.customersEntity
+      : guest.customersEntity
+        ? [guest.customersEntity]
+        : []
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="flex justify-between items-center p-6 border-b">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Guest Details</h2>
+              <p className="text-gray-600">Booking ID: {guest.id}</p>
+            </div>
+            <button onClick={onClose} className="p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100">
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <div className="overflow-y-auto p-6">
+            {/* Booking Information */}
+            <div className="mb-8 bg-blue-50 rounded-xl p-6 border border-blue-200">
+              <h3 className="text-lg font-bold text-blue-900 mb-4 flex items-center">
+                <Calendar className="w-5 h-5 mr-2" />
+                Booking Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <span className="text-sm font-bold text-gray-600">Arrival Date:</span>
+                  <p className="text-gray-900">{new Date(guest.arrivalDate).toLocaleString()}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-bold text-gray-600">Guest Count:</span>
+                  <p className="text-gray-900">
+                    {customers.length} registered guest(s) | Male: {guest.maleCount}, Female: {guest.femaleCount},
+                    Children: {guest.childCount}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-sm font-bold text-gray-600">Purpose:</span>
+                  <p className="text-gray-900">{guest.purpose || "N/A"}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-bold text-gray-600">Coming From:</span>
+                  <p className="text-gray-900">{guest.comingFrom || "N/A"}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-bold text-gray-600">Deposit:</span>
+                  <p className="text-gray-900">₹{guest.deposit}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-bold text-gray-600">Total Amount:</span>
+                  <p className="text-gray-900">₹{guest.amount}</p>
+                </div>
+              </div>
+              {guest.remarks && (
+                <div className="mt-4">
+                  <span className="text-sm font-bold text-gray-600">Remarks:</span>
+                  <p className="text-gray-900 bg-white p-3 rounded-lg border">{guest.remarks}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Customer Details */}
+            <div className="space-y-6">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                <Users className="w-5 h-5 mr-2 text-green-600" />
+                Registered Customers ({customers.length})
+              </h3>
+
+              {customers.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <Users className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                  <p>No customer details available</p>
+                </div>
+              ) : (
+                customers.map((customer, index) => (
+                  <div key={customer.id} className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-semibold text-gray-800 flex items-center">
+                        <UserCheck className="w-5 h-5 mr-2 text-blue-600" />
+                        Customer {index + 1}
+                      </h4>
+                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                        Registered
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div>
+                        <span className="text-sm font-bold text-gray-600">Full Name:</span>
+                        <p className="text-gray-900 font-medium">{customer.name}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm font-bold text-gray-600">Contact:</span>
+                        <p className="text-gray-900">{customer.contact}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm font-bold text-gray-600">Aadhar Number:</span>
+                        <p className="text-gray-900 font-mono">{customer.adharNo}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm font-bold text-gray-600">Nationality:</span>
+                        <p className="text-gray-900">{customer.nationality}</p>
+                      </div>
+                      <div className="md:col-span-2">
+                        <span className="text-sm font-bold text-gray-600">Address:</span>
+                        <p className="text-gray-900">
+                          {[customer.address, customer.city, customer.state].filter(Boolean).join(", ")}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <span className="text-sm font-bold text-gray-600">Registration Date:</span>
+                      <p className="text-gray-900 text-sm">{new Date(customer.creationDateTime).toLocaleString()}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          <div className="p-6 border-t bg-gray-50 flex justify-between items-center">
+            <div className="text-sm text-gray-600">
+              Total Customers: {customers.length} | Total Amount: ₹{guest.amount} | Balance: ₹
+              {(Number.parseFloat(guest.amount) - Number.parseFloat(guest.deposit)).toFixed(2)}
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => handleCheckout(guest.id)}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium"
+              >
+                Checkout Group
+              </button>
+              <button
+                onClick={onClose}
+                className="px-4 py-2 bg-[#1e7878] hover:bg-teal-600 text-white rounded-lg transition-colors font-medium"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const GuestTable = () => {
     const [searchTerm, setSearchTerm] = useState("")
 
     const filteredGuests = currentGuests.filter((guest) => {
-      const nameMatch = guest.customersEntity.name.toLowerCase().includes(searchTerm.toLowerCase())
-      const contactMatch = guest.customersEntity.contact.includes(searchTerm)
-      return nameMatch || contactMatch
+      // Search in guest names and customer data
+      const guestNamesMatch = guest.guestNames?.toLowerCase().includes(searchTerm.toLowerCase()) || false
+
+      // Search in customer entities
+      const customers = Array.isArray(guest.customersEntity)
+        ? guest.customersEntity
+        : guest.customersEntity
+          ? [guest.customersEntity]
+          : []
+      const customerMatch = customers.some(
+        (customer) =>
+          customer.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          customer.contact?.includes(searchTerm) ||
+          customer.adharNo?.includes(searchTerm),
+      )
+
+      return guestNamesMatch || customerMatch
     })
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2">
-        <div className="bg-white rounded-xl shadow-xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="bg-white rounded-xl shadow-xl w-full max-w-7xl max-h-[90vh] overflow-hidden flex flex-col">
           <div className="flex justify-between items-center p-4 border-b">
             <h2 className="text-2xl font-bold text-gray-900">Current Guests</h2>
             <button
@@ -281,7 +442,7 @@ const HotelHome: React.FC = () => {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search by name or contact number..."
+                placeholder="Search by name, contact, or Aadhar number..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="px-2 placeholder-gray-400 w-1/2 form-control"
@@ -319,25 +480,25 @@ const HotelHome: React.FC = () => {
                         scope="col"
                         className="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        Guest Name
+                        Guest Names
                       </th>
                       <th
                         scope="col"
                         className="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        Contact
+                        Registered Customers
                       </th>
                       <th
                         scope="col"
                         className="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        Address
+                        Primary Contact
                       </th>
                       <th
                         scope="col"
                         className="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        Aadhar Number
+                        Guest Count
                       </th>
                       <th
                         scope="col"
@@ -364,23 +525,59 @@ const HotelHome: React.FC = () => {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {filteredGuests.map((guest, index) => {
+                      // Handle both array and single customer entity
+                      const customers = Array.isArray(guest.customersEntity)
+                        ? guest.customersEntity
+                        : guest.customersEntity
+                          ? [guest.customersEntity]
+                          : []
+                      const primaryCustomer = customers[0] || {}
                       const deposit = Number.parseFloat(guest.deposit) || 0
                       const total = Number.parseFloat(guest.amount) || 0
                       const balance = total - deposit
+                      const totalGuestCount =
+                        Number.parseInt(guest.maleCount) +
+                        Number.parseInt(guest.femaleCount) +
+                        Number.parseInt(guest.childCount)
 
                       return (
-                        <tr key={index}>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">{guest.customersEntity.name}</div>
+                        <tr key={guest.id || index} className="hover:bg-gray-50">
+                          <td className="px-6 py-4">
+                            <div className="text-sm font-medium text-gray-900">{guest.guestNames || "N/A"}</div>
+                            <div className="text-xs text-gray-500">
+                              Arrival: {new Date(guest.arrivalDate).toLocaleDateString()}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-900">
+                              {customers.length > 0 ? (
+                                <div>
+                                  <span className="font-medium">{customers.length} registered</span>
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    {customers
+                                      .slice(0, 2)
+                                      .map((c) => c.name)
+                                      .join(", ")}
+                                    {customers.length > 2 && ` +${customers.length - 2} more`}
+                                  </div>
+                                </div>
+                              ) : (
+                                <span className="text-gray-400">No registered customers</span>
+                              )}
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{guest.customersEntity.contact}</div>
+                            <div className="text-sm text-gray-900">
+                              {primaryCustomer.contact || guest.contact || "N/A"}
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{guest.customersEntity.address}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{guest.customersEntity.adharNo}</div>
+                            <div className="text-sm text-gray-900">
+                              <span className="font-medium">{totalGuestCount}</span>
+                              <div className="text-xs text-gray-500">
+                                M:{guest.maleCount} F:{guest.femaleCount} C:{guest.childCount}
+                              </div>
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-900">{deposit.toFixed(2)}</div>
@@ -394,12 +591,21 @@ const HotelHome: React.FC = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button
-                              onClick={() => handleCheckout(guest.id)}
-                              className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md transition-colors"
-                            >
-                              Checkout
-                            </button>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => setSelectedGuest(guest)}
+                                className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors flex items-center gap-1"
+                              >
+                                <Eye className="w-3 h-3" />
+                                View
+                              </button>
+                              <button
+                                onClick={() => handleCheckout(guest.id)}
+                                className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md transition-colors"
+                              >
+                                Checkout
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       )
@@ -412,7 +618,7 @@ const HotelHome: React.FC = () => {
 
           <div className="p-6 border-t bg-gray-50 flex justify-between items-center">
             <div className="text-sm text-gray-600">
-              Showing {filteredGuests.length} of {currentGuests.length} guests
+              Showing {filteredGuests.length} of {currentGuests.length} bookings
               {searchTerm && ` matching "${searchTerm}"`}
             </div>
             <button
@@ -477,7 +683,7 @@ const HotelHome: React.FC = () => {
                 <Users className="w-6 h-6 text-teal-600" />
               </div>
               <p className="text-2xl font-bold text-gray-900">{currentGuests.length}</p>
-              <p className="text-sm text-gray-600">Current Guests</p>
+              <p className="text-sm text-gray-600">Current Bookings</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
@@ -514,6 +720,7 @@ const HotelHome: React.FC = () => {
       </footer>
 
       {showGuestTable && <GuestTable />}
+      {selectedGuest && <GuestDetailsModal guest={selectedGuest} onClose={() => setSelectedGuest(null)} />}
     </div>
   )
 }
