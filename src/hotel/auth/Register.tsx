@@ -37,6 +37,7 @@ interface HotelFormData {
   gstNumber: string
   referral?: string
   type?: string
+  roomNumber: string[] 
 }
 
 const HotelForm: React.FC = () => {
@@ -57,7 +58,9 @@ const HotelForm: React.FC = () => {
     gstNumber: "",
     referral: "",
     type: "hotel",
+    roomNumber: [],
   })
+const [roomInput, setRoomInput] = useState("");
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -97,6 +100,7 @@ const handleBack = () => {
         gstNumber: formData.gstNumber.trim(),
         referral: formData.referral ? formData.referral.trim() : undefined,
         type: formData.type,
+         roomNumber: formData.roomNumber.map(Number),
       }
 
       console.log("Sending hotel creation payload:", JSON.stringify(payload))
@@ -154,6 +158,7 @@ const handleBack = () => {
       gstNumber: "",
       referral: "",
       type: "hotel",
+      roomNumber: [],
     })
   }
 
@@ -225,17 +230,7 @@ const handleBack = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="form-label bg-none sm:bg-transparent">Total Rooms</label>
-                <input
-                  type="number"
-                  name="totalRooms"
-                  value={formData.totalRooms}
-                  onChange={handleInputChange}
-                  placeholder="Number of rooms"
-                  className="form-control"
-                />
-              </div>
+              
 
               <div>
                 <label className="form-label bg-none sm:bg-transparent">Subscription Plan</label>
@@ -431,6 +426,96 @@ const handleBack = () => {
               </div>
             </div>
           </div>
+<div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 mb-6">
+  <label className="form-label bg-none sm:bg-transparent">Total Rooms *</label>
+  <input
+    type="number"
+    name="totalRooms"
+    value={formData.totalRooms}
+    onChange={(e) => {
+      const value = e.target.value
+      setFormData((prev) => ({
+        ...prev,
+        totalRooms: value,
+        // Optional: reset roomNumber if totalRooms decreased
+        roomNumber:
+          prev.roomNumber.length > Number(value)
+            ? prev.roomNumber.slice(0, Number(value))
+            : prev.roomNumber,
+      }))
+    }}
+    placeholder="Number of rooms"
+    className="form-control"
+    min={1}
+  />
+
+  <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center mt-3">
+    <input
+      type="number"
+      value={roomInput}
+      onChange={(e) => setRoomInput(e.target.value)}
+      placeholder="Enter room number"
+      className="form-control flex-1 sm:flex-none sm:w-40 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-[#126666] focus:border-[#126666]"
+      disabled={
+        formData.totalRooms === "" ||
+        formData.roomNumber.length >= Number(formData.totalRooms)
+      }
+    />
+    <button
+      type="button"
+      onClick={() => {
+        if (
+          roomInput.trim() !== "" &&
+          formData.roomNumber.length < Number(formData.totalRooms)
+        ) {
+          setFormData((prev) => ({
+            ...prev,
+            roomNumber: [...prev.roomNumber, roomInput.trim()],
+          }))
+          setRoomInput("")
+        }
+      }}
+      className="px-4 py-2 bg-[#126666] hover:bg-[#0f5555] text-white font-medium rounded-md shadow-sm transition-all flex items-center gap-1"
+      disabled={
+        formData.totalRooms === "" ||
+        formData.roomNumber.length >= Number(formData.totalRooms)
+      }
+    >
+      <Plus className="w-4 h-4" /> Add
+    </button>
+  </div>
+
+  <div className="flex flex-wrap gap-2 mt-2">
+    {formData.roomNumber.map((num, idx) => (
+      <span
+        key={idx}
+        className="flex items-center gap-2 px-3 py-1 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+      >
+        {num}
+        <button
+          type="button"
+          onClick={() => {
+            setFormData((prev) => ({
+              ...prev,
+              roomNumber: prev.roomNumber.filter((_, i) => i !== idx),
+            }))
+          }}
+          className="text-red-500 hover:text-red-700 font-bold"
+        >
+          ×
+        </button>
+      </span>
+    ))}
+  </div>
+
+  {formData.totalRooms !== "" &&
+    formData.roomNumber.length >= Number(formData.totalRooms) && (
+      <p className="text-sm text-red-500 mt-1">
+        You have reached the total number of rooms!
+      </p>
+    )}
+</div>
+
 
           {/* Action Buttons */}
           <div className="flex  flex-col sm:flex-row gap-3">
@@ -461,6 +546,8 @@ const handleBack = () => {
               <span>Reset</span>
             </button>
           </div>
+
+          
         </form>
       </div>
     </div>
