@@ -43,7 +43,7 @@ interface CheckInFormData {
   billNo: string
   amount: string
   remarks: string
-   roomNumber: string  
+  roomNumber: string  
 }
 
 const CustomerCheckInForm = () => {
@@ -77,6 +77,8 @@ const CustomerCheckInForm = () => {
   })
   const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({})
   const [additionalCustomers, setAdditionalCustomers] = useState<CustomerData[]>([])
+  const [availableRooms, setAvailableRooms] = useState<string[]>([])
+  const [occupiedRooms, setOccupiedRooms] = useState<string[]>([])
 
   // Fetch customer details by IDs
   const fetchCustomerDetails = async (customerId: string[]) => {
@@ -115,86 +117,133 @@ const CustomerCheckInForm = () => {
     }
   }
 
+  useEffect(() => {
+    if (location.state) {
+      const { customerId, customerData, isExisting } = location.state
+
+      setFormData((prev) => ({
+        ...prev,
+        customerId: customerId || [],
+        guestNames: customerData ? customerData.map((c: any) => c.name).join(", ") : "",
+        address: customerData?.[0]?.address || "",
+        contact: customerData?.[0]?.contact || "",
+        company: customerData?.[0]?.company || "",
+        idDetails: customerData?.[0]?.adharNo ? `Aadhar: ${customerData[0].adharNo}` : "",
+        nationality: customerData?.[0]?.nationality || "",
+      }))
+    }
+  }, [location.state])
+
+  // Available rooms calculation - UPDATED
+ // Available rooms calculation - FIXED VERSION
 useEffect(() => {
-  if (location.state) {
-    const { customerId, customerData, isExisting } = location.state
+  const calculateAvailableRooms = () => {
+    const userDetailsString = localStorage.getItem("userDetails");
+    const guestDataString = localStorage.getItem("guestsData");
 
-    setFormData((prev) => ({
-      ...prev,
-      customerId: customerId || [],   // ✅ IDs inject karo
-      guestNames: customerData ? customerData.map((c: any) => c.name).join(", ") : "",
-      address: customerData?.[0]?.address || "",
-      contact: customerData?.[0]?.contact || "",
-      company: customerData?.[0]?.company || "",
-      idDetails: customerData?.[0]?.adharNo ? `Aadhar: ${customerData[0].adharNo}` : "",
-      nationality: customerData?.[0]?.nationality || "",
-    }))
-  }
-}, [location.state])
+    if (userDetailsString) {
+      const userDetails = JSON.parse(userDetailsString);
+      const allRooms = userDetails?.hotelCreationEntity?.roomNumber || [];
+      console.log("All Rooms =>", allRooms);
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault()
-  setIsSubmitting(true)
-  const token = localStorage.getItem("token")
-  if (!token) {
-    toast.error("Authentication token not found")
-    setIsSubmitting(false)
-    return
-  }
+      if (guestDataString) {
+        const guestData = JSON.parse(guestDataString);
+        console.log("Guest Data from localStorage =>", guestData);
 
-  try {
-    const checkInPayload = {
-      customerId: formData.customerId, // directly formData se lo
-      arrivalDate: formData.arrivalDate,
-      guestNames: formData.guestNames,   // yaha bhi formData se lo
-      address: formData.address,
-      contact: formData.contact,
-      company: formData.company,
-      idDetails: formData.idDetails,
-      nationality: formData.nationality,
-      maleCount: formData.maleCount,
-      femaleCount: formData.femaleCount,
-      childCount: formData.childCount,
-      purpose: formData.purpose,
-      comingFrom: formData.comingFrom,
-      goingTo: formData.goingTo,
-      departureDate: formData.departureDate,
-      transport: formData.transport,
-      deposit: formData.deposit,
-      billNo: formData.billNo,
-      amount: formData.amount,
-      roomNumber: formData.roomNumber,
-      remarks: formData.remarks,
+        // Filter occupied rooms: jinka departureDate empty hai AND roomNumber null nahi hai
+        const occupiedRoomsList = guestData
+          .filter(guest => 
+            (!guest.departureDate || guest.departureDate === "") && 
+            guest.roomNumber !== null && 
+            guest.roomNumber !== "null" && 
+            guest.roomNumber !== ""
+          )
+          .map(guest => guest.roomNumber.toString())
+          .filter((room, index, self) => self.indexOf(room) === index); // Remove duplicates
+
+        console.log("Occupied Rooms (not checked out) =>", occupiedRoomsList);
+        setOccupiedRooms(occupiedRoomsList);
+
+        const freeRooms = allRooms.filter(
+          room => !occupiedRoomsList.includes(room.toString())
+        );
+
+        console.log("Available Rooms =>", freeRooms);
+        setAvailableRooms(freeRooms);
+      } else {
+        // Agar guestData nahi hai, to saari rooms available hain
+        console.log("No guest data found, all rooms are available");
+        setAvailableRooms(allRooms);
+        setOccupiedRooms([]);
+      }
+    }
+  };
+
+  calculateAvailableRooms();
+}, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    const token = localStorage.getItem("token")
+    if (!token) {
+      toast.error("Authentication token not found")
+      setIsSubmitting(false)
+      return
     }
 
-    console.log("✅ Final Payload:", checkInPayload) // Debugging ke liye
+    try {
+      const checkInPayload = {
+        customerId: formData.customerId,
+        arrivalDate: formData.arrivalDate,
+        guestNames: formData.guestNames,
+        address: formData.address,
+        contact: formData.contact,
+        company: formData.company,
+        idDetails: formData.idDetails,
+        nationality: formData.nationality,
+        maleCount: formData.maleCount,
+        femaleCount: formData.femaleCount,
+        childCount: formData.childCount,
+        purpose: formData.purpose,
+        comingFrom: formData.comingFrom,
+        goingTo: formData.goingTo,
+        departureDate: formData.departureDate,
+        transport: formData.transport,
+        deposit: formData.deposit,
+        billNo: formData.billNo,
+        amount: formData.amount,
+        roomNumber: formData.roomNumber,
+        remarks: formData.remarks,
+      }
 
-    const response = await fetch("https://s-m-s-keyw.onrender.com/hotelCheckInn/save", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(checkInPayload),
-    })
+      console.log("✅ Final Payload:", checkInPayload)
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      throw new Error(errorText || "Check-in failed")
+      const response = await fetch("https://s-m-s-keyw.onrender.com/hotelCheckInn/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(checkInPayload),
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(errorText || "Check-in failed")
+      }
+
+      toast.success(`Check-in completed successfully!`)
+      navigate("/hotel-home", {
+        state: { message: `Check-in completed successfully!` },
+      })
+    } catch (error: any) {
+      console.error("Check-in error:", error)
+      toast.error(error.message || "Failed to save check-in data")
+    } finally {
+      setIsSubmitting(false)
     }
-
-    toast.success(`Check-in completed successfully!`)
-    navigate("/hotel-home", {
-      state: { message: `Check-in completed successfully!` },
-    })
-  } catch (error: any) {
-    console.error("Check-in error:", error)
-    toast.error(error.message || "Failed to save check-in data")
-  } finally {
-    setIsSubmitting(false)
   }
-}
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -302,11 +351,11 @@ useEffect(() => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen min-w-screen bg-gray-50">
       <UnifiedNavbar showBackButton onBackClick={() => navigate(-1)} customTitle="Customer Check-in" />
 
       <div className="px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="">
           <div className="bg-white rounded-xl shadow-md p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Customer Check-in Form</h2>
 
@@ -436,18 +485,41 @@ useEffect(() => {
                     className="w-full form-control"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Room Number</label>
-                  <input
-                    
-                    name="roomNumber"
-                    value={formData.roomNumber}
-                    onChange={handleChange}
-                    
-                    required
-                    className="w-full form-control"
-                  />
-                </div>
+
+                {/* Room Number Dropdown - UPDATED */}
+                {/* Room Number Dropdown - FIXED */}
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">Room Number *</label>
+  <select
+    name="roomNumber"
+    value={formData.roomNumber}
+    onChange={handleChange}
+    required
+    className="w-full form-control"
+  >
+    <option value="">Select Room</option>
+    {availableRooms.map((room, index) => (
+      <option key={index} value={room}>
+        {room} - Available
+      </option>
+    ))}
+    {occupiedRooms.map((room, index) => (
+      <option key={`occupied-${index}`} value={room} disabled>
+        {room} - Occupied (Booked)
+      </option>
+    ))}
+  </select>
+  <p className="text-xs text-gray-500 mt-1">
+    Available: {availableRooms.length} rooms | Occupied: {occupiedRooms.length} rooms
+  </p>
+  
+  {/* Debug information */}
+  <div className="mt-2 p-2 bg-gray-100 rounded text-xs">
+    <p><strong>Debug Info:</strong></p>
+    <p>Total Rooms: {availableRooms.length + occupiedRooms.length}</p>
+    <p>Occupied Rooms: {occupiedRooms.join(", ") || "None"}</p>
+  </div>
+</div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Child Count *</label>
@@ -581,7 +653,7 @@ useEffect(() => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400 transition-colors flex items-center"
+                  className="px-6 py-2 bg-[#126666] text-white rounded-md disabled:bg-blue-400 transition-colors flex items-center"
                 >
                   {isSubmitting && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
                   {isSubmitting ? "Processing..." : "Complete Check-in"}

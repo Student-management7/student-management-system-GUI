@@ -61,49 +61,65 @@ const HotelHome: React.FC = () => {
   const [showGuestTable, setShowGuestTable] = useState(false)
   const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null)
 
-  useEffect(() => {
-    const fetchHotelData = () => {
-      const hotelDataString = localStorage.getItem("userDetails")
-      if (hotelDataString) {
-        try {
-          const parsedHotelData = JSON.parse(hotelDataString)
-          if (parsedHotelData.hotelCreationEntity) {
-            setHotelDetails(parsedHotelData.hotelCreationEntity)
-          }
-        } catch (error) {
-          console.error("Failed to parse hotel data from localStorage", error)
-        }
-      }
-    }
-
-    const token = localStorage.getItem("token")
-    const fetchGuests = async () => {
+ useEffect(() => {
+  const fetchHotelData = () => {
+    const hotelDataString = localStorage.getItem("userDetails")
+    if (hotelDataString) {
       try {
-        setLoading(true)
-        const response = await fetch("https://s-m-s-keyw.onrender.com/hotelCheckInn/get", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${token}`,
-          },
-        })
-        if (response.ok) {
-          const data = await response.json()
-          setGuests(data)
-        } else {
-          toast.error("Failed to fetch guest data")
+        const parsedHotelData = JSON.parse(hotelDataString)
+        if (parsedHotelData.hotelCreationEntity) {
+          setHotelDetails(parsedHotelData.hotelCreationEntity)
         }
       } catch (error) {
-        console.error("Error fetching guests:", error)
-        toast.error("Error fetching guest data")
-      } finally {
-        setLoading(false)
+        console.error("Failed to parse hotel data from localStorage", error)
       }
     }
+  }
 
-    fetchHotelData()
-    fetchGuests()
-  }, [])
+  const token = localStorage.getItem("token")
+  const fetchGuests = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch("https://s-m-s-keyw.onrender.com/hotelCheckInn/get", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setGuests(data)
+
+        // ✅ Save to localStorage
+        localStorage.setItem("guestsData", JSON.stringify(data))
+      } else {
+        toast.error("Failed to fetch guest data")
+
+        // ✅ fallback from localStorage
+        const localGuests = localStorage.getItem("guestsData")
+        if (localGuests) {
+          setGuests(JSON.parse(localGuests))
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching guests:", error)
+      toast.error("Error fetching guest data")
+
+      // ✅ fallback from localStorage
+      const localGuests = localStorage.getItem("guestsData")
+      if (localGuests) {
+        setGuests(JSON.parse(localGuests))
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  fetchHotelData()
+  fetchGuests()
+}, [])
+
 
   const handleLogout = () => {
     localStorage.removeItem("authToken")
@@ -171,6 +187,7 @@ const HotelHome: React.FC = () => {
         if (updatedResponse.ok) {
           const data = await updatedResponse.json()
           setGuests(data)
+           localStorage.setItem("guestsData", JSON.stringify(data))
         }
       } else {
         toast.error("Failed to checkout guest")
@@ -262,7 +279,7 @@ const HotelHome: React.FC = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="bg-white rounded-xl shadow-xl w-full  max-h-[90vh] overflow-hidden flex flex-col">
           <div className="flex justify-between items-center p-6 border-b">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">Guest Details</h2>
@@ -427,7 +444,7 @@ const HotelHome: React.FC = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2">
-        <div className="bg-white rounded-xl shadow-xl w-full max-w-7xl max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="bg-white rounded-xl shadow-xl w-full  max-h-[90vh] overflow-hidden flex flex-col">
           <div className="flex justify-between items-center p-4 border-b">
             <h2 className="text-2xl font-bold text-gray-900">Current Guests</h2>
             <button
@@ -644,7 +661,7 @@ const HotelHome: React.FC = () => {
             <Hotel className="w-12 h-12 text-teal-600" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome to {hotelName}</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600  mx-auto">
             Manage your hotel operations efficiently with our comprehensive management system.
           </p>
         </div>
@@ -711,7 +728,7 @@ const HotelHome: React.FC = () => {
       </main>
 
       <footer className="bg-white border-t border-gray-200 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="  px-4 sm:px-6 lg:px-8 py-6">
           <div className="text-center text-gray-600">
             <p>&copy; 2024 {hotelName}. All rights reserved.</p>
             <p className="text-sm mt-1">Powered by EasyWaySolution Hotel Management System</p>

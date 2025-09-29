@@ -22,7 +22,7 @@ const HotelRegistrationForm = () => {
   if (!token) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center p-6 bg-white rounded-lg shadow-md max-w-md">
+        <div className="text-center p-6 bg-white rounded-lg shadow-md ">
           <h2 className="text-xl font-bold text-red-600 mb-4">Session Expired</h2>
           <p className="mb-4">Please login again to continue</p>
           <button
