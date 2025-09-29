@@ -28,27 +28,33 @@ export default function HotelTable() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const fetchGuests = async () => {
-      setLoading(true)
-      const token = localStorage.getItem("token")
-      try {
-        const res = await fetch("https://s-m-s-keyw.onrender.com/hotelCheckInn/get", {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        })
-        const data = await res.json()
-        setGuests(data)
-        setFilteredGuests(data)
-      } catch (error) {
-        console.error("Error fetching data", error)
-      } finally {
-        setLoading(false)
-      }
-    }
+  const fetchGuests = async () => {
+    setLoading(true)
+    const token = localStorage.getItem("token")
+    try {
+      const res = await fetch("https://s-m-s-keyw.onrender.com/hotelCheckInn/get", {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      })
+      const data = await res.json()
 
-    fetchGuests()
-  }, [])
+      // ✅ state update
+      setGuests(data)
+      setFilteredGuests(data)
+
+      // ✅ localStorage update
+      localStorage.setItem("guestsData", JSON.stringify(data))
+    } catch (error) {
+      console.error("Error fetching data", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  fetchGuests()
+}, [])
+
 
   const handleFilter = () => {
     const from = fromDate ? new Date(fromDate) : null
@@ -77,7 +83,7 @@ export default function HotelTable() {
     <div className="min-h-screen bg-gray-50">
       <HotelNavbar showBackButton={true} onBackClick={() => navigate(-1)} />
 
-      <div className="max-w-7xl mx-auto p-4">
+      <div className=" p-4">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Guest History Report</h2>
 
         {/* Filter Section */}
